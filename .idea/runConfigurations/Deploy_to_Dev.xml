@@ -1,0 +1,35 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Deploy to Dev" type="com.microsoft.intellij.run.configuration.WebAppConfigurationType" factoryName="Azure Web App">
+    <option name="OS" value="linux" />
+    <option name="appServicePlanId" value="" />
+    <option name="appServicePlanName" value="" />
+    <option name="creatingAppServicePlan" value="false" />
+    <option name="creatingNew" value="false" />
+    <option name="creatingResGrp" value="false" />
+    <option name="deployToRoot" value="true" />
+    <option name="deployToSlot" value="false" />
+    <option name="jdkVersion">
+      <JavaVersion />
+    </option>
+    <option name="newSlotConfigurationSource" />
+    <option name="newSlotName" />
+    <option name="openBrowserAfterDeployment" value="true" />
+    <option name="pricing" value="" />
+    <option name="region" value="" />
+    <option name="resourceGroup" value="" />
+    <option name="slotName" />
+    <option name="slotPanelVisible" value="false" />
+    <option name="stack" value="TOMCAT" />
+    <option name="subscriptionId" value="3683c1e0-ea21-4f46-82c8-bd6be22238c2" />
+    <option name="targetName" value="skil-somatic-cloud-1.0-SNAPSHOT.war" />
+    <option name="targetPath" value="$PROJECT_DIR$/target/skil-somatic-cloud-1.0-SNAPSHOT.war" />
+    <option name="uiVersion" value="NEW" />
+    <option name="version" value="8.5-jre8" />
+    <option name="webAppId" value="/subscriptions/3683c1e0-ea21-4f46-82c8-bd6be22238c2/resourceGroups/skil-somatic-cloud/providers/Microsoft.Web/sites/skil-somatic-dev" />
+    <option name="webAppName" value="" />
+    <option name="webContainer" value="" />
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="package" />
+    </method>
+  </configuration>
+</component>
