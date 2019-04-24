@@ -7,8 +7,8 @@
     <packaging>war</packaging>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -81,6 +81,37 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-webapp-maven-plugin</artifactId>
+                <version>1.5.4</version>
+                <configuration>
+                    <!-- Specify v2 schema -->
+                    <schemaVersion>v2</schemaVersion>
+                    <!-- App information -->
+                    <subscriptionId>3683c1e0-ea21-4f46-82c8-bd6be22238c2</subscriptionId>
+                    <resourceGroup>skil-somatic-cloud</resourceGroup>
+                    <appName>skil-somatic-dev</appName>
+                    <region>southcentralus</region>
+
+                    <!-- Java Runtime Stack for App on Linux-->
+                    <runtime>
+                        <os>linux</os>
+                        <javaVersion>jre8</javaVersion>
+                        <webContainer>tomcat 9.0</webContainer>
+                    </runtime>
+                    <deployment>
+                        <resources>
+                            <resource>
+                                <directory>${project.basedir}/target</directory>
+                                <includes>
+                                    <include>*.war</include>
+                                </includes>
+                            </resource>
+                        </resources>
+                    </deployment>
+                </configuration>
             </plugin>
         </plugins>
     </build>
