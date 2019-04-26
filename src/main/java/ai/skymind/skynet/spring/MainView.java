@@ -16,7 +16,6 @@ public class MainView extends VerticalLayout {
     public MainView(@Autowired MessageBean bean) {
         Button button = new Button("Click me", e -> {
             Notification.show(bean.getMessage());
-            RestTemplate template = null;
         });
 
 
