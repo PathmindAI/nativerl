@@ -1,12 +1,13 @@
 package ai.skymind.skynet.spring.views
 
+import ai.skymind.skynet.spring.views.layouts.LoginLayout
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.login.LoginOverlay
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.router.Route
 
-@Route("")
+@Route(value ="", layout = LoginLayout::class)
 class LoginView() : VerticalLayout() {
     init {
         justifyContentMode = FlexComponent.JustifyContentMode.CENTER
