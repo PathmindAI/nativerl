@@ -2,7 +2,7 @@ package ai.skymind.skynet.spring.cloud.job.rescale.rest.entities
 
 import java.time.LocalDateTime
 
-data class OutputFile (
+data class RescaleFile (
         /**
          * 1 = inpute file,
          * 2 = template file,

@@ -2,11 +2,16 @@ package ai.skymind.skynet.spring.cloud.job.rescale.rest
 
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.*
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.toMono
+import reactor.netty.http.client.HttpClient
+import java.io.File
 import java.nio.charset.Charset
 import java.util.function.Function
 import java.util.function.Predicate
@@ -18,7 +23,9 @@ class RescaleRestApiClient(
         webClientBuilder: WebClient.Builder
 ) {
     val client = webClientBuilder
-            .baseUrl("https://$platformRegion/api/v2")
+            .clientConnector(ReactorClientHttpConnector(HttpClient.create().chunkedTransfer(false)))
+            //.baseUrl("https://$platformRegion/api/v2")
+            .baseUrl("http://127.0.0.1:9000/api/v2")
             .defaultHeader("Authorization", "Token $apiKey")
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
@@ -63,10 +70,10 @@ class RescaleRestApiClient(
             .retrieve()
             .bodyToMono(typeReference<PagedResult<JobRun>>()).block()!!
 
-    fun outputFiles(jobId: String): PagedResult<OutputFile> = client
+    fun outputFiles(jobId: String): PagedResult<RescaleFile> = client
             .get().uri("/jobs/$jobId/runs/1/files/")
             .retrieve()
-            .bodyToMono(typeReference<PagedResult<OutputFile>>()).block()!!
+            .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
 
     fun getFileContents(fileId: String): ByteArray = client
             .get().uri("/files/${fileId}/contents/").retrieve().bodyToMono(ByteArray::class.java).block()!!
@@ -75,5 +82,18 @@ class RescaleRestApiClient(
         val outputFiles = outputFiles(jobId)
         val consoleFile = outputFiles.results.find { it.name == "process_output.log" && it.isUploaded && !it.isDeleted}!!
         return getFileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
+    }
+
+    fun uploadFile(filename: String, content: File): RescaleFile {
+        val contents = FileSystemResource(content)
+
+        return client
+                .post().uri("/files/contents/")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(BodyInserters.fromMultipartData("file", contents))
+                .retrieve()
+                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), Function {it.bodyToMono(String::class.java).map { java.lang.RuntimeException(it) }})
+                .bodyToMono(RescaleFile::class.java)
+                .block()!!
     }
 }

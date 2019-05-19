@@ -6,6 +6,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Ignore
 import org.junit.Test
 import org.springframework.web.reactive.function.client.WebClient
+import java.io.File
 import java.net.URI
 
 class RescaleJobExecutorTest {
@@ -51,6 +52,12 @@ class RescaleJobExecutorTest {
     fun stop() {
 
         apiClient.jobStop("GWQop")
+    }
+
+    @Ignore
+    @Test
+    fun uploadFile(){
+        println(apiClient.uploadFile("hello-world.txt", File("X:/hello-world.123.txt")))
     }
 
 }
