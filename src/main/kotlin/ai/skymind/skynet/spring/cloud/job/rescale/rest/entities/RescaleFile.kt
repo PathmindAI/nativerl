@@ -1,7 +1,9 @@
 package ai.skymind.skynet.spring.cloud.job.rescale.rest.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDateTime
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class RescaleFile (
         /**
          * 1 = inpute file,
@@ -15,18 +17,18 @@ data class RescaleFile (
          * 10 = temporary file
          */
         val typeId: Int,
+        val id: String,
         val name: String,
+        val isUploaded: Boolean,
+        val isDeleted: Boolean,
+        val viewInBrowser: Boolean,
         val dateUploaded: LocalDateTime,
         val relativePath: String?,
-        val encodedEncryptionKey: String,
         val downloadUrl: String,
-        val sharedWith: List<String>,
-        val decryptedSize: Int,
-        val owner: String,
         val path: String,
-        val isUploaded: Boolean,
-        val viewInBrowser: Boolean,
-        val id: String,
-        val isDeleted: Boolean,
+        val sharedWith: List<String>,
+        val owner: String,
+        val encodedEncryptionKey: String,
+        val decryptedSize: Int,
         val md5: String
         )

@@ -1,16 +1,14 @@
 package ai.skymind.skynet.spring.cloud.job.rescale.rest
 
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.*
+import ai.skymind.skynet.spring.cloud.job.rescale.util.runCommand
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.FileSystemResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.toMono
-import reactor.netty.http.client.HttpClient
 import java.io.File
 import java.nio.charset.Charset
 import java.util.function.Function
@@ -20,18 +18,14 @@ import java.util.function.Predicate
 class RescaleRestApiClient(
         @Value("\${skymind.rescale.platform.region}") val platformRegion: String,
         @Value("\${skymind.rescale.platform.key}") val apiKey: String,
+        val objectMapper: ObjectMapper,
         webClientBuilder: WebClient.Builder
 ) {
     val client = webClientBuilder
-            .clientConnector(ReactorClientHttpConnector(HttpClient.create().chunkedTransfer(false)))
-            //.baseUrl("https://$platformRegion/api/v2")
-            .baseUrl("http://127.0.0.1:9000/api/v2")
+            .baseUrl("https://$platformRegion/api/v2")
             .defaultHeader("Authorization", "Token $apiKey")
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
-
-    //inline fun <reified T> nextPage(page: PagedResult<T>): PagedResult<T> = client.get().uri(page.next!!).retrieve().bodyToMono(PagedResult.of<T>()).block()!!
-    //inline fun <reified T> previousPage(page: PagedResult<T>): PagedResult<T> = client.get().uri(page.previous!!).retrieve().bodyToMono(PagedResult.of<T>()).block()!!
 
     fun jobCreate(job: Job): Job = client
             .post().uri("/jobs/")
@@ -75,25 +69,45 @@ class RescaleRestApiClient(
             .retrieve()
             .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
 
-    fun getFileContents(fileId: String): ByteArray = client
+    fun fileContents(fileId: String): ByteArray = client
             .get().uri("/files/${fileId}/contents/").retrieve().bodyToMono(ByteArray::class.java).block()!!
 
     fun consoleOutput(jobId: String): String {
         val outputFiles = outputFiles(jobId)
         val consoleFile = outputFiles.results.find { it.name == "process_output.log" && it.isUploaded && !it.isDeleted}!!
-        return getFileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
+        return fileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
     }
 
-    fun uploadFile(filename: String, content: File): RescaleFile {
-        val contents = FileSystemResource(content)
+    /**
+     * Uses a hack to work around the fact that rescale doesn't support `Transfer-Encoding: chunked` for file uploads,
+     * and WebClient doesn't properly support not using it for file uploads
+     */
+    fun fileUpload(content: File): RescaleFile {
+        if(!content.exists()) {throw IllegalArgumentException("The to be uploaded file $content does not exist!")}
 
-        return client
-                .post().uri("/files/contents/")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .body(BodyInserters.fromMultipartData("file", contents))
+        val command = listOf("curl",
+                "-X", "POST",
+                "-H", "Content-Type:multipart/form-data",
+                "-H", "Authorization: Token $apiKey",
+                "-F", "file=@${content.absolutePath}",
+                "https://$platformRegion/api/v2/files/contents/"
+        )
+
+        val result = command.runCommand(content.parentFile)
+        if(result.exitValue != 0){ throw RuntimeException("Could not upload given file. Error: $result") }
+
+        return objectMapper.readValue(result.stdOut, RescaleFile::class.java)
+    }
+
+    fun filesList(): PagedResult<RescaleFile> = client
+            .get().uri("/files/")
+            .retrieve()
+            .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
+
+    fun deleteFile(fileId: String) {
+        client.delete().uri("/files/$fileId/")
                 .retrieve()
-                .onStatus(Predicate.isEqual(HttpStatus.BAD_REQUEST), Function {it.bodyToMono(String::class.java).map { java.lang.RuntimeException(it) }})
-                .bodyToMono(RescaleFile::class.java)
-                .block()!!
+                .bodyToMono(Void::class.java)
+                .block()
     }
 }
