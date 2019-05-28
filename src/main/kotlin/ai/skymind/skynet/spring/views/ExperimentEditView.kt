@@ -24,8 +24,6 @@ class ExperimentEditView() : VerticalLayout() {
                 Button("Run Train Job")
         ))
 
-
-
         add(Card(SplitLayout(
                 VerticalLayout(
                         ListBox<String>().apply {

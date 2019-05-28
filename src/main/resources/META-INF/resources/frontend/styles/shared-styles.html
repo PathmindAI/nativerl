@@ -24,6 +24,12 @@
 
             [part="navbar"] {
                 background-color: rgb(26, 41, 73);
+                padding: 1em;
+            }
+
+            slot[name="menu"] {
+                color: white;
+                align-content: flex-end;
             }
 
             [part="content"] {
@@ -44,5 +50,14 @@
 
     .align-right {
         align-self: flex-end;
+    }
+
+    .topMenu {
+        justify-content: flex-end;
+        color: white;
+    }
+
+    .expand {
+        flex-grow: 1;
     }
 </style>

@@ -1,8 +1,8 @@
 package ai.skymind.skynet.spring.views
 
 import ai.skymind.skynet.spring.services.Experiment
-import ai.skymind.skynet.spring.services.ExperimentService
 import ai.skymind.skynet.spring.views.layouts.MainLayout
+import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.H2
@@ -16,7 +16,7 @@ import com.vaadin.flow.router.Route
 
 @Route(value = "experiments", layout = MainLayout::class)
 class ExperimentListView(
-        val experimentService: ExperimentService
+        val userSession: UserSession
 ) : VerticalLayout() {
     val grid = Grid(Experiment::class.java)
     val filterText = TextField()
@@ -65,7 +65,7 @@ class ExperimentListView(
     }
 
     fun updateList() {
-        val foundItems = experimentService.find(filterText.value)
+        val foundItems = userSession.findExperiments(filterText.value)
         grid.setItems(foundItems)
     }
 }

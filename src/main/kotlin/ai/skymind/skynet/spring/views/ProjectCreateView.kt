@@ -1,8 +1,9 @@
 package ai.skymind.skynet.spring.views
 
 import ai.skymind.skynet.spring.services.Project
-import ai.skymind.skynet.spring.services.ProjectService
 import ai.skymind.skynet.spring.views.layouts.MainLayout
+import ai.skymind.skynet.spring.views.state.UserSession
+import ai.skymind.skynet.spring.views.upload.MultiFileBuffer
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
@@ -12,21 +13,22 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.component.upload.Upload
-import com.vaadin.flow.component.upload.receivers.FileBuffer
 import com.vaadin.flow.router.Route
+import java.io.File
 
 @Route("projects/create", layout = MainLayout::class)
 class ProjectCreateView(
-        val projectService: ProjectService
+        val userSession: UserSession
 ) : VerticalLayout() {
     val projectName = TextField()
+    val fileBuffer = MultiFileBuffer()
 
     init {
         add(H2("Create Project"))
         add(FormLayout().apply {
             addFormItem(projectName, "Project Name")
         })
-        add(Upload(FileBuffer()).apply {
+        add(Upload(fileBuffer).apply {
             dropLabel = Span("Drag exported Model as Zip File here")
         })
         add(HorizontalLayout(
@@ -35,7 +37,12 @@ class ProjectCreateView(
                 },
                 Button("Create Project").apply {
                     addClickListener {
-                        projectService.add(Project(projectName.value))
+                        fileBuffer.getFiles().forEach{
+                            val target = File("x:/test/$it").outputStream()
+                            fileBuffer.getInputStream(it).copyTo(target)
+                            target.close()
+                        }
+                        userSession.addProject(Project(projectName.value))
                         ui.ifPresent { it.navigate(ProjectListView::class.java) }
                     }
                 }

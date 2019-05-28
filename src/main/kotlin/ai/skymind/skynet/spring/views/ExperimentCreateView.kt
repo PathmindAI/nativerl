@@ -1,8 +1,8 @@
 package ai.skymind.skynet.spring.views
 
 import ai.skymind.skynet.spring.services.Experiment
-import ai.skymind.skynet.spring.services.ExperimentService
 import ai.skymind.skynet.spring.views.layouts.MainLayout
+import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
@@ -14,7 +14,7 @@ import com.vaadin.flow.router.Route
 
 @Route("experiments/create", layout = MainLayout::class)
 class ExperimentCreateView(
-        val experimentService: ExperimentService
+    val userSession: UserSession
 ) : VerticalLayout() {
     val experimentName = TextField()
 
@@ -29,7 +29,7 @@ class ExperimentCreateView(
                 },
                 Button("Create Experiment").apply {
                     addClickListener {
-                        experimentService.add(Experiment(experimentName.value))
+                        userSession.addExperiment(Experiment(experimentName.value))
                         ui.ifPresent { it.navigate(ExperimentListView::class.java) }
                     }
                 }
