@@ -21,7 +21,6 @@ class RescaleJobExecutorTest {
     @Ignore
     @Test
     fun run() {
-
         val executor = RescaleJobExecutor(apiClient)
         val jobId = executor.run(
                 CloudJobSpec(
@@ -36,17 +35,49 @@ class RescaleJobExecutorTest {
 
     @Ignore
     @Test
+    fun status4cores() {
+        val executor = RescaleJobExecutor(apiClient)
+        executor.status("Orqtd")
+
+        println(apiClient.outputFiles("Orqtd"))
+    }
+
+    @Ignore
+    @Test
+    fun workingDirectoryContents() {
+        println(apiClient.directoryContent("Mrqtd", "1"))
+    }
+
+
+    @Ignore
+    @Test
+    fun tail() {
+        println(apiClient.tailConsole("Mrqtd", "1"))
+    }
+
+    @Ignore
+    @Test
+    fun tail4cores() {
+        println(apiClient.tailConsole("Orqtd", "1"))
+    }
+
+    @Ignore
+    @Test
     fun status() {
         val executor = RescaleJobExecutor(apiClient)
-        executor.status("oYoTdb")
+        executor.status("Orqtd")
+
+        println(apiClient.outputFiles("Orqtd"))
     }
 
     @Ignore
     @Test
     fun result() {
         val executor = RescaleJobExecutor(apiClient)
-        executor.result("oYoTdb")
+        executor.result("gQJWa")
     }
+
+
 
 
     @Ignore

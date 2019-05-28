@@ -13,6 +13,7 @@ import java.io.File
 import java.nio.charset.Charset
 import java.util.function.Function
 import java.util.function.Predicate
+import kotlin.streams.toList
 
 @Service
 class RescaleRestApiClient(
@@ -64,10 +65,21 @@ class RescaleRestApiClient(
             .retrieve()
             .bodyToMono(typeReference<PagedResult<JobRun>>()).block()!!
 
+    fun directoryContent(jobId: String, run: String): List<DirectoryFileReference> = client
+            .get().uri("/jobs/$jobId/runs/$run/directory-contents/")
+            .retrieve()
+            .bodyToFlux(DirectoryFileReference::class.java)
+            .toStream().toList()
+
     fun outputFiles(jobId: String): PagedResult<RescaleFile> = client
             .get().uri("/jobs/$jobId/runs/1/files/")
             .retrieve()
             .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
+
+    fun tailConsole(jobId: String, run: String) = client
+            .get().uri("/jobs/$jobId/runs/$run/tail/process_output.log")
+            .retrieve()
+            .bodyToMono(String::class.java).block()!!
 
     fun fileContents(fileId: String): ByteArray = client
             .get().uri("/files/${fileId}/contents/").retrieve().bodyToMono(ByteArray::class.java).block()!!

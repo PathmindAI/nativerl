@@ -12,7 +12,7 @@ data class RescaleFile (
          * 4 = script file,
          * 5 = output file,
          * 7 = design variable file,
-         * 8 = case file,
+         * 8 = case fvile,
          * 9 = optimizer file,
          * 10 = temporary file
          */

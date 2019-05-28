@@ -3,10 +3,10 @@ package ai.skymind.skynet.spring.cloud.job.rescale.rest.entities
 data class JobAnalysis (
         val command: String,
         val analysis: Analysis = Analysis("user_included", "0"),
-        val hardware: Hardware = Hardware("standard-plus", 1),
+        val hardware: Hardware = Hardware("standard-plus", 4),
         val useMpi: Boolean = false,
         val envVars: Map<String,String> = emptyMap(),
-        val inputFiles: List<String> = emptyList(),
+        val inputFiles: List<FileReference> = emptyList(),
         val useRescaleLicense: Boolean = false,
         val templateTasks: List<Any>? = emptyList(),
         val preProcessScript: String? = null,
@@ -22,5 +22,9 @@ data class JobAnalysis (
     data class Hardware(
             val coreType: String,
             val coresPerSlot: Int
+    )
+
+    data class FileReference(
+            val id: String
     )
 }

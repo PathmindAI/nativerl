@@ -11,9 +11,13 @@ import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.JobAnalysis
 class RescaleJobExecutor(val apiClient: RescaleRestApiClient): CloudJobExecutor {
     override fun run(spec: CloudJobSpec): String {
         val job = apiClient.jobCreate(Job(
-                name = "${spec.userId}-job",
+                name = "${spec.userId}-job-traffic-sim-2",
                 jobanalyses = listOf(JobAnalysis(
-                        "java -version; gcc --version; cmake --version; python --version; python3 --version"
+                        command = "unzip traffic-sim.zip; cd sim; ./run.sh",
+                        inputFiles = listOf(
+                            JobAnalysis.FileReference("qpgzX")
+                        )
+
                 ))
         ))
 
