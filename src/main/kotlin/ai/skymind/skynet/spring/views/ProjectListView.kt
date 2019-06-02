@@ -1,6 +1,6 @@
 package ai.skymind.skynet.spring.views
 
-import ai.skymind.skynet.spring.services.Project
+import ai.skymind.skynet.data.db.jooq.tables.records.ProjectRecord
 import ai.skymind.skynet.spring.views.layouts.MainLayout
 import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.button.Button
@@ -17,7 +17,7 @@ import com.vaadin.flow.router.Route
 class ProjectListView(
     val userSession: UserSession
 ) : VerticalLayout() {
-    val grid = Grid(Project::class.java)
+    val grid = Grid(ProjectRecord::class.java)
     val filterText = TextField()
 
     init {
@@ -56,6 +56,6 @@ class ProjectListView(
 
     fun updateList() {
         val foundItems = userSession.findProject(filterText.value)
-        grid.setItems(foundItems)
+        grid.setItems(foundItems ?: emptyList())
     }
 }

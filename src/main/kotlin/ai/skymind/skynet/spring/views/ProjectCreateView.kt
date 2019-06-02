@@ -1,6 +1,5 @@
 package ai.skymind.skynet.spring.views
 
-import ai.skymind.skynet.spring.services.Project
 import ai.skymind.skynet.spring.views.layouts.MainLayout
 import ai.skymind.skynet.spring.views.state.UserSession
 import ai.skymind.skynet.spring.views.upload.MultiFileBuffer
@@ -37,12 +36,13 @@ class ProjectCreateView(
                 },
                 Button("Create Project").apply {
                     addClickListener {
+                        val file = File("x:/test/$it")
                         fileBuffer.getFiles().forEach{
-                            val target = File("x:/test/$it").outputStream()
+                            val target = file.outputStream()
                             fileBuffer.getInputStream(it).copyTo(target)
                             target.close()
                         }
-                        userSession.addProject(Project(projectName.value))
+                        userSession.addProject(projectName.value, file)
                         ui.ifPresent { it.navigate(ProjectListView::class.java) }
                     }
                 }
