@@ -1,9 +1,6 @@
 package ai.skymind.skynet.spring.views.state
 
-import ai.skymind.skynet.spring.services.Experiment
-import ai.skymind.skynet.spring.services.ExperimentService
-import ai.skymind.skynet.spring.services.Project
-import ai.skymind.skynet.spring.services.ProjectService
+import ai.skymind.skynet.spring.services.*
 import com.vaadin.flow.spring.annotation.VaadinSessionScope
 import org.springframework.stereotype.Component
 
@@ -11,18 +8,13 @@ import org.springframework.stereotype.Component
 @VaadinSessionScope
 class UserSession(
         val experimentService: ExperimentService,
-        val projectService: ProjectService
+        val projectService: ProjectService,
+        val userService: UserService
 ) {
     var user: User? = null
 
-    val accounts = mapOf(
-            "paul.dubs@skymind.io" to "ashtasht"
-    )
-
     fun login(username: String, password: String){
-        if(password == accounts[username]){
-            user = User(username)
-        }
+        user = userService.login(username, password)
     }
 
     fun isLoggedIn() = user != null

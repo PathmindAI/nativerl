@@ -88,4 +88,7 @@
             <column name="fileId" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
         </createTable>
     </changeSet>
+    <changeSet id="20190602-2" author="pdubs">
+        <addUniqueConstraint tableName="user" columnNames="email" />
+    </changeSet>
 </databaseChangeLog>
