@@ -15,8 +15,12 @@ class UserSession(
 ) {
     var user: User? = null
 
+    val accounts = mapOf(
+            "paul.dubs@skymind.io" to "ashtasht"
+    )
+
     fun login(username: String, password: String){
-        if(password != "wrong"){
+        if(password == accounts[username]){
             user = User(username)
         }
     }
@@ -30,7 +34,7 @@ class UserSession(
 
     fun projects() = projectService.findAll()
     fun findProject(query: String) = projectService.find(query)
-    fun addProject(project: Project) = projectService.add(project)
+    fun addProject(project: Project) = projectService.add(project.copy(owner=user!!.username))
 
     fun experiments() = experimentService.findAll()
     fun findExperiments(query: String) = experimentService.find(query)

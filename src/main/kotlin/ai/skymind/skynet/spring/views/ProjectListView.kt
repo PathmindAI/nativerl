@@ -23,7 +23,7 @@ class ProjectListView(
     init {
         grid.apply {
             setSelectionMode(Grid.SelectionMode.SINGLE)
-            setColumns("modelName", "dateCreated")
+            setColumns("name", "createdAt")
             addItemClickListener {
                 ui.ifPresent { it.navigate(ExperimentListView::class.java) }
             }

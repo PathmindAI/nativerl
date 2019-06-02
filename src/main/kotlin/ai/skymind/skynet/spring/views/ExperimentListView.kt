@@ -25,7 +25,7 @@ class ExperimentListView(
 
         grid.apply {
             setSelectionMode(Grid.SelectionMode.SINGLE)
-            setColumns("name", "dateCreated", "runs")
+            setColumns("name", "createdAt", "runs")
             addComponentColumn { experiment ->
                 HorizontalLayout(
                         Button("Run") {

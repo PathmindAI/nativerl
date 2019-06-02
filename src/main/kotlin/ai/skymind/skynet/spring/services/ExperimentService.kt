@@ -1,7 +1,7 @@
 package ai.skymind.skynet.spring.services
 
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Service
 class ExperimentService {
@@ -17,6 +17,6 @@ class ExperimentService {
 
 data class Experiment(
         val name: String,
-        val dateCreated: LocalDateTime = LocalDateTime.now(),
+        val createdAt: Instant = Instant.now(),
         val runs: Int = 0
 )
