@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="20190602-1" author="pdubs">
+        <createTable tableName="users">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="email" type="VARCHAR(255)" />
+            <column name="password" type="VARCHAR(60)"/>
+        </createTable>
+        <createTable tableName="projects">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INTEGER">
+                <constraints references="users" referencedColumnNames="id" foreignKeyName="project_owner" />
+            </column>
+            <column name="name" type="NVARCHAR"/>
+            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="updatedAt" type="DATETIME" valueComputed="NOW()"/>
+        </createTable>
+        <createTable tableName="models">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="users" foreignKeyName="model_owner"/>
+            </column>
+            <column name="name" type="NVARCHAR"/>
+            <column name="fileId" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
+            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
+        </createTable>
+        <createTable tableName="mdps">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="users" foreignKeyName="mdp_owner"/>
+            </column>
+            <column name="modelId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="models" foreignKeyName="mdp_for_model"/>
+            </column>
+            <column name="name" type="NVARCHAR"/>
+            <column name="code" type="NVARCHAR" />
+            <column name="verified" type="BOOLEAN" defaultValueBoolean="false" />
+            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="updatedAt" type="DATETIME" valueComputed="NOW()"/>
+        </createTable>
+        <createTable tableName="runs">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="users" foreignKeyName="run_owner"/>
+            </column>
+            <column name="modelId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="models" foreignKeyName="run_model"/>
+            </column>
+            <column name="mdpId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="mdps" foreignKeyName="run_mdp"/>
+            </column>
+            <column name="startedAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="finishedAt" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+            <column name="status" type="NVARCHAR" />
+        </createTable>
+        <createTable tableName="policies">
+            <column name="id" autoIncrement="true" type="INTEGER">
+                <constraints primaryKey="true" />
+            </column>
+            <column name="userId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="users" foreignKeyName="policyOwner"/>
+            </column>
+            <column name="modelId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="models" foreignKeyName="policy_model"/>
+            </column>
+            <column name="mdpId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="mdps" foreignKeyName="policy_mdp"/>
+            </column>
+            <column name="runId" type="INTEGER">
+                <constraints referencedColumnNames="id" references="runs" foreignKeyName="policy_created_by_run"/>
+            </column>
+            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="fileId" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
