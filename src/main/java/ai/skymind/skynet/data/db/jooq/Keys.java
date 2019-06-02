@@ -72,6 +72,7 @@ public class Keys {
     public static final ForeignKey<MdpRecord, UserRecord> MDP__MDP_OWNER = ForeignKeys0.MDP__MDP_OWNER;
     public static final ForeignKey<MdpRecord, ModelRecord> MDP__MDP_FOR_MODEL = ForeignKeys0.MDP__MDP_FOR_MODEL;
     public static final ForeignKey<ModelRecord, UserRecord> MODEL__MODEL_OWNER = ForeignKeys0.MODEL__MODEL_OWNER;
+    public static final ForeignKey<ModelRecord, UserRecord> MODEL__MODEL_PROJECT = ForeignKeys0.MODEL__MODEL_PROJECT;
     public static final ForeignKey<PolicyRecord, UserRecord> POLICY__POLICYOWNER = ForeignKeys0.POLICY__POLICYOWNER;
     public static final ForeignKey<PolicyRecord, ModelRecord> POLICY__POLICY_MODEL = ForeignKeys0.POLICY__POLICY_MODEL;
     public static final ForeignKey<PolicyRecord, MdpRecord> POLICY__POLICY_MDP = ForeignKeys0.POLICY__POLICY_MDP;
@@ -109,6 +110,7 @@ public class Keys {
         public static final ForeignKey<MdpRecord, UserRecord> MDP__MDP_OWNER = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.USER_PKEY, Mdp.MDP, "mdp__mdp_owner", Mdp.MDP.USER_ID);
         public static final ForeignKey<MdpRecord, ModelRecord> MDP__MDP_FOR_MODEL = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.MODEL_PKEY, Mdp.MDP, "mdp__mdp_for_model", Mdp.MDP.MODEL_ID);
         public static final ForeignKey<ModelRecord, UserRecord> MODEL__MODEL_OWNER = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.USER_PKEY, Model.MODEL, "model__model_owner", Model.MODEL.USER_ID);
+        public static final ForeignKey<ModelRecord, UserRecord> MODEL__MODEL_PROJECT = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.USER_PKEY, Model.MODEL, "model__model_project", Model.MODEL.PROJECT_ID);
         public static final ForeignKey<PolicyRecord, UserRecord> POLICY__POLICYOWNER = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.USER_PKEY, Policy.POLICY, "policy__policyOwner", Policy.POLICY.USER_ID);
         public static final ForeignKey<PolicyRecord, ModelRecord> POLICY__POLICY_MODEL = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.MODEL_PKEY, Policy.POLICY, "policy__policy_model", Policy.POLICY.MODEL_ID);
         public static final ForeignKey<PolicyRecord, MdpRecord> POLICY__POLICY_MDP = Internal.createForeignKey(ai.skymind.skynet.data.db.jooq.Keys.MDP_PKEY, Policy.POLICY, "policy__policy_mdp", Policy.POLICY.MDP_ID);

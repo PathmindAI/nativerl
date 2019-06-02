@@ -8,25 +8,14 @@ import ai.skymind.skynet.data.db.jooq.Indexes;
 import ai.skymind.skynet.data.db.jooq.Keys;
 import ai.skymind.skynet.data.db.jooq.Public;
 import ai.skymind.skynet.data.db.jooq.tables.records.MdpRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -42,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Mdp extends TableImpl<MdpRecord> {
 
-    private static final long serialVersionUID = -1489270725;
+    private static final long serialVersionUID = 2005059808;
 
     /**
      * The reference instance of <code>public.mdp</code>
@@ -65,37 +54,37 @@ public class Mdp extends TableImpl<MdpRecord> {
     /**
      * The column <code>public.mdp.user_id</code>.
      */
-    public final TableField<MdpRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<MdpRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.mdp.model_id</code>.
      */
-    public final TableField<MdpRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<MdpRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.mdp.name</code>.
      */
-    public final TableField<MdpRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<MdpRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.mdp.code</code>.
      */
-    public final TableField<MdpRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<MdpRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.mdp.verified</code>.
      */
-    public final TableField<MdpRecord, Boolean> VERIFIED = createField("verified", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
+    public final TableField<MdpRecord, Boolean> VERIFIED = createField("verified", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false).defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * The column <code>public.mdp.created_at</code>.
      */
-    public final TableField<MdpRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<MdpRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * The column <code>public.mdp.updated_at</code>.
      */
-    public final TableField<MdpRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<MdpRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.mdp</code> table reference

@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -1975428638;
+    private static final long serialVersionUID = 783572839;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -65,22 +65,22 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>public.run.user_id</code>.
      */
-    public final TableField<RunRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.run.model_id</code>.
      */
-    public final TableField<RunRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.run.mdp_id</code>.
      */
-    public final TableField<RunRecord, Integer> MDP_ID = createField("mdp_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> MDP_ID = createField("mdp_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.run.started_at</code>.
      */
-    public final TableField<RunRecord, Timestamp> STARTED_AT = createField("started_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<RunRecord, Timestamp> STARTED_AT = createField("started_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * The column <code>public.run.finished_at</code>.
@@ -90,7 +90,7 @@ public class Run extends TableImpl<RunRecord> {
     /**
      * The column <code>public.run.status</code>.
      */
-    public final TableField<RunRecord, String> STATUS = createField("status", org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<RunRecord, String> STATUS = createField("status", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * Create a <code>public.run</code> table reference

@@ -2,22 +2,40 @@ package ai.skymind.skynet.spring.services
 
 import ai.skymind.skynet.data.db.jooq.Tables
 import ai.skymind.skynet.data.db.jooq.tables.records.ProjectRecord
-import org.jooq.DSLContext
+import ai.skymind.skynet.spring.cloud.job.api.CloudJobExecutor
+import ai.skymind.skynet.spring.db.ModelRepository
+import ai.skymind.skynet.spring.db.ProjectRepository
 import org.springframework.stereotype.Service
+import java.io.File
 
 @Service
 class ProjectService(
-        val ctx: DSLContext
-){
+        val projectRepository: ProjectRepository,
+        val modelRepository: ModelRepository,
+        val cloudJobExecutor: CloudJobExecutor
+) {
+    fun find(ownerId: Int, query: String?) = projectRepository.find(ownerId, query)
+    fun findAll(ownerId: Int) = projectRepository.findAll(ownerId)
 
-    fun find(ownerId: Int, query: String?) = if(query.isNullOrBlank()) findAll(ownerId) else all(ownerId).and(Tables.PROJECT.NAME.containsIgnoreCase(query)).fetch().toList()
-    fun findAll(ownerId: Int) = all(ownerId).fetch().toList()
+    fun addProject(ownerId: Int, projectName: String, model: File): ProjectRecord {
+        val project = Tables.PROJECT.newRecord().apply {
+            name = projectName
+            userId = ownerId
+        }.let {
+            projectRepository.add(it)
+        }
 
-    fun add(project: ProjectRecord): ProjectRecord {
-        project.attach(ctx.configuration())
-        project.store()
+        val modelFileId = cloudJobExecutor.upload(model)
+        val model = Tables.MODEL.newRecord().apply {
+            name = "Initial Model for Project '$projectName'"
+            userId = ownerId
+            projectId = project.id
+            fileId = modelFileId
+        }.let {
+            modelRepository.add(it)
+        }
         return project
     }
 
-    private fun all(ownerId: Int) = ctx.selectFrom(Tables.PROJECT).where(Tables.PROJECT.USER_ID.eq(ownerId))
+    fun models(projectId: Int) = modelRepository.findAllByProjectId(projectId)
 }

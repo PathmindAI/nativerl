@@ -7,7 +7,10 @@ import ai.skymind.skynet.spring.cloud.job.api.CloudJobStatus
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.RescaleRestApiClient
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.Job
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.JobAnalysis
+import org.springframework.stereotype.Service
+import java.io.File
 
+@Service
 class RescaleJobExecutor(val apiClient: RescaleRestApiClient): CloudJobExecutor {
     override fun run(spec: CloudJobSpec): String {
         val job = apiClient.jobCreate(Job(
@@ -39,4 +42,6 @@ class RescaleJobExecutor(val apiClient: RescaleRestApiClient): CloudJobExecutor 
 
         return CloudJobResult(jobId)
     }
+
+    override fun upload(file: File): String = apiClient.fileUpload(file).id
 }

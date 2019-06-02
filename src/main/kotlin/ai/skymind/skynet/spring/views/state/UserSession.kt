@@ -1,7 +1,10 @@
 package ai.skymind.skynet.spring.views.state
 
-import ai.skymind.skynet.data.db.jooq.Tables
-import ai.skymind.skynet.spring.services.*
+import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
+import ai.skymind.skynet.spring.db.ModelRepository
+import ai.skymind.skynet.spring.services.ProjectService
+import ai.skymind.skynet.spring.services.User
+import ai.skymind.skynet.spring.services.UserService
 import com.vaadin.flow.spring.annotation.VaadinSessionScope
 import org.springframework.stereotype.Component
 import java.io.File
@@ -9,7 +12,7 @@ import java.io.File
 @Component
 @VaadinSessionScope
 class UserSession(
-        val experimentService: ExperimentService,
+        val modelService: ModelRepository,
         val projectService: ProjectService,
         val userService: UserService
 ) {
@@ -28,17 +31,18 @@ class UserSession(
 
     fun projects() = withUser { projectService.findAll(it.id) }
     fun findProject(query: String) = withUser { projectService.find(it.id, query) }
-    fun addProject(name: String, model: File) = withUser{
-        val project = Tables.PROJECT.newRecord().apply {
-            setName(name)
-            userId = it.id
-        }
-        projectService.add(project)
-    }
+    fun addProject(name: String, model: File) = withUser{ projectService.addProject(it.id, name, model) }
 
-    fun experiments() = experimentService.findAll()
-    fun findExperiments(query: String) = experimentService.find(query)
-    fun addExperiment(experiment: Experiment) = experimentService.add(experiment)
+    fun experiments(): Any = TODO()
+    fun findExperiments(query: String): Any = TODO()
+    fun addExperiment(experiment: Any): Any = TODO()
 
     fun <T> withUser(f: (User) -> T): T? = user?.let(f)
+    fun findModels(projectId: Int?, query: String?): List<ModelRecord> = when(projectId) {
+        null -> emptyList()
+        else -> when(query) {
+            null -> emptyList()
+            else -> projectService.models(projectId).filter { it.name.contains(query, true) }
+        }
+    }
 }

@@ -6,90 +6,142 @@
     <changeSet id="20190602-1" author="pdubs">
         <createTable tableName="user">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="email" type="VARCHAR(255)">
-                <constraints unique="true" />
+                <constraints unique="true" nullable="false"/>
             </column>
-            <column name="password" type="VARCHAR(60)"/>
-            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
-            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="password" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <createTable tableName="project">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="INTEGER">
-                <constraints references="user" referencedColumnNames="id" foreignKeyName="project_owner" />
+                <constraints references="user" referencedColumnNames="id" foreignKeyName="project_owner"
+                             nullable="false"/>
             </column>
-            <column name="name" type="NVARCHAR"/>
-            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
-            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="name" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <createTable tableName="model">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="user" foreignKeyName="model_owner"/>
+                <constraints referencedColumnNames="id" references="user" foreignKeyName="model_owner"
+                             nullable="false"/>
             </column>
-            <column name="name" type="NVARCHAR"/>
-            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
-            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="project_id" type="INTEGER">
+                <constraints referencedColumnNames="id" references="user" foreignKeyName="model_project"
+                             nullable="false"/>
+            </column>
+            <column name="name" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <createTable tableName="mdp">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="user" foreignKeyName="mdp_owner"/>
+                <constraints referencedColumnNames="id" references="user" foreignKeyName="mdp_owner" nullable="false"/>
             </column>
             <column name="model_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="model" foreignKeyName="mdp_for_model"/>
+                <constraints referencedColumnNames="id" references="model" foreignKeyName="mdp_for_model"
+                             nullable="false"/>
             </column>
-            <column name="name" type="NVARCHAR"/>
-            <column name="code" type="NVARCHAR" />
-            <column name="verified" type="BOOLEAN" defaultValueBoolean="false" />
-            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
-            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="name" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="verified" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <createTable tableName="run">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="user" foreignKeyName="run_owner"/>
+                <constraints referencedColumnNames="id" references="user" foreignKeyName="run_owner" nullable="false"/>
             </column>
             <column name="model_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="model" foreignKeyName="run_model"/>
+                <constraints referencedColumnNames="id" references="model" foreignKeyName="run_model" nullable="false"/>
             </column>
             <column name="mdp_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="mdp" foreignKeyName="run_mdp"/>
+                <constraints referencedColumnNames="id" references="mdp" foreignKeyName="run_mdp" nullable="false"/>
             </column>
-            <column name="started_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="started_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
             <column name="finished_at" type="DATETIME">
-                <constraints nullable="true" />
+                <constraints nullable="true"/>
             </column>
-            <column name="status" type="NVARCHAR" />
+            <column name="status" type="NVARCHAR">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
         <createTable tableName="policy">
             <column name="id" autoIncrement="true" type="INTEGER">
-                <constraints primaryKey="true" />
+                <constraints primaryKey="true"/>
             </column>
             <column name="user_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="user" foreignKeyName="policyOwner"/>
+                <constraints referencedColumnNames="id" references="user" foreignKeyName="policyOwner"
+                             nullable="false"/>
             </column>
             <column name="model_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="model" foreignKeyName="policy_model"/>
+                <constraints referencedColumnNames="id" references="model" foreignKeyName="policy_model"
+                             nullable="false"/>
             </column>
             <column name="mdp_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="mdp" foreignKeyName="policy_mdp"/>
+                <constraints referencedColumnNames="id" references="mdp" foreignKeyName="policy_mdp" nullable="false"/>
             </column>
             <column name="run_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="run" foreignKeyName="policy_created_by_run"/>
+                <constraints referencedColumnNames="id" references="run" foreignKeyName="policy_created_by_run"
+                             nullable="false"/>
             </column>
-            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
-            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
+    </changeSet>
+    <changeSet id="20190602-2" author="pdubs" context="dev">
+        <insert tableName="user">
+            <column name="email">paul.dubs@skymind.io</column>
+            <column name="password">$2a$10$Sf9m/2PaMIknRJ.4GJz7C.75UCqXBUVIdOwjF3yZJQmfOB1bTbSq2</column>
+        </insert>
     </changeSet>
 </databaseChangeLog>

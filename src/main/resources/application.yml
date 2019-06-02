@@ -16,3 +16,9 @@ skymind:
     platform:
       region: platform.rescale.jp
       key: 0d0601925a547db44d41007e3cc4386b075c761c
+
+---
+spring:
+  profiles: dev
+  liquibase:
+    contexts: dev

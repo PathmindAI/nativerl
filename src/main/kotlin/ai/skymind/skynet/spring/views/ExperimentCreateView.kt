@@ -1,6 +1,5 @@
 package ai.skymind.skynet.spring.views
 
-import ai.skymind.skynet.spring.services.Experiment
 import ai.skymind.skynet.spring.views.layouts.MainLayout
 import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.button.Button
@@ -25,12 +24,12 @@ class ExperimentCreateView(
         })
         add(HorizontalLayout(
                 Button("Cancel").apply {
-                    addClickListener { ui.ifPresent { it.navigate(ExperimentListView::class.java) } }
+                    addClickListener { ui.ifPresent { it.navigate(ModelListView::class.java) } }
                 },
                 Button("Create Experiment").apply {
                     addClickListener {
-                        userSession.addExperiment(Experiment(experimentName.value))
-                        ui.ifPresent { it.navigate(ExperimentListView::class.java) }
+                        //userSession.addExperiment(Experiment(experimentName.value))
+                        ui.ifPresent { it.navigate(ModelListView::class.java) }
                     }
                 }
         ).apply {

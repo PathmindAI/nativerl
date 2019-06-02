@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 743307772;
+    private static final long serialVersionUID = 696186342;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -65,22 +65,27 @@ public class Model extends TableImpl<ModelRecord> {
     /**
      * The column <code>public.model.user_id</code>.
      */
-    public final TableField<ModelRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<ModelRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.model.project_id</code>.
+     */
+    public final TableField<ModelRecord, Integer> PROJECT_ID = createField("project_id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>public.model.name</code>.
      */
-    public final TableField<ModelRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this, "");
+    public final TableField<ModelRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.model.file_id</code>. This is the file id as returned by rescale api
      */
-    public final TableField<ModelRecord, String> FILE_ID = createField("file_id", org.jooq.impl.SQLDataType.VARCHAR, this, "This is the file id as returned by rescale api");
+    public final TableField<ModelRecord, String> FILE_ID = createField("file_id", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "This is the file id as returned by rescale api");
 
     /**
      * The column <code>public.model.created_at</code>.
      */
-    public final TableField<ModelRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+    public final TableField<ModelRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference
@@ -160,11 +165,15 @@ public class Model extends TableImpl<ModelRecord> {
      */
     @Override
     public List<ForeignKey<ModelRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ModelRecord, ?>>asList(Keys.MODEL__MODEL_OWNER);
+        return Arrays.<ForeignKey<ModelRecord, ?>>asList(Keys.MODEL__MODEL_OWNER, Keys.MODEL__MODEL_PROJECT);
     }
 
-    public User user() {
+    public User model_ModelOwner() {
         return new User(this, Keys.MODEL__MODEL_OWNER);
+    }
+
+    public User model_ModelProject() {
+        return new User(this, Keys.MODEL__MODEL_PROJECT);
     }
 
     /**

@@ -1,6 +1,6 @@
 package ai.skymind.skynet.spring.views
 
-import ai.skymind.skynet.spring.services.Experiment
+import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
 import ai.skymind.skynet.spring.views.layouts.MainLayout
 import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.button.Button
@@ -12,20 +12,22 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.data.value.ValueChangeMode
+import com.vaadin.flow.router.BeforeEvent
+import com.vaadin.flow.router.HasUrlParameter
 import com.vaadin.flow.router.Route
 
-@Route(value = "experiments", layout = MainLayout::class)
-class ExperimentListView(
+@Route(value = "models", layout = MainLayout::class)
+class ModelListView(
         val userSession: UserSession
-) : VerticalLayout() {
-    val grid = Grid(Experiment::class.java)
+) : VerticalLayout(), HasUrlParameter<Int> {
+    var projectId: Int? = null
+    val grid = Grid(ModelRecord::class.java)
     val filterText = TextField()
 
     init {
-
         grid.apply {
             setSelectionMode(Grid.SelectionMode.SINGLE)
-            setColumns("name", "createdAt", "runs")
+            setColumns("name", "createdAt")
             addComponentColumn { experiment ->
                 HorizontalLayout(
                         Button("Run") {
@@ -60,12 +62,15 @@ class ExperimentListView(
         })
         add(filterText)
         add(grid)
-
-        updateList()
     }
 
     fun updateList() {
-        val foundItems = userSession.findExperiments(filterText.value)
+        val foundItems = userSession.findModels(projectId, filterText.value)
         grid.setItems(foundItems)
+    }
+
+    override fun setParameter(event: BeforeEvent?, projectId: Int?) {
+        this.projectId = projectId
+        updateList()
     }
 }
