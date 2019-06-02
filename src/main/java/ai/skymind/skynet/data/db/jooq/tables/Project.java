@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Project extends TableImpl<ProjectRecord> {
 
-    private static final long serialVersionUID = 2098334082;
+    private static final long serialVersionUID = -265225039;
 
     /**
      * The reference instance of <code>public.project</code>
@@ -63,9 +63,9 @@ public class Project extends TableImpl<ProjectRecord> {
     public final TableField<ProjectRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('project_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.project.userId</code>.
+     * The column <code>public.project.user_id</code>.
      */
-    public final TableField<ProjectRecord, Integer> USERID = createField("userId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<ProjectRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.project.name</code>.
@@ -73,14 +73,14 @@ public class Project extends TableImpl<ProjectRecord> {
     public final TableField<ProjectRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR, this, "");
 
     /**
-     * The column <code>public.project.createdAt</code>.
+     * The column <code>public.project.created_at</code>.
      */
-    public final TableField<ProjectRecord, Timestamp> CREATEDAT = createField("createdAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<ProjectRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
-     * The column <code>public.project.updatedAt</code>.
+     * The column <code>public.project.updated_at</code>.
      */
-    public final TableField<ProjectRecord, Timestamp> UPDATEDAT = createField("updatedAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<ProjectRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.project</code> table reference

@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Record5<Integer, Integer, String, String, Timestamp> {
 
-    private static final long serialVersionUID = 1849173239;
+    private static final long serialVersionUID = -1802748840;
 
     /**
      * Setter for <code>public.model.id</code>.
@@ -47,16 +47,16 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
     }
 
     /**
-     * Setter for <code>public.model.userId</code>.
+     * Setter for <code>public.model.user_id</code>.
      */
-    public void setUserid(Integer value) {
+    public void setUserId(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>public.model.userId</code>.
+     * Getter for <code>public.model.user_id</code>.
      */
-    public Integer getUserid() {
+    public Integer getUserId() {
         return (Integer) get(1);
     }
 
@@ -75,30 +75,30 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
     }
 
     /**
-     * Setter for <code>public.model.fileId</code>. This is the file id as returned by rescale api
+     * Setter for <code>public.model.file_id</code>. This is the file id as returned by rescale api
      */
-    public void setFileid(String value) {
+    public void setFileId(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.model.fileId</code>. This is the file id as returned by rescale api
+     * Getter for <code>public.model.file_id</code>. This is the file id as returned by rescale api
      */
-    public String getFileid() {
+    public String getFileId() {
         return (String) get(3);
     }
 
     /**
-     * Setter for <code>public.model.createdAt</code>.
+     * Setter for <code>public.model.created_at</code>.
      */
-    public void setCreatedat(Timestamp value) {
+    public void setCreatedAt(Timestamp value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>public.model.createdAt</code>.
+     * Getter for <code>public.model.created_at</code>.
      */
-    public Timestamp getCreatedat() {
+    public Timestamp getCreatedAt() {
         return (Timestamp) get(4);
     }
 
@@ -147,7 +147,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Field<Integer> field2() {
-        return Model.MODEL.USERID;
+        return Model.MODEL.USER_ID;
     }
 
     /**
@@ -163,7 +163,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Field<String> field4() {
-        return Model.MODEL.FILEID;
+        return Model.MODEL.FILE_ID;
     }
 
     /**
@@ -171,7 +171,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Field<Timestamp> field5() {
-        return Model.MODEL.CREATEDAT;
+        return Model.MODEL.CREATED_AT;
     }
 
     /**
@@ -187,7 +187,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Integer component2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -203,7 +203,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public String component4() {
-        return getFileid();
+        return getFileId();
     }
 
     /**
@@ -211,7 +211,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Timestamp component5() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -227,7 +227,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Integer value2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -243,7 +243,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public String value4() {
-        return getFileid();
+        return getFileId();
     }
 
     /**
@@ -251,7 +251,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public Timestamp value5() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -268,7 +268,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public ModelRecord value2(Integer value) {
-        setUserid(value);
+        setUserId(value);
         return this;
     }
 
@@ -286,7 +286,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public ModelRecord value4(String value) {
-        setFileid(value);
+        setFileId(value);
         return this;
     }
 
@@ -295,7 +295,7 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
      */
     @Override
     public ModelRecord value5(Timestamp value) {
-        setCreatedat(value);
+        setCreatedAt(value);
         return this;
     }
 
@@ -326,13 +326,13 @@ public class ModelRecord extends UpdatableRecordImpl<ModelRecord> implements Rec
     /**
      * Create a detached, initialised ModelRecord
      */
-    public ModelRecord(Integer id, Integer userid, String name, String fileid, Timestamp createdat) {
+    public ModelRecord(Integer id, Integer userId, String name, String fileId, Timestamp createdAt) {
         super(Model.MODEL);
 
         set(0, id);
-        set(1, userid);
+        set(1, userId);
         set(2, name);
-        set(3, fileid);
-        set(4, createdat);
+        set(3, fileId);
+        set(4, createdAt);
     }
 }

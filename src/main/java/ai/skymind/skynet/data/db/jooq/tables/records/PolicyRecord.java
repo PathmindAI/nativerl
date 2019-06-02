@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements Record7<Integer, Integer, Integer, Integer, Integer, Timestamp, String> {
 
-    private static final long serialVersionUID = -35490174;
+    private static final long serialVersionUID = 1880610936;
 
     /**
      * Setter for <code>public.policy.id</code>.
@@ -47,86 +47,86 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     }
 
     /**
-     * Setter for <code>public.policy.userId</code>.
+     * Setter for <code>public.policy.user_id</code>.
      */
-    public void setUserid(Integer value) {
+    public void setUserId(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>public.policy.userId</code>.
+     * Getter for <code>public.policy.user_id</code>.
      */
-    public Integer getUserid() {
+    public Integer getUserId() {
         return (Integer) get(1);
     }
 
     /**
-     * Setter for <code>public.policy.modelId</code>.
+     * Setter for <code>public.policy.model_id</code>.
      */
-    public void setModelid(Integer value) {
+    public void setModelId(Integer value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>public.policy.modelId</code>.
+     * Getter for <code>public.policy.model_id</code>.
      */
-    public Integer getModelid() {
+    public Integer getModelId() {
         return (Integer) get(2);
     }
 
     /**
-     * Setter for <code>public.policy.mdpId</code>.
+     * Setter for <code>public.policy.mdp_id</code>.
      */
-    public void setMdpid(Integer value) {
+    public void setMdpId(Integer value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.policy.mdpId</code>.
+     * Getter for <code>public.policy.mdp_id</code>.
      */
-    public Integer getMdpid() {
+    public Integer getMdpId() {
         return (Integer) get(3);
     }
 
     /**
-     * Setter for <code>public.policy.runId</code>.
+     * Setter for <code>public.policy.run_id</code>.
      */
-    public void setRunid(Integer value) {
+    public void setRunId(Integer value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>public.policy.runId</code>.
+     * Getter for <code>public.policy.run_id</code>.
      */
-    public Integer getRunid() {
+    public Integer getRunId() {
         return (Integer) get(4);
     }
 
     /**
-     * Setter for <code>public.policy.createdAt</code>.
+     * Setter for <code>public.policy.created_at</code>.
      */
-    public void setCreatedat(Timestamp value) {
+    public void setCreatedAt(Timestamp value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>public.policy.createdAt</code>.
+     * Getter for <code>public.policy.created_at</code>.
      */
-    public Timestamp getCreatedat() {
+    public Timestamp getCreatedAt() {
         return (Timestamp) get(5);
     }
 
     /**
-     * Setter for <code>public.policy.fileId</code>. This is the file id as returned by rescale api
+     * Setter for <code>public.policy.file_id</code>. This is the file id as returned by rescale api
      */
-    public void setFileid(String value) {
+    public void setFileId(String value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>public.policy.fileId</code>. This is the file id as returned by rescale api
+     * Getter for <code>public.policy.file_id</code>. This is the file id as returned by rescale api
      */
-    public String getFileid() {
+    public String getFileId() {
         return (String) get(6);
     }
 
@@ -175,7 +175,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<Integer> field2() {
-        return Policy.POLICY.USERID;
+        return Policy.POLICY.USER_ID;
     }
 
     /**
@@ -183,7 +183,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<Integer> field3() {
-        return Policy.POLICY.MODELID;
+        return Policy.POLICY.MODEL_ID;
     }
 
     /**
@@ -191,7 +191,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<Integer> field4() {
-        return Policy.POLICY.MDPID;
+        return Policy.POLICY.MDP_ID;
     }
 
     /**
@@ -199,7 +199,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<Integer> field5() {
-        return Policy.POLICY.RUNID;
+        return Policy.POLICY.RUN_ID;
     }
 
     /**
@@ -207,7 +207,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<Timestamp> field6() {
-        return Policy.POLICY.CREATEDAT;
+        return Policy.POLICY.CREATED_AT;
     }
 
     /**
@@ -215,7 +215,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Field<String> field7() {
-        return Policy.POLICY.FILEID;
+        return Policy.POLICY.FILE_ID;
     }
 
     /**
@@ -231,7 +231,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer component2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -239,7 +239,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer component3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -247,7 +247,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer component4() {
-        return getMdpid();
+        return getMdpId();
     }
 
     /**
@@ -255,7 +255,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer component5() {
-        return getRunid();
+        return getRunId();
     }
 
     /**
@@ -263,7 +263,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Timestamp component6() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -271,7 +271,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public String component7() {
-        return getFileid();
+        return getFileId();
     }
 
     /**
@@ -287,7 +287,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer value2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -295,7 +295,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer value3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -303,7 +303,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer value4() {
-        return getMdpid();
+        return getMdpId();
     }
 
     /**
@@ -311,7 +311,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Integer value5() {
-        return getRunid();
+        return getRunId();
     }
 
     /**
@@ -319,7 +319,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public Timestamp value6() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -327,7 +327,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public String value7() {
-        return getFileid();
+        return getFileId();
     }
 
     /**
@@ -344,7 +344,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value2(Integer value) {
-        setUserid(value);
+        setUserId(value);
         return this;
     }
 
@@ -353,7 +353,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value3(Integer value) {
-        setModelid(value);
+        setModelId(value);
         return this;
     }
 
@@ -362,7 +362,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value4(Integer value) {
-        setMdpid(value);
+        setMdpId(value);
         return this;
     }
 
@@ -371,7 +371,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value5(Integer value) {
-        setRunid(value);
+        setRunId(value);
         return this;
     }
 
@@ -380,7 +380,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value6(Timestamp value) {
-        setCreatedat(value);
+        setCreatedAt(value);
         return this;
     }
 
@@ -389,7 +389,7 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
      */
     @Override
     public PolicyRecord value7(String value) {
-        setFileid(value);
+        setFileId(value);
         return this;
     }
 
@@ -422,15 +422,15 @@ public class PolicyRecord extends UpdatableRecordImpl<PolicyRecord> implements R
     /**
      * Create a detached, initialised PolicyRecord
      */
-    public PolicyRecord(Integer id, Integer userid, Integer modelid, Integer mdpid, Integer runid, Timestamp createdat, String fileid) {
+    public PolicyRecord(Integer id, Integer userId, Integer modelId, Integer mdpId, Integer runId, Timestamp createdAt, String fileId) {
         super(Policy.POLICY);
 
         set(0, id);
-        set(1, userid);
-        set(2, modelid);
-        set(3, mdpid);
-        set(4, runid);
-        set(5, createdat);
-        set(6, fileid);
+        set(1, userId);
+        set(2, modelId);
+        set(3, mdpId);
+        set(4, runId);
+        set(5, createdAt);
+        set(6, fileId);
     }
 }

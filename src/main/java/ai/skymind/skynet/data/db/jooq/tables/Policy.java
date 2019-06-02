@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Policy extends TableImpl<PolicyRecord> {
 
-    private static final long serialVersionUID = -431830027;
+    private static final long serialVersionUID = 492911583;
 
     /**
      * The reference instance of <code>public.policy</code>
@@ -63,34 +63,34 @@ public class Policy extends TableImpl<PolicyRecord> {
     public final TableField<PolicyRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('policy_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.policy.userId</code>.
+     * The column <code>public.policy.user_id</code>.
      */
-    public final TableField<PolicyRecord, Integer> USERID = createField("userId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<PolicyRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.policy.modelId</code>.
+     * The column <code>public.policy.model_id</code>.
      */
-    public final TableField<PolicyRecord, Integer> MODELID = createField("modelId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<PolicyRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.policy.mdpId</code>.
+     * The column <code>public.policy.mdp_id</code>.
      */
-    public final TableField<PolicyRecord, Integer> MDPID = createField("mdpId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<PolicyRecord, Integer> MDP_ID = createField("mdp_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.policy.runId</code>.
+     * The column <code>public.policy.run_id</code>.
      */
-    public final TableField<PolicyRecord, Integer> RUNID = createField("runId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<PolicyRecord, Integer> RUN_ID = createField("run_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.policy.createdAt</code>.
+     * The column <code>public.policy.created_at</code>.
      */
-    public final TableField<PolicyRecord, Timestamp> CREATEDAT = createField("createdAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<PolicyRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
-     * The column <code>public.policy.fileId</code>. This is the file id as returned by rescale api
+     * The column <code>public.policy.file_id</code>. This is the file id as returned by rescale api
      */
-    public final TableField<PolicyRecord, String> FILEID = createField("fileId", org.jooq.impl.SQLDataType.VARCHAR, this, "This is the file id as returned by rescale api");
+    public final TableField<PolicyRecord, String> FILE_ID = createField("file_id", org.jooq.impl.SQLDataType.VARCHAR, this, "This is the file id as returned by rescale api");
 
     /**
      * Create a <code>public.policy</code> table reference

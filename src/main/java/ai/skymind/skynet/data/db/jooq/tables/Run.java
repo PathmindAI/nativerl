@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = -768539067;
+    private static final long serialVersionUID = -1975428638;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -63,29 +63,29 @@ public class Run extends TableImpl<RunRecord> {
     public final TableField<RunRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('run_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.run.userId</code>.
+     * The column <code>public.run.user_id</code>.
      */
-    public final TableField<RunRecord, Integer> USERID = createField("userId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.run.modelId</code>.
+     * The column <code>public.run.model_id</code>.
      */
-    public final TableField<RunRecord, Integer> MODELID = createField("modelId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.run.mdpId</code>.
+     * The column <code>public.run.mdp_id</code>.
      */
-    public final TableField<RunRecord, Integer> MDPID = createField("mdpId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<RunRecord, Integer> MDP_ID = createField("mdp_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.run.startedAt</code>.
+     * The column <code>public.run.started_at</code>.
      */
-    public final TableField<RunRecord, Timestamp> STARTEDAT = createField("startedAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<RunRecord, Timestamp> STARTED_AT = createField("started_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
-     * The column <code>public.run.finishedAt</code>.
+     * The column <code>public.run.finished_at</code>.
      */
-    public final TableField<RunRecord, Timestamp> FINISHEDAT = createField("finishedAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<RunRecord, Timestamp> FINISHED_AT = createField("finished_at", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
 
     /**
      * The column <code>public.run.status</code>.

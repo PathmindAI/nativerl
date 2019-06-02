@@ -42,6 +42,7 @@ public class Indexes {
     public static final Index POLICY_PKEY = Indexes0.POLICY_PKEY;
     public static final Index PROJECT_PKEY = Indexes0.PROJECT_PKEY;
     public static final Index RUN_PKEY = Indexes0.RUN_PKEY;
+    public static final Index USER_EMAIL_KEY = Indexes0.USER_EMAIL_KEY;
     public static final Index USER_PKEY = Indexes0.USER_PKEY;
 
     // -------------------------------------------------------------------------
@@ -55,6 +56,7 @@ public class Indexes {
         public static Index POLICY_PKEY = Internal.createIndex("policy_pkey", Policy.POLICY, new OrderField[] { Policy.POLICY.ID }, true);
         public static Index PROJECT_PKEY = Internal.createIndex("project_pkey", Project.PROJECT, new OrderField[] { Project.PROJECT.ID }, true);
         public static Index RUN_PKEY = Internal.createIndex("run_pkey", Run.RUN, new OrderField[] { Run.RUN.ID }, true);
+        public static Index USER_EMAIL_KEY = Internal.createIndex("user_email_key", User.USER, new OrderField[] { User.USER.EMAIL }, true);
         public static Index USER_PKEY = Internal.createIndex("user_pkey", User.USER, new OrderField[] { User.USER.ID }, true);
     }
 }

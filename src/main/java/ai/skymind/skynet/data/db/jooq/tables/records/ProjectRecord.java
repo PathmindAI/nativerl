@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements Record5<Integer, Integer, String, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = -1165090629;
+    private static final long serialVersionUID = -1332486014;
 
     /**
      * Setter for <code>public.project.id</code>.
@@ -47,16 +47,16 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
     }
 
     /**
-     * Setter for <code>public.project.userId</code>.
+     * Setter for <code>public.project.user_id</code>.
      */
-    public void setUserid(Integer value) {
+    public void setUserId(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>public.project.userId</code>.
+     * Getter for <code>public.project.user_id</code>.
      */
-    public Integer getUserid() {
+    public Integer getUserId() {
         return (Integer) get(1);
     }
 
@@ -75,30 +75,30 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
     }
 
     /**
-     * Setter for <code>public.project.createdAt</code>.
+     * Setter for <code>public.project.created_at</code>.
      */
-    public void setCreatedat(Timestamp value) {
+    public void setCreatedAt(Timestamp value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.project.createdAt</code>.
+     * Getter for <code>public.project.created_at</code>.
      */
-    public Timestamp getCreatedat() {
+    public Timestamp getCreatedAt() {
         return (Timestamp) get(3);
     }
 
     /**
-     * Setter for <code>public.project.updatedAt</code>.
+     * Setter for <code>public.project.updated_at</code>.
      */
-    public void setUpdatedat(Timestamp value) {
+    public void setUpdatedAt(Timestamp value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>public.project.updatedAt</code>.
+     * Getter for <code>public.project.updated_at</code>.
      */
-    public Timestamp getUpdatedat() {
+    public Timestamp getUpdatedAt() {
         return (Timestamp) get(4);
     }
 
@@ -147,7 +147,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Field<Integer> field2() {
-        return Project.PROJECT.USERID;
+        return Project.PROJECT.USER_ID;
     }
 
     /**
@@ -163,7 +163,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Field<Timestamp> field4() {
-        return Project.PROJECT.CREATEDAT;
+        return Project.PROJECT.CREATED_AT;
     }
 
     /**
@@ -171,7 +171,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Field<Timestamp> field5() {
-        return Project.PROJECT.UPDATEDAT;
+        return Project.PROJECT.UPDATED_AT;
     }
 
     /**
@@ -187,7 +187,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Integer component2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -203,7 +203,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Timestamp component4() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -211,7 +211,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Timestamp component5() {
-        return getUpdatedat();
+        return getUpdatedAt();
     }
 
     /**
@@ -227,7 +227,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Integer value2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -243,7 +243,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Timestamp value4() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -251,7 +251,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public Timestamp value5() {
-        return getUpdatedat();
+        return getUpdatedAt();
     }
 
     /**
@@ -268,7 +268,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public ProjectRecord value2(Integer value) {
-        setUserid(value);
+        setUserId(value);
         return this;
     }
 
@@ -286,7 +286,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public ProjectRecord value4(Timestamp value) {
-        setCreatedat(value);
+        setCreatedAt(value);
         return this;
     }
 
@@ -295,7 +295,7 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
      */
     @Override
     public ProjectRecord value5(Timestamp value) {
-        setUpdatedat(value);
+        setUpdatedAt(value);
         return this;
     }
 
@@ -326,13 +326,13 @@ public class ProjectRecord extends UpdatableRecordImpl<ProjectRecord> implements
     /**
      * Create a detached, initialised ProjectRecord
      */
-    public ProjectRecord(Integer id, Integer userid, String name, Timestamp createdat, Timestamp updatedat) {
+    public ProjectRecord(Integer id, Integer userId, String name, Timestamp createdAt, Timestamp updatedAt) {
         super(Project.PROJECT);
 
         set(0, id);
-        set(1, userid);
+        set(1, userId);
         set(2, name);
-        set(3, createdat);
-        set(4, updatedat);
+        set(3, createdAt);
+        set(4, updatedAt);
     }
 }

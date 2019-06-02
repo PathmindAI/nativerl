@@ -8,62 +8,66 @@
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="email" type="VARCHAR(255)" />
+            <column name="email" type="VARCHAR(255)">
+                <constraints unique="true" />
+            </column>
             <column name="password" type="VARCHAR(60)"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
         </createTable>
         <createTable tableName="project">
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="userId" type="INTEGER">
+            <column name="user_id" type="INTEGER">
                 <constraints references="user" referencedColumnNames="id" foreignKeyName="project_owner" />
             </column>
             <column name="name" type="NVARCHAR"/>
-            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
-            <column name="updatedAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
         </createTable>
         <createTable tableName="model">
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="userId" type="INTEGER">
+            <column name="user_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="user" foreignKeyName="model_owner"/>
             </column>
             <column name="name" type="NVARCHAR"/>
-            <column name="fileId" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
-            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
         </createTable>
         <createTable tableName="mdp">
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="userId" type="INTEGER">
+            <column name="user_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="user" foreignKeyName="mdp_owner"/>
             </column>
-            <column name="modelId" type="INTEGER">
+            <column name="model_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="model" foreignKeyName="mdp_for_model"/>
             </column>
             <column name="name" type="NVARCHAR"/>
             <column name="code" type="NVARCHAR" />
             <column name="verified" type="BOOLEAN" defaultValueBoolean="false" />
-            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
-            <column name="updatedAt" type="DATETIME" valueComputed="NOW()"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="updated_at" type="DATETIME" defaultValueComputed="NOW()"/>
         </createTable>
         <createTable tableName="run">
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="userId" type="INTEGER">
+            <column name="user_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="user" foreignKeyName="run_owner"/>
             </column>
-            <column name="modelId" type="INTEGER">
+            <column name="model_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="model" foreignKeyName="run_model"/>
             </column>
-            <column name="mdpId" type="INTEGER">
+            <column name="mdp_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="mdp" foreignKeyName="run_mdp"/>
             </column>
-            <column name="startedAt" type="DATETIME" valueComputed="NOW()"/>
-            <column name="finishedAt" type="DATETIME">
+            <column name="started_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="finished_at" type="DATETIME">
                 <constraints nullable="true" />
             </column>
             <column name="status" type="NVARCHAR" />
@@ -72,23 +76,20 @@
             <column name="id" autoIncrement="true" type="INTEGER">
                 <constraints primaryKey="true" />
             </column>
-            <column name="userId" type="INTEGER">
+            <column name="user_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="user" foreignKeyName="policyOwner"/>
             </column>
-            <column name="modelId" type="INTEGER">
+            <column name="model_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="model" foreignKeyName="policy_model"/>
             </column>
-            <column name="mdpId" type="INTEGER">
+            <column name="mdp_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="mdp" foreignKeyName="policy_mdp"/>
             </column>
-            <column name="runId" type="INTEGER">
+            <column name="run_id" type="INTEGER">
                 <constraints referencedColumnNames="id" references="run" foreignKeyName="policy_created_by_run"/>
             </column>
-            <column name="createdAt" type="DATETIME" valueComputed="NOW()"/>
-            <column name="fileId" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
+            <column name="created_at" type="DATETIME" defaultValueComputed="NOW()"/>
+            <column name="file_id" type="VARCHAR" remarks="This is the file id as returned by rescale api"/>
         </createTable>
-    </changeSet>
-    <changeSet id="20190602-2" author="pdubs">
-        <addUniqueConstraint tableName="user" columnNames="email" />
     </changeSet>
 </databaseChangeLog>

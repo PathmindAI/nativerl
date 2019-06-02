@@ -30,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7<Integer, Integer, Integer, Integer, Timestamp, Timestamp, String> {
 
-    private static final long serialVersionUID = -1773329707;
+    private static final long serialVersionUID = 1269471342;
 
     /**
      * Setter for <code>public.run.id</code>.
@@ -47,72 +47,72 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     }
 
     /**
-     * Setter for <code>public.run.userId</code>.
+     * Setter for <code>public.run.user_id</code>.
      */
-    public void setUserid(Integer value) {
+    public void setUserId(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>public.run.userId</code>.
+     * Getter for <code>public.run.user_id</code>.
      */
-    public Integer getUserid() {
+    public Integer getUserId() {
         return (Integer) get(1);
     }
 
     /**
-     * Setter for <code>public.run.modelId</code>.
+     * Setter for <code>public.run.model_id</code>.
      */
-    public void setModelid(Integer value) {
+    public void setModelId(Integer value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>public.run.modelId</code>.
+     * Getter for <code>public.run.model_id</code>.
      */
-    public Integer getModelid() {
+    public Integer getModelId() {
         return (Integer) get(2);
     }
 
     /**
-     * Setter for <code>public.run.mdpId</code>.
+     * Setter for <code>public.run.mdp_id</code>.
      */
-    public void setMdpid(Integer value) {
+    public void setMdpId(Integer value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>public.run.mdpId</code>.
+     * Getter for <code>public.run.mdp_id</code>.
      */
-    public Integer getMdpid() {
+    public Integer getMdpId() {
         return (Integer) get(3);
     }
 
     /**
-     * Setter for <code>public.run.startedAt</code>.
+     * Setter for <code>public.run.started_at</code>.
      */
-    public void setStartedat(Timestamp value) {
+    public void setStartedAt(Timestamp value) {
         set(4, value);
     }
 
     /**
-     * Getter for <code>public.run.startedAt</code>.
+     * Getter for <code>public.run.started_at</code>.
      */
-    public Timestamp getStartedat() {
+    public Timestamp getStartedAt() {
         return (Timestamp) get(4);
     }
 
     /**
-     * Setter for <code>public.run.finishedAt</code>.
+     * Setter for <code>public.run.finished_at</code>.
      */
-    public void setFinishedat(Timestamp value) {
+    public void setFinishedAt(Timestamp value) {
         set(5, value);
     }
 
     /**
-     * Getter for <code>public.run.finishedAt</code>.
+     * Getter for <code>public.run.finished_at</code>.
      */
-    public Timestamp getFinishedat() {
+    public Timestamp getFinishedAt() {
         return (Timestamp) get(5);
     }
 
@@ -175,7 +175,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<Integer> field2() {
-        return Run.RUN.USERID;
+        return Run.RUN.USER_ID;
     }
 
     /**
@@ -183,7 +183,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<Integer> field3() {
-        return Run.RUN.MODELID;
+        return Run.RUN.MODEL_ID;
     }
 
     /**
@@ -191,7 +191,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<Integer> field4() {
-        return Run.RUN.MDPID;
+        return Run.RUN.MDP_ID;
     }
 
     /**
@@ -199,7 +199,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<Timestamp> field5() {
-        return Run.RUN.STARTEDAT;
+        return Run.RUN.STARTED_AT;
     }
 
     /**
@@ -207,7 +207,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Field<Timestamp> field6() {
-        return Run.RUN.FINISHEDAT;
+        return Run.RUN.FINISHED_AT;
     }
 
     /**
@@ -231,7 +231,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer component2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -239,7 +239,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer component3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -247,7 +247,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer component4() {
-        return getMdpid();
+        return getMdpId();
     }
 
     /**
@@ -255,7 +255,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Timestamp component5() {
-        return getStartedat();
+        return getStartedAt();
     }
 
     /**
@@ -263,7 +263,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Timestamp component6() {
-        return getFinishedat();
+        return getFinishedAt();
     }
 
     /**
@@ -287,7 +287,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer value2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -295,7 +295,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer value3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -303,7 +303,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Integer value4() {
-        return getMdpid();
+        return getMdpId();
     }
 
     /**
@@ -311,7 +311,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Timestamp value5() {
-        return getStartedat();
+        return getStartedAt();
     }
 
     /**
@@ -319,7 +319,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public Timestamp value6() {
-        return getFinishedat();
+        return getFinishedAt();
     }
 
     /**
@@ -344,7 +344,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value2(Integer value) {
-        setUserid(value);
+        setUserId(value);
         return this;
     }
 
@@ -353,7 +353,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value3(Integer value) {
-        setModelid(value);
+        setModelId(value);
         return this;
     }
 
@@ -362,7 +362,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value4(Integer value) {
-        setMdpid(value);
+        setMdpId(value);
         return this;
     }
 
@@ -371,7 +371,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value5(Timestamp value) {
-        setStartedat(value);
+        setStartedAt(value);
         return this;
     }
 
@@ -380,7 +380,7 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
      */
     @Override
     public RunRecord value6(Timestamp value) {
-        setFinishedat(value);
+        setFinishedAt(value);
         return this;
     }
 
@@ -422,15 +422,15 @@ public class RunRecord extends UpdatableRecordImpl<RunRecord> implements Record7
     /**
      * Create a detached, initialised RunRecord
      */
-    public RunRecord(Integer id, Integer userid, Integer modelid, Integer mdpid, Timestamp startedat, Timestamp finishedat, String status) {
+    public RunRecord(Integer id, Integer userId, Integer modelId, Integer mdpId, Timestamp startedAt, Timestamp finishedAt, String status) {
         super(Run.RUN);
 
         set(0, id);
-        set(1, userid);
-        set(2, modelid);
-        set(3, mdpid);
-        set(4, startedat);
-        set(5, finishedat);
+        set(1, userId);
+        set(2, modelId);
+        set(3, mdpId);
+        set(4, startedAt);
+        set(5, finishedAt);
         set(6, status);
     }
 }

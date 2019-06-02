@@ -42,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Mdp extends TableImpl<MdpRecord> {
 
-    private static final long serialVersionUID = 2134924171;
+    private static final long serialVersionUID = -1489270725;
 
     /**
      * The reference instance of <code>public.mdp</code>
@@ -63,14 +63,14 @@ public class Mdp extends TableImpl<MdpRecord> {
     public final TableField<MdpRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("nextval('mdp_id_seq'::regclass)", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
-     * The column <code>public.mdp.userId</code>.
+     * The column <code>public.mdp.user_id</code>.
      */
-    public final TableField<MdpRecord, Integer> USERID = createField("userId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<MdpRecord, Integer> USER_ID = createField("user_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
-     * The column <code>public.mdp.modelId</code>.
+     * The column <code>public.mdp.model_id</code>.
      */
-    public final TableField<MdpRecord, Integer> MODELID = createField("modelId", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<MdpRecord, Integer> MODEL_ID = createField("model_id", org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>public.mdp.name</code>.
@@ -88,14 +88,14 @@ public class Mdp extends TableImpl<MdpRecord> {
     public final TableField<MdpRecord, Boolean> VERIFIED = createField("verified", org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("false", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
-     * The column <code>public.mdp.createdAt</code>.
+     * The column <code>public.mdp.created_at</code>.
      */
-    public final TableField<MdpRecord, Timestamp> CREATEDAT = createField("createdAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<MdpRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
-     * The column <code>public.mdp.updatedAt</code>.
+     * The column <code>public.mdp.updated_at</code>.
      */
-    public final TableField<MdpRecord, Timestamp> UPDATEDAT = createField("updatedAt", org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+    public final TableField<MdpRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.mdp</code> table reference

@@ -9,6 +9,7 @@ import ai.skymind.skynet.data.db.jooq.Keys;
 import ai.skymind.skynet.data.db.jooq.Public;
 import ai.skymind.skynet.data.db.jooq.tables.records.UserRecord;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class User extends TableImpl<UserRecord> {
 
-    private static final long serialVersionUID = 1259325121;
+    private static final long serialVersionUID = 2111377212;
 
     /**
      * The reference instance of <code>public.user</code>
@@ -70,6 +71,16 @@ public class User extends TableImpl<UserRecord> {
      * The column <code>public.user.password</code>.
      */
     public final TableField<UserRecord, String> PASSWORD = createField("password", org.jooq.impl.SQLDataType.VARCHAR(60), this, "");
+
+    /**
+     * The column <code>public.user.created_at</code>.
+     */
+    public final TableField<UserRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+
+    /**
+     * The column <code>public.user.updated_at</code>.
+     */
+    public final TableField<UserRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
 
     /**
      * Create a <code>public.user</code> table reference
@@ -117,7 +128,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public List<Index> getIndexes() {
-        return Arrays.<Index>asList(Indexes.USER_PKEY);
+        return Arrays.<Index>asList(Indexes.USER_EMAIL_KEY, Indexes.USER_PKEY);
     }
 
     /**
@@ -141,7 +152,7 @@ public class User extends TableImpl<UserRecord> {
      */
     @Override
     public List<UniqueKey<UserRecord>> getKeys() {
-        return Arrays.<UniqueKey<UserRecord>>asList(Keys.USER_PKEY);
+        return Arrays.<UniqueKey<UserRecord>>asList(Keys.USER_PKEY, Keys.USER_EMAIL_KEY);
     }
 
     /**

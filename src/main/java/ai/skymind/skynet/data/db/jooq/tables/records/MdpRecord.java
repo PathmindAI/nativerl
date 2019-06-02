@@ -5,16 +5,14 @@ package ai.skymind.skynet.data.db.jooq.tables.records;
 
 
 import ai.skymind.skynet.data.db.jooq.tables.Mdp;
-
-import java.sql.Timestamp;
-
-import javax.annotation.Generated;
-
 import org.jooq.Field;
 import org.jooq.Record1;
 import org.jooq.Record8;
 import org.jooq.Row8;
 import org.jooq.impl.UpdatableRecordImpl;
+
+import javax.annotation.Generated;
+import java.sql.Timestamp;
 
 
 /**
@@ -30,7 +28,7 @@ import org.jooq.impl.UpdatableRecordImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8<Integer, Integer, Integer, String, String, Boolean, Timestamp, Timestamp> {
 
-    private static final long serialVersionUID = 1189663069;
+    private static final long serialVersionUID = -1000045161;
 
     /**
      * Setter for <code>public.mdp.id</code>.
@@ -47,30 +45,30 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
     }
 
     /**
-     * Setter for <code>public.mdp.userId</code>.
+     * Setter for <code>public.mdp.user_id</code>.
      */
-    public void setUserid(Integer value) {
+    public void setUserId(Integer value) {
         set(1, value);
     }
 
     /**
-     * Getter for <code>public.mdp.userId</code>.
+     * Getter for <code>public.mdp.user_id</code>.
      */
-    public Integer getUserid() {
+    public Integer getUserId() {
         return (Integer) get(1);
     }
 
     /**
-     * Setter for <code>public.mdp.modelId</code>.
+     * Setter for <code>public.mdp.model_id</code>.
      */
-    public void setModelid(Integer value) {
+    public void setModelId(Integer value) {
         set(2, value);
     }
 
     /**
-     * Getter for <code>public.mdp.modelId</code>.
+     * Getter for <code>public.mdp.model_id</code>.
      */
-    public Integer getModelid() {
+    public Integer getModelId() {
         return (Integer) get(2);
     }
 
@@ -117,30 +115,30 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
     }
 
     /**
-     * Setter for <code>public.mdp.createdAt</code>.
+     * Setter for <code>public.mdp.created_at</code>.
      */
-    public void setCreatedat(Timestamp value) {
+    public void setCreatedAt(Timestamp value) {
         set(6, value);
     }
 
     /**
-     * Getter for <code>public.mdp.createdAt</code>.
+     * Getter for <code>public.mdp.created_at</code>.
      */
-    public Timestamp getCreatedat() {
+    public Timestamp getCreatedAt() {
         return (Timestamp) get(6);
     }
 
     /**
-     * Setter for <code>public.mdp.updatedAt</code>.
+     * Setter for <code>public.mdp.updated_at</code>.
      */
-    public void setUpdatedat(Timestamp value) {
+    public void setUpdatedAt(Timestamp value) {
         set(7, value);
     }
 
     /**
-     * Getter for <code>public.mdp.updatedAt</code>.
+     * Getter for <code>public.mdp.updated_at</code>.
      */
-    public Timestamp getUpdatedat() {
+    public Timestamp getUpdatedAt() {
         return (Timestamp) get(7);
     }
 
@@ -189,7 +187,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Field<Integer> field2() {
-        return Mdp.MDP.USERID;
+        return Mdp.MDP.USER_ID;
     }
 
     /**
@@ -197,7 +195,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Field<Integer> field3() {
-        return Mdp.MDP.MODELID;
+        return Mdp.MDP.MODEL_ID;
     }
 
     /**
@@ -229,7 +227,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Field<Timestamp> field7() {
-        return Mdp.MDP.CREATEDAT;
+        return Mdp.MDP.CREATED_AT;
     }
 
     /**
@@ -237,7 +235,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Field<Timestamp> field8() {
-        return Mdp.MDP.UPDATEDAT;
+        return Mdp.MDP.UPDATED_AT;
     }
 
     /**
@@ -253,7 +251,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Integer component2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -261,7 +259,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Integer component3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -293,7 +291,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Timestamp component7() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -301,7 +299,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Timestamp component8() {
-        return getUpdatedat();
+        return getUpdatedAt();
     }
 
     /**
@@ -317,7 +315,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Integer value2() {
-        return getUserid();
+        return getUserId();
     }
 
     /**
@@ -325,7 +323,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Integer value3() {
-        return getModelid();
+        return getModelId();
     }
 
     /**
@@ -357,7 +355,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Timestamp value7() {
-        return getCreatedat();
+        return getCreatedAt();
     }
 
     /**
@@ -365,7 +363,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public Timestamp value8() {
-        return getUpdatedat();
+        return getUpdatedAt();
     }
 
     /**
@@ -382,7 +380,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public MdpRecord value2(Integer value) {
-        setUserid(value);
+        setUserId(value);
         return this;
     }
 
@@ -391,7 +389,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public MdpRecord value3(Integer value) {
-        setModelid(value);
+        setModelId(value);
         return this;
     }
 
@@ -427,7 +425,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public MdpRecord value7(Timestamp value) {
-        setCreatedat(value);
+        setCreatedAt(value);
         return this;
     }
 
@@ -436,7 +434,7 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
      */
     @Override
     public MdpRecord value8(Timestamp value) {
-        setUpdatedat(value);
+        setUpdatedAt(value);
         return this;
     }
 
@@ -470,16 +468,16 @@ public class MdpRecord extends UpdatableRecordImpl<MdpRecord> implements Record8
     /**
      * Create a detached, initialised MdpRecord
      */
-    public MdpRecord(Integer id, Integer userid, Integer modelid, String name, String code, Boolean verified, Timestamp createdat, Timestamp updatedat) {
+    public MdpRecord(Integer id, Integer userId, Integer modelId, String name, String code, Boolean verified, Timestamp createdAt, Timestamp updatedAt) {
         super(Mdp.MDP);
 
         set(0, id);
-        set(1, userid);
-        set(2, modelid);
+        set(1, userId);
+        set(2, modelId);
         set(3, name);
         set(4, code);
         set(5, verified);
-        set(6, createdat);
-        set(7, updatedat);
+        set(6, createdAt);
+        set(7, updatedAt);
     }
 }
