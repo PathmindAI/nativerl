@@ -12,9 +12,12 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.splitlayout.SplitLayout
 import com.vaadin.flow.router.Route
+import org.springframework.core.io.ResourceLoader
 
 @Route(value = "experiments/edit", layout = MainLayout::class)
-class ExperimentEditView() : VerticalLayout() {
+class ExperimentEditView(
+        val resourceLoader: ResourceLoader
+) : VerticalLayout() {
     init {
         add(H2("ExperimentName"))
         add(HorizontalLayout(
@@ -35,17 +38,19 @@ class ExperimentEditView() : VerticalLayout() {
                     isPadding = false
                 },
                 JuicyAceEditor().apply {
-                    value = "import some.more.stuff.*;"
+                    value = resourceLoader.getResource("classpath:/files/mdp-template.java").inputStream.reader().readText()
                     setTheme(JuicyAceTheme.eclipse)
                     setMode(JuicyAceMode.java)
                     setWidthFull()
-                    height = "20em"
+                    setHeightFull()
                 }
         ).apply {
             setWidthFull()
+            setHeightFull()
             setSplitterPosition(20.0)
         }).apply {
             setWidthFull()
+            height = "80vh"
         })
     }
 }
