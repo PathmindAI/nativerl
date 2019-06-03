@@ -1,0 +1,6 @@
+**/*.class
+**/*.jar
+**/*.so
+**/*.dylib
+database
+lib
