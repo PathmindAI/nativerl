@@ -1,4 +1,4 @@
-package nativerl;
+package ai.skymind.nativerl;
 
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
@@ -6,10 +6,11 @@ import org.bytedeco.javacpp.tools.*;
 
 @Properties(
     value = @Platform(
-        include = "../nativerl.h"
+        compiler = "cpp11",
+        include = "nativerl.h"
     ),
-    target = "nativerl",
-    global = "nativerl.NativeRL"
+    target = "ai.skymind.nativerl",
+    global = "ai.skymind.nativerl.NativeRL"
 )
 public class NativeRLPresets implements InfoMapper {
     public void map(InfoMap infoMap) {

@@ -1,17 +1,23 @@
-import java.io.File;
 import java.util.Arrays;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
-import nativerl.*;
+import ai.skymind.nativerl.*;
 
-import com.anylogic.engine.Engine;
-import traffic_light_opt.EmptyExperiment;
+public class TrafficEnvironment extends AbstractEnvironment {
+    final static Training ex = new Training(null);
 
-public class TrafficEnvironment extends Environment {
-    final static EmptyExperiment ex = new EmptyExperiment(null);
+    public static float[] normalize(double[] state) {
+        float[] normalized = new float[state.length];
+        double totalDelay = Arrays.stream(state, 0, 9).sum();
+        for (int i = 0; i < state.length; i++) {
+            normalized[i] = (float)state[i];
+            if (totalDelay > 0 && i < 9) {
+                normalized[i] /= totalDelay;
+            }
+        }
+        return normalized;
+    }
 
     Engine engine;
-    traffic_light_opt.Main root;
+    Main root;
     int simCount = 0;
     String combinations[][] = {
             {"constant_moderate", "constant_moderate"},
@@ -21,12 +27,9 @@ public class TrafficEnvironment extends Environment {
             {"peak_morning", "peak_afternoon"}
     };
 
-    Space actionSpace = new Discrete(2);
-    Space observationSpace = new Continuous(
-            new FloatVector(0, 0, 0, 0, 0, 0, 0, 0, 0, -1),
-            new FloatVector(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-            new SSizeTVector());
-    Array observation = new Array(new SSizeTVector().put(10));
+    public TrafficEnvironment() {
+        super(2, 10);
+    }
 
     @Override public void close() {
         super.close();
@@ -35,25 +38,8 @@ public class TrafficEnvironment extends Environment {
         engine.stop();
     }
 
-    @Override public Space getActionSpace() {
-        return actionSpace;
-    }
-
-    @Override public Space getObservationSpace() {
-        return observationSpace;
-    }
-
     @Override public Array getObservation() {
-        double[] state = root.getState();
-        float[] normalized = new float[state.length];
-        double totalDelay = Arrays.stream(state, 0, 9).sum();
-        for (int i = 0; i < state.length; i++) {
-            normalized[i] = (float)state[i];
-            if (totalDelay > 0 && i < 9) {
-                normalized[i] /= totalDelay;
-            }
-        }
-        observation.data().put(normalized);
+        observation.data().put(normalize(root.getState()));
         return observation;
     }
 
@@ -75,8 +61,7 @@ public class TrafficEnvironment extends Environment {
         // Set stop time:
         engine.setStopTime(28800);
         // Create new root object:
-        root = new traffic_light_opt.Main(engine, null, null);
-//        root.policy = null;
+        root = new Main(engine, null, null);
 
         root.setParametersToDefaultValues();
         root.usePolicy = false;

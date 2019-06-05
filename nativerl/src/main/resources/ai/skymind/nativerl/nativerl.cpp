@@ -6,10 +6,22 @@ PYBIND11_MAKE_OPAQUE(std::vector<float>);
 PYBIND11_MAKE_OPAQUE(std::vector<ssize_t>);
 
 #include "nativerl.h"
-#include "nativerl/jniNativeRL.h"
+#include "jniNativeRL.h"
+
+int init(const std::vector<std::string>& jvmargs) {
+    const char *argv[256];
+    for (size_t i = 0; i < jvmargs.size() && i < 256; i++) {
+        argv[i] = jvmargs[i].c_str();
+    }
+    return JavaCPP_init(jvmargs.size(), argv);
+}
+
+int uninit() {
+    return JavaCPP_uninit();
+}
 
 PYBIND11_MODULE(nativerl, m) {
-    JavaCPP_init(0, nullptr);
+//    JavaCPP_init(0, nullptr);
 
     pybind11::bind_vector<std::vector<float>>(m, "FloatVector", pybind11::buffer_protocol());
     pybind11::bind_vector<std::vector<ssize_t>>(m, "SSizeTVector", pybind11::buffer_protocol());
@@ -54,4 +66,7 @@ PYBIND11_MODULE(nativerl, m) {
 
     m.def("createEnvironment", &createEnvironment);
     m.def("releaseEnvironment", &releaseEnvironment);
+
+    m.def("init", &init);
+    m.def("uninit", &uninit);
 }

@@ -1,3 +1,5 @@
+dependency-reduced-pom.xml
+/target/
 **/*.class
 **/*.jar
 **/*.so
