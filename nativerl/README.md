@@ -72,6 +72,12 @@ Example Using RLlib and TrafficEnvironment
  3. Extract the native libraries from `nativerl-1.0.0-SNAPSHOT-bin.zip` inside that directory
  4. Copy as well [`examples/rllibtest.py`](`examples/rllibtest.py`) into that directory
  5. Execute `python3 rllibtest.py` inside the directory and wait for training to complete
+    * For a manually managed cluster, the sequence of operation is:
+    1. On the "head node", execute `ray start --head --redis-port=6379`
+    2. On other nodes, execute `ray start --redis-address 10.x.x.x:6379`
+    3. Replace `ray.init()` with `ray.init(redis_address="10.x.x.x:6379")` in `rllibtest.py` and increase `num_workers` accordingly
+    4. Execute `python3 rllibtest.py` on any node
+
  6. Once we get a checkpoint file, we can use it as a policy inside AnyLogic with an event containing code like this:
 
     ```java
