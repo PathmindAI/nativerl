@@ -37,11 +37,12 @@ ray.init()
 config = ppo.DEFAULT_CONFIG.copy()
 config["num_gpus"] = 0
 config["num_workers"] = 4
+config["lr"] = 0.0001
 trainer = ppo.PPOTrainer(config=config, env=MyEnv)
 
 # Can optionally call trainer.restore(path) to load a checkpoint.
 
-for i in range(100):
+for i in range(200):
     # Perform one iteration of training the policy with PPO
     result = trainer.train()
     print(pretty_print(result))

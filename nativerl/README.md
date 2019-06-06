@@ -70,7 +70,7 @@ Example Using RLlib and TrafficEnvironment
     ```
 
  3. Extract the native libraries from `nativerl-1.0.0-SNAPSHOT-bin.zip` inside that directory
- 4. Copy as well [`examples/rllibtest.py`](`examples/rllibtest.py`) into that directory
+ 4. Copy as well [`examples/rllibtest.py`](examples/rllibtest.py) into that directory
  5. Execute `python3 rllibtest.py` inside the directory and wait for training to complete
     * For a manually managed cluster, the sequence of operation is:
     1. On the "head node", execute `ray start --head --redis-port=6379`
