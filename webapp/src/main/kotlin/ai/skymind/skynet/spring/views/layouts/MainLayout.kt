@@ -3,19 +3,16 @@ package ai.skymind.skynet.spring.views.layouts
 import ai.skymind.skynet.spring.views.LoginView
 import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.applayout.AppLayout
-import com.vaadin.flow.component.dependency.HtmlImport
 import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.html.Image
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.router.BeforeEnterEvent
 import com.vaadin.flow.router.BeforeEnterObserver
+import com.vaadin.flow.router.ParentLayout
 import com.vaadin.flow.router.RouterLayout
-import com.vaadin.flow.theme.Theme
-import com.vaadin.flow.theme.lumo.Lumo
 
-@Theme(Lumo::class)
-@HtmlImport("frontend://styles/shared-styles.html")
+@ParentLayout(ApplicationLayout::class)
 class MainLayout(
         val userSession: UserSession
 ): AppLayout(), RouterLayout, BeforeEnterObserver {

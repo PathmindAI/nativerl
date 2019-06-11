@@ -28,6 +28,13 @@ class RescaleRestApiClient(
             .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .build()
 
+    //final inline fun <reified T> nextPage(pagedResult: T): T = client.get().uri((pagedResult as PagedResult<*>).next!!).retrieve().bodyToMono(T::class.java).block()!!
+
+    fun jobList(): PagedResult<JobSummary> = client
+            .get().uri("/jobs/?page_size=9999")
+            .retrieve()
+            .bodyToMono(typeReference<PagedResult<JobSummary>>()).block()!!
+
     fun jobCreate(job: Job): Job = client
             .post().uri("/jobs/")
             .contentType(MediaType.APPLICATION_JSON).body(job.toMono(), Job::class.java)
@@ -66,13 +73,13 @@ class RescaleRestApiClient(
             .bodyToMono(typeReference<PagedResult<JobRun>>()).block()!!
 
     fun directoryContent(jobId: String, run: String): List<DirectoryFileReference> = client
-            .get().uri("/jobs/$jobId/runs/$run/directory-contents/")
+            .get().uri("/jobs/$jobId/runs/$run/directory-contents/?page_size=1000")
             .retrieve()
             .bodyToFlux(DirectoryFileReference::class.java)
             .toStream().toList()
 
     fun outputFiles(jobId: String): PagedResult<RescaleFile> = client
-            .get().uri("/jobs/$jobId/runs/1/files/")
+            .get().uri("/jobs/$jobId/runs/1/files/?page_size=1000")
             .retrieve()
             .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
 
@@ -87,6 +94,12 @@ class RescaleRestApiClient(
     fun consoleOutput(jobId: String): String {
         val outputFiles = outputFiles(jobId)
         val consoleFile = outputFiles.results.find { it.name == "process_output.log" && it.isUploaded && !it.isDeleted}!!
+        return fileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
+    }
+
+    fun compileOutput(jobId: String): String {
+        val outputFiles = outputFiles(jobId)
+        val consoleFile = outputFiles.results.find { it.name == "compile.out.txt" && it.isUploaded && !it.isDeleted}!!
         return fileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
     }
 
@@ -112,7 +125,7 @@ class RescaleRestApiClient(
     }
 
     fun filesList(): PagedResult<RescaleFile> = client
-            .get().uri("/files/")
+            .get().uri("/files/?page_size=9999")
             .retrieve()
             .bodyToMono(typeReference<PagedResult<RescaleFile>>()).block()!!
 
