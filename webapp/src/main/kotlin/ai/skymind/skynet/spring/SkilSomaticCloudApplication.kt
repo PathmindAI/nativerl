@@ -8,6 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
+/**
+ * TODO:
+ * [ ] Upload model file to rescale in background thread
+ *
+ */
 @SpringBootApplication
 class SkilSomaticCloudApplication {
 	@Bean

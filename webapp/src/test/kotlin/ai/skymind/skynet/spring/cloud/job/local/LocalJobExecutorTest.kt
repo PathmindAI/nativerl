@@ -1,31 +1,40 @@
-package ai.skymind.skynet.spring.cloud.job.rescale
+package ai.skymind.skynet.spring.cloud.job.local
 
 import ai.skymind.skynet.data.db.jooq.tables.records.MdpRecord
 import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
-import ai.skymind.skynet.spring.cloud.job.local.Environment
-import ai.skymind.skynet.spring.cloud.job.local.RLConfig
-import ai.skymind.skynet.spring.cloud.job.rescale.rest.RescaleRestApiClient
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.Assert.*
 import org.junit.Ignore
 import org.junit.Test
-import org.springframework.web.reactive.function.client.WebClient
-import java.io.File
 
-class RescaleJobExecutorTest {
-    val apiClient = RescaleRestApiClient(
-            //"eu.rescale.com",
-            //"e6300684e6355b3bc34e95cfa368a1164e12edc7",
-            "platform.rescale.jp",
-            "0d0601925a547db44d41007e3cc4386b075c761c",
-            ObjectMapper().findAndRegisterModules(),
-            WebClient.builder()
-    )
-
-    @Ignore
+@Ignore
+class LocalJobExecutorTest {
+    /**
+     * This assumes that all necessary files were already uploaded
+     */
     @Test
     fun run() {
-        val mdpCode = """
+        val fileIdMap = mapOf(
+                "Bmcxc" to "/c/Users/dubs/Documents/PDC/Skymind/skynet/baseEnv.zip",
+                "oCHpf" to "/c/Users/dubs/Documents/PDC/Skymind/skynet/rl4j-beta4.zip",
+                "pCTMk" to "/c/Users/dubs/Documents/PDC/Skymind/skynet/model.zip"
+        )
+
+        val env = Environment(listOf("Bmcxc", "oCHpf"))
+        val model = ModelRecord().apply {
+            id = 7
+            fileId = "pCTMk"
+        }
+        val mdp = MdpRecord().apply {
+            id = 8
+            code = mdpCode
+        }
+        val rlConfig = RLConfig("PhasePolicy.zip", env, model, mdp)
+
+        val executor = LocalJobExecutor(fileIdMap)
+        val jobId = executor.run(rlConfig)
+
+        executor.getConsoleOutput(jobId)
+    }
+    val mdpCode = """
 new MDP<Encodable, Integer, DiscreteSpace>() {
     Engine engine;
     Main root;
@@ -119,80 +128,4 @@ new MDP<Encodable, Integer, DiscreteSpace>() {
     }
 };
     """.trimIndent()
-
-        val env = Environment(listOf("VNNaQb", "XeGNac")) // jp file ids
-        //val env = Environment(listOf("vbqfEc", "KDiSPc")) // eu file ids
-        val model = ModelRecord().apply {
-            id = 7
-            fileId = "JCNaQb" // jp file id
-            //fileId = "aDWBGc" // eu file id
-        }
-        val mdp = MdpRecord().apply {
-            id = 8
-            code = mdpCode
-        }
-        val rlConfig = RLConfig("PhasePolicy.zip", env, model, mdp)
-
-        val executor = RescaleJobExecutor(apiClient)
-        println(executor.run(rlConfig))
-
-
-    }
-
-    @Ignore
-    @Test
-    fun status4cores() {
-        val jobId = "afHxeb"
-        //val jobId = "ZCRBeb"
-        println(apiClient.jobStatusHistory(jobId))
-        println(apiClient.jobRuns(jobId))
-        val page = apiClient.directoryContent(jobId, "1")
-        println(page)
-        println(apiClient.tailConsole(jobId, "1"))
-        println(apiClient.consoleOutput(jobId))
-        println(apiClient.compileOutput(jobId))
-        println(apiClient.outputFiles(jobId))
-    }
-
-    @Ignore
-    @Test
-    fun stop() {
-
-        apiClient.jobStop("GWQop")
-    }
-
-    @Ignore
-    @Test
-    fun uploadFile(){
-        val input = File("X:/hello-world.123.txt")
-        val uploaded = apiClient.fileUpload(input)
-        val file = apiClient.filesList().results.find { it.name == "hello-world.123.txt" && it.id == uploaded.id }
-
-        assertNotNull(file)
-        assertEquals(uploaded.id, file!!.id)
-        val content = input.readBytes()
-        val uploadedContent = apiClient.fileContents(uploaded.id)
-
-        assertArrayEquals(content, uploadedContent)
-        apiClient.deleteFile(uploaded.id)
-        Thread.sleep(15000)
-        assertNull(apiClient.filesList().results.find { it.id == uploaded.id})
-    }
-
-    @Ignore
-    @Test
-    fun listFiles(){
-        println(apiClient.filesList())
-    }
-
-    @Ignore
-    @Test
-    fun deleteFile(){
-        apiClient.filesList().results.filter { it.name == "hello-world.123.txt"}.forEach{apiClient.deleteFile(it.id)}
-    }
-
-    @Test
-    fun deleteAllFiles(){
-        apiClient.filesList().results.filter{!it.isDeleted}.forEach{apiClient.deleteFile(it.id)}
-    }
 }

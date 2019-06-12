@@ -1,6 +1,7 @@
 package ai.skymind.skynet.spring.views.state
 
 import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
+import ai.skymind.skynet.spring.db.MdpRepository
 import ai.skymind.skynet.spring.db.ModelRepository
 import ai.skymind.skynet.spring.services.ProjectService
 import ai.skymind.skynet.spring.services.User
@@ -13,6 +14,7 @@ import java.io.File
 @VaadinSessionScope
 class UserSession(
         val modelService: ModelRepository,
+        val mdpService: MdpRepository,
         val projectService: ProjectService,
         val userService: UserService
 ) {
@@ -29,9 +31,11 @@ class UserSession(
         else -> true
     }
 
+    fun project(projectId: Int?) = withUser { projectService.findById(it.id, projectId)}
     fun projects() = withUser { projectService.findAll(it.id) }
     fun findProject(query: String) = withUser { projectService.find(it.id, query) }
     fun addProject(name: String, model: File) = withUser{ projectService.addProject(it.id, name, model) }
+
 
     fun experiments(): Any = TODO()
     fun findExperiments(query: String): Any = TODO()
@@ -45,4 +49,8 @@ class UserSession(
             else -> projectService.models(projectId).filter { it.name.contains(query, true) }
         }
     }
+
+    fun model(modelId: Int?) = withUser {modelService.findById(it.id, modelId)}
+    fun findMdps(modelId: Int) = withUser { mdpService.findAllByModelId(it.id, modelId)}
+    fun newMdp(modelId: Int) = withUser{ mdpService.newMdp(it.id, modelId) }
 }

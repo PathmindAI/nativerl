@@ -2,7 +2,7 @@ package ai.skymind.skynet.spring.services
 
 import ai.skymind.skynet.data.db.jooq.Tables
 import ai.skymind.skynet.data.db.jooq.tables.records.ProjectRecord
-import ai.skymind.skynet.spring.cloud.job.api.CloudJobExecutor
+import ai.skymind.skynet.spring.cloud.job.api.JobExecutor
 import ai.skymind.skynet.spring.db.ModelRepository
 import ai.skymind.skynet.spring.db.ProjectRepository
 import org.springframework.stereotype.Service
@@ -12,7 +12,7 @@ import java.io.File
 class ProjectService(
         val projectRepository: ProjectRepository,
         val modelRepository: ModelRepository,
-        val cloudJobExecutor: CloudJobExecutor
+        val cloudJobExecutor: JobExecutor
 ) {
     fun find(ownerId: Int, query: String?) = projectRepository.find(ownerId, query)
     fun findAll(ownerId: Int) = projectRepository.findAll(ownerId)
@@ -26,7 +26,7 @@ class ProjectService(
         }
 
         val modelFileId = cloudJobExecutor.upload(model)
-        val model = Tables.MODEL.newRecord().apply {
+        Tables.MODEL.newRecord().apply {
             name = "Initial Model for Project '$projectName'"
             userId = ownerId
             projectId = project.id
@@ -38,4 +38,5 @@ class ProjectService(
     }
 
     fun models(projectId: Int) = modelRepository.findAllByProjectId(projectId)
+    fun findById(ownerId: Int, projectId: Int?) = projectRepository.findById(ownerId, projectId)
 }

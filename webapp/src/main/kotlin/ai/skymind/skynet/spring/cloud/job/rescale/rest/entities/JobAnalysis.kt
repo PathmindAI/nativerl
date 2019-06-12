@@ -25,6 +25,7 @@ data class JobAnalysis (
     )
 
     data class FileReference(
-            val id: String
+            val id: String,
+            val decompress: Boolean = true
     )
 }

@@ -15,4 +15,7 @@ class ModelRepository(
         it.store()
         return it
     }
+
+    private fun all(ownerId: Int) = ctx.selectFrom(Tables.MODEL).where(Tables.MODEL.USER_ID.eq(ownerId))
+    fun findById(ownerId: Int, modelId: Int?) = all(ownerId).and(Tables.MODEL.ID.eq(modelId)).fetchOne()
 }

@@ -48,7 +48,7 @@
                              nullable="false"/>
             </column>
             <column name="project_id" type="INTEGER">
-                <constraints referencedColumnNames="id" references="user" foreignKeyName="model_project"
+                <constraints referencedColumnNames="id" references="project" foreignKeyName="model_project"
                              nullable="false"/>
             </column>
             <column name="name" type="NVARCHAR">
@@ -142,6 +142,16 @@
         <insert tableName="user">
             <column name="email">paul.dubs@skymind.io</column>
             <column name="password">$2a$10$Sf9m/2PaMIknRJ.4GJz7C.75UCqXBUVIdOwjF3yZJQmfOB1bTbSq2</column>
+        </insert>
+    </changeSet>
+    <changeSet id="20190612-1" author="pdubs" context="dev">
+        <insert tableName="user">
+            <column name="email">eduardo@skymind.io</column>
+            <column name="password">$2a$10$e5t.ChyYUfYcFgAPknrnnOAa99R1PFTfmTJQX.tIT0mfLaUX2YBBC</column>
+        </insert>
+        <insert tableName="user">
+            <column name="email">samuel@skymind.io</column>
+            <column name="password">$2a$10$uonztQxhO12gdwOifDbNAurnRmvmx23j6Nrrg9LDkScmvU5rskSBi</column>
         </insert>
     </changeSet>
 </databaseChangeLog>

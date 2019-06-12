@@ -34,7 +34,7 @@ class ExperimentListView(
                                 Notification.show("Running ${experiment.name}")
                             },
                             Button("Policies") {
-                                ui.ifPresent { it.navigate(ExperimentEditView::class.java) }
+                                ui.ifPresent { it.navigate(EditMdpView::class.java) }
                             }
                     )
                 }
