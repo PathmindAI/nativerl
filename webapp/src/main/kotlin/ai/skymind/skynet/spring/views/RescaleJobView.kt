@@ -27,6 +27,7 @@ class RescaleJobView(
     var backgroundThread: Thread? = null
 
     override fun onAttach(attachEvent: AttachEvent?) {
+        
         backgroundThread = Thread{
             while(true){
                 ui.get().access{

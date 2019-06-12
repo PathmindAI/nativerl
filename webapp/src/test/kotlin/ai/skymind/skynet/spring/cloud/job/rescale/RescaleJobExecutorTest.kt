@@ -12,6 +12,7 @@ import org.junit.Test
 import org.springframework.web.reactive.function.client.WebClient
 import java.io.File
 
+@Ignore
 class RescaleJobExecutorTest {
     val apiClient = RescaleRestApiClient(
             //"eu.rescale.com",
@@ -191,6 +192,7 @@ new MDP<Encodable, Integer, DiscreteSpace>() {
         apiClient.filesList().results.filter { it.name == "hello-world.123.txt"}.forEach{apiClient.deleteFile(it.id)}
     }
 
+    @Ignore
     @Test
     fun deleteAllFiles(){
         apiClient.filesList().results.filter{!it.isDeleted}.forEach{apiClient.deleteFile(it.id)}
