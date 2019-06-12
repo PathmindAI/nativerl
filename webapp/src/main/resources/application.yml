@@ -7,7 +7,7 @@ spring:
       enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: ${DATABASE_URL}
+    url: ${DB_URL}
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.xml
 
