@@ -21,7 +21,8 @@ data class JobAnalysis (
 
     data class Hardware(
             val coreType: String,
-            val coresPerSlot: Int
+            val coresPerSlot: Int,
+            val walltime: Int = 24
     )
 
     data class FileReference(

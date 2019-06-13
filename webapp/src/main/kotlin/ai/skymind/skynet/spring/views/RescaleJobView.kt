@@ -30,10 +30,14 @@ class RescaleJobView(
         
         backgroundThread = Thread{
             while(true){
-                ui.get().access{
-                    updateList()
-                }
-                Thread.sleep(10000)
+                    ui.get().access{
+                        try {
+                            updateList()
+                        }catch(e: Exception) {
+                            //no-op
+                        }
+                    }
+                    Thread.sleep(10000)
             }
         }
         backgroundThread!!.start()

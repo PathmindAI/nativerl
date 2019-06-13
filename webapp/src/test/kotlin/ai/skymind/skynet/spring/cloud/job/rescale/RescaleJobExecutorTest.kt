@@ -5,6 +5,8 @@ import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
 import ai.skymind.skynet.spring.cloud.job.local.Environment
 import ai.skymind.skynet.spring.cloud.job.local.RLConfig
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.RescaleRestApiClient
+import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.Job
+import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.JobAnalysis
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.Assert.*
 import org.junit.Ignore
@@ -22,6 +24,34 @@ class RescaleJobExecutorTest {
             ObjectMapper().findAndRegisterModules(),
             WebClient.builder()
     )
+
+    @Ignore
+    @Test
+    fun mpiInformationJob(){
+        val jobSpec = Job(
+                name = "mpi-files",
+                jobanalyses = listOf(JobAnalysis(
+                        command = "for f in hosts mpd.hosts machinefile machinefile.gpu machinefile.openmpi hosts " +
+                                "rhosts mpd.hosts.string PCF.xml; do echo \$f; cat \$HOME/\$f; echo; done ",
+                        inputFiles = emptyList(),
+                        hardware = JobAnalysis.Hardware("emerald", 8)
+
+                ))
+        )
+
+        val job = apiClient.jobCreate(jobSpec)
+        apiClient.jobSubmit(job)
+
+        println(job.id)
+    }
+
+    @Ignore
+    @Test
+    fun collectMpiJobOutput(){
+        val jobId = "dBPqW"
+
+        println(apiClient.consoleOutput(jobId))
+    }
 
     @Ignore
     @Test
