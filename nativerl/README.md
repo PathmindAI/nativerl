@@ -85,10 +85,10 @@ Example Using RLlib and TrafficEnvironment
     import ai.skymind.nativerl.*;
 
     // In the Main "Additional class code"
-    RLlibHelper rllibHelper = null;
+    PolicyHelper policyHelper = null;
 
     // In the Event "Action"
-    if (rllibHelper == null && usePolicy) {
+    if (policyHelper == null && usePolicy) {
         try {
             // Directories where to find all modules required by RLlib
             File[] path = {
@@ -98,17 +98,35 @@ Example Using RLlib and TrafficEnvironment
                 new File(System.getProperty("user.home") + "/.local/lib/python3.7/site-packages/")
             };
             File checkpoint = new File("/path/to/checkpoint_100/checkpoint-100");
-            rllibHelper = new RLlibHelper(path, "PPO", checkpoint, "Traffic", 2, 10);
+            policyHelper = new RLlibHelper(path, "PPO", checkpoint, "Traffic", 2, 10);
         } catch (IOException e) {
             traceln(e);
         }
     }
 
-    if (rllibHelper != null && usePolicy) {
+    if (policyHelper != null && usePolicy) {
         float[] a = TrafficEnvironment.normalize(getState());
-        int action = (int)rllibHelper.computeDiscreteAction(a);
+        int action = (int)policyHelper.computeDiscreteAction(a);
         traceln("Action: " + action);
         step(action);
     }
     ```
 
+    * Alternatively, we can also load a TensorFlow SavedModel exported from RLlib allowing us to do inference without it:
+
+    ```java
+    if (policyHelper == null && usePolicy) {
+        try {
+            policyHelper = new RLlibPolicyHelper(new File("/tmp/policy"));
+        } catch (IOException e) {
+            traceln(e);
+        }
+    }
+
+    if (policyHelper != null && usePolicy) {
+        float[] a = TrafficEnvironment.normalize(getState());
+        int action = (int)policyHelper.computeDiscreteAction(a);
+        traceln("Action: " + action);
+        step(action);
+    }
+    ```

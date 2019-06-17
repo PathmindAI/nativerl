@@ -49,3 +49,7 @@ for i in range(200):
 
 checkpoint = trainer.save()
 print("checkpoint saved at", checkpoint)
+
+# export TensorFlow SavedModel as well
+policy = trainer.get_policy()
+policy.export_model("/tmp/policy");

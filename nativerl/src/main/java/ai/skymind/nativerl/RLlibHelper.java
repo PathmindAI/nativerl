@@ -10,7 +10,7 @@ import org.bytedeco.numpy.*;
 import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
 
-public class RLlibHelper {
+public class RLlibHelper implements PolicyHelper {
     PyObject globals = null;
     PyArrayObject obsArray = null;
     FloatPointer obsData = null;
@@ -82,11 +82,11 @@ public class RLlibHelper {
         PyDict_SetItemString(globals, "obs", obsArray);
     }
 
-    public float[] computeContinuousAction(float[] state) {
+    @Override public float[] computeContinuousAction(float[] state) {
         throw new UnsupportedOperationException();
     }
 
-    public long computeDiscreteAction(float[] state) {
+    @Override public long computeDiscreteAction(float[] state) {
         obsData.put(state);
         PyRun_StringFlags("action = trainer.compute_action(obs)\n", Py_file_input, globals, globals, null);
 

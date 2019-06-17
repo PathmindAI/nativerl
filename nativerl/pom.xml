@@ -54,6 +54,11 @@
             <artifactId>numpy-platform</artifactId>
             <version>1.16.3-1.5.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>tensorflow-platform</artifactId>
+            <version>1.14.0-rc1-1.5.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
