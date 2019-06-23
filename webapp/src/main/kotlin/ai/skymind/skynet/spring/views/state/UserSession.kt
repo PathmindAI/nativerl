@@ -11,6 +11,7 @@ import ai.skymind.skynet.spring.services.UserService
 import com.vaadin.flow.spring.annotation.VaadinSessionScope
 import org.springframework.stereotype.Component
 import java.io.File
+import java.io.Serializable
 
 @Component
 @VaadinSessionScope
@@ -20,7 +21,7 @@ class UserSession(
         val projectService: ProjectService,
         val userService: UserService,
         val runRepository: RunRepository
-) {
+): Serializable {
     var user: User? = null
 
     fun login(username: String, password: String){
@@ -59,4 +60,25 @@ class UserSession(
     fun findRuns(modelId: Int, query: String?): List<RunRecord>? = withUser {
         runRepository.findByModelId(it.id, modelId, query)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UserSession
+
+        if (user != other.user) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return user?.hashCode() ?: 0
+    }
+
+    override fun toString(): String {
+        return "UserSession(user=$user)"
+    }
+
+
 }
