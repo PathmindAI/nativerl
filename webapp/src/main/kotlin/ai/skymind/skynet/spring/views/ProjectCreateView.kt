@@ -7,6 +7,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.Span
+import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
@@ -35,7 +36,9 @@ class ProjectCreateView(
                     addClickListener { ui.ifPresent { it.navigate(ProjectListView::class.java) } }
                 },
                 Button("Create Project").apply {
+                    isDisableOnClick = true
                     addClickListener {
+                        Notification.show("Uploading Model...")
                         fileBuffer.getFiles().forEach{
                             val file = File("x:/test/$it")
                             val target = file.outputStream()
