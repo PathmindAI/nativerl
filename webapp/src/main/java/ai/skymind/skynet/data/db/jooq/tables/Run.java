@@ -8,25 +8,14 @@ import ai.skymind.skynet.data.db.jooq.Indexes;
 import ai.skymind.skynet.data.db.jooq.Keys;
 import ai.skymind.skynet.data.db.jooq.Public;
 import ai.skymind.skynet.data.db.jooq.tables.records.RunRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -42,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Run extends TableImpl<RunRecord> {
 
-    private static final long serialVersionUID = 783572839;
+    private static final long serialVersionUID = 412185715;
 
     /**
      * The reference instance of <code>public.run</code>
@@ -91,6 +80,11 @@ public class Run extends TableImpl<RunRecord> {
      * The column <code>public.run.status</code>.
      */
     public final TableField<RunRecord, String> STATUS = createField("status", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+
+    /**
+     * The column <code>public.run.external_job_id</code>. The job id as returned by rescale api
+     */
+    public final TableField<RunRecord, String> EXTERNAL_JOB_ID = createField("external_job_id", org.jooq.impl.SQLDataType.VARCHAR, this, "The job id as returned by rescale api");
 
     /**
      * Create a <code>public.run</code> table reference

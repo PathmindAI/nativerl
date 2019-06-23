@@ -244,7 +244,7 @@
 				<configuration>
 					<jdbc>
 						<driver>org.postgresql.Driver</driver>
-						<url>${DATABASE_URL}</url>
+						<url>${DB_URL}</url>
 					</jdbc>
 					<generator>
 						<database>

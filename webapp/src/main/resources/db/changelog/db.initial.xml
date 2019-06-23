@@ -154,4 +154,9 @@
             <column name="password">$2a$10$uonztQxhO12gdwOifDbNAurnRmvmx23j6Nrrg9LDkScmvU5rskSBi</column>
         </insert>
     </changeSet>
+    <changeSet id="20190623-1" author="pdubs">
+        <addColumn tableName="run">
+            <column name="external_job_id" type="VARCHAR" remarks="The job id as returned by rescale api"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

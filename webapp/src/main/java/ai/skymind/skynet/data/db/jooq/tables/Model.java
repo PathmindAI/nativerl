@@ -8,25 +8,14 @@ import ai.skymind.skynet.data.db.jooq.Indexes;
 import ai.skymind.skynet.data.db.jooq.Keys;
 import ai.skymind.skynet.data.db.jooq.Public;
 import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord;
+import org.jooq.*;
+import org.jooq.impl.DSL;
+import org.jooq.impl.TableImpl;
 
+import javax.annotation.Generated;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.annotation.Generated;
-
-import org.jooq.Field;
-import org.jooq.ForeignKey;
-import org.jooq.Identity;
-import org.jooq.Index;
-import org.jooq.Name;
-import org.jooq.Record;
-import org.jooq.Schema;
-import org.jooq.Table;
-import org.jooq.TableField;
-import org.jooq.UniqueKey;
-import org.jooq.impl.DSL;
-import org.jooq.impl.TableImpl;
 
 
 /**
@@ -42,7 +31,7 @@ import org.jooq.impl.TableImpl;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 696186342;
+    private static final long serialVersionUID = 106030040;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -168,12 +157,12 @@ public class Model extends TableImpl<ModelRecord> {
         return Arrays.<ForeignKey<ModelRecord, ?>>asList(Keys.MODEL__MODEL_OWNER, Keys.MODEL__MODEL_PROJECT);
     }
 
-    public User model_ModelOwner() {
+    public User user() {
         return new User(this, Keys.MODEL__MODEL_OWNER);
     }
 
-    public User model_ModelProject() {
-        return new User(this, Keys.MODEL__MODEL_PROJECT);
+    public Project project() {
+        return new Project(this, Keys.MODEL__MODEL_PROJECT);
     }
 
     /**
