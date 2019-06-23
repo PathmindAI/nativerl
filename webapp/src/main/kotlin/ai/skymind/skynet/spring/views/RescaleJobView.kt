@@ -7,12 +7,15 @@ import ai.skymind.skynet.spring.views.state.UserSession
 import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.DetachEvent
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.textfield.TextArea
 import com.vaadin.flow.router.Route
+import org.slf4j.LoggerFactory
 
 /**
  * Internal View used to check on the current Rescale Job Status.
@@ -24,17 +27,17 @@ class RescaleJobView(
     val userSession: UserSession,
     val rescaleRestApiClient: RescaleRestApiClient
 ) : VerticalLayout() {
+    val logger = LoggerFactory.getLogger(RescaleJobView::class.java)
     var backgroundThread: Thread? = null
 
     override fun onAttach(attachEvent: AttachEvent?) {
-        
         backgroundThread = Thread{
             while(true){
                     ui.get().access{
                         try {
                             updateList()
                         }catch(e: Exception) {
-                            //no-op
+                            println(e)
                         }
                     }
                     Thread.sleep(10000)
@@ -70,6 +73,45 @@ class RescaleJobView(
                             }
                         })
                     }
+                    if(listOf("Started", "Stopped").contains(summary.clusterStatusDisplay?.content)){
+                        add(Button("Console") {
+                            var open = true
+                            val console = TextArea().apply {
+                                setWidthFull()
+                                setHeightFull()
+                                isReadOnly = true
+                            }
+
+
+                            if(summary.jobStatus.content != "Completed" && summary.clusterStatusDisplay?.content != "Stopped") {
+                                Thread {
+                                    while(open){
+                                        try {
+                                            val tailConsole = rescaleRestApiClient.tailConsole(summary.id, "1")
+                                           access {
+                                                    console.value = tailConsole
+                                                }
+                                        }catch (e: Exception){
+                                            logger.error(e.message, e)
+                                        }
+                                        Thread.sleep(1000)
+                                    }
+                                }.start()
+                            }else{
+                                console.value = rescaleRestApiClient.consoleOutput(summary.id) + "\n" + rescaleRestApiClient.compileOutput(summary.id)
+                            }
+                            Dialog().apply {
+                                add(console)
+                                height = "80vh"
+                                width = "80vw"
+                                open()
+                                addDialogCloseActionListener {
+                                    open = false
+                                    close()
+                                }
+                            }
+                        })
+                    }
                 }
             }
         }
@@ -82,6 +124,13 @@ class RescaleJobView(
         })
         add(grid)
     }
+
+    private fun access(function: () -> Unit) {
+        ui.ifPresent{
+            it.access(function)
+        }
+    }
+
 
     fun updateList() {
         val foundItems = rescaleRestApiClient.jobList()

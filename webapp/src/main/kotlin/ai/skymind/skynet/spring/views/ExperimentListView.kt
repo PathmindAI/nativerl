@@ -6,7 +6,6 @@ import com.vaadin.flow.component.applayout.AppLayout
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.grid.Grid
 import com.vaadin.flow.component.html.H2
-import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
@@ -23,7 +22,6 @@ class ExperimentListView(
     val filterText = TextField()
 
     init {
-        setBranding(Span("Skymind"))
         setContent(VerticalLayout().apply {
             grid.apply {
                 setSelectionMode(Grid.SelectionMode.SINGLE)

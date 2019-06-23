@@ -36,13 +36,13 @@ class ProjectCreateView(
                 },
                 Button("Create Project").apply {
                     addClickListener {
-                        val file = File("x:/test/$it")
                         fileBuffer.getFiles().forEach{
+                            val file = File("x:/test/$it")
                             val target = file.outputStream()
                             fileBuffer.getInputStream(it).copyTo(target)
                             target.close()
+                            userSession.addProject(projectName.value, file)
                         }
-                        userSession.addProject(projectName.value, file)
                         ui.ifPresent { it.navigate(ProjectListView::class.java) }
                     }
                 }

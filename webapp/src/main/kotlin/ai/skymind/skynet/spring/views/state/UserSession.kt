@@ -1,8 +1,10 @@
 package ai.skymind.skynet.spring.views.state
 
 import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
+import ai.skymind.skynet.data.db.jooq.tables.records.RunRecord
 import ai.skymind.skynet.spring.db.MdpRepository
 import ai.skymind.skynet.spring.db.ModelRepository
+import ai.skymind.skynet.spring.db.RunRepository
 import ai.skymind.skynet.spring.services.ProjectService
 import ai.skymind.skynet.spring.services.User
 import ai.skymind.skynet.spring.services.UserService
@@ -16,7 +18,8 @@ class UserSession(
         val modelService: ModelRepository,
         val mdpService: MdpRepository,
         val projectService: ProjectService,
-        val userService: UserService
+        val userService: UserService,
+        val runRepository: RunRepository
 ) {
     var user: User? = null
 
@@ -53,4 +56,7 @@ class UserSession(
     fun model(modelId: Int?) = withUser {modelService.findById(it.id, modelId)}
     fun findMdps(modelId: Int) = withUser { mdpService.findAllByModelId(it.id, modelId)}
     fun newMdp(modelId: Int) = withUser{ mdpService.newMdp(it.id, modelId) }
+    fun findRuns(modelId: Int, query: String?): List<RunRecord>? = withUser {
+        runRepository.findByModelId(it.id, modelId, query)
+    }
 }

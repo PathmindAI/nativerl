@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.toMono
 import java.io.File
+import java.io.InputStream
 import java.nio.charset.Charset
 import java.util.function.Function
 import java.util.function.Predicate
@@ -134,5 +135,12 @@ class RescaleRestApiClient(
                 .retrieve()
                 .bodyToMono(Void::class.java)
                 .block()
+    }
+
+    fun policyFile(jobId: String): InputStream {
+        val outputFiles = outputFiles(jobId)
+        val consoleFile = outputFiles.results.find { it.name == "PhasePolicy.zip" && it.isUploaded && !it.isDeleted}!!
+
+        return fileContents(consoleFile.id).inputStream()
     }
 }

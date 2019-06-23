@@ -33,6 +33,9 @@ class ModelListView(
                 HorizontalLayout(
                         Button("Edit MDP") {
                             ui.ifPresent { it.navigate(EditMdpView::class.java, model.id) }
+                        },
+                        Button("Show runs") {
+                            ui.ifPresent{ it.navigate(RunListView::class.java, model.id) }
                         }
                 )
             }

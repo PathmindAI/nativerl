@@ -5,9 +5,22 @@ import ai.skymind.skynet.data.db.jooq.tables.records.ModelRecord
 import ai.skymind.skynet.spring.cloud.job.api.JobExecutor
 import ai.skymind.skynet.spring.cloud.job.rescale.util.runCommand
 import java.io.File
+import java.io.InputStream
 import java.nio.file.Files
 
 class LocalJobExecutor(val fileIdMap: Map<String, String>) : JobExecutor {
+    override fun stop(jobId: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun getPolicy(jobId: String): InputStream {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun status(externalJobId: String): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun upload(file: File): String {
         TODO("just provide an appropriate fileIdMap when instantiating the LocalJobExecutor for now.")
     }
@@ -26,8 +39,12 @@ class LocalJobExecutor(val fileIdMap: Map<String, String>) : JobExecutor {
         return s
     }
 
-    override fun getConsoleOutput(jobId: String) {
+    override fun getConsoleOutput(jobId: String): String {
         TODO()
+    }
+
+    override fun tailConsoleOutput(jobId: String): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private fun _run(jobId: String, rlConfig: RLConfig) {
@@ -138,7 +155,7 @@ public class NewTraining extends ExperimentCustom {
     }
 
     public MDP getMDP(){
-     return ${mdp.code};
+     return ${mdp.code}
     }
 
     public void run() {

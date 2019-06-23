@@ -44,6 +44,7 @@ class EditMdpView(
                         mdp?.let{
                             executionService.runMdp(it)
                             Notification.show("Training Started.")
+                            ui.get().navigate(RunListView::class.java, it.modelId)
                         }
                     }
                 }

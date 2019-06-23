@@ -7,6 +7,7 @@ import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.Job
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.JobAnalysis
 import org.springframework.stereotype.Service
 import java.io.File
+import java.io.InputStream
 
 @Service
 class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
@@ -29,7 +30,7 @@ class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
         val postProcess = StringBuilder().apply{
             append("cd ..; ")
             append("mkdir output;")
-            append("cp baseEnv/${rlConfig.outputFileName} output;")
+            append("cp baseEnv/${rlConfig.outputFileName} output/PhasePolicy.zip;")
             append("cp baseEnv/compile.out.txt output/;")
             append("cp baseEnv/training.out.txt output/;")
             append("rm -rf baseEnv; ")
@@ -51,9 +52,26 @@ class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
         return job.id!!
     }
 
-    override fun getConsoleOutput(jobId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun stop(jobId: String) {
+        apiClient.jobStop(jobId)
     }
 
+    override fun getConsoleOutput(jobId: String): String {
+        return apiClient.consoleOutput(jobId)
+    }
+
+    override fun tailConsoleOutput(jobId: String): String {
+        return apiClient.tailConsole(jobId, "1")
+    }
+
+
     override fun upload(file: File): String = apiClient.fileUpload(file).id
+
+    override fun status(jobId: String): String {
+        return apiClient.jobStatusHistory(jobId).results.first().status
+    }
+
+    override fun getPolicy(jobId: String): InputStream {
+        return apiClient.policyFile(jobId)
+    }
 }
