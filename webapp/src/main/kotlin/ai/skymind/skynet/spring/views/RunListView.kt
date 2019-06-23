@@ -66,10 +66,12 @@ class RunListView(
                     jobExecutor.getPolicy(run.externalJobId)
                 })
                 HorizontalLayout().apply {
-                    if(!listOf("Completed", "Failed", "Stopping").contains(run.status)){
+                    if(!listOf("Completed", "User terminated", "Stopping").contains(run.status)){
                         add(Button("Stop"){
                             jobExecutor.stop(run.externalJobId)
                             updateList()
+                        }.apply {
+                            isDisableOnClick = true
                         })
                     }
                     if(listOf("Completed", "Started", "Executing", "Failed").contains(run.status)){
@@ -155,7 +157,7 @@ class RunListView(
     fun updateList() {
         val foundItems = userSession.findRuns(modelId!!, filterText.value)
         foundItems?.filter {
-            !listOf("Completed", "Failed").contains(it.status)
+            !listOf("Completed", "User terminated").contains(it.status)
         }?.forEach {
             it.status = jobExecutor.status(it.externalJobId)
             it.store()

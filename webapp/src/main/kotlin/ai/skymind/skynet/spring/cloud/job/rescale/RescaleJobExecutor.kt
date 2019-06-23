@@ -68,7 +68,12 @@ class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
     override fun upload(file: File): String = apiClient.fileUpload(file).id
 
     override fun status(jobId: String): String {
-        return apiClient.jobStatusHistory(jobId).results.first().status
+        val first = apiClient.jobStatusHistory(jobId).results.first()
+        return when(first.statusReason){
+            "Completed successfully" -> first.status
+            "User terminated" -> first.statusReason
+            else -> first.status
+        }
     }
 
     override fun getPolicy(jobId: String): InputStream {
