@@ -14,7 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.router.Route
-import java.io.File
+import java.nio.file.Files
 
 @Route("projects/create", layout = MainLayout::class)
 class ProjectCreateView(
@@ -40,11 +40,13 @@ class ProjectCreateView(
                     addClickListener {
                         Notification.show("Uploading Model...")
                         fileBuffer.getFiles().forEach{
-                            val file = File("x:/test/$it")
+                            val path = Files.createTempDirectory("pathmind-upload")
+                            val file = path.resolve(it).toFile()
                             val target = file.outputStream()
                             fileBuffer.getInputStream(it).copyTo(target)
                             target.close()
                             userSession.addProject(projectName.value, file)
+                            path.toFile().deleteRecursively()
                         }
                         ui.ifPresent { it.navigate(ProjectListView::class.java) }
                     }

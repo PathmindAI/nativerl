@@ -1,8 +1,11 @@
 package ai.skymind.skynet.spring.cloud.job.rescale.rest
 
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.*
-import ai.skymind.skynet.spring.cloud.job.rescale.util.runCommand
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.mime.MultipartEntityBuilder
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.message.BasicHeader
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -111,18 +114,17 @@ class RescaleRestApiClient(
     fun fileUpload(content: File): RescaleFile {
         if(!content.exists()) {throw IllegalArgumentException("The to be uploaded file $content does not exist!")}
 
-        val command = listOf("curl",
-                "-X", "POST",
-                "-H", "Content-Type:multipart/form-data",
-                "-H", "Authorization: Token $apiKey",
-                "-F", "file=@${content.absolutePath}",
-                "https://$platformRegion/api/v2/files/contents/"
-        )
+        val client = HttpClients.custom().setDefaultHeaders(listOf(
+                BasicHeader("Authorization", "Token $apiKey")
+        )).build()
+        val resp = HttpPost("https://$platformRegion/api/v2/files/contents/").apply {
+            entity = MultipartEntityBuilder.create()
+                    .addBinaryBody("file", content)
+                    .build()
+            //addHeader("Content-Type", "multipart/form-data")
+        }.let { client.execute(it) }
 
-        val result = command.runCommand(content.parentFile)
-        if(result.exitValue != 0){ throw RuntimeException("Could not upload given file. Error: $result") }
-
-        return objectMapper.readValue(result.stdOut, RescaleFile::class.java)
+        return objectMapper.readValue(resp.entity.content, RescaleFile::class.java)
     }
 
     fun filesList(): PagedResult<RescaleFile> = client
