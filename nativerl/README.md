@@ -48,8 +48,8 @@ mvn clean package -Djavacpp.platform=linux-x86_64
 ```
 
 
-Example Using RLlib and TrafficEnvironment
-------------------------------------------
+Example Using RLlib for Traffic Light Phases
+--------------------------------------------
 
  1. Install RLlib, for example, `pip3 install --user psutil requests setproctitle tensorflow ray[rllib]`
     * Remove these lines from `~/.local/lib/python3.7/site-packages/ray/worker.py`, or else the JVM will crash:
@@ -62,21 +62,20 @@ Example Using RLlib and TrafficEnvironment
  2. Inside AnyLogic:
     1. Add `nativerl-1.0.0-SNAPSHOT.jar` to the class path of the project
     2. Create a new "Custom Experiment" named "Training" and erase all of its code
-    3. Create a new "Java Class" named "TrafficEnvironment", copying all content from [`examples/TrafficEnvironment.java`](examples/TrafficEnvironment.java)
-    4. Export the "Training" experiment to a "Standalone Java application" into some directory
+    3. Export the "Training" experiment to a "Standalone Java application" into some directory
     * To ensure we can execute multiple simulations in parallel, append this line to `database/db.properties`:
     ```
         hsqldb.lock_file=false
     ```
 
  3. Extract the native libraries from `nativerl-1.0.0-SNAPSHOT-bin.zip` inside that directory
- 4. Copy as well [`examples/rllibtest.py`](examples/rllibtest.py) into that directory
- 5. Execute `python3 rllibtest.py` inside the directory and wait for training to complete
+ 4. Copy as well [`examples/traintraffic.sh`](examples/traintraffic.sh) into that directory
+ 5. Execute `bash traintraffic.sh` inside the directory and wait for training to complete
     * For a manually managed cluster, the sequence of operation is:
     1. On the "head node", execute `ray start --head --redis-port=6379`
     2. On other nodes, execute `ray start --redis-address 10.x.x.x:6379`
-    3. Replace `ray.init()` with `ray.init(redis_address="10.x.x.x:6379")` in `rllibtest.py` and increase `num_workers` accordingly
-    4. Execute `python3 rllibtest.py` on any node
+    3. Add `--redis-address 10.x.x.x:6379` option to `RLlibHelper` in `traintraffic.sh`, and increase `--num_workers` accordingly
+    4. Execute `bash traintraffic.sh` on any node
 
  6. Once we get a checkpoint file, we can use it as a policy inside AnyLogic with an event containing code like this:
 
@@ -88,7 +87,7 @@ Example Using RLlib and TrafficEnvironment
     PolicyHelper policyHelper = null;
 
     // In the Event "Action"
-    if (policyHelper == null && usePolicy) {
+    if (policyHelper == null && usePolicy && !PolicyHelper.disablePolicyHelper) {
         try {
             // Directories where to find all modules required by RLlib
             File[] path = {
@@ -98,35 +97,33 @@ Example Using RLlib and TrafficEnvironment
                 new File(System.getProperty("user.home") + "/.local/lib/python3.7/site-packages/")
             };
             File checkpoint = new File("/path/to/checkpoint_100/checkpoint-100");
-            policyHelper = new RLlibHelper(path, "PPO", checkpoint, "Traffic", 2, 10);
+            policyHelper = new RLlibHelper.PythonPolicyHelper(path, "PPO", checkpoint, "Traffic", 2, 10);
         } catch (IOException e) {
             traceln(e);
         }
     }
 
-    if (policyHelper != null && usePolicy) {
-        float[] a = TrafficEnvironment.normalize(getState());
-        int action = (int)policyHelper.computeDiscreteAction(a);
+    if (policyHelper != null && usePolicy && !PolicyHelper.disablePolicyHelper) {
+        int action = (int)policyHelper.computeDiscreteAction(getObservation(false));
         traceln("Action: " + action);
-        step(action);
+        doAction(action);
     }
     ```
 
     * Alternatively, we can also load a TensorFlow SavedModel exported from RLlib allowing us to do inference without it:
 
     ```java
-    if (policyHelper == null && usePolicy) {
+    if (policyHelper == null && usePolicy && !PolicyHelper.disablePolicyHelper) {
         try {
-            policyHelper = new RLlibPolicyHelper(new File("/tmp/policy"));
+            policyHelper = new RLlibPolicyHelper(new File("/path/to/policy_XXX"));
         } catch (IOException e) {
             traceln(e);
         }
     }
 
-    if (policyHelper != null && usePolicy) {
-        float[] a = TrafficEnvironment.normalize(getState());
-        int action = (int)policyHelper.computeDiscreteAction(a);
+    if (policyHelper != null && usePolicy && !PolicyHelper.disablePolicyHelper) {
+        int action = (int)policyHelper.computeDiscreteAction(getObservation(false));
         traceln("Action: " + action);
-        step(action);
+        doAction(action);
     }
     ```

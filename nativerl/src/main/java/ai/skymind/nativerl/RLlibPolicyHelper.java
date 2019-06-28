@@ -24,6 +24,9 @@ public class RLlibPolicyHelper implements PolicyHelper {
     TensorVector outputTensors = null;
 
     public RLlibPolicyHelper(File savedModel) throws IOException {
+        if (disablePolicyHelper) {
+            return;
+        }
         bundle = new SavedModelBundle();
         options = new SessionOptions();
         runOptions = new RunOptions();
@@ -75,10 +78,16 @@ public class RLlibPolicyHelper implements PolicyHelper {
     }
 
     @Override public float[] computeContinuousAction(float[] state) {
+        if (disablePolicyHelper) {
+            return null;
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override public long computeDiscreteAction(float[] state) {
+        if (disablePolicyHelper) {
+            return -1;
+        }
         obsData.put(state);
         Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors),
                 new StringVector(realOutputNames), new StringVector(), outputTensors);
