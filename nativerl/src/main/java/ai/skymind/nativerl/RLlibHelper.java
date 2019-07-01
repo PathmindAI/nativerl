@@ -110,11 +110,11 @@ public class RLlibHelper {
     int numGPUs = 0;
     int numWorkers = 1;
     long randomSeed = 0;
-    double gamma = 0.99;
-    double learningRate = 5e-5;
+    double[] gammas = {0.99};
+    double[] learningRates = {5e-5};
+    int[] miniBatchSizes = {128};
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
-    int miniBatchSize = 128;
     int stepsPerIteration = 4000;
     int maxIterations = 500;
     int savePolicyInterval = 100;
@@ -188,19 +188,27 @@ public class RLlibHelper {
         return this;
     }
 
-    double gamma() {
-        return gamma;
+    double[] gammas() {
+        return gammas;
     }
-    RLlibHelper gamma(double gamma) {
-        this.gamma = gamma;
+    RLlibHelper gammas(double[] gammas) {
+        this.gammas = gammas;
         return this;
     }
 
-    double learningRate() {
-        return learningRate;
+    double[] learningRates() {
+        return learningRates;
     }
-    RLlibHelper learningRate(double learningRate) {
-        this.learningRate = learningRate;
+    RLlibHelper learningRates(double[] learningRates) {
+        this.learningRates = learningRates;
+        return this;
+    }
+
+    int[] miniBatchSizes() {
+        return miniBatchSizes;
+    }
+    RLlibHelper miniBatchSizes(int[] miniBatchSizes) {
+        this.miniBatchSizes = miniBatchSizes;
         return this;
     }
 
@@ -217,14 +225,6 @@ public class RLlibHelper {
     }
     RLlibHelper numHiddenNodes(int numHiddenNodes) {
         this.numHiddenNodes = numHiddenNodes;
-        return this;
-    }
-
-    int miniBatchSize() {
-        return miniBatchSize;
-    }
-    RLlibHelper miniBatchSize(int miniBatchSize) {
-        this.miniBatchSize = miniBatchSize;
         return this;
     }
 
@@ -284,17 +284,16 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, inspect, nativerl, numpy, ray, sys, os\n"
-            + "from ray.rllib.agents import registry\n"
+        String trainer = "import glob, gym, nativerl, numpy, ray, sys, os\n"
             + "from ray.rllib.utils import seed\n"
-            + "from ray.tune.logger import pretty_print\n"
-            + "from ray.tune.registry import register_env\n"
+            + "\n"
+            + "jardir = os.getcwd()\n"
             + "\n"
             + "class " + environment.getClass().getSimpleName() + "(gym.Env):\n"
             + "    def __init__(self, env_config):\n"
             + "        # Put all JAR files found here in the class path\n"
-            + "        jars = glob.glob('**/*.jar', recursive=True)\n"
-            + "        nativerl.init(['-Djava.class.path=' + os.pathsep.join(jars + ['.'])]);\n"
+            + "        jars = glob.glob(jardir + '/**/*.jar', recursive=True)\n"
+            + "        nativerl.init(['-Djava.class.path=' + os.pathsep.join(jars + [jardir])]);\n"
             + "\n"
             + "        self.nativeEnv = nativerl.createEnvironment('" + environment.getClass().getName() + "')\n"
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
@@ -316,34 +315,25 @@ public class RLlibHelper {
             + "\n"
             + "ray.init(" + (redisAddress != null ? "redis_address='" + redisAddress + "'" : "") + ")\n"
             + "seed.seed(" + randomSeed + ")\n"
-            + "cls = registry.get_agent_class('" + algorithm + "')\n"
-            + "config = inspect.getmodule(cls).DEFAULT_CONFIG.copy()\n"
-            + "config['num_gpus'] = " + numGPUs + "\n"
-            + "config['num_workers'] = " + numWorkers + "\n"
-            + "config['gamma'] = " + gamma + "\n"
-            + "config['lr'] = " + learningRate + "\n"
-            + "config['model']['fcnet_hiddens'] = " + hiddenLayers() + "\n"
-            + "config['sgd_minibatch_size'] = " + miniBatchSize + "\n"
-            + "config['train_batch_size'] = " + stepsPerIteration + "\n"
-            + "trainer = cls(config=config, env=" + environment.getClass().getSimpleName() + ")\n"
-            + "\n"
-            + "# Can optionally call trainer.restore(path) to load a checkpoint.\n"
-            + (checkpoint != null ? "trainer.restore('" + checkpoint.getAbsolutePath() + "')\n" : "")
-            + "\n"
-            + "for i in range(" + maxIterations + "):\n"
-            + "    # Perform one iteration of training the policy with algorithm\n"
-            + "    result = trainer.train()\n"
-            + "    print(pretty_print(result))\n"
-            + "\n"
-            + "    if trainer.iteration % " + savePolicyInterval + " == 0:\n"
-            + "        checkpoint = trainer.save()\n"
-            + "        print('checkpoint saved at', checkpoint)\n"
-            + "\n"
-            + "        # Export TensorFlow SavedModel as well\n"
-            + "        policy = trainer.get_policy()\n"
-            + "        policy_path = trainer.logdir + '/policy_' + str(trainer.iteration)\n"
-            + "        policy.export_model(policy_path);\n"
-            + "        print('policy model exported at', policy_path)\n";
+            + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
+            + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
+            + "ray.tune.run(\n"
+            + "    '" + algorithm + "',\n"
+            + "    stop={'training_iteration': " + maxIterations + "},\n"
+            + "    config={\n"
+            + "        'env': " + environment.getClass().getSimpleName() + ",\n"
+            + "        'num_gpus': " + numGPUs + ",\n"
+            + "        'num_workers': " + numWorkers + ",\n"
+            + "        'gamma': ray.tune.grid_search(" +  Arrays.toString(gammas) + "),\n"
+            + "        'lr': ray.tune.grid_search(" +  Arrays.toString(learningRates) + "),\n"
+            + "        'sgd_minibatch_size': ray.tune.grid_search(" + Arrays.toString(miniBatchSizes) + "),\n"
+            + "        'model': model,\n"
+            + "        'train_batch_size': " + stepsPerIteration + ",\n"
+            + "    },\n"
+            + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "')\n" : "")
+            + "    checkpoint_freq=" + savePolicyInterval + ",\n"
+            + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
+            + ")\n";
         return trainer;
     }
 
@@ -364,9 +354,9 @@ public class RLlibHelper {
                 System.out.println("    --random-seed");
                 System.out.println("    --gamma");
                 System.out.println("    --learning-rate");
+                System.out.println("    --mini-batch-size");
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
-                System.out.println("    --mini-batch-size");
                 System.out.println("    --steps-per-iteration");
                 System.out.println("    --max-iterations");
                 System.out.println("    --save-policy-interval");
@@ -387,15 +377,30 @@ public class RLlibHelper {
             } else if ("--random-seed".equals(args[i])) {
                 helper.randomSeed(Long.parseLong(args[++i]));
             } else if ("--gamma".equals(args[i])) {
-                helper.gamma(Double.parseDouble(args[++i]));
+                String[] strings = args[++i].split(",");
+                double[] doubles = new double[strings.length];
+                for (int j = 0; j < doubles.length; j++) {
+                    doubles[j] = Double.parseDouble(strings[j]);
+                }
+                helper.gammas(doubles);
             } else if ("--learning-rate".equals(args[i])) {
-                helper.learningRate(Double.parseDouble(args[++i]));
+                String[] strings = args[++i].split(",");
+                double[] doubles = new double[strings.length];
+                for (int j = 0; j < doubles.length; j++) {
+                    doubles[j] = Double.parseDouble(strings[j]);
+                }
+                helper.learningRates(doubles);
+            } else if ("--mini-batch-size".equals(args[i])) {
+                String[] strings = args[++i].split(",");
+                int[] ints = new int[strings.length];
+                for (int j = 0; j < ints.length; j++) {
+                    ints[j] = Integer.parseInt(strings[j]);
+                }
+                helper.miniBatchSizes(ints);
             } else if ("--num-hidden-layers".equals(args[i])) {
                 helper.numHiddenLayers(Integer.parseInt(args[++i]));
             } else if ("--num-hidden-nodes".equals(args[i])) {
                 helper.numHiddenNodes(Integer.parseInt(args[++i]));
-            } else if ("--mini-batch-size".equals(args[i])) {
-                helper.miniBatchSize(Integer.parseInt(args[++i]));
             } else if ("--steps-per-iteration".equals(args[i])) {
                 helper.stepsPerIteration(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
