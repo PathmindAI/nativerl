@@ -18,6 +18,9 @@ public class AnyLogicHelper {
     String classSnippet = "";
     String resetSnippet = "";
     String rewardSnippet = "";
+    String metricsSnippet = "";
+    String policyHelper = null;
+    int testIterations = 10;
 
     String environmentClassName() {
         return environmentClassName;
@@ -107,6 +110,30 @@ public class AnyLogicHelper {
         return this;
     }
 
+    String metricsSnippet() {
+        return metricsSnippet;
+    }
+    AnyLogicHelper metricsSnippet(String metricsSnippet) {
+        this.metricsSnippet = metricsSnippet;
+        return this;
+    }
+
+    String policyHelper() {
+        return policyHelper;
+    }
+    AnyLogicHelper policyHelper(String policyHelper) {
+        this.policyHelper = policyHelper;
+        return this;
+    }
+
+    int testIterations() {
+        return testIterations;
+    }
+    AnyLogicHelper testIterations(int testIterations) {
+        this.testIterations = testIterations;
+        return this;
+    }
+
     public void generateEnvironment(File file) throws IOException {
         File directory = file.getParentFile();
         if (directory != null) {
@@ -123,18 +150,29 @@ public class AnyLogicHelper {
         String env = (packageName != null ? "package " + packageName + ";\n" : "")
             + "import ai.skymind.nativerl.*;\n"
             + "import com.anylogic.engine.*;\n"
+            + "import java.io.File;\n"
+            + "import java.nio.charset.Charset;\n"
+            + "import java.nio.file.Files;\n"
+            + "import java.nio.file.Paths;\n"
+            + "import java.util.ArrayList;\n"
             + "import java.util.Arrays;\n"
             + "\n"
             + "public class " + className + " extends AbstractEnvironment {\n"
             + "    final static Training experiment = new Training(null);\n"
             + "    protected Engine engine;\n"
             + "    protected " + agentClassName + " agent;\n"
+            + "    protected PolicyHelper policyHelper;\n"
             + "\n"
             + classSnippet
             + "\n"
             + "    public " + className + "() {\n"
             + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
             + "        System.setProperty(\"ai.skymind.nativerl.disablePolicyHelper\", \"true\");\n"
+            + "    }\n"
+            + "\n"
+            + "    public " + className + "(PolicyHelper policyHelper) {\n"
+            + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
+            + "        this.policyHelper = policyHelper;\n"
             + "    }\n"
             + "\n"
             + "    @Override public void close() {\n"
@@ -173,6 +211,7 @@ public class AnyLogicHelper {
             + "        // Create new agent object:\n"
             + "        agent = new " + agentClassName + "(engine, null, null);\n"
             + "        agent.setParametersToDefaultValues();\n"
+            + "        agent.policyHelper = policyHelper;\n"
             + "\n"
             + resetSnippet
             + "\n"
@@ -180,6 +219,7 @@ public class AnyLogicHelper {
             + "    }\n"
             + "\n"
             + "    @Override public float step(long action) {\n"
+            + "        double reward = 0;\n"
             + "        double[] state0 = agent.getObservation(true);\n"
             + "        agent.doAction((int)action);\n"
             + "        engine.runFast(agent.time() + " + stepTime + ");\n"
@@ -188,6 +228,28 @@ public class AnyLogicHelper {
             + rewardSnippet
             + "\n"
             + "        return (float)reward;\n"
+            + "    }\n"
+            + "\n"
+            + "    public double[] test() {\n"
+            + "        double[] metrics = null;\n"
+            + "        reset();\n"
+            + "        while (!isDone()) {\n"
+            + "            engine.runFast(agent.time() + " + stepTime + ");\n"
+            + "        }\n"
+            + "\n"
+            + metricsSnippet
+            + "\n"
+            + "        return metrics;\n"
+            + "    }\n"
+            + "\n"
+            + "    public static void main(String[] args) throws Exception {\n"
+            + (policyHelper != null
+                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0])));\n"
+                    + "        ArrayList<String> lines = new ArrayList<String>(" + testIterations + ");\n"
+                    + "        for (int i = 0; i < " + testIterations + "; i++) {\n"
+                    + "            lines.add(Arrays.toString(e.test()));\n"
+                    + "        }\n" : "")
+                    + "        Files.write(Paths.get(args[0], \"metrics.txt\"), lines, Charset.defaultCharset());\n"
             + "    }\n"
             + "}\n";
         return env;
@@ -207,9 +269,14 @@ public class AnyLogicHelper {
                 System.out.println("    --continuous-actions");
                 System.out.println("    --continuous-observations");
                 System.out.println("    --random-seed");
+                System.out.println("    --step-time");
+                System.out.println("    --stop-time");
                 System.out.println("    --class-snippet");
                 System.out.println("    --reset-snippet");
                 System.out.println("    --reward-snippet");
+                System.out.println("    --metrics-snippet");
+                System.out.println("    --policy-helper");
+                System.out.println("    --test-iterations");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
                 helper.environmentClassName(args[++i]);
@@ -233,6 +300,12 @@ public class AnyLogicHelper {
                 helper.resetSnippet(args[++i]);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
+            } else if ("--metrics-snippet".equals(args[i])) {
+                helper.metricsSnippet(args[++i]);
+            } else if ("--policy-helper".equals(args[i])) {
+                helper.policyHelper(args[++i]);
+            } else if ("--test-iterations".equals(args[i])) {
+                helper.testIterations(Integer.parseInt(args[++i]));
             } else {
                 output = new File(args[i]);
             }

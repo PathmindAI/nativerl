@@ -105,6 +105,7 @@ public class RLlibHelper {
 
     File[] rllibpaths = null;
     String algorithm = "PPO";
+    File outputDir = null;
     File checkpoint = null;
     Environment environment = null;
     int numGPUs = 0;
@@ -141,6 +142,18 @@ public class RLlibHelper {
     }
     RLlibHelper algorithm(String algorithm) {
         this.algorithm = algorithm;
+        return this;
+    }
+
+    File outputDir() {
+        return outputDir;
+    }
+    RLlibHelper outputDir(File outputDir) {
+        this.outputDir = outputDir;
+        return this;
+    }
+    RLlibHelper outputDir(String outputDir) {
+        this.outputDir = new File(outputDir);
         return this;
     }
 
@@ -330,7 +343,8 @@ public class RLlibHelper {
             + "        'model': model,\n"
             + "        'train_batch_size': " + stepsPerIteration + ",\n"
             + "    },\n"
-            + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "')\n" : "")
+            + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
+            + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
             + "    checkpoint_freq=" + savePolicyInterval + ",\n"
             + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n";
@@ -366,6 +380,8 @@ public class RLlibHelper {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
             } else if ("--algorithm".equals(args[i])) {
                 helper.algorithm(args[++i]);
+            } else if ("--output-dir".equals(args[i])) {
+                helper.outputDir(args[++i]);
             } else if ("--checkpoint".equals(args[i])) {
                 helper.checkpoint(args[++i]);
             } else if ("--environment".equals(args[i])) {
