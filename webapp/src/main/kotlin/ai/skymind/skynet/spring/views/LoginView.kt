@@ -20,7 +20,7 @@ class LoginView(
 
 
         val login = LoginOverlay().apply {
-            setTitle("Skymind Seeker")
+            setTitle("Pathmind")
             description = "Reinforcement Learning in the Cloud"
             isOpened = true
             addLoginListener {
