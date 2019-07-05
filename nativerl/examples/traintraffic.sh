@@ -56,6 +56,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers 4 \
     --random-seed 42 \
+    --max-reward-mean 100 \
     rllibtrain.py
 
 python3 rllibtrain.py

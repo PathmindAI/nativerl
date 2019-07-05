@@ -118,6 +118,7 @@ public class RLlibHelper {
     int numHiddenNodes = 256;
     int stepsPerIteration = 4000;
     int maxIterations = 500;
+    double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
 
@@ -257,6 +258,14 @@ public class RLlibHelper {
         return this;
     }
 
+    double maxRewardMean() {
+        return maxRewardMean;
+    }
+    RLlibHelper maxRewardMean(double maxRewardMean) {
+        this.maxRewardMean = maxRewardMean;
+        return this;
+    }
+
     int savePolicyInterval() {
         return savePolicyInterval;
     }
@@ -332,7 +341,10 @@ public class RLlibHelper {
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
             + "ray.tune.run(\n"
             + "    '" + algorithm + "',\n"
-            + "    stop={'training_iteration': " + maxIterations + "},\n"
+            + "    stop={\n"
+            + "         'training_iteration': " + maxIterations + ",\n"
+            + (Double.isFinite(maxRewardMean) ? "         'episode_reward_mean': " + maxRewardMean + ",\n" : "")
+            + "    },\n"
             + "    config={\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': " + numGPUs + ",\n"
@@ -373,6 +385,7 @@ public class RLlibHelper {
                 System.out.println("    --num-hidden-nodes");
                 System.out.println("    --steps-per-iteration");
                 System.out.println("    --max-iterations");
+                System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.exit(0);
@@ -421,6 +434,8 @@ public class RLlibHelper {
                 helper.stepsPerIteration(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
                 helper.maxIterations(Integer.parseInt(args[++i]));
+            } else if ("--max-reward-mean".equals(args[i])) {
+                helper.maxRewardMean(Double.parseDouble(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {
                 helper.savePolicyInterval(Integer.parseInt(args[++i]));
             } else if ("--redis-address".equals(args[i])) {
