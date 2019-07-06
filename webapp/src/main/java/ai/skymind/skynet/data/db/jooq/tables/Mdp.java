@@ -31,7 +31,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Mdp extends TableImpl<MdpRecord> {
 
-    private static final long serialVersionUID = 2005059808;
+    private static final long serialVersionUID = -72043095;
 
     /**
      * The reference instance of <code>public.mdp</code>
@@ -67,9 +67,9 @@ public class Mdp extends TableImpl<MdpRecord> {
     public final TableField<MdpRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
-     * The column <code>public.mdp.code</code>.
+     * The column <code>public.mdp.reward</code>.
      */
-    public final TableField<MdpRecord, String> CODE = createField("code", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
+    public final TableField<MdpRecord, String> REWARD = createField("reward", org.jooq.impl.SQLDataType.VARCHAR.nullable(false), this, "");
 
     /**
      * The column <code>public.mdp.verified</code>.
@@ -85,6 +85,36 @@ public class Mdp extends TableImpl<MdpRecord> {
      * The column <code>public.mdp.updated_at</code>.
      */
     public final TableField<MdpRecord, Timestamp> UPDATED_AT = createField("updated_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+
+    /**
+     * The column <code>public.mdp.imports</code>.
+     */
+    public final TableField<MdpRecord, String> IMPORTS = createField("imports", org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.mdp.variables</code>.
+     */
+    public final TableField<MdpRecord, String> VARIABLES = createField("variables", org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.mdp.reset</code>.
+     */
+    public final TableField<MdpRecord, String> RESET = createField("reset", org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.mdp.metrics</code>.
+     */
+    public final TableField<MdpRecord, String> METRICS = createField("metrics", org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("''::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.mdp.observation_space_size</code>.
+     */
+    public final TableField<MdpRecord, Integer> OBSERVATION_SPACE_SIZE = createField("observation_space_size", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.mdp.action_space_size</code>.
+     */
+    public final TableField<MdpRecord, Integer> ACTION_SPACE_SIZE = createField("action_space_size", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>public.mdp</code> table reference

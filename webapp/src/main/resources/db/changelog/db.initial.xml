@@ -159,4 +159,29 @@
             <column name="external_job_id" type="VARCHAR" remarks="The job id as returned by rescale api"/>
         </addColumn>
     </changeSet>
+    <changeSet id="20190706" author="pdubs">
+        <delete tableName="run" />
+        <delete tableName="mdp" />
+        <renameColumn tableName="mdp" oldColumnName="code" newColumnName="reward" />
+        <addColumn tableName="mdp">
+            <column name="imports" type="NVARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="variables" type="NVARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reset" type="NVARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="metrics" type="NVARCHAR" defaultValue="">
+                <constraints nullable="false"/>
+            </column>
+            <column name="observation_space_size" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="action_space_size" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
