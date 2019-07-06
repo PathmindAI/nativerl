@@ -25,11 +25,10 @@ class MdpRepository(
             name = "Initial MDP"
             userId = ownerId
             setModelId(modelId)
-            code = resourceLoader.getResource("classpath:/files/mdp-template.java").inputStream.reader().readText()
         }
 
         mdp.attach(ctx.configuration())
-        mdp.insert()
+        //mdp.insert()
         return mdp
     }
 }

@@ -160,7 +160,7 @@ new MDP<Encodable, Integer, DiscreteSpace>() {
         }
         val mdp = MdpRecord().apply {
             id = 8
-            code = mdpCode
+            //code = mdpCode
         }
         val rlConfig = RLConfig("PhasePolicy.zip", env, model, mdp)
 
