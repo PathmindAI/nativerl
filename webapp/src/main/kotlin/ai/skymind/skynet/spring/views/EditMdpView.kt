@@ -11,12 +11,14 @@ import com.juicy.theme.JuicyAceTheme
 import com.vaadin.flow.component.Component
 import com.vaadin.flow.component.HasValue
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.H3
 import com.vaadin.flow.component.html.Span
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.textfield.TextField
 import com.vaadin.flow.router.BeforeEvent
 import com.vaadin.flow.router.HasUrlParameter
 import com.vaadin.flow.router.Route
@@ -27,16 +29,24 @@ class EditMdpView(
         val userSession: UserSession,
         val executionService: ExecutionService
 ) : VerticalLayout(), HasUrlParameter<Int> {
-    var rewardEditor = JuicyAceEditor()
-    var importsEditor = JuicyAceEditor()
-    var variablesEditor = JuicyAceEditor()
-    var resetEditor = JuicyAceEditor()
-    var metricsEditor = JuicyAceEditor()
+    val rewardEditor = JuicyAceEditor()
+    val importsEditor = JuicyAceEditor()
+    val variablesEditor = JuicyAceEditor()
+    val resetEditor = JuicyAceEditor()
+    val metricsEditor = JuicyAceEditor()
+    val title = H2("ExperimentName")
+    val observationSpace = TextField { e -> mdp?.let { it.observationSpaceSize = e.value.toInt() } }
+    val actionSpace = TextField { e -> mdp?.let { it.actionSpaceSize = e.value.toInt() } }
 
     var mdp: MdpRecord? by Delegates.observable(null as MdpRecord?) { property, oldValue, newValue ->
         newValue?.let {
             // This only sets the editor value when the mdp record **itself** changes. Not when any one of its properties
             // does change
+            title.text = userSession.model(it.modelId)?.name
+
+            observationSpace.value = it.observationSpaceSize?.toString() ?: ""
+            actionSpace.value = it.actionSpaceSize?.toString() ?: ""
+
             rewardEditor.value = it.reward
             importsEditor.value = it.imports
             variablesEditor.value = it.variables
@@ -46,7 +56,7 @@ class EditMdpView(
     }
 
     init {
-        add(H2("ExperimentName"))
+        add(title)
         add(HorizontalLayout(
                 Button("Save").apply {
                     addClickListener {
@@ -65,6 +75,11 @@ class EditMdpView(
                 }
         ))
 
+        add(H2("Basic Options"))
+        add(FormLayout().apply {
+            addFormItem(observationSpace, "Observations Count")
+            addFormItem(actionSpace, "Possible Actions Count")
+        })
 
         val rewardDescription = "This is where you enter the code for your reward function. You have the following variables available: agent (your Main Agent), before and after. The variables before and after are the result of calling your getObservation function before and after your doAction function was called. You have to assign the reward to the reward variable. \n\nFor example: \n\n reward = before[0] - after[0];"
         add(createEditor("Reward Function", rewardDescription, rewardEditor){e, mdp -> mdp.reward = e.value })

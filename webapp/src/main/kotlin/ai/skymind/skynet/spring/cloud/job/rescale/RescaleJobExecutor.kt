@@ -22,7 +22,8 @@ class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
             append("mkdir \$MODEL_PACKAGE;")
             append("echo \"package \$MODEL_PACKAGE;\" > \$MODEL_PACKAGE/NewTraining.java;")
             append("cat << EOF >> \$MODEL_PACKAGE/NewTraining.java\n${rlConfig.toTrainingFile()}\nEOF\n")
-            append("javac -cp \$CLASSPATH \$MODEL_PACKAGE/NewTraining.java &> compile.out.txt;")
+            //append("javac -cp \$CLASSPATH \$MODEL_PACKAGE/NewTraining.java &> compile.out.txt;")
+            append("javac -cp \$CLASSPATH \$MODEL_PACKAGE/NewTraining.java;")
         }.toString()
 
         val run = "java -cp \$CLASSPATH:. \$MODEL_PACKAGE.NewTraining; "

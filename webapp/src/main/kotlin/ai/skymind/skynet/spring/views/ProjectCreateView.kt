@@ -41,7 +41,7 @@ class ProjectCreateView(
                         Notification.show("Uploading Model...")
                         fileBuffer.getFiles().forEach{
                             val path = Files.createTempDirectory("pathmind-upload")
-                            val file = path.resolve(it).toFile()
+                            val file = path.resolve("model.zip").toFile()
                             val target = file.outputStream()
                             fileBuffer.getInputStream(it).copyTo(target)
                             target.close()

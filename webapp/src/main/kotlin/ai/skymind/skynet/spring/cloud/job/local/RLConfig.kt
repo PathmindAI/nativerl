@@ -34,13 +34,119 @@ import org.deeplearning4j.rl4j.util.DataManager;
 import org.json.JSONObject;
 import org.nd4j.linalg.learning.config.RmsProp;
 
+${mdp.imports ?: ""}
+
 public class NewTraining extends ExperimentCustom {
+    public class AnylogicToRLAdapter {
+      ${mdp.variables  ?: ""}
+    
+      public ObservationSpace<Encodable> getObservationSpace(){
+        ObservationSpace<Encodable> space = new ArrayObservationSpace<>(new int[] {${mdp.observationSpaceSize}});
+        return space;
+      }
+      
+      public DiscreteSpace getActionSpace(){
+        DiscreteSpace space = new DiscreteSpace(${mdp.actionSpaceSize});
+        return space;
+      }
+      
+      public void reset(Main agent){
+        ${mdp.reset  ?: ""}
+      }
+      
+      
+      public double reward(Main agent, double[] before, double[] after) {
+        double reward = 0;
+        ${mdp.reward  ?: ""}
+        return reward;
+      }
+      
+      public double[] metrics(Main agent){
+        double[] metrics = null;
+        ${mdp.metrics  ?: ""}
+        return metrics;
+      }
+    
+    }
+
     public NewTraining() {
         super(null);
     }
 
     public MDP getMDP(){
-     return TODO
+     return new MDP<Encodable, Integer, DiscreteSpace>() {
+            Engine engine;
+            Main root;
+            
+            AnylogicToRLAdapter adapter = new AnylogicToRLAdapter();
+        
+            public ObservationSpace<Encodable> getObservationSpace() {
+                return adapter.getObservationSpace();
+            }
+        
+            public DiscreteSpace getActionSpace() {
+                return adapter.getActionSpace();
+            }
+        
+            public Encodable getObservation() {
+                return new Encodable() {
+                    double[] a = root.getObservation();
+        
+                    public double[] toArray() {
+                        return a;
+                    }
+                };
+            }
+        
+            public Encodable reset() {      
+                if (engine != null) {
+                    engine.stop();
+                }
+                // Create Engine, initialize random number generator:
+                engine = createEngine();
+                // Fixed seed (reproducible simulation runs)
+                engine.getDefaultRandomGenerator().setSeed(1);
+                // Selection mode for simultaneous events:
+                engine.setSimultaneousEventsSelectionMode(Engine.EVENT_SELECTION_LIFO);
+                // Create new root object:
+                root = new Main(engine, null, null);
+                // TODO Setup parameters of root object here
+                root.setParametersToDefaultValues();
+        
+                adapter.reset(root);
+        
+                // Prepare Engine for simulation:
+                engine.start(root);
+        
+        
+                return getObservation();
+            }
+        
+            public void close() {
+                // Destroy the model:
+                engine.stop();
+            }
+        
+            public StepReply<Encodable> step(Integer action) {
+                double[] s0 = root.getObservation();
+                
+                root.doAction(action);
+                engine.runFast(root.time() + 10);
+                double[] s1 = root.getObservation();
+               
+                double reward = adapter.reward(root, s0, s1);
+                
+                return new StepReply(getObservation(), reward, isDone(), null);
+            }
+        
+            public boolean isDone() {
+                return false;
+            }
+        
+            public MDP<Encodable, Integer, DiscreteSpace> newInstance() {
+                return null; // not required for DQN
+            }
+        };
     }
 
     public void run() {
