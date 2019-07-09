@@ -143,7 +143,7 @@ public class NewTraining extends ExperimentCustom {
                 double[] s0 = root.getObservation();
                 
                 root.doAction(action);
-                engine.runFast(root.time() + ${model.stepSize});
+                engine.runFast(root.time() + ${timeUnit()}.convertTo(${model.stepSize}, com.anylogic.engine.TimeUnits.SECOND));
                 double[] s1 = root.getObservation();
                
                 double reward = adapter.reward(root, s0, s1);
