@@ -47,6 +47,24 @@ scl enable devtoolset-7 rh-maven35 bash
 mvn clean package -Djavacpp.platform=linux-x86_64
 ```
 
+We can also package the Anaconda environment this way:
+
+```
+conda install -c conda-forge conda-pack
+conda pack -o rllibpack.tar.gz
+```
+
+Once this is done, we can take all those archives and extract them on another machine ready for execution:
+
+```
+cd /path/to/rllibpack/
+tar --totals -xf /path/to/rllibpack.tar.gz
+source bin/activate
+
+cd /path/to/anylogic_model/
+unzip -j nativerl-1.0.0-SNAPSHOT-bin.zip
+```
+
 
 Example Using RLlib for Traffic Light Phases
 --------------------------------------------
@@ -115,7 +133,7 @@ Example Using RLlib for Traffic Light Phases
     ```java
     if (policyHelper == null && usePolicy && !PolicyHelper.disablePolicyHelper) {
         try {
-            policyHelper = new RLlibPolicyHelper(new File("/path/to/policy_XXX"));
+            policyHelper = new RLlibPolicyHelper(new File("/path/to/model/"));
         } catch (IOException e) {
             traceln(e);
         }
