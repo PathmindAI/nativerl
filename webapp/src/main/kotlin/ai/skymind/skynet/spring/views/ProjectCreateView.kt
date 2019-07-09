@@ -4,6 +4,7 @@ import ai.skymind.skynet.spring.views.layouts.MainLayout
 import ai.skymind.skynet.spring.views.state.UserSession
 import ai.skymind.skynet.spring.views.upload.MultiFileBuffer
 import com.vaadin.flow.component.button.Button
+import com.vaadin.flow.component.combobox.ComboBox
 import com.vaadin.flow.component.formlayout.FormLayout
 import com.vaadin.flow.component.html.H2
 import com.vaadin.flow.component.html.Span
@@ -21,12 +22,18 @@ class ProjectCreateView(
         val userSession: UserSession
 ) : VerticalLayout() {
     val projectName = TextField()
+    val projectTimeUnit = ComboBox("Model time units", listOf("milliseconds", "seconds", "minutes", "hours", "days", "weeks", "months", "years")).apply {
+        value = "minutes"
+    }
+    val projectStepSize = TextField().apply { value = "1" }
     val fileBuffer = MultiFileBuffer()
 
     init {
         add(H2("Create Project"))
         add(FormLayout().apply {
             addFormItem(projectName, "Project Name")
+            addFormItem(projectTimeUnit, "Model Time Units")
+            addFormItem(projectStepSize, "Step Size") // TODO: Add explanation
         })
         add(Upload(fileBuffer).apply {
             dropLabel = Span("Drag exported Model as Zip File here")
@@ -45,7 +52,7 @@ class ProjectCreateView(
                             val target = file.outputStream()
                             fileBuffer.getInputStream(it).copyTo(target)
                             target.close()
-                            userSession.addProject(projectName.value, file)
+                            userSession.addProject(projectName.value, file, projectTimeUnit.value, projectStepSize.value.toInt())
                             path.toFile().deleteRecursively()
                         }
                         ui.ifPresent { it.navigate(ProjectListView::class.java) }

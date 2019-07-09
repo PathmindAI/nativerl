@@ -31,7 +31,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Model extends TableImpl<ModelRecord> {
 
-    private static final long serialVersionUID = 106030040;
+    private static final long serialVersionUID = 1408191394;
 
     /**
      * The reference instance of <code>public.model</code>
@@ -75,6 +75,16 @@ public class Model extends TableImpl<ModelRecord> {
      * The column <code>public.model.created_at</code>.
      */
     public final TableField<ModelRecord, Timestamp> CREATED_AT = createField("created_at", org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false).defaultValue(org.jooq.impl.DSL.field("now()", org.jooq.impl.SQLDataType.TIMESTAMP)), this, "");
+
+    /**
+     * The column <code>public.model.time_unit</code>.
+     */
+    public final TableField<ModelRecord, String> TIME_UNIT = createField("time_unit", org.jooq.impl.SQLDataType.VARCHAR.nullable(false).defaultValue(org.jooq.impl.DSL.field("'minutes'::character varying", org.jooq.impl.SQLDataType.VARCHAR)), this, "");
+
+    /**
+     * The column <code>public.model.step_size</code>.
+     */
+    public final TableField<ModelRecord, Integer> STEP_SIZE = createField("step_size", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.model</code> table reference

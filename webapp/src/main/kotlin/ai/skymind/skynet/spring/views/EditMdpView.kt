@@ -37,6 +37,12 @@ class EditMdpView(
     val title = H2("ExperimentName")
     val observationSpace = TextField { e -> mdp?.let { it.observationSpaceSize = e.value.toInt() } }
     val actionSpace = TextField { e -> mdp?.let { it.actionSpaceSize = e.value.toInt() } }
+    val epochs = TextField { e -> mdp?.let { it.epochs = e.value.toInt() } }
+    val simulationStepsLength = TextField { e -> mdp?.let { it.simulationStepsLength = e.value.toInt() } }
+    val batchSize = TextField { e -> mdp?.let { it.batchSize = e.value.toInt() } }
+    val experienceReplaySteps = TextField { e -> mdp?.let { it.experienceReplaySteps = e.value.toInt() } }
+    val stepsPerUpdate = TextField { e -> mdp?.let { it.stepsPerUpdate = e.value.toInt() } }
+    val warmupSteps = TextField { e -> mdp?.let { it.warmupSteps = e.value.toInt() } }
 
     var mdp: MdpRecord? by Delegates.observable(null as MdpRecord?) { property, oldValue, newValue ->
         newValue?.let {
@@ -46,6 +52,12 @@ class EditMdpView(
 
             observationSpace.value = it.observationSpaceSize?.toString() ?: ""
             actionSpace.value = it.actionSpaceSize?.toString() ?: ""
+            epochs.value = it.epochs?.toString() ?: ""
+            simulationStepsLength.value  = it.simulationStepsLength?.toString() ?: ""
+            batchSize.value = it.batchSize?.toString() ?: ""
+            experienceReplaySteps.value = it.experienceReplaySteps?.toString() ?: ""
+            stepsPerUpdate.value = it.stepsPerUpdate?.toString() ?: ""
+            warmupSteps.value = it.warmupSteps?.toString() ?: ""
 
             rewardEditor.value = it.reward
             importsEditor.value = it.imports
@@ -85,6 +97,16 @@ class EditMdpView(
         add(createEditor("Reward Function", rewardDescription, rewardEditor){e, mdp -> mdp.reward = e.value })
 
         add(H2("Advanced Options"))
+        add(FormLayout().apply {
+            addFormItem(epochs, "Epochs")
+            addFormItem(simulationStepsLength, "Simulation Steps Count")
+            addFormItem(batchSize, "Batch Size")
+            addFormItem(experienceReplaySteps, "Experience Replay Steps")
+            addFormItem(stepsPerUpdate, "Steps per Update")
+            addFormItem(warmupSteps, "Warm up Steps")
+        })
+
+
 
         val importsDescription = "If you need any additional classes in the functions you define here, you can import them here"
         add(createEditor("Imports", importsDescription, importsEditor){e, mdp -> mdp.imports = e.value })

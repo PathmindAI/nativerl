@@ -9,6 +9,18 @@ data class RLConfig(
         val model: ModelRecord,
         val mdp: MdpRecord
 ){
+    fun timeUnit() = "com.anylogic.engine.TimeUnits." + when(model.timeUnit){
+        "milliseconds" -> "MILLISECOND"
+        "seconds" -> "SECOND"
+        "minutes" -> "MINUTE"
+        "hours" -> "HOUR"
+        "days" -> "DAY"
+        "weeks" -> "WEEK"
+        "months" -> "MONTH"
+        "years" -> "YEAR"
+        else -> throw IllegalArgumentException("${model.timeUnit} is an Invalid Time Unit")
+    }
+
     fun toTrainingFile() = """
 
 import com.anylogic.engine.Agent;
@@ -32,7 +44,7 @@ import org.deeplearning4j.rl4j.space.Encodable;
 import org.deeplearning4j.rl4j.space.ObservationSpace;
 import org.deeplearning4j.rl4j.util.DataManager;
 import org.json.JSONObject;
-import org.nd4j.linalg.learning.config.RmsProp;
+import org.nd4j.linalg.learning.config.AdaDelta;
 
 ${mdp.imports ?: ""}
 
@@ -131,7 +143,7 @@ public class NewTraining extends ExperimentCustom {
                 double[] s0 = root.getObservation();
                 
                 root.doAction(action);
-                engine.runFast(root.time() + 10);
+                engine.runFast(root.time() + ${model.stepSize});
                 double[] s1 = root.getObservation();
                
                 double reward = adapter.reward(root, s0, s1);
@@ -154,8 +166,8 @@ public class NewTraining extends ExperimentCustom {
 
         try {
             DataManager manager = new DataManager(true);
-            QLConfiguration AL_QL = new QLConfiguration(1, 2880, 288000, 288000, 128, 500, 10, 0.1D, 0.99D, 1.0D, 0.1F, 1000, true);
-            Configuration AL_NET = Configuration.builder().l2(0.0D).updater(new RmsProp(0.001D)).numHiddenNodes(300).numLayer(2).build();
+            QLConfiguration AL_QL = new QLConfiguration(1, ${mdp.simulationStepsLength}, ${mdp.simulationStepsLength * mdp.epochs}, ${mdp.experienceReplaySteps}, ${mdp.batchSize}, ${mdp.stepsPerUpdate}, ${mdp.warmupSteps}, 0.1D, 0.99D, 1.0D, 0.1F, 1000, true);
+            Configuration AL_NET = Configuration.builder().l2(0.0D).updater(new AdaDelta()).numHiddenNodes(300).numLayer(2).build();
             QLearningDiscreteDense<Encodable> dql = new QLearningDiscreteDense(mdp, AL_NET, AL_QL, manager);
             dql.train();
             DQNPolicy<Encodable> pol = dql.getPolicy();
@@ -168,6 +180,7 @@ public class NewTraining extends ExperimentCustom {
     }
 
     public void setupEngine_xjal(Engine engine) {
+        engine.setTimeUnit( ${timeUnit()} );
         engine.setVMethods(427313);
         engine.setTimeUnit(AgentConstants.SECOND);
     }

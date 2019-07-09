@@ -31,7 +31,7 @@ import java.util.List;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Mdp extends TableImpl<MdpRecord> {
 
-    private static final long serialVersionUID = -72043095;
+    private static final long serialVersionUID = -1116073218;
 
     /**
      * The reference instance of <code>public.mdp</code>
@@ -115,6 +115,36 @@ public class Mdp extends TableImpl<MdpRecord> {
      * The column <code>public.mdp.action_space_size</code>.
      */
     public final TableField<MdpRecord, Integer> ACTION_SPACE_SIZE = createField("action_space_size", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+
+    /**
+     * The column <code>public.mdp.epochs</code>.
+     */
+    public final TableField<MdpRecord, Integer> EPOCHS = createField("epochs", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("100", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.mdp.simulation_steps_length</code>.
+     */
+    public final TableField<MdpRecord, Integer> SIMULATION_STEPS_LENGTH = createField("simulation_steps_length", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("2880", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.mdp.batch_size</code>.
+     */
+    public final TableField<MdpRecord, Integer> BATCH_SIZE = createField("batch_size", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("128", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.mdp.experience_replay_steps</code>.
+     */
+    public final TableField<MdpRecord, Integer> EXPERIENCE_REPLAY_STEPS = createField("experience_replay_steps", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("288000", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.mdp.steps_per_update</code>.
+     */
+    public final TableField<MdpRecord, Integer> STEPS_PER_UPDATE = createField("steps_per_update", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("500", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>public.mdp.warmup_steps</code>.
+     */
+    public final TableField<MdpRecord, Integer> WARMUP_STEPS = createField("warmup_steps", org.jooq.impl.SQLDataType.INTEGER.nullable(false).defaultValue(org.jooq.impl.DSL.field("10", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>public.mdp</code> table reference

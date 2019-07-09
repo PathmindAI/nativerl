@@ -184,4 +184,47 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="20190709" author="pdubs">
+        <addColumn tableName="model">
+            <column name="timeUnit" type="NVARCHAR" defaultValue="minutes">
+                <constraints nullable="false" />
+            </column>
+            <column name="stepSize" type="INTEGER" defaultValue="1">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="20190709-2" author="pdubs">
+       <renameColumn tableName="model" oldColumnName="timeUnit" newColumnName="time_unit" />
+       <renameColumn tableName="model" oldColumnName="stepSize" newColumnName="step_size" />
+    </changeSet>
+    <changeSet id="20190709-3" author="pdubs">
+        <addColumn tableName="mdp">
+            <column name="epochs" defaultValue="100" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="simulation_steps_length" defaultValue="2880" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="batch_size" defaultValue="128" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="experience_replay_steps" defaultValue="288000" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="steps_per_update" defaultValue="500" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+            <column name="warmup_steps" defaultValue="10" type="INTEGER">
+                <constraints nullable="false" />
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="20190709-4" author="pdubs">
+        <insert tableName="user">
+            <column name="email">pathmind-demo@skymind.io</column>
+            <!-- literally "pathmind-demo-account" -->
+            <column name="password">$2a$10$6DZeSf6T01Z6Y1wQUxtP4.6BOJTU65ALG0HIYoBnGDYsMnidx4JJC</column>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

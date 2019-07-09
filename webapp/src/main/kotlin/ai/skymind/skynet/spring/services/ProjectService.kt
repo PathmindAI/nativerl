@@ -17,7 +17,7 @@ class ProjectService(
     fun find(ownerId: Int, query: String?) = projectRepository.find(ownerId, query)
     fun findAll(ownerId: Int) = projectRepository.findAll(ownerId)
 
-    fun addProject(ownerId: Int, projectName: String, model: File): ProjectRecord {
+    fun addProject(ownerId: Int, projectName: String, model: File, modelTimeUnit: String, modelStepSize: Int): ProjectRecord {
         val project = Tables.PROJECT.newRecord().apply {
             name = projectName
             userId = ownerId
@@ -31,6 +31,8 @@ class ProjectService(
             userId = ownerId
             projectId = project.id
             fileId = modelFileId
+            timeUnit = modelTimeUnit
+            stepSize = modelStepSize
         }.let {
             modelRepository.add(it)
         }

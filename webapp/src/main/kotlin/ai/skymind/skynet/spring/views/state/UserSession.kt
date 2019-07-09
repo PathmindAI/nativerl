@@ -38,7 +38,7 @@ class UserSession(
     fun project(projectId: Int?) = withUser { projectService.findById(it.id, projectId)}
     fun projects() = withUser { projectService.findAll(it.id) }
     fun findProject(query: String) = withUser { projectService.find(it.id, query) }
-    fun addProject(name: String, model: File) = withUser{ projectService.addProject(it.id, name, model) }
+    fun addProject(name: String, model: File, timeUnit: String, stepSize: Int) = withUser{ projectService.addProject(it.id, name, model, timeUnit, stepSize) }
 
 
     fun experiments(): Any = TODO()
