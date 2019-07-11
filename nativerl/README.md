@@ -60,6 +60,7 @@ Once this is done, we can take all those archives and extract them on another ma
 cd /path/to/rllibpack/
 tar --totals -xf /path/to/rllibpack.tar.gz
 source bin/activate
+conda-unpack
 
 cd /path/to/anylogic_model/
 unzip -j nativerl-1.0.0-SNAPSHOT-bin.zip
