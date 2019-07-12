@@ -2,6 +2,8 @@ package ai.skymind.nativerl;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.util.Arrays;
 
@@ -22,115 +24,134 @@ public class AnyLogicHelper {
     String policyHelper = null;
     int testIterations = 10;
 
-    String environmentClassName() {
+    public String environmentClassName() {
         return environmentClassName;
     }
-    AnyLogicHelper environmentClassName(String environmentClassName) {
+    public AnyLogicHelper environmentClassName(String environmentClassName) {
         this.environmentClassName = environmentClassName;
         return this;
     }
 
-    String agentClassName() {
+    public String agentClassName() {
         return agentClassName;
     }
-    AnyLogicHelper agentClassName(String agentClassName) {
+    public AnyLogicHelper agentClassName(String agentClassName) {
         this.agentClassName = agentClassName;
         return this;
     }
 
-    long discreteActions() {
+    public long discreteActions() {
         return discreteActions;
     }
-    AnyLogicHelper discreteActions(long discreteActions) {
+    public AnyLogicHelper discreteActions(long discreteActions) {
         this.discreteActions = discreteActions;
         return this;
     }
 
-    long continuousActions() {
+    public long continuousActions() {
         return continuousActions;
     }
-    AnyLogicHelper continuousActions(long continuousActions) {
+    public AnyLogicHelper continuousActions(long continuousActions) {
         this.continuousActions = continuousActions;
         return this;
     }
 
-    long continuousObservations() {
+    public long continuousObservations() {
         return continuousObservations;
     }
-    AnyLogicHelper continuousObservations(long continuousObservations) {
+    public AnyLogicHelper continuousObservations(long continuousObservations) {
         this.continuousObservations = continuousObservations;
         return this;
     }
 
-    long randomSeed() {
+    public long randomSeed() {
         return randomSeed;
     }
-    AnyLogicHelper randomSeed(long randomSeed) {
+    public AnyLogicHelper randomSeed(long randomSeed) {
         this.randomSeed = randomSeed;
         return this;
     }
 
-    long stepTime() {
+    public long stepTime() {
         return stepTime;
     }
-    AnyLogicHelper stepTime(long stepTime) {
+    public AnyLogicHelper stepTime(long stepTime) {
         this.stepTime = stepTime;
         return this;
     }
 
-    long stopTime() {
+    public long stopTime() {
         return stopTime;
     }
-    AnyLogicHelper stopTime(long stopTime) {
+    public AnyLogicHelper stopTime(long stopTime) {
         this.stopTime = stopTime;
         return this;
     }
 
-    String classSnippet() {
+    public String classSnippet() {
         return classSnippet;
     }
-    AnyLogicHelper classSnippet(String classSnippet) {
+    public AnyLogicHelper classSnippet(String classSnippet) {
         this.classSnippet = classSnippet;
         return this;
     }
 
-    String resetSnippet() {
+    public String resetSnippet() {
         return resetSnippet;
     }
-    AnyLogicHelper resetSnippet(String resetSnippet) {
+    public AnyLogicHelper resetSnippet(String resetSnippet) {
         this.resetSnippet = resetSnippet;
         return this;
     }
 
-    String rewardSnippet() {
+    public String rewardSnippet() {
         return rewardSnippet;
     }
-    AnyLogicHelper rewardSnippet(String rewardSnippet) {
+    public AnyLogicHelper rewardSnippet(String rewardSnippet) {
         this.rewardSnippet = rewardSnippet;
         return this;
     }
 
-    String metricsSnippet() {
+    public String metricsSnippet() {
         return metricsSnippet;
     }
-    AnyLogicHelper metricsSnippet(String metricsSnippet) {
+    public AnyLogicHelper metricsSnippet(String metricsSnippet) {
         this.metricsSnippet = metricsSnippet;
         return this;
     }
 
-    String policyHelper() {
+    public String policyHelper() {
         return policyHelper;
     }
-    AnyLogicHelper policyHelper(String policyHelper) {
+    public AnyLogicHelper policyHelper(String policyHelper) {
         this.policyHelper = policyHelper;
         return this;
     }
 
-    int testIterations() {
+    public int testIterations() {
         return testIterations;
     }
-    AnyLogicHelper testIterations(int testIterations) {
+    public AnyLogicHelper testIterations(int testIterations) {
         this.testIterations = testIterations;
+        return this;
+    }
+
+    AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
+        int n = agentClassName.lastIndexOf(".");
+        String className = agentClassName.substring(n + 1);
+        String packageName = n > 0 ? agentClassName.substring(0, n) : null;
+
+        Class.forName((packageName != null ? packageName + "." : "") + "Training");
+        Class c = Class.forName(agentClassName);
+        c.getDeclaredMethod("doAction", int.class);
+        Method m = c.getDeclaredMethod("getObservation", boolean.class);
+        if (m.getReturnType() != double[].class) {
+            throw new NoSuchMethodException(m + " must return " + double[].class);
+        }
+        Field f = c.getDeclaredField("policyHelper");
+        if (f.getType() != PolicyHelper.class) {
+            throw new NoSuchMethodException(f + " must be " + PolicyHelper.class);
+        }
         return this;
     }
 
@@ -313,6 +334,6 @@ public class AnyLogicHelper {
         if (output == null) {
             output = new File(helper.environmentClassName.replace('.', '/') + ".java");
         }
-        helper.generateEnvironment(output);
+        helper.checkAgentClass().generateEnvironment(output);
     }
 }
