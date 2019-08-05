@@ -446,6 +446,7 @@ public class RLlibHelper {
             throw new IllegalStateException("Environment is null.");
         }
         String trainer = "import glob, gym, nativerl, numpy, ray, sys, os\n"
+            + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
             + "\n"
             + "jardir = os.getcwd()\n"
@@ -478,7 +479,7 @@ public class RLlibHelper {
             + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
-            + "ray.tune.run(\n"
+            + "trials = ray.tune.run(\n"
             + "    '" + algorithm + "',\n"
             + "    stop={\n"
             + "         'training_iteration': " + maxIterations + ",\n"
@@ -498,7 +499,19 @@ public class RLlibHelper {
             + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
             + "    checkpoint_freq=" + savePolicyInterval + ",\n"
             + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
-            + ")\n";
+            + ")\n"
+            + "\n"
+            + "print('Trials: ', trials)\n"
+            + "\n"
+            + "# Export all checkpoints to TensorFlow SavedModel as well\n"
+            + "cls = get_agent_class('" + algorithm + "')\n"
+            + "agent = cls(env=" + environment.getClass().getSimpleName() + ")\n"
+            + "checkpoints = glob.glob('" + outputDir.getAbsolutePath() + "/**/checkpoint_*/', recursive=True)\n"
+            + "for c in checkpoints:\n"
+            + "    i = c[c.rindex('_') + 1 : -1]\n"
+            + "    agent.restore(c + '/checkpoint-' + i)\n"
+            + "    policy = agent.get_policy()\n"
+            + "    policy.export_model(c + '/model-' + i)\n";
         return trainer;
     }
 

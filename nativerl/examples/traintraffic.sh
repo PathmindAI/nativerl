@@ -61,6 +61,5 @@ java ai.skymind.nativerl.RLlibHelper \
 
 python3 rllibtrain.py
 
-for MODEL in $(find $OUTPUT_DIR -iname model -type d); do
-    java "$ENVIRONMENT_CLASS" "$MODEL"
-end
+# Execute the simulation with all models to get test metrics
+find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
