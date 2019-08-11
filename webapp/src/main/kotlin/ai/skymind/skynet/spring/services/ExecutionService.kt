@@ -17,8 +17,8 @@ class ExecutionService(
 ) {
     fun runMdp(mdp: MdpRecord) {
         val model = modelRepository.findById(mdp.userId, mdp.modelId)
-        val env = Environment(listOf("VNNaQb", "XeGNac")) // jp file ids
-        //val env = Environment(listOf("vbqfEc", "KDiSPc")) // eu file ids
+        val env = Environment(listOf("qBaAAd", "rbOcJd", "LZAENb", "XeGNac"))
+
 
         val rlConfig = RLConfig("PhasePolicy.zip", env, model, mdp)
         val jobId = executor.run(rlConfig)

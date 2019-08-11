@@ -14,7 +14,7 @@ data class RLConfig(
         val model: ModelRecord,
         val mdp: MdpRecord
 ){
-    fun timeUnit() = "com.anylogic.engine.TimeUnits." + when(model.timeUnit){
+    fun timeUnit() = when(model.timeUnit){
         "milliseconds" -> "MILLISECOND"
         "seconds" -> "SECOND"
         "minutes" -> "MINUTE"

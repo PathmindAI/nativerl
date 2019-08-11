@@ -164,9 +164,34 @@ new MDP<Encodable, Integer, DiscreteSpace>() {
         }
         val rlConfig = RLConfig("PhasePolicy.zip", env, model, mdp)
 
-        val executor = RescaleJobExecutor(apiClient)
+        val executor = Rl4jRescaleJobExecutor(apiClient)
         println(executor.run(rlConfig))
 
+
+    }
+
+    @Ignore
+    @Test
+    fun rllibTest(){
+        val env = Environment(listOf("qBaAAd", "rbOcJd", "LZAENb", "XeGNac")) // jp file ids
+        val model = ModelRecord().apply {
+            id = 7
+            fileId = "vZdrMd"
+            stepSize = 1
+            timeUnit = "minutes"
+        }
+        val mdp = MdpRecord().apply {
+            id = 8
+            reward = "reward = 7;"
+            epochs = 1
+            actionSpaceSize = 4
+            observationSpaceSize = 7
+            simulationStepsLength = 720
+        }
+        val rlConfig = RLConfig("policy.zip", env, model, mdp)
+
+        val executor = RllibRescaleJobExecutor(apiClient)
+        println(executor.run(rlConfig))
 
     }
 

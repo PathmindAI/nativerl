@@ -5,12 +5,11 @@ import ai.skymind.skynet.spring.cloud.job.local.RLConfig
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.RescaleRestApiClient
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.Job
 import ai.skymind.skynet.spring.cloud.job.rescale.rest.entities.JobAnalysis
-import org.springframework.stereotype.Service
 import java.io.File
 import java.io.InputStream
 
-@Service
-class RescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
+//@Service
+class Rl4jRescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
     override fun run(rlConfig: RLConfig): String {
         val preProcess = StringBuilder().apply{
             append("unzip model.zip -d baseEnv; ")

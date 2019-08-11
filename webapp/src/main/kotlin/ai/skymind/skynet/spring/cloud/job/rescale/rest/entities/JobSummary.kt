@@ -7,7 +7,7 @@ data class JobSummary (
        val dateInserted: LocalDateTime,
        val name: String,
        val analysisNames: List<String>,
-       val storage: Int,
+       val storage: Long,
        val jobStatus: JobSummaryStatus,
        val sharedWith: List<String>,
        val isVisible: Boolean,

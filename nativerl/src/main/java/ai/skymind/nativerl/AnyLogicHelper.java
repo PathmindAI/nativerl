@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
-import java.util.Arrays;
 
 public class AnyLogicHelper {
 
@@ -23,6 +22,7 @@ public class AnyLogicHelper {
     String metricsSnippet = "";
     String policyHelper = null;
     int testIterations = 10;
+    boolean stepless = false;
 
     public String environmentClassName() {
         return environmentClassName;
@@ -136,6 +136,15 @@ public class AnyLogicHelper {
         return this;
     }
 
+    public boolean isStepless() {
+        return stepless;
+    }
+
+    public void setStepless(boolean stepless) {
+        this.stepless = stepless;
+    }
+
+
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         int n = agentClassName.lastIndexOf(".");
         String className = agentClassName.substring(n + 1);
@@ -204,10 +213,10 @@ public class AnyLogicHelper {
             + "    }\n"
             + "\n"
             + "    @Override public Array getObservation() {\n"
-            + "        double[] state = agent.getObservation(false);\n"
-            + "        float[] array = new float[state.length];\n"
-            + "        for (int i = 0; i < state.length; i++) {\n"
-            + "            array[i] = (float)state[i];\n"
+            + "        agent.pathmindHelper.getObservation(false);\n"
+            + "        float[] array = new float[agent.pathmindHelper.observation.length];\n"
+            + "        for (int i = 0; i < agent.pathmindHelper.observation.length; i++) {\n"
+            + "            array[i] = (float)agent.pathmindHelper.observation[i];\n"
             + "        }\n"
             + "        observation.data().put(array);\n"
             + "        return observation;\n"
@@ -232,7 +241,7 @@ public class AnyLogicHelper {
             + "        // Create new agent object:\n"
             + "        agent = new " + agentClassName + "(engine, null, null);\n"
             + "        agent.setParametersToDefaultValues();\n"
-            + "        agent.policyHelper = policyHelper;\n"
+            + "        agent.pathmindHelper.policyHelper = policyHelper;\n"
             + "\n"
             + resetSnippet
             + "\n"
@@ -241,10 +250,12 @@ public class AnyLogicHelper {
             + "\n"
             + "    @Override public float step(long action) {\n"
             + "        double reward = 0;\n"
-            + "        double[] state0 = agent.getObservation(true);\n"
-            + "        agent.doAction((int)action);\n"
-            + "        engine.runFast(agent.time() + " + stepTime + ");\n"
-            + "        double[] state1 = agent.getObservation(true);\n"
+            + "        agent.pathmindHelper.getObservation(true);\n"
+            + "        double[] before = Arrays.copyOf(agent.pathmindHelper.observation, agent.pathmindHelper.observation.length);\n"
+            + "        agent.pathmindHelper.doAction((int)action);\n"
+            + "        engine.runFast(" + (stepless ? "" : " agent.time() + " + stepTime) + ");\n"
+            + "        agent.pathmindHelper.getObservation(true);\n"
+            + "        double[] after = Arrays.copyOf(agent.pathmindHelper.observation, agent.pathmindHelper.observation.length);\n"
             + "\n"
             + rewardSnippet
             + "\n"
@@ -253,6 +264,7 @@ public class AnyLogicHelper {
             + "\n"
             + "    public double[] test() {\n"
             + "        double[] metrics = null;\n"
+            + (stepless ? "if(true) throw new IllegalArgumentException(\"Stepless Models do not support collecting metrics yet!\");\n" : "")
             + "        reset();\n"
             + "        while (!isDone()) {\n"
             + "            engine.runFast(agent.time() + " + stepTime + ");\n"
@@ -298,6 +310,7 @@ public class AnyLogicHelper {
                 System.out.println("    --metrics-snippet");
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
+                System.out.println("    --stepless");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
                 helper.environmentClassName(args[++i]);
@@ -327,6 +340,8 @@ public class AnyLogicHelper {
                 helper.policyHelper(args[++i]);
             } else if ("--test-iterations".equals(args[i])) {
                 helper.testIterations(Integer.parseInt(args[++i]));
+            } else if ("--stepless".equals(args[i])) {
+                helper.setStepless(true);
             } else {
                 output = new File(args[i]);
             }
@@ -334,6 +349,6 @@ public class AnyLogicHelper {
         if (output == null) {
             output = new File(helper.environmentClassName.replace('.', '/') + ".java");
         }
-        helper.checkAgentClass().generateEnvironment(output);
+        helper/*.checkAgentClass()*/.generateEnvironment(output);
     }
 }

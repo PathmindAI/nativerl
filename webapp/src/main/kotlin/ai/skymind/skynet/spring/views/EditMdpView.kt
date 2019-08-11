@@ -144,7 +144,7 @@ class EditMdpView(
                             setTheme(JuicyAceTheme.eclipse)
                             setMode(JuicyAceMode.java)
                             setWidthFull()
-                            height = "10em"
+                            height = "15em"
                             addValueChangeListener { e ->
                                 mdp?.let {
                                     onChange(e, it)

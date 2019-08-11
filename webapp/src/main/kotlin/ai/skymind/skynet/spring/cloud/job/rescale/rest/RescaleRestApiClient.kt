@@ -101,10 +101,10 @@ class RescaleRestApiClient(
         return fileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
     }
 
-    fun compileOutput(jobId: String): String {
+    fun compileOutput(jobId: String): String? {
         val outputFiles = outputFiles(jobId)
-        val consoleFile = outputFiles.results.find { it.name == "compile.out.txt" && it.isUploaded && !it.isDeleted}!!
-        return fileContents(consoleFile.id).toString(Charset.forName("UTF-8"))
+        val consoleFile = outputFiles.results.find { it.name == "compile.out.txt" && it.isUploaded && !it.isDeleted}
+        return consoleFile?.let {fileContents(it.id).toString(Charset.forName("UTF-8"))}
     }
 
     /**
@@ -141,7 +141,7 @@ class RescaleRestApiClient(
 
     fun policyFile(jobId: String): InputStream {
         val outputFiles = outputFiles(jobId)
-        val consoleFile = outputFiles.results.find { it.name == "PhasePolicy.zip" && it.isUploaded && !it.isDeleted}!!
+        val consoleFile = outputFiles.results.find { it.name == "policy.zip" && it.isUploaded && !it.isDeleted}!!
 
         return fileContents(consoleFile.id).inputStream()
     }
