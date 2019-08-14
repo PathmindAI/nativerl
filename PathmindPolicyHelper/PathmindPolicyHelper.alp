@@ -607,9 +607,9 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl/target/nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>false</Imported>
+		<Imported>true</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
