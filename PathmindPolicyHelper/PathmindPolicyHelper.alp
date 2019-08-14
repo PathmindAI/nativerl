@@ -28,7 +28,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;]]></Import>
-			<StartupCode><![CDATA[if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper")) {
+			<StartupCode><![CDATA[disconnectFromAll();
+if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper")) {
     try {
         ZipFile policyPackage = new ZipFile(policyFile);
     	Path target = Files.createTempDirectory("pathmind-");
@@ -606,9 +607,9 @@ import ai.skymind.nativerl.PolicyHelper;]]></Import>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl/target/nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>true</Imported>
+		<Imported>false</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
