@@ -30,7 +30,11 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'test package'
+- task: CopyFiles@2
+  inputs:
+    contents: 'webapp/target/skil-somatic-cloud-*.jar'
+    targetFolder: $(Build.ArtifactStagingDirectory)
 - task: PublishBuildArtifacts@1
   inputs:
     artifactName: 'drop'
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/webapp/target/skil-somatic-cloud-*.jar'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
