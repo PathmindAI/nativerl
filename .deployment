@@ -1,2 +1,2 @@
 [config]
-command = cd webapp && ./mvn clean package && mv target/*.jar /home/site/wwwroot/app.jar && cd .. && rm -rf webapp nativerl PathmindPolicyHelper
+command = deploy.sh

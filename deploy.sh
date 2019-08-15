@@ -1,0 +1,1 @@
+cd webapp && ./mvn clean package && mv target/*.jar /home/site/wwwroot/app.jar
