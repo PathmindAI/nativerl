@@ -20,7 +20,7 @@ steps:
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven local repo
 - script:
-    mvn dependency:go-offline
+    mvn -f webapp/pom.xml dependency:go-offline
 - task: Maven@3
   inputs:
     mavenPomFile: 'webapp/pom.xml'
