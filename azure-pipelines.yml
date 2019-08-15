@@ -24,7 +24,7 @@ steps:
 - task: Maven@3
   inputs:
     mavenPomFile: 'webapp/pom.xml'
-    mavenOptions: '$(MAVEN_OPTS) -O'
+    mavenOptions: '$(MAVEN_OPTS)'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
