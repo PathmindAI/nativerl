@@ -19,6 +19,9 @@ exitWithMessageOnError () {
 # Prerequisites
 # -------------
 
+find / -iname java 
+find / -iname javac
+
 # Verify node.js installed
 hash node 2>/dev/null
 exitWithMessageOnError "Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment."
