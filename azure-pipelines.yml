@@ -19,6 +19,7 @@ steps:
     key: maven | **/pom.xml
     path: $(MAVEN_CACHE_FOLDER)
   displayName: Cache Maven local repo
+
 - task: Maven@3
   inputs:
     mavenPomFile: 'webapp/pom.xml'
@@ -29,10 +30,12 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'test package'
+
 - task: CopyFiles@2
   inputs:
     contents: 'webapp/target/skil-somatic-cloud-*.jar'
     targetFolder: $(Build.ArtifactStagingDirectory)
+
 - task: PublishBuildArtifacts@1
   inputs:
     artifactName: 'drop'
