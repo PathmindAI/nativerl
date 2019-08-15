@@ -3,6 +3,10 @@
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+
 trigger:
 - master
 
@@ -10,6 +14,13 @@ pool:
   vmImage: 'Ubuntu-16.04'
 
 steps:
+- task: CacheBeta@0
+  inputs:
+    key: maven | **/pom.xml
+    path: $(MAVEN_CACHE_FOLDER)
+  displayName: Cache Maven local repo
+- script:
+    mvn dependency:go-offline
 - task: Maven@3
   inputs:
     mavenPomFile: 'webapp/pom.xml'
