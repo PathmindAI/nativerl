@@ -33,4 +33,5 @@ steps:
     goals: 'test package'
 - task: PublishBuildArtifacts@1
   inputs:
-    ArtifactName: 'drop'
+    artifactName: 'drop'
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/webapp/target/skil-somatic-cloud-*.jar'
