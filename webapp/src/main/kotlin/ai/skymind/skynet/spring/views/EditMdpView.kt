@@ -1,7 +1,6 @@
 package ai.skymind.skynet.spring.views
 
 import ai.skymind.skynet.data.db.jooq.tables.records.MdpRecord
-import ai.skymind.skynet.spring.cloud.job.local.Environment
 import ai.skymind.skynet.spring.cloud.job.local.RLConfig
 import ai.skymind.skynet.spring.services.ExecutionService
 import ai.skymind.skynet.spring.views.components.ExplainedBlock
@@ -148,7 +147,8 @@ class EditMdpView(
                             addValueChangeListener { e ->
                                 mdp?.let {
                                     onChange(e, it)
-                                    val allErrors = RLConfig("output", Environment(emptyList()), userSession.model(it.modelId)!!,it).compileErrors()
+                                    // Disable compile error checking for now
+                                    /*val allErrors = RLConfig("output", Environment(emptyList()), userSession.model(it.modelId)!!,it).compileErrors()
                                     val errors = errorProperty(allErrors)
                                     if(errors.size > 0){
                                         compileOutput.value = errors.joinToString("\n")
@@ -156,7 +156,7 @@ class EditMdpView(
                                     }else{
                                         compileOutput.value = ""
                                         compileOutput.isVisible  = false
-                                    }
+                                    }*/
                                 }
                             }
                         }
