@@ -173,7 +173,7 @@ new MDP<Encodable, Integer, DiscreteSpace>() {
     @Ignore
     @Test
     fun rllibTest(){
-        val env = Environment(listOf("qBaAAd", "rbOcJd", "LZAENb", "XeGNac")) // jp file ids
+        val env = Environment(listOf("qBaAAd", "LZAENb", "XeGNac", "TaYPwd", "fDRBHd")) // jp file ids
         val model = ModelRecord().apply {
             id = 7
             fileId = "vZdrMd"

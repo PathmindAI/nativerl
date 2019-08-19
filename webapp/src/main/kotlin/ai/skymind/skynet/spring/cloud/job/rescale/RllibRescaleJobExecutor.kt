@@ -18,6 +18,14 @@ private val String?.escaped: String
 class RllibRescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor {
     override fun run(rlConfig: RLConfig): String {
         val actions = listOf(
+                // SETUP JVM
+                "tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz;",
+                "rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz;",
+                "export JAVA_HOME=`pwd`/jdk8u222-b10;",
+                "export JDK_HOME=\$JAVA_HOME;",
+                "export JRE_HOME=\$JAVA_HOME/jre;",
+                "export PATH=\$JAVA_HOME/bin:\$PATH;",
+                "export LD_LIBRARY_PATH=\$JAVA_HOME/jre/lib/amd64/server:\$JAVA_HOME/jre/lib/amd64/:\$LD_LIBRARY_PATH;",
                 // SETUP Variables
                 "export CLASS_SNIPPET='${rlConfig.mdp.variables.escaped}';",
                 "export RESET_SNIPPET='${rlConfig.mdp.reset.escaped}';",
@@ -40,7 +48,7 @@ class RllibRescaleJobExecutor(val apiClient: RescaleRestApiClient): JobExecutor 
                 "unzip ../nativerl-1.0.0-SNAPSHOT-bin.zip; rm ../nativerl-1.0.0-SNAPSHOT-bin.zip; mv nativerl-bin/* .; mv examples/train.sh .;",
                 " echo > setup.sh; mkdir -p database; touch database/db.properties;",
                 "source train.sh;",
-                "mv policy.zip ..; cd ..; rm -rf work conda"
+                "mv policy.zip ..; cd ..; rm -rf work conda jdk8u222-b10;"
         )
 
         val command = actions.joinToString(" ");

@@ -3,7 +3,7 @@ package ai.skymind.skynet.spring.cloud.job.rescale.rest.entities
 data class JobAnalysis (
         val command: String,
         val analysis: Analysis = Analysis("user_included", "0"),
-        val hardware: Hardware = Hardware("standard-plus", 4),
+        val hardware: Hardware = Hardware("mercury", 7),
         val useMpi: Boolean = false,
         val envVars: Map<String,String> = emptyMap(),
         val inputFiles: List<FileReference> = emptyList(),

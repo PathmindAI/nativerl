@@ -1,8 +1,8 @@
 package ai.skymind.skynet.spring.views.upload
 
-import com.vaadin.external.org.slf4j.LoggerFactory
 import com.vaadin.flow.component.upload.MultiFileReceiver
 import com.vaadin.flow.component.upload.receivers.FileData
+import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
 
