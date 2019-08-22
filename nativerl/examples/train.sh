@@ -31,15 +31,9 @@ public class Training extends ExperimentCustom {
 
     @AnyLogicInternalCodegenAPI
     public void setupEngine_xjal(Engine engine) {
-        engine.setATOL(1.0E-5D);
-        engine.setRTOL(1.0E-5D);
-        engine.setTTOL(1.0E-5D);
-        engine.setHTOL(0.001D);
-        engine.setSolverODE(Engine.SOLVER_ODE_EULER);
-        engine.setSolverNAE(Engine.SOLVER_NAE_MODIFIED_NEWTON);
-        engine.setSolverDAE(Engine.SOLVER_DAE_RK45_NEWTON);
-        engine.setVMethods(165169);
-        engine.setTimeUnit(AgentConstants.$TIME_UNIT);
+        Simulation sim = new Simulation();
+        sim.setupEngine(engine);
+        sim.initDefaultRandomNumberGenerator(engine);
     }
 
     @AnyLogicInternalCodegenAPI
