@@ -18,10 +18,10 @@ class ExecutionService(
     fun runMdp(mdp: MdpRecord) {
         val model = modelRepository.findById(mdp.userId, mdp.modelId)
         val env = Environment(listOf(
-                "qBaAAd", // PathmindPolicy.jar, 2019-08-09
+                "VAjgJd", // PathmindPolicy.jar, 2019-08-22
                 "LZAENb", // conda
                 "XeGNac", // Anylogic Base Environment: baseEnv.zip
-                "TaYPwd", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-08-19
+                "doRCLd", // nativerl-1.0.0-SNAPSHOT-bin.zip, 2019-08-22
                 "fDRBHd"  // OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz
         ))
 
