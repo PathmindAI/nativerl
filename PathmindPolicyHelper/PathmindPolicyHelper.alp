@@ -17,40 +17,15 @@
 			<Id>1563523926930</Id>
 			<Name><![CDATA[PathmindHelper]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
-			<Import><![CDATA[import java.nio.file.Files;
-import java.nio.file.Path;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileOutputStream;
-import java.util.List;
-import java.util.Collections;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import ai.skymind.nativerl.RLlibPolicyHelper;
-import ai.skymind.nativerl.PolicyHelper;]]></Import>
-			<StartupCode><![CDATA[isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
+			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;]]></Import>
+			<StartupCode><![CDATA[PathmindHelperRegistry.register(this);
+
+isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining) {
-    try {
-        ZipFile policyPackage = new ZipFile(policyFile);
-    	Path target = Files.createTempDirectory("pathmind-");
-		target.toFile().deleteOnExit();
-    	
-    	for(ZipEntry entry: Collections.list(policyPackage.entries())){
-    	    //traceln("Extracting: "+entry.getName());
-	    	Path targetFile = target.resolve(entry.getName());
-	    	
-		    targetFile.getParent().toFile().mkdirs();
-	        if(!entry.isDirectory()){
-		        Files.copy(policyPackage.getInputStream(entry), targetFile);
-	        }
-    	}
-    
-        policyHelper = new RLlibPolicyHelper(target.toFile());
-    } catch (IOException e) {
-        traceln(e);
-    }
+   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 }]]></StartupCode>
+			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
 				<Id>1563534160693</Id>
@@ -146,24 +121,9 @@ if (isEnabled && policyHelper == null && !isTraining) {
 			<ConnectionsId>1563523926926</ConnectionsId>
 			<Variables>
 				<Variable Class="PlainVariable">
-					<Id>1563525061294</Id>
-					<Name><![CDATA[observation]]></Name>
-					<X>160</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double[]]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[new double[0];]]></Code>
-						</InitialValue>
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
 					<Id>1563529489111</Id>
 					<Name><![CDATA[policyHelper]]></Name>
-					<X>160</X><Y>130</Y>
+					<X>320</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -178,7 +138,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 				<Variable Class="PlainVariable">
 					<Id>1566466833512</Id>
 					<Name><![CDATA[isTraining]]></Name>
-					<X>320</X><Y>70</Y>
+					<X>320</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -193,7 +153,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 				<Variable Class="PlainVariable">
 					<Id>1566467051803</Id>
 					<Name><![CDATA[stepStarted]]></Name>
-					<X>320</X><Y>130</Y>
+					<X>320</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -208,7 +168,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 				<Variable Class="PlainVariable">
 					<Id>1566467201295</Id>
 					<Name><![CDATA[engine]]></Name>
-					<X>320</X><Y>100</Y>
+					<X>320</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -259,29 +219,78 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1563523991195</Id>
-					<Name><![CDATA[getObservation]]></Name>
-					<Description><![CDATA[This is a description]]></Description>
+					<Id>1563524634306</Id>
+					<Name><![CDATA[policyFile]]></Name>
+					<Description><![CDATA[Choose the policy file for ]]></Description>
 					<X>20</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="ACTION">
-						<Type><![CDATA[double]]></Type>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<MethodArgument>
-							<Name><![CDATA[forReward]]></Name>
-							<Type><![CDATA[boolean]]></Type>
-						</MethodArgument>
+						<ParameterEditor>
+							<Id>1563524634304</Id>
+							<Label><![CDATA[policyFile]]></Label>
+							<EditorContolType>FILE_CHOOSER</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1563523991195</Id>
+					<Name><![CDATA[observationForTraining]]></Name>
+					<X>20</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[double[]]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
 						<ParameterEditor>
 							<Id>1563523991193</Id>
-							<Label><![CDATA[getObservation]]></Label>
+							<Label><![CDATA[observation for Training]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566471864343</Id>
+					<Name><![CDATA[observationForReward]]></Name>
+					<X>20</X><Y>190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[double[]]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1566471864341</Id>
+							<Label><![CDATA[observation for Reward]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
 							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
@@ -313,30 +322,24 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1563524634306</Id>
-					<Name><![CDATA[policyFile]]></Name>
-					<Description><![CDATA[Choose the policy file for ]]></Description>
-					<X>20</X><Y>160</Y>
+					<Id>1566471148671</Id>
+					<Name><![CDATA[isDone]]></Name>
+					<X>20</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
+					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[String]]></Type>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[getEngine().getStopTime() <= time()]]></Code>
+						</DefaultValue>
 						<ParameterEditor>
-							<Id>1563524634304</Id>
-							<Label><![CDATA[policyFile]]></Label>
-							<EditorContolType>FILE_CHOOSER</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>NOT_EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
+							<Id>1566471148669</Id>
+							<Label><![CDATA[isDone]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -350,7 +353,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1566466772537</Id>
 					<Name><![CDATA[triggerNextAction]]></Name>
-					<X>320</X><Y>160</Y>
+					<X>450</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -365,8 +368,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 	engine.pause();
 }else if(isEnabled && policyHelper != null){
 	// No trainer to do that for us, so we do it ourselves
-	getObservation(false);
-    action = (int)policyHelper.computeDiscreteAction(observation);
+    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
     doAction(action);
 }
 stepStarted = true;]]></Body>
@@ -376,7 +378,7 @@ stepStarted = true;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1566466783864</Id>
 					<Name><![CDATA[actionEffectIsObservable]]></Name>
-					<X>320</X><Y>190</Y>
+					<X>450</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -389,6 +391,18 @@ stepStarted = true;]]></Body>
 	// Noop for inference
 }
 stepStarted = false;]]></Body>
+				</Function>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[String]]></ReturnType>
+					<Id>1566470575833</Id>
+					<Name><![CDATA[toString]]></Name>
+					<X>160</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[return "PathmindHelper:\n  observation for Training: "+Arrays.toString(observationForTraining())+"\n  observation for Reward: "+Arrays.toString(observationForReward())+"\n  last Action: "+action+"\n  isDone: "+isDone();]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -532,19 +546,22 @@ stepStarted = false;]]></Body>
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[getObservation]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[doAction]]></ParameterName>
-					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[// noop]]></Code>
-					</ParameterValue>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
 					<ParameterValue Class="CodeValue">
 						<Code><![CDATA["C:\\Users\\dubs\\Documents\\PDC\\Skymind\\skynet\\model.zip"]]></Code>
 					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[observationForTraining]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[observationForReward]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[doAction]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[isDone]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -564,6 +581,92 @@ stepStarted = false;]]></Body>
 			</ModelTimeProperties>
 		</SimulationExperiment>	
 	</Experiments>
+	<JavaClasses>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1566473119411</Id>
+			<Name><![CDATA[PathmindHelperRegistry]]></Name>
+			<Text><![CDATA[import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import ai.skymind.nativerl.RLlibPolicyHelper;
+import ai.skymind.nativerl.PolicyHelper;
+
+public class PathmindHelperRegistry {
+    private static List<PathmindHelper> registeredHelpers = new ArrayList<PathmindHelper>();
+    private static Map<String, PolicyHelper> policyCache = new HashMap<>();
+	
+    private static PolicyHelper forceLoadPolicy = null;
+
+    public static void setForceLoadPolicy(PolicyHelper h) {
+    	forceLoadPolicy = h;
+    }
+    
+	public static void register(PathmindHelper helper) {
+		if(!registeredHelpers.contains(helper)) {
+			registeredHelpers.add(helper);
+			if(forceLoadPolicy != null) {
+				helper.policyHelper = forceLoadPolicy;
+			}
+		}
+	}
+
+	
+	public static void unregister(PathmindHelper helper) {
+		registeredHelpers.remove(helper);
+	}
+	
+	public static PathmindHelper getHelper() {
+		if(registeredHelpers.size() == 0) {
+			throw new IllegalStateException("No helper registered yet!");
+		}else if(registeredHelpers.size() > 1) {
+			throw new IllegalStateException("Too many registered helpers! Found: "+registeredHelpers.size());
+		}
+		return registeredHelpers.get(0);
+	}
+	
+	public static List<PathmindHelper> getHelpers(){
+		return registeredHelpers;
+	}
+	
+	public static PolicyHelper loadPolicy(String policyFile) {
+		if(policyCache.containsKey(policyFile)) {
+			return policyCache.get(policyFile);
+		}else {
+			 try {
+			        ZipFile policyPackage = new ZipFile(policyFile);
+			    	Path target = Files.createTempDirectory("pathmind-");
+					target.toFile().deleteOnExit();
+			    	
+			    	for(ZipEntry entry: Collections.list(policyPackage.entries())){
+				    	Path targetFile = target.resolve(entry.getName());
+				    	
+					    targetFile.getParent().toFile().mkdirs();
+				        if(!entry.isDirectory()){
+					        Files.copy(policyPackage.getInputStream(entry), targetFile);
+				        }
+			    	}
+			    	
+			    	policyPackage.close();
+			    
+			        PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+			        policyCache.put(policyFile, helper);
+			        return helper;
+			    } catch (IOException e) {
+			    	traceln(e);
+			    	return null;
+			    }			
+		}
+	}
+}]]></Text>
+		</JavaClass>
+	</JavaClasses>
 	<Libraries>
 		<!--   =========   Library   ========  -->
 		<Library>
@@ -588,7 +691,7 @@ stepStarted = false;]]></Body>
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>5</VersionBuild>
+			<VersionBuild>15</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
