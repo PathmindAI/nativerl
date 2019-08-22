@@ -28,8 +28,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;]]></Import>
-			<StartupCode><![CDATA[disconnectFromAll();
-if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper")) {
+			<StartupCode><![CDATA[isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
+disconnectFromAll();
+if (isEnabled && policyHelper == null && !isTraining) {
     try {
         ZipFile policyPackage = new ZipFile(policyFile);
     	Path target = Files.createTempDirectory("pathmind-");
@@ -150,7 +151,7 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 					<X>160</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
+					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double[]]]></Type>        
@@ -162,7 +163,7 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 				<Variable Class="PlainVariable">
 					<Id>1563529489111</Id>
 					<Name><![CDATA[policyHelper]]></Name>
-					<X>160</X><Y>70</Y>
+					<X>160</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -172,6 +173,63 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[null]]></Code>
 						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566466833512</Id>
+					<Name><![CDATA[isTraining]]></Name>
+					<X>320</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566467051803</Id>
+					<Name><![CDATA[stepStarted]]></Name>
+					<X>320</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566467201295</Id>
+					<Name><![CDATA[engine]]></Name>
+					<X>320</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
+						<Type><![CDATA[Engine]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[getEngine()]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566468010477</Id>
+					<Name><![CDATA[action]]></Name>
+					<X>160</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -190,50 +248,10 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
 						</DefaultValue>
-						<OnChangeCode><![CDATA[if(isEnabled){
-  triggerPolicy.restart();
-}else{
-  triggerPolicy.reset();
-}]]></OnChangeCode>
 						<ParameterEditor>
 							<Id>1563523942386</Id>
 							<Label><![CDATA[isEnabled]]></Label>
 							<EditorContolType>CHECK_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1563524068716</Id>
-					<Name><![CDATA[triggerRate]]></Name>
-					<X>20</X><Y>160</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[]]></Type>
-						<UnitType><![CDATA[RATE]]></UnitType>
-						<UnitOfValue Class="RateUnits"><![CDATA[PER_SECOND]]></UnitOfValue>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeUnitValue">
-							<Code><![CDATA[]]></Code>
-							<Unit Class="RateUnits"><![CDATA[PER_SECOND]]></Unit>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1563524068714</Id>
-							<Label><![CDATA[triggerRate]]></Label>
-							<EditorContolType>UNIT_EDITOR</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -298,7 +316,7 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 					<Id>1563524634306</Id>
 					<Name><![CDATA[policyFile]]></Name>
 					<Description><![CDATA[Choose the policy file for ]]></Description>
-					<X>20</X><Y>190</Y>
+					<X>20</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -326,44 +344,53 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 					</Properties>                 
 				</Variable>
 			</Variables>
-			<Events>
-				<Event>
-					<Id>1563525402911</Id>
-					<Name><![CDATA[triggerPolicy]]></Name>
-					<X>160</X><Y>150</Y>
+			<Functions>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1566466772537</Id>
+					<Name><![CDATA[triggerNextAction]]></Name>
+					<X>320</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
+					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Properties TriggerType="rate" Mode="userControls">
-						<Timeout Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</Timeout>
-						<Rate Class="CodeUnitValue">
-							<Code><![CDATA[triggerRate(RateUnits.PER_SECOND)]]></Code>
-							<Unit Class="RateUnits"><![CDATA[PER_SECOND]]></Unit>
-						</Rate>
-						<OccurrenceAtTime>true</OccurrenceAtTime>
-						<OccurrenceDate>1563609600000</OccurrenceDate>
-						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[0]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</OccurrenceTime>
-						<RecurrenceCode Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</RecurrenceCode>
-						<Condition><![CDATA[false]]></Condition>
-					</Properties>
-					<Action><![CDATA[if(isEnabled && policyHelper != null && !Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper")){
+					<Body><![CDATA[if(isTraining){
+	if(stepStarted){
+		// if previous step wasn't finished, finish it now before starting a new one.
+		actionEffectIsObservable();
+	}
+	// Pause the Engine so the step function can do observation, and take action.
+	// thereby starting a step
+	engine.pause();
+}else if(isEnabled && policyHelper != null){
+	// No trainer to do that for us, so we do it ourselves
 	getObservation(false);
-    int action = (int)policyHelper.computeDiscreteAction(observation);
+    action = (int)policyHelper.computeDiscreteAction(observation);
     doAction(action);
-}]]></Action>
-					<Logging>false</Logging>
-				</Event>
-			</Events>
+}
+stepStarted = true;]]></Body>
+				</Function>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1566466783864</Id>
+					<Name><![CDATA[actionEffectIsObservable]]></Name>
+					<X>320</X><Y>190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[if(isTraining && stepStarted){
+	// Pause for the engine to be able to observe the effect of the last action
+	// and calculate a reward, thereby finishing a step
+	engine.pause();
+}else{
+	// Noop for inference
+}
+stepStarted = false;]]></Body>
+				</Function>
+			</Functions>
 			<AgentLinks>
 				<AgentLink>
 					<Id>1563523926926</Id>
@@ -505,9 +532,6 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[triggerRate]]></ParameterName>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[getObservation]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -564,13 +588,17 @@ if (isEnabled && policyHelper == null && !Boolean.getBoolean("ai.skymind.nativer
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>2</VersionBuild>
+			<VersionBuild>5</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
 	<ModelResources>
 		<Resource>
 			<Path><![CDATA[pathmind-16x16.gif]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
