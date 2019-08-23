@@ -347,6 +347,28 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</Properties>                 
 				</Variable>
 			</Variables>
+			<DynamicEvents>
+				<DynamicEventClass>
+					<Id>1566552542751</Id>
+					<Name><![CDATA[TriggerNextActionEvent]]></Name>
+					<X>660</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Action><![CDATA[if(stepStarted){
+	// if previous step wasn't finished, finish it now before starting a new one.
+	actionEffectIsObservable();
+	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
+}else{	
+	// Pause the Engine so the step function can do observation, and take action.
+	// thereby starting a step
+	engine.pause();
+	stepStarted = true;
+}]]></Action>
+					<Logging>false</Logging>
+				</DynamicEventClass>
+			</DynamicEvents>
 			<Functions>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -359,19 +381,12 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if(isTraining){
-	if(stepStarted){
-		// if previous step wasn't finished, finish it now before starting a new one.
-		actionEffectIsObservable();
-	}
-	// Pause the Engine so the step function can do observation, and take action.
-	// thereby starting a step
-	engine.pause();
+	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
 }else if(isEnabled && policyHelper != null){
 	// No trainer to do that for us, so we do it ourselves
     action = (int)policyHelper.computeDiscreteAction(observationForTraining());
     doAction(action);
-}
-stepStarted = true;]]></Body>
+}]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -387,10 +402,10 @@ stepStarted = true;]]></Body>
 	// Pause for the engine to be able to observe the effect of the last action
 	// and calculate a reward, thereby finishing a step
 	engine.pause();
+	stepStarted = false;
 }else{
 	// Noop for inference
-}
-stepStarted = false;]]></Body>
+}]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -691,7 +706,7 @@ public class PathmindHelperRegistry {
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>15</VersionBuild>
+			<VersionBuild>17</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
