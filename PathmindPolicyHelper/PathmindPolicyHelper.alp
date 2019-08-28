@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.4.0.201903191539" AlpVersion="8.4.6">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201712" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -22,7 +22,7 @@
 
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
-if (isEnabled && policyHelper == null && !isTraining) {
+if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 }]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
@@ -118,6 +118,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 				<Scale>10</Scale>
 				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
 			</ScaleRuler>
+			<CurrentLevel>1566891812071</CurrentLevel>
 			<ConnectionsId>1563523926926</ConnectionsId>
 			<Variables>
 				<Variable Class="PlainVariable">
@@ -219,6 +220,91 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1566825558177</Id>
+					<Name><![CDATA[usePolicy]]></Name>
+					<X>20</X><Y>250</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1566825558175</Id>
+							<Label><![CDATA[actionType]]></Label>
+							<EditorContolType>RADIO_BUTTONS</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<PredefParamValue>
+								<Id>0</Id>
+								<Name><![CDATA[Use Policy]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</PredefParamValue>
+							<PredefParamValue>
+								<Id>0</Id>
+								<Name><![CDATA[Use Random Actions]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</PredefParamValue>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566825577748</Id>
+					<Name><![CDATA[possibleActionCount]]></Name>
+					<X>20</X><Y>280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1566825577746</Id>
+							<Label><![CDATA[possibleActionCount]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1563524634306</Id>
 					<Name><![CDATA[policyFile]]></Name>
 					<Description><![CDATA[Choose the policy file for ]]></Description>
@@ -238,6 +324,14 @@ if (isEnabled && policyHelper == null && !isTraining) {
 							<HideCondition>
 								<Id>0</Id>
 								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
 								<Operation>NOT_EQUALS</Operation>
 								<Value Class="CodeValue">
 									<Code><![CDATA[true]]></Code>
@@ -382,10 +476,17 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if(isTraining){
 	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
-}else if(isEnabled && policyHelper != null){
-	// No trainer to do that for us, so we do it ourselves
-    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
-    doAction(action);
+}else if(isEnabled){
+	if(usePolicy && policyHelper != null){
+		// No trainer to do that for us, so we do it ourselves
+	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
+	    doAction(action);
+    }else{
+    	if(!usePolicy){
+    		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
+    		doAction(action);
+    	}
+    }
 }]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
@@ -417,7 +518,18 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[return "PathmindHelper:\n  observation for Training: "+Arrays.toString(observationForTraining())+"\n  observation for Reward: "+Arrays.toString(observationForReward())+"\n  last Action: "+action+"\n  isDone: "+isDone();]]></Body>
+					<Body><![CDATA[double[] training = observationForTraining();
+double[] reward = observationForReward();
+
+return "PathmindHelper:\n"
+      +"  last Action: "+action+"\n"
+      +"  isDone: "+isDone() + "\n"
+      +"  observation for Training:\n"
+      +"    size: "+training.length+"\n"
+      +"    array: "+Arrays.toString(training)+"\n"
+      +"  observation for Reward: \n"
+      +"    size: "+reward.length+"\n"
+      +"    array:"+Arrays.toString(reward)+"\n";]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -445,7 +557,20 @@ if (isEnabled && policyHelper == null && !isTraining) {
 			</AgentLinks>
 
 
-			<Shapes>
+			<Presentation>
+				<Level>
+					<Id>1566891812071</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>ALWAYS_SHOW</LevelVisibility>
+
+			<Presentation>
 				<Image>
 					<Id>1564400828815</Id>
 					<Name><![CDATA[image]]></Name>
@@ -468,7 +593,10 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</ImageFiles>
 					<OriginalSize>true</OriginalSize>
 				</Image>
-			</Shapes>
+			</Presentation>
+
+				</Level>
+			</Presentation>
 
 		</ActiveObjectClass>
 	</ActiveObjectClasses>	
@@ -532,7 +660,7 @@ if (isEnabled && policyHelper == null && !isTraining) {
 			<VmArgs><![CDATA[]]></VmArgs>
 			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
 
-			<Shapes>
+			<Presentation>
 				<Text>
 					<Id>0</Id>
 					<Name><![CDATA[text]]></Name>
@@ -554,11 +682,17 @@ if (isEnabled && policyHelper == null && !isTraining) {
 					</Font>
 					<Alignment>LEFT</Alignment>
 				</Text>
-			</Shapes>
+			</Presentation>
 
 			<Parameters>			
 				<Parameter>
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[usePolicy]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
@@ -706,7 +840,7 @@ public class PathmindHelperRegistry {
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>17</VersionBuild>
+			<VersionBuild>22</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
