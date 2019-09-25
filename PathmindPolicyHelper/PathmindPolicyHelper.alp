@@ -692,13 +692,10 @@ return "PathmindHelper:\n"
 					<ParameterName><![CDATA[usePolicy]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>			
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
-					<ParameterValue Class="CodeValue">
-						<Code><![CDATA["C:\\Users\\dubs\\Documents\\PDC\\Skymind\\skynet\\model.zip"]]></Code>
-					</ParameterValue>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[observationForTraining]]></ParameterName>
@@ -840,7 +837,7 @@ public class PathmindHelperRegistry {
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>22</VersionBuild>
+			<VersionBuild>24</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
@@ -850,7 +847,7 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -887,7 +884,7 @@ public class PathmindHelperRegistry {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
