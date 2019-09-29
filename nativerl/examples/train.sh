@@ -73,6 +73,9 @@ java ai.skymind.nativerl.RLlibHelper \
     --random-seed $RANDOM_SEED \
     --max-reward-mean $MAX_REWARD_MEAN \
     --max-iterations $MAX_ITERATIONS \
+    --gammas $GAMMAS \
+    --learning-rates $LEARNING_RATES \
+    --mini-batch-sizes $BATCH_SIZES \
     rllibtrain.py
 
 python3 rllibtrain.py
