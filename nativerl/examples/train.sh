@@ -75,7 +75,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-iterations $MAX_ITERATIONS \
     --gammas $GAMMAS \
     --learning-rates $LEARNING_RATES \
-    --mini-batch-sizes $BATCH_SIZES \
+    --train-batch-sizes $BATCH_SIZES \
     rllibtrain.py
 
 python3 rllibtrain.py
