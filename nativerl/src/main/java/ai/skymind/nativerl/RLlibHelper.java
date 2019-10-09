@@ -120,6 +120,7 @@ public class RLlibHelper {
     int numHiddenNodes = 256;
     int stepsPerIteration = 4000;
     int maxIterations = 500;
+    int maxTimeInSec = -1;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
@@ -192,6 +193,7 @@ public class RLlibHelper {
         this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
+        this.maxTimeInSec = copy.maxTimeInSec;
     }
 
     public List<RLlibHelper> createSubcombinations() {
@@ -258,6 +260,7 @@ public class RLlibHelper {
                 + "maxIterations=" + maxIterations + ", "
                 + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
+                + "maxTimeInSec=" + maxTimeInSec + ", "
                 + "redisAddress=" + redisAddress + "]";
     }
 
@@ -405,6 +408,15 @@ public class RLlibHelper {
         return this;
     }
 
+    public int maxTimeInSec() {
+        return maxTimeInSec;
+    }
+
+    public RLlibHelper maxTimeInSec(int maxTimeInSec) {
+        this.maxTimeInSec = maxTimeInSec;
+        return this;
+    }
+
     public int savePolicyInterval() {
         return savePolicyInterval;
     }
@@ -483,6 +495,7 @@ public class RLlibHelper {
             + "    '" + algorithm + "',\n"
             + "    stop={\n"
             + "         'training_iteration': " + maxIterations + ",\n"
+            + (maxTimeInSec > 0 ? "         'time_total_s': " + maxTimeInSec + ",\n" : "")
             + (Double.isFinite(maxRewardMean) ? "         'episode_reward_mean': " + maxRewardMean + ",\n" : "")
             + "    },\n"
             + "    config={\n"
@@ -542,6 +555,7 @@ public class RLlibHelper {
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --subcombinations");
+                System.out.println("    --maxTimeInSec");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -590,6 +604,8 @@ public class RLlibHelper {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-reward-mean".equals(args[i])) {
                 helper.maxRewardMean(Double.parseDouble(args[++i]));
+            } else if ("--max-time-in-sec".equals(args[i])) {
+                helper.maxTimeInSec(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {
                 helper.savePolicyInterval(Integer.parseInt(args[++i]));
             } else if ("--redis-address".equals(args[i])) {
