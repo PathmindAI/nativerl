@@ -20,12 +20,13 @@ RESET_SNIPPET='
 '
 
 REWARD_SNIPPET='
+    double[] s0 = state0[0], s1 = state1[0];
     // change in forward + intersection delay
-    double delay0 = state0[0] + state0[2] + state0[4] + state0[6] + state0[8];
-    double delay1 = state1[0] + state1[2] + state1[4] + state1[6] + state1[8];
-    reward = delay0 - delay1;
+    double delay0 = s0[0] + s0[2] + s0[4] + s0[6] + s0[8];
+    double delay1 = s1[0] + s1[2] + s1[4] + s1[6] + s1[8];
+    reward[0] = delay0 - delay1;
     if (delay0 > 0 || delay1 > 0) {
-        reward /= Math.max(delay0, delay1);
+        reward[0] /= Math.max(delay0, delay1);
     }
 '
 
@@ -47,16 +48,19 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --reset-snippet "$RESET_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
-    --policy-helper RLlibPolicyHelper
+    --policy-helper RLlibPolicyHelper \
+    --multi-agent
 
 javac $(find -iname '*.java')
 
 java ai.skymind.nativerl.RLlibHelper \
+    --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers 4 \
     --random-seed 42 \
     --max-reward-mean 100 \
+    --multi-agent \
     rllibtrain.py
 
 python3 rllibtrain.py
