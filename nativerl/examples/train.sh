@@ -62,11 +62,13 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --reward-snippet "$REWARD_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
-    --policy-helper RLlibPolicyHelper
+    --policy-helper RLlibPolicyHelper \
+    --multi-agent
 
 javac $(find -iname '*.java')
 
 java ai.skymind.nativerl.RLlibHelper \
+    --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers $NUM_WORKERS \
@@ -76,6 +78,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --gammas $GAMMAS \
     --learning-rates $LEARNING_RATES \
     --train-batch-sizes $BATCH_SIZES \
+    --multi-agent \
     rllibtrain.py
 
 python3 rllibtrain.py
