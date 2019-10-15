@@ -27,6 +27,15 @@ PYBIND11_MODULE(nativerl, m) {
     pybind11::bind_vector<std::vector<ssize_t>>(m, "SSizeTVector", pybind11::buffer_protocol());
 
     pybind11::class_<nativerl::Array>(m, "Array", pybind11::buffer_protocol())
+        .def(pybind11::init([](pybind11::buffer b) {
+            pybind11::buffer_info info = b.request();
+
+            if (info.format != pybind11::format_descriptor<float>::format()) {
+                throw std::runtime_error("Incompatible format: expected a float array!");
+            }
+
+            return new nativerl::Array((float*)info.ptr, info.shape);
+        }))
         .def_buffer([](nativerl::Array &a) -> pybind11::buffer_info {
             std::vector<ssize_t> strides(a.shape.size());
             strides[a.shape.size() - 1] = sizeof(float);
@@ -62,7 +71,7 @@ PYBIND11_MODULE(nativerl, m) {
         .def("isDone", &nativerl::Environment::isDone)
         .def("reset", &nativerl::Environment::reset)
         .def("step", (float (nativerl::Environment::*)(ssize_t action))&nativerl::Environment::step)
-        .def("step", (float (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step);
+        .def("step", (const nativerl::Array& (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step);
 
     m.def("createEnvironment", &createEnvironment);
     m.def("releaseEnvironment", &releaseEnvironment);
