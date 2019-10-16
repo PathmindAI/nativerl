@@ -146,3 +146,15 @@ Example Using RLlib for Traffic Light Phases
         doAction(action);
     }
     ```
+
+
+Support for Multiagent Environments
+-----------------------------------
+
+NativeRL currently implements only the simplest possible multiagent support available in RLlib, but it might just be what is needed in "99%" of the cases anyway, and it does allow us to have the "multiagent checkbox" ticked. Specifically, the policy optimized is shared among all agents, so they must be homogeneous enough to allow that. This corresponds to "level 1" described on this blog post: https://bair.berkeley.edu/blog/2018/12/12/rllib/
+
+This basic level of support requires the few following modifications to the AnyLogic model:
+
+ * Instead of `double[]`, `getObservation()` must return `double[][]` (1 observation array per agent)
+ * Instead of `int`, `doAction()` must accept `int[]` (1 action per agent)
+ * The reward function must be modified to accept `double[][] obs` and `double[] reward` (1 reward per agent)
