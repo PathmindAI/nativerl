@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201712" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201852" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -190,7 +190,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[int[]]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -352,7 +352,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[]]]></Type>
+						<Type><![CDATA[double[][]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -375,7 +375,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[]]]></Type>
+						<Type><![CDATA[double[][]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<ParameterEditor>
@@ -403,7 +403,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int]]></Type>
+							<Type><![CDATA[int[]]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
@@ -479,11 +479,13 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
 		// No trainer to do that for us, so we do it ourselves
-	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
+	    action = policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
     }else{
     	if(!usePolicy){
-    		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
+    		double[][] obs = observationForTraining();
+    		action = new int[obs.length];
+    		Arrays.setAll(action, i -> getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount));
     		doAction(action);
     	}
     }
@@ -518,8 +520,8 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double[] training = observationForTraining();
-double[] reward = observationForReward();
+					<Body><![CDATA[double[][] training = observationForTraining();
+double[][] reward = observationForReward();
 
 return "PathmindHelper:\n"
       +"  last Action: "+action+"\n"
@@ -692,7 +694,7 @@ return "PathmindHelper:\n"
 					<ParameterName><![CDATA[usePolicy]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>			
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
@@ -847,7 +849,7 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[RLlibPolicyHelper/target/RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -884,7 +886,7 @@ public class PathmindHelperRegistry {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[RLlibPolicyHelper/target/RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
