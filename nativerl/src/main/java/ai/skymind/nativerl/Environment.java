@@ -24,6 +24,7 @@ public class Environment extends Pointer {
         return (Environment)super.position(position);
     }
 
+    @Virtual(true) public native void setSeed(long seed);
     @Virtual(true) public native @Const Space getActionSpace();
     @Virtual(true) public native @Const Space getObservationSpace();
     @Virtual(true) public native @Const @ByRef Array getObservation();

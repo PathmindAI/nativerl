@@ -508,6 +508,8 @@ public class RLlibHelper {
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
+            + "    def seed(self, seed):\n"
+            + "        self.nativeEnv.setSeed(seed)\n"
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
             + (multiAgent
@@ -553,6 +555,8 @@ public class RLlibHelper {
             + "    },\n"
             + "    config={\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
+// 'seed' only available starting with Ray 0.7.3: https://github.com/ray-project/ray/commit/0af07bd4934d6cd0d578683da7a6e1e2917014f6
+            + "        'seed': " + randomSeed + ",\n"
             + "        'num_gpus': " + numGPUs + ",\n"
             + "        'num_workers': " + numWorkers + ",\n"
             + "        'gamma': ray.tune.grid_search(" +  Arrays.toString(gammas) + "),\n"

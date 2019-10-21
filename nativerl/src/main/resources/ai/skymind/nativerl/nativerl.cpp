@@ -65,6 +65,7 @@ PYBIND11_MODULE(nativerl, m) {
         .def_readwrite("n", &nativerl::Discrete::n);
 
     pybind11::class_<nativerl::Environment>(m, "Environment")
+        .def("setSeed", &nativerl::Environment::setSeed)
         .def("getActionSpace", &nativerl::Environment::getActionSpace)
         .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
         .def("getObservation", &nativerl::Environment::getObservation)

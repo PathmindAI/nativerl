@@ -69,6 +69,7 @@ Discrete* Space::asDiscrete() { return dynamic_cast<Discrete*>(this); }
 class Environment {
 public:
     virtual ~Environment() { };
+    virtual void setSeed(long long seed) = 0;
     virtual const Space* getActionSpace() = 0;
     virtual const Space* getObservationSpace() = 0;
     virtual const Array& getObservation() = 0;
