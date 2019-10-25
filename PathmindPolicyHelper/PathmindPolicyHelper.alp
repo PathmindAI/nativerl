@@ -190,7 +190,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int[]]]></Type>
+						<Type><![CDATA[double[][]]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -403,7 +403,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int[]]]></Type>
+							<Type><![CDATA[double[][]]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
@@ -479,13 +479,15 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
 		// No trainer to do that for us, so we do it ourselves
-	    action = policyHelper.computeDiscreteAction(observationForTraining());
+	    action = policyHelper.computeContinuousAction(observationForTraining());
 	    doAction(action);
     }else{
     	if(!usePolicy){
     		double[][] obs = observationForTraining();
-    		action = new int[obs.length];
-    		Arrays.setAll(action, i -> getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount));
+    		action = new double[obs.length][possibleActionCount];
+    		for (double[] a : action) {
+    			Arrays.setAll(a, i -> getEngine().getDefaultRandomGenerator().nextDouble());
+    		}
     		doAction(action);
     	}
     }

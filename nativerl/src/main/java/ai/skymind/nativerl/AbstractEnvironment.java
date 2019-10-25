@@ -18,10 +18,10 @@ public abstract class AbstractEnvironment extends Environment {
     protected Array observation;
     protected Array reward;
 
-    protected AbstractEnvironment(long discreteActions, long continuousObservations) {
-        actionSpace = getDiscreteSpace(discreteActions);
-        observationSpace = getContinuousSpace(continuousObservations);
-        observation = new Array(new SSizeTVector().put(continuousObservations));
+    protected AbstractEnvironment(Space actionSpace, Space observationSpace) {
+        this.actionSpace = actionSpace;
+        this.observationSpace = observationSpace;
+        observation = new Array(observationSpace.asContinuous().shape());
         reward = null;
     }
 

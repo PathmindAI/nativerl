@@ -213,12 +213,14 @@ public class AnyLogicHelper {
             + classSnippet
             + "\n"
             + "    public " + className + "() {\n"
-            + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
+            + "        super(" + (continuousActions > 0 ? "getContinuousSpace(" + continuousActions
+                            : "getDiscreteSpace(" + discreteActions) + "), getContinuousSpace(" + continuousObservations + "));\n"
             + "        System.setProperty(\"ai.skymind.nativerl.disablePolicyHelper\", \"true\");\n"
             + "    }\n"
             + "\n"
             + "    public " + className + "(PolicyHelper policyHelper) {\n"
-            + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
+            + "        super(" + (continuousActions > 0 ? "getContinuousSpace(" + continuousActions
+                            : "getDiscreteSpace(" + discreteActions) + "), getContinuousSpace(" + continuousObservations + "));\n"
             + "        this.policyHelper = policyHelper;\n"
             + "    }\n"
             + "\n"
@@ -289,11 +291,20 @@ public class AnyLogicHelper {
                 + "        double[] reward = new double[(int)action.length()];\n"
                 + "        engine.runFast();\n"
                 + "        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        int[] array = new int[(int)action.length()];\n"
-                + "        for (int i = 0; i < array.length; i++) {\n"
-                + "            array[i] = (int)action.data().get(i);\n"
-                + "        }\n"
-                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
+                + (continuousActions > 0
+                    ? "        int agentsize = (int)action.shape().get(0);\n"
+                    + "        int actionsize = (int)action.shape().get(1);\n"
+                    + "        double[][] array = new double[agentsize][actionsize];\n"
+                    + "        for (int i = 0; i < action.length(); i++) {\n"
+                    + "            array[i / actionsize][i % actionsize] = action.data().get(i);\n"
+                    + "        }\n"
+                    + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
+
+                    : "        int[] array = new int[(int)action.length()];\n"
+                    + "        for (int i = 0; i < array.length; i++) {\n"
+                    + "            array[i] = (int)action.data().get(i);\n"
+                    + "        }\n"
+                    + "        PathmindHelperRegistry.getHelper().doAction(array);\n")
                 + "        engine.runFast();\n"
                 + "        double[][] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"
@@ -311,11 +322,18 @@ public class AnyLogicHelper {
                 + "    }\n"
                 + "\n"
 
-                : "    @Override public float step(long action) {\n"
+                : "    @Override public float step(" + (continuousActions > 0 ? "Array" : "long") + "action) {\n"
                 + "        double reward = 0;\n"
                 + "        engine.runFast();\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
+                + (continuousActions > 0
+                    ? "        double[] array = new double[(int)action.length()];\n"
+                    + "        for (int i = 0; i < array.length; i++) {\n"
+                    + "            array[i] = action.data().get(i);\n"
+                    + "        }\n"
+                    + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
+
+                    : "        PathmindHelperRegistry.getHelper().doAction((int)action);\n")
                 + "        engine.runFast();\n"
                 + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"

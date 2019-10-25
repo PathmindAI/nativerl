@@ -503,7 +503,10 @@ public class RLlibHelper {
             + "        self.nativeEnv = nativerl.createEnvironment('" + environment.getClass().getName() + "')\n"
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
             + "        observationSpace = self.nativeEnv.getObservationSpace()\n"
-            + "        self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
+            + "        if isinstance(actionSpace, nativerl.Discrete):\n"
+            + "            self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
+            + "        else:\n"
+            + "            self.action_space = gym.spaces.Box(actionSpace.low[0], actionSpace.high[0], numpy.array(actionSpace.shape), dtype=numpy.float32)\n"
             + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
@@ -522,7 +525,11 @@ public class RLlibHelper {
                 : "        return numpy.array(self.nativeEnv.getObservation())\n")
             + "    def step(self, action):\n"
             + (multiAgent
-                ? "        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)\n"
+                ? "        if isinstance(self.action_space, gym.spaces.Discrete):\n"
+                + "            n = 1\n"
+                + "        else:\n"
+                + "            n = self.action_space.shape[0]\n"
+                + "        actionarray = numpy.ndarray(shape=(len(action), n), dtype=numpy.float32)\n"
                 + "        for i in range(0, actionarray.shape[0]):\n"
                 + "            actionarray[i,:] = action[str(i)].astype(numpy.float32)\n"
                 + "        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
@@ -534,7 +541,10 @@ public class RLlibHelper {
                 + "            rewarddict[str(i)] = reward[i]\n"
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
-                : "        reward = self.nativeEnv.step(action)\n"
+                : "        if isinstance(self.action_space, gym.spaces.Discrete):\n"
+                + "            reward = self.nativeEnv.step(action)\n"
+                + "        else:\n"
+                + "            reward = self.nativeEnv.step(nativerl.Array(action.astype(numpy.float32)))\n"
                 + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
             + "\n"
             + "# Make sure multiple processes can read the database from AnyLogic\n"

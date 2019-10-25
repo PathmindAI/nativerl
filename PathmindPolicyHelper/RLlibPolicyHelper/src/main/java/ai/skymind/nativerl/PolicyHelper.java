@@ -24,6 +24,22 @@ public interface PolicyHelper {
         return computeDiscreteAction(s);
     }
 
+    default public double[][] computeContinuousAction(double[][] state) {
+        double[][] actions = new double[state.length][];
+        for (int i = 0; i < state.length; i++) {
+            float[] s = new float[state[i].length];
+            for (int j = 0; j < state[i].length; j++) {
+                s[j] = (float)state[i][j];
+            }
+            float[] a = computeContinuousAction(s);
+            actions[i] = new double[a.length];
+            for (int j = 0; j < actions[i].length; j++) {
+                actions[i][j] = a[j];
+            }
+        }
+        return actions;
+    }
+
     default public int[] computeDiscreteAction(double[][] state) {
         int[] actions = new int[state.length];
         for (int i = 0; i < state.length; i++) {
