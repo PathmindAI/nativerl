@@ -21,6 +21,11 @@ public class NativeRL extends ai.skymind.nativerl.NativeRLPresets {
 // #define NATIVERL_H
 
 // #include <vector>
+
+/**
+ * This is the main C++ interface implemented, for example, in Java via JavaCPP,
+ * and used in Python by, for example, RLlib via pybind11.
+ */
 // Targeting Array.java
 
 
@@ -34,7 +39,10 @@ public class NativeRL extends ai.skymind.nativerl.NativeRLPresets {
 
 
 
+/** Helper method to cast dynamically a Space object into Continuous. */
 
+
+/** Helper method to cast dynamically a Space object into Discrete. */
 
 // Targeting Environment.java
 

@@ -4,6 +4,9 @@ import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
 import org.bytedeco.javacpp.tools.*;
 
+/**
+ * This file basically contains the configuration to map the API from nativerl.h to Java using JavaCPP.
+ */
 @Properties(
     value = @Platform(
         compiler = "cpp11",

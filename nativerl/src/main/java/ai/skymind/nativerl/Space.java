@@ -9,6 +9,7 @@ import org.bytedeco.javacpp.annotation.*;
 import static ai.skymind.nativerl.NativeRL.*;
 
 
+/** Base class for the Continuous and Discrete classes. */
 @Namespace("nativerl") @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class Space extends Pointer {
     static { Loader.load(); }

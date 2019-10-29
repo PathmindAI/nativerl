@@ -9,6 +9,10 @@ import org.bytedeco.javacpp.annotation.*;
 import static ai.skymind.nativerl.NativeRL.*;
 
 
+/**
+ * Describes a continuous space for both state and action spaces. Includes low and high
+ * values for all elements, as well as the shape of the Array required by the Environment.
+ */
 @Namespace("nativerl") @NoOffset @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class Continuous extends Space {
     static { Loader.load(); }
