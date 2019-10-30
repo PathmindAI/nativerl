@@ -347,7 +347,7 @@ public class AnyLogicHelper {
                 + "    }\n"
                 + "\n"
 
-                : "    @Override public float step(" + (continuousActions > 0 ? "Array" : "long") + "action) {\n"
+                : "    @Override public Array step(" + (continuousActions > 0 ? "Array" : "long") + " action) {\n"
                 + "        double reward = 0;\n"
                 + "        engine.runFast();\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
@@ -364,7 +364,11 @@ public class AnyLogicHelper {
                 + "\n"
                 + rewardSnippet
                 + "\n"
-                + "        return (float)reward;\n"
+                + "        if (this.reward == null || this.reward.length() != 1) {\n"
+                + "            this.reward = new Array(new SSizeTVector().put(1));\n"
+                + "        }\n"
+                + "        this.reward.data().put(reward);\n"
+                + "        return this.reward;\n"
                 + "    }\n"
                 + "\n")
             + "    public double[] test() {\n"

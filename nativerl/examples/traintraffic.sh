@@ -81,7 +81,6 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --agent-class-name "$AGENT_CLASS" \
     --continuous-actions 1 \
-#    --discrete-actions 2 \
     --continuous-observations 10 \
     --step-time 10 \
     --stop-time 28800 \
