@@ -1,0 +1,8 @@
+io:
+  skymind:
+    pathmind:
+      model-analyzer:
+        swagger:
+          title: Pathmind model analyzer
+          description: A service that processes an AnyLogic model to extract data needed to be used in Pathmind Platform
+          base-package: io.skymind.pathmind.analyzer
