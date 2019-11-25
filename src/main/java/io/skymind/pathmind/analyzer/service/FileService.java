@@ -67,8 +67,6 @@ public class FileService {
         FileCopyUtils.copy(scriptFile, newFile);
 
         final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath()};
-        log.info(newFile.getAbsolutePath());
-        log.info(newFile.getParentFile().getAbsolutePath());
         final Process proc = Runtime.getRuntime().exec(cmd);
         final List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
