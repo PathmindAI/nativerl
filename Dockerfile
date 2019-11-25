@@ -1,14 +1,27 @@
+# syntax = docker/dockerfile:1.0-experimental
+
 FROM azul/zulu-openjdk:11.0.3
-VOLUME /tmp
 
-# Install all required dependencies into lib/pathmind directory
-ARG THIRD_PARTY_DEPENDENCIES=pathmind-lib
-COPY ${THIRD_PARTY_DEPENDENCIES} lib/pathmind
-
-# Install needed tools
+# Install all required tools and dependencies
 RUN apt-get update && apt-get install -y \
-    unzip
+    unzip \
+    curl \
+ && rm -rf /var/lib/apt/lists/*
+ 
+WORKDIR /lib/pathmind
 
+RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/kuQJAd/contents/ -o PathmindPolicy.jar
+
+RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/jKjXa/contents/ -o nativerl-1.0.0-SNAPSHOT-bin.zip \
+&& unzip nativerl-1.0.0-SNAPSHOT-bin.zip \
+&& rm nativerl-1.0.0-SNAPSHOT-bin.zip
+
+RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/FcrKm/contents/ -o baseEnv.zip \
+ && unzip baseEnv.zip \
+ && rm baseEnv.zip
+ 
+WORKDIR /
+ 
 # Copy a script which executes extraction JAR
 ARG SCRIPT=src/main/resources/scripts/check_model.sh
 COPY ${SCRIPT} bin
