@@ -34,6 +34,6 @@ To run local service instance using IDE:
 
 ### Building docker image
 
-* Create `/pathmind-lib` folder contains `baseEnv`, `nativer-bin`, `PathmindPolicy`
 * Run maven `package` goal to create new `jar` version 
-* At `Dockerfile` directory level run `$ docker build -t pathmind-model-analyzer .`
+* Prepare `file` contains credentials to `Rescale API`, it should contains following content `Authorization: Token {token}` where `{token}` is a valid key to `Rescale`
+* At `Dockerfile` directory level run `$ docker build --secret id=rescale_token,src[path_to_file_with_secret] -t pathmind-model-analyzer .`
