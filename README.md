@@ -11,6 +11,7 @@ It requires one input `file` which has to be a valid ZIP file. In case of succes
 
 ## Setting up local env
 ### Docker container
+Install `pathmind-model-analyzer` docker image using [GitHub package](https://github.com/SkymindIO/pathmind-model-analyzer/packages/63675).<br/>
 To run a service into docker container run:
 ```bash
 $ docker run -p <HOST_PORT>:8080 pathmind-model-analyzer
