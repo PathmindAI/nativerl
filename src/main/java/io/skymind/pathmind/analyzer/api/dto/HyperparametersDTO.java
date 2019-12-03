@@ -26,7 +26,14 @@ public class HyperparametersDTO {
     private String observations;
 
 
-    public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList){
-       return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1));
+    @ApiModelProperty(value = "Reward function definition", required =
+            true)
+    @NotBlank(message = "Reward function definition cannot be blank")
+    private String rewardFunction;
+
+
+    public static HyperparametersDTO of(@NotEmpty final List<String> hyperparametersList) {
+        return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1),
+                hyperparametersList.get(2));
     }
 }

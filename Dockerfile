@@ -13,12 +13,14 @@ WORKDIR /lib/pathmind
 RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/kuQJAd/contents/ -o PathmindPolicy.jar
 
 RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/jKjXa/contents/ -o nativerl-1.0.0-SNAPSHOT-bin.zip \
-&& unzip nativerl-1.0.0-SNAPSHOT-bin.zip \
-&& rm nativerl-1.0.0-SNAPSHOT-bin.zip
+ && unzip nativerl-1.0.0-SNAPSHOT-bin.zip \
+ && rm nativerl-1.0.0-SNAPSHOT-bin.zip
 
 RUN --mount=type=secret,id=rescale_token,required,dst=/tmp/rescale_api_token.txt curl -s -H @/tmp/rescale_api_token.txt https://platform.rescale.jp/api/v2/files/FcrKm/contents/ -o baseEnv.zip \
  && unzip baseEnv.zip \
  && rm baseEnv.zip
+
+RUN curl -s https://www.benf.org/other/cfr/cfr-0.148.jar -o cfr-0.148.jar
  
 WORKDIR /
  
