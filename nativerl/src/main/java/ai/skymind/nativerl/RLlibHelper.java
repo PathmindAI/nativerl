@@ -535,6 +535,7 @@ public class RLlibHelper {
             + "        'train_batch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
             + "        'model': model,\n"
             + "        'sample_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
+            + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
             + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
