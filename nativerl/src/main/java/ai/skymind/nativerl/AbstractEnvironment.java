@@ -6,8 +6,7 @@ public abstract class AbstractEnvironment extends Environment {
     }
 
     public static Continuous getContinuousSpace(long n) {
-        return getContinuousSpace(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, n); // Remove bounds
-        // return getContinuousSpace(-1.0f, 1.0f, n); // Bound between -1 and 1
+        return getContinuousSpace(Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, n);
     }
 
     public static Continuous getContinuousSpace(float low, float high, long n) {
