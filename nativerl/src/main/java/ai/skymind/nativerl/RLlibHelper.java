@@ -141,7 +141,7 @@ public class RLlibHelper {
     int[] trainBatchSizes = {128};
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
-    int sampleBatchSize = 4000;
+    int sampleBatchSize = 32;
     int maxIterations = 500;
     int maxTimeInSec = -1;
     double maxRewardMean = Double.POSITIVE_INFINITY;
@@ -692,7 +692,7 @@ public class RLlibHelper {
             } else if ("--redis-address".equals(args[i])) {
                 helper.redisAddress(args[++i]);
             } else if ("--custom-parameters".equals(args[i])) {
-                helper.customParameters(args[++i]);                
+                helper.customParameters(args[++i]);
             } else if ("--subcombinations".equals(args[i])) {
                 subcombinations = true;
             } else {
