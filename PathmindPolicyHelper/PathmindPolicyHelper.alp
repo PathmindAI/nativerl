@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201712" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -211,38 +211,8 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1563523942386</Id>
-							<Label><![CDATA[Enabled]]></Label>
+							<Label><![CDATA[isEnabled]]></Label>
 							<EditorContolType>CHECK_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1566825577748</Id>
-					<Name><![CDATA[possibleActionCount]]></Name>
-					<X>20</X><Y>280</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1566825577746</Id>
-							<Label><![CDATA[Number of actions]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -290,6 +260,44 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 									<Code><![CDATA[false]]></Code>
 								</Value>
 							</PredefParamValue>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566825577748</Id>
+					<Name><![CDATA[possibleActionCount]]></Name>
+					<X>20</X><Y>280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1566825577746</Id>
+							<Label><![CDATA[possibleActionCount]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -347,15 +355,9 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[new double[]{
-/* write your normalized observations here or delete this
-entire section and call a function that returns a double[] */
-}]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1563523991193</Id>
-							<Label><![CDATA[RL Observations]]></Label>
+							<Label><![CDATA[observation for Training]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -376,15 +378,9 @@ entire section and call a function that returns a double[] */
 						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[new double[]{
-/* write your observations(need not be normalized) here or delete this
-entire section and call a function that returns a double[] */
-}]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566471864341</Id>
-							<Label><![CDATA[RL Reward variables]]></Label>
+							<Label><![CDATA[observation for Reward]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -405,24 +401,13 @@ entire section and call a function that returns a double[] */
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[switch (action) {
-	case 0:
-	// write actions that RL can perform between two observations
-		break;
-	case 1:
-	/* can add as many actions, or delete this sections and call a 
-	function that has an int as an argument. */
-		break;
-}]]></Code>
-						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
 							<Type><![CDATA[int]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
-							<Label><![CDATA[RL Actions]]></Label>
+							<Label><![CDATA[doAction]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -443,8 +428,7 @@ entire section and call a function that returns a double[] */
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[getEngine().getStopTime() <= time()
-// can be any time or a condition to reset the simulation.]]></Code>
+							<Code><![CDATA[getEngine().getStopTime() <= time()]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566471148669</Id>
@@ -456,145 +440,7 @@ entire section and call a function that returns a double[] */
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573849287879</Id>
-					<Name><![CDATA[customEventTrigger]]></Name>
-					<Description><![CDATA[Should the policy be used?]]></Description>
-					<X>20</X><Y>370</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573849287877</Id>
-							<Label><![CDATA[customEvent]]></Label>
-							<EditorContolType>CHECK_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>NOT_EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>SEPARATE_SECTION</DelimeterType>
-							<StartSection><![CDATA[Event Trigger]]></StartSection>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573833451402</Id>
-					<Name><![CDATA[recurrence]]></Name>
-					<X>20</X><Y>310</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[]]></Type>
-						<UnitType><![CDATA[TIME]]></UnitType>
-						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeUnitValue">
-							<Code><![CDATA[]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573833451400</Id>
-							<EditorContolType>UNIT_EDITOR</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1573849287879</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573833780188</Id>
-					<Name><![CDATA[eventCondition]]></Name>
-					<X>20</X><Y>340</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573833780186</Id>
-							<Label><![CDATA[event condition]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1573849287879</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
 			</Variables>
-			<Events>
-				<Event>
-					<Id>1573748399465</Id>
-					<Name><![CDATA[triggerAction]]></Name>
-					<X>660</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties TriggerType="timeout" Mode="cyclic">
-						<Timeout Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
-						</Timeout>
-						<Rate Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="RateUnits"><![CDATA[PER_MINUTE]]></Unit>
-						</Rate>
-						<OccurrenceAtTime>true</OccurrenceAtTime>
-						<OccurrenceDate>1566892800000</OccurrenceDate>
-						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[0]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
-						</OccurrenceTime>
-						<RecurrenceCode Class="CodeUnitValue">
-							<Code><![CDATA[30]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</RecurrenceCode>
-						<Condition><![CDATA[false]]></Condition>
-					</Properties>
-					<Action><![CDATA[if (eventCondition()) {
-	this.triggerNextAction();
-}]]></Action>
-				</Event>
-			</Events>
 			<DynamicEvents>
 				<DynamicEventClass>
 					<Id>1566552542751</Id>
@@ -843,10 +689,10 @@ return "PathmindHelper:\n"
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
+					<ParameterName><![CDATA[usePolicy]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[usePolicy]]></ParameterName>
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>			
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
@@ -862,15 +708,6 @@ return "PathmindHelper:\n"
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[customEventTrigger]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[recurrence]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[eventCondition]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -1000,7 +837,7 @@ public class PathmindHelperRegistry {
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>25</VersionBuild>
+			<VersionBuild>24</VersionBuild>
 			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
