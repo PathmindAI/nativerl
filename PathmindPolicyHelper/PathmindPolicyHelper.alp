@@ -184,43 +184,13 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1566468010477</Id>
 					<Name><![CDATA[action]]></Name>
-					<X>170</X><Y>70</Y>
+					<X>160</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[int[]]]></Type>        
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1578425082743</Id>
-					<Name><![CDATA[steps]]></Name>
-					<X>170</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[0]]></Code>
-						</InitialValue>
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1578431244660</Id>
-					<Name><![CDATA[done]]></Name>
-					<X>170</X><Y>130</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[isDone()]]></Code>
-						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -637,8 +607,7 @@ condition is checked.
 					</Properties>
 					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
 	this.triggerNextAction();
-	steps ++;
-}    ]]></Action>
+}]]></Action>
 				</Event>
 			</Events>
 			<DynamicEvents>
@@ -715,35 +684,25 @@ condition is checked.
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1566470575833</Id>
 					<Name><![CDATA[toString]]></Name>
-					<X>170</X><Y>160</Y>
+					<X>160</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[double[][] training = observationForTraining();
-double[][] reward = observationForReward();  
+double[][] reward = observationForReward();
 
-// Hide logging when training in Pathmind
-if (isTraining == false) {
-	String output = new String("Pathmind:\n"
-	      +"  Step: "+steps + "\n"	
-	      +"  Number of Agents: "+training.length+"\n"	      
-	      +"  Observations:\n"
-	      +"    Array: "+Arrays.deepToString(training)+"\n"
-	      +"    Observations Per Agent: "+training[0].length+"\n"	      
-	      +"  Reward Variables: \n"
-	      +"    Array: "+Arrays.deepToString(reward)+"\n"
-	      +"    Rewards Per Agent: "+reward[0].length+"\n"	               
-	      +"  Last Action: "+Arrays.toString(action)+"\n"
-	      +"  Done: "+isDone() + "\n");		           
-	// Reset steps to 0 upon simulation completion
-	if (done == true) {
-	  steps = 0;
-	}		      
-	return output;
-} else {
-	return "";
-}]]></Body>
+return "PathmindHelper:\n"
+      +"  last Action: "+Arrays.toString(action)+"\n"
+      +"  isDone: "+isDone() + "\n"
+      +"  observation for Training:\n"
+      +"    agents: "+training.length+"\n"
+      +"    observations per agent: "+training[0].length+"\n"
+      +"    array: "+Arrays.deepToString(training)+"\n"
+      +"  observation for Reward: \n"
+      +"    agents: "+reward.length+"\n"
+      +"    observations per agent: "+reward[0].length+"\n"
+      +"    array:"+Arrays.deepToString(reward)+"\n";]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -1074,7 +1033,7 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1111,7 +1070,7 @@ public class PathmindHelperRegistry {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
