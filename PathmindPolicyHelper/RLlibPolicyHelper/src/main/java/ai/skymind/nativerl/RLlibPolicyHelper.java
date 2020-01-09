@@ -3,7 +3,6 @@ package ai.skymind.nativerl;
 import java.io.File;
 import java.io.IOException;
 import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
 
 import org.bytedeco.tensorflow.*;
 import static org.bytedeco.tensorflow.global.tensorflow.*;

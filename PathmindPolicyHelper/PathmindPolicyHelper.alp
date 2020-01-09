@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201712" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -190,12 +190,13 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int[]]]></Type>        
+						<Type><![CDATA[int]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563523942388</Id>
 					<Name><![CDATA[isEnabled]]></Name>
+					<Description><![CDATA[Should the policy be used?]]></Description>
 					<X>20</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -210,38 +211,8 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1563523942386</Id>
-							<Label><![CDATA[Enabled]]></Label>
+							<Label><![CDATA[isEnabled]]></Label>
 							<EditorContolType>CHECK_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1566825577748</Id>
-					<Name><![CDATA[possibleActionCount]]></Name>
-					<X>20</X><Y>280</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1566825577746</Id>
-							<Label><![CDATA[Number of actions]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -296,8 +267,47 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1566825577748</Id>
+					<Name><![CDATA[possibleActionCount]]></Name>
+					<X>20</X><Y>280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1566825577746</Id>
+							<Label><![CDATA[possibleActionCount]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1563524634306</Id>
 					<Name><![CDATA[policyFile]]></Name>
+					<Description><![CDATA[Choose the policy file for ]]></Description>
 					<X>20</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -342,20 +352,12 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[][]]]></Type>
+						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* 
-Insert observations for each agent. 
-Observations must return double[][] in which:
-First [] - N agent 
-Second [] - Observations for agent N
-*/]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1563523991193</Id>
-							<Label><![CDATA[Observations]]></Label>
+							<Label><![CDATA[observation for Training]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -373,23 +375,12 @@ Second [] - Observations for agent N
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[][]]]></Type>
+						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* 
-Insert reward variables here. 
-These variables are used when you write 
-your reward function in Pathmind.
-
-Reward variablers must return double[][] in which:
-First [] - N agent 
-Second [] - Reward for agent N 
-*/]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566471864341</Id>
-							<Label><![CDATA[Reward Variables]]></Label>
+							<Label><![CDATA[observation for Reward]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -410,24 +401,13 @@ Second [] - Reward for agent N
 						<Type><![CDATA[double]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* 
-Write actions that an agent can perform. An action is 
-performed after each step (see "triggerNextaction" below).
-Must return an int[] in which each index corresponds
-to an action for a specific agent.
-
-You may use if-else statements or switch statements
-to dynamically trigger actions.
-*/]]></Code>
-						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int[]]]></Type>
+							<Type><![CDATA[int]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
-							<Label><![CDATA[Actions]]></Label>
+							<Label><![CDATA[doAction]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -448,9 +428,7 @@ to dynamically trigger actions.
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[getEngine().getStopTime() <= time()
-/* This defines the length of an episode. 
-Can be time-based (default) or conditional. */]]></Code>
+							<Code><![CDATA[getEngine().getStopTime() <= time()]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566471148669</Id>
@@ -462,154 +440,7 @@ Can be time-based (default) or conditional. */]]></Code>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573849287879</Id>
-					<Name><![CDATA[useEventTrigger]]></Name>
-					<X>20</X><Y>370</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573849287877</Id>
-							<Label><![CDATA[Use Pathmind Event Trigger]]></Label>
-							<EditorContolType>CHECK_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>SEPARATE_SECTION</DelimeterType>
-							<StartSection><![CDATA[Event Trigger]]></StartSection>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573833451402</Id>
-					<Name><![CDATA[recurrence]]></Name>
-					<X>20</X><Y>310</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[]]></Type>
-						<UnitType><![CDATA[TIME]]></UnitType>
-						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573833451400</Id>
-							<Label><![CDATA[Recurrence]]></Label>
-							<EditorContolType>UNIT_EDITOR</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1573849287879</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1573833780188</Id>
-					<Name><![CDATA[eventCondition]]></Name>
-					<X>20</X><Y>340</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true
-/* 
-Must return `true` or `false`.
-
-<-- Usage Instructions -->
-
-Option 1: Set the recurrence time to automatically
-trigger next action periodically. We recommend
-the default of once per second.
-
-Option 2: Trigger next action based on a condition.
-For example:
- if(agent.inState(agent.state)){
-	return true;
- }
-The recurrence time determines how often this
-condition is checked. 
-*/]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1573833780186</Id>
-							<Label><![CDATA[Event Condition]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1573849287879</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
 			</Variables>
-			<Events>
-				<Event>
-					<Id>1573748399465</Id>
-					<Name><![CDATA[triggerAction]]></Name>
-					<X>660</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties TriggerType="timeout" Mode="cyclic">
-						<Timeout Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
-						</Timeout>
-						<Rate Class="CodeUnitValue">
-							<Code><![CDATA[1]]></Code>
-							<Unit Class="RateUnits"><![CDATA[PER_MINUTE]]></Unit>
-						</Rate>
-						<OccurrenceAtTime>true</OccurrenceAtTime>
-						<OccurrenceDate>1566892800000</OccurrenceDate>
-						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[0]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
-						</OccurrenceTime>
-						<RecurrenceCode Class="CodeUnitValue">
-							<Code><![CDATA[recurrence(SECOND)]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
-						</RecurrenceCode>
-						<Condition><![CDATA[false]]></Condition>
-					</Properties>
-					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
-	this.triggerNextAction();
-}]]></Action>
-				</Event>
-			</Events>
 			<DynamicEvents>
 				<DynamicEventClass>
 					<Id>1566552542751</Id>
@@ -648,13 +479,11 @@ condition is checked.
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
 		// No trainer to do that for us, so we do it ourselves
-	    action = policyHelper.computeDiscreteAction(observationForTraining());
+	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
     }else{
     	if(!usePolicy){
-    		double[][] obs = observationForTraining();
-    		action = new int[obs.length];
-    		Arrays.setAll(action, i -> getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount));
+    		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
     		doAction(action);
     	}
     }
@@ -689,20 +518,18 @@ condition is checked.
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double[][] training = observationForTraining();
-double[][] reward = observationForReward();
+					<Body><![CDATA[double[] training = observationForTraining();
+double[] reward = observationForReward();
 
 return "PathmindHelper:\n"
-      +"  last Action: "+Arrays.toString(action)+"\n"
+      +"  last Action: "+action+"\n"
       +"  isDone: "+isDone() + "\n"
       +"  observation for Training:\n"
-      +"    agents: "+training.length+"\n"
-      +"    observations per agent: "+training[0].length+"\n"
-      +"    array: "+Arrays.deepToString(training)+"\n"
+      +"    size: "+training.length+"\n"
+      +"    array: "+Arrays.toString(training)+"\n"
       +"  observation for Reward: \n"
-      +"    agents: "+reward.length+"\n"
-      +"    observations per agent: "+reward[0].length+"\n"
-      +"    array:"+Arrays.deepToString(reward)+"\n";]]></Body>
+      +"    size: "+reward.length+"\n"
+      +"    array:"+Arrays.toString(reward)+"\n";]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
@@ -862,20 +689,16 @@ return "PathmindHelper:\n"
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
+					<ParameterName><![CDATA[usePolicy]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[usePolicy]]></ParameterName>
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>			
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[observationForTraining]]></ParameterName>
-					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[/* Insert observations for each agent. 
-Observations must be in the form of double[][]. Please include any observations that you believe will help the agent learn better. */]]></Code>
-					</ParameterValue>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[observationForReward]]></ParameterName>
@@ -885,15 +708,6 @@ Observations must be in the form of double[][]. Please include any observations 
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[useEventTrigger]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[recurrence]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[eventCondition]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -1003,8 +817,8 @@ public class PathmindHelperRegistry {
 		<!--   =========   Library   ========  -->
 		<Library>
 			<Id>1563529858312</Id>
-			<Name><![CDATA[Pathmind]]></Name>
-			<Description><![CDATA[Apply Reinforcement Learning to AnyLogic Simulations]]></Description>
+			<Name><![CDATA[Pathmind Policy]]></Name>
+			<Description><![CDATA[INTERNAL USE ONLY]]></Description>
 			<AOCEntry>
 				<ActiveObjectClassId>1563523926930</ActiveObjectClassId>
 				<Icon16ResourceReference>
@@ -1021,10 +835,10 @@ public class PathmindHelperRegistry {
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[pathmind-16x16.gif]]></ClassName>
 			</IconResourceReference>
-			<VersionMajor>1</VersionMajor>
+			<VersionMajor>0</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>0</VersionBuild>
-			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
+			<VersionBuild>24</VersionBuild>
+			<Provider><![CDATA[Skymind]]></Provider>    
 		</Library>
 	</Libraries>
 	<ModelResources>
@@ -1033,7 +847,7 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1070,7 +884,7 @@ public class PathmindHelperRegistry {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[nativerl-1.0.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>

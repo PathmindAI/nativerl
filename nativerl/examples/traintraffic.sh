@@ -1,7 +1,6 @@
 OUTPUT_DIR="$(pwd)"
-MODEL_PACKAGE="traffic_light_opt"
-ENVIRONMENT_CLASS="$MODEL_PACKAGE.PathmindEnvironment"
-AGENT_CLASS="$MODEL_PACKAGE.Main"
+ENVIRONMENT_CLASS="traffic_light_opt.TrafficEnvironment"
+AGENT_CLASS="traffic_light_opt.Main"
 
 CLASS_SNIPPET='
     int simCount = 0;
@@ -21,7 +20,7 @@ RESET_SNIPPET='
 '
 
 REWARD_SNIPPET='
-    double[] s0 = before[0], s1 = after[0];
+    double[] s0 = state0[0], s1 = state1[0];
     // change in forward + intersection delay
     double delay0 = s0[0] + s0[2] + s0[4] + s0[6] + s0[8];
     double delay1 = s1[0] + s1[2] + s1[4] + s1[6] + s1[8];
@@ -34,46 +33,6 @@ REWARD_SNIPPET='
 METRICS_SNIPPET='
     metrics = new double[] { agent.tisDS.getYMean() };
 '
-
-mkdir -p $MODEL_PACKAGE
-
-cat <<EOF > $MODEL_PACKAGE/Training.java
-package $MODEL_PACKAGE;
-import com.anylogic.engine.AgentConstants;
-import com.anylogic.engine.AnyLogicInternalCodegenAPI;
-import com.anylogic.engine.Engine;
-import com.anylogic.engine.ExperimentCustom;
-import com.anylogic.engine.Utilities;
-
-public class Training extends ExperimentCustom {
-    @AnyLogicInternalCodegenAPI
-    public static String[] COMMAND_LINE_ARGUMENTS_xjal = new String[0];
-
-    public Training(Object parentExperiment) {
-        super(parentExperiment);
-        this.setCommandLineArguments_xjal(COMMAND_LINE_ARGUMENTS_xjal);
-    }
-
-    public void run() {
-    }
-
-    @AnyLogicInternalCodegenAPI
-    public void setupEngine_xjal(Engine engine) {
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
-    }
-
-    @AnyLogicInternalCodegenAPI
-    public static void main(String[] args) {
-        COMMAND_LINE_ARGUMENTS_xjal = args;
-        Utilities.prepareBeforeExperimentStart_xjal(Training.class);
-        Training ex = new Training((Object)null);
-        ex.setCommandLineArguments_xjal(args);
-        ex.run();
-    }
-}
-EOF
 
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
