@@ -146,6 +146,7 @@ public class RLlibHelper {
     int savePolicyInterval = 100;
     String redisAddress = null;
     String customParameters = "";
+    boolean multiAgent = false;
 
     static <T> List<List<T>> subcombinations(List<T> input, int length, int start, List<T> temp) {
         List<List<T>> output = new ArrayList<List<T>>();
@@ -454,6 +455,14 @@ public class RLlibHelper {
         return this;
     }
 
+    public boolean isMultiAgent() {
+        return multiAgent;
+    }
+    public RLlibHelper setMultiAgent(boolean multiAgent) {
+        this.multiAgent = multiAgent;
+        return this;
+    }
+
     public String hiddenLayers() {
         String s = "[";
         for (int i = 0; i < numHiddenLayers; i++) {
@@ -479,12 +488,13 @@ public class RLlibHelper {
             throw new IllegalStateException("Environment is null.");
         }
         String trainer = "import glob, gym, nativerl, numpy, ray, sys, os\n"
+            + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
             + "\n"
             + "jardir = os.getcwd()\n"
             + "\n"
-            + "class " + environment.getClass().getSimpleName() + "(gym.Env):\n"
+            + "class " + environment.getClass().getSimpleName() + "(" + (multiAgent ? "MultiAgentEnv" : "gym.Env") + "):\n"
             + "    def __init__(self, env_config):\n"
             + "        # Put all JAR files found here in the class path\n"
             + "        jars = glob.glob(jardir + '/**/*.jar', recursive=True)\n"
@@ -497,13 +507,33 @@ public class RLlibHelper {
             + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
-            + "        self.unwrapped.spec = self\n"
+            + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
-            + "        return numpy.array(self.nativeEnv.getObservation())\n"
+            + (multiAgent
+                ? "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                + "        obsdict = {}\n"
+                + "        for i in range(0, obs.shape[0]):\n"
+                + "            obsdict[str(i)] = obs[i]\n"
+                + "        return obsdict\n"
+
+                : "        return numpy.array(self.nativeEnv.getObservation())\n")
             + "    def step(self, action):\n"
-            + "        reward = self.nativeEnv.step(action)\n"
-            + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n"
+            + (multiAgent
+                ? "        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)\n"
+                + "        for i in range(0, actionarray.shape[0]):\n"
+                + "            actionarray[i,:] = action[str(i)].astype(numpy.float32)\n"
+                + "        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
+                + "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                + "        obsdict = {}\n"
+                + "        rewarddict = {}\n"
+                + "        for i in range(0, obs.shape[0]):\n"
+                + "            obsdict[str(i)] = obs[i]\n"
+                + "            rewarddict[str(i)] = reward[i]\n"
+                + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
+
+                : "        reward = self.nativeEnv.step(action)\n"
+                + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
             + "\n"
             + "# Make sure multiple processes can read the database from AnyLogic\n"
             + "with open('database/db.properties', 'r+') as f:\n"
@@ -583,6 +613,7 @@ public class RLlibHelper {
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
+                System.out.println("    --multi-agent");
                 System.out.println("    --subcombinations");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
@@ -638,6 +669,8 @@ public class RLlibHelper {
                 helper.redisAddress(args[++i]);
             } else if ("--custom-parameters".equals(args[i])) {
                 helper.customParameters(args[++i]);
+            } else if ("--multi-agent".equals(args[i])) {
+                helper.multiAgent = true;
             } else if ("--subcombinations".equals(args[i])) {
                 subcombinations = true;
             } else {

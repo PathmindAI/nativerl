@@ -75,7 +75,7 @@ public:
     virtual bool isDone() = 0;
     virtual void reset() = 0;
     virtual float step(ssize_t action) = 0;
-    virtual float step(const Array& action) = 0;
+    virtual const Array& step(const Array& action) = 0;
 };
 
 // typedef Environment* (*CreateEnvironment)(const char* name);

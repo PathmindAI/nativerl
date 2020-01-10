@@ -23,6 +23,7 @@ public class AnyLogicHelper {
     String policyHelper = null;
     int testIterations = 10;
     boolean stepless = false;
+    boolean multiAgent = false;
 
     public String environmentClassName() {
         return environmentClassName;
@@ -144,6 +145,13 @@ public class AnyLogicHelper {
         this.stepless = stepless;
     }
 
+    public boolean isMultiAgent() {
+        return multiAgent;
+    }
+    public AnyLogicHelper setMultiAgent(boolean multiAgent) {
+        this.multiAgent = multiAgent;
+        return this;
+    }
 
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         int n = agentClassName.lastIndexOf(".");
@@ -152,9 +160,15 @@ public class AnyLogicHelper {
 
         Class.forName((packageName != null ? packageName + "." : "") + "Training");
         Class c = Class.forName(agentClassName);
-        c.getDeclaredMethod("doAction", int.class);
+        if (multiAgent) {
+            c.getDeclaredMethod("doAction", int[].class);
+        } else {
+            c.getDeclaredMethod("doAction", int.class);
+        }
         Method m = c.getDeclaredMethod("getObservation", boolean.class);
-        if (m.getReturnType() != double[].class) {
+        if (multiAgent && m.getReturnType() != double[][].class) {
+            throw new NoSuchMethodException(m + " must return " + double[][].class);
+        } else if (!multiAgent && m.getReturnType() != double[].class) {
             throw new NoSuchMethodException(m + " must return " + double[].class);
         }
         Field f = c.getDeclaredField("policyHelper");
@@ -213,16 +227,32 @@ public class AnyLogicHelper {
             + "        engine.stop();\n"
             + "    }\n"
             + "\n"
-            + "    @Override public Array getObservation() {\n"
-            + "        double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();\n"
-            + "        float[] array = new float[obs.length];\n"
-            + "        for (int i = 0; i < obs.length; i++) {\n"
-            + "            array[i] = (float)obs[i];\n"
-            + "        }\n"
-            + "        observation.data().put(array);\n"
-            + "        return observation;\n"
-            + "    }\n"
-            + "\n"
+            + (multiAgent
+                ? "    @Override public Array getObservation() {\n"
+                + "        double[][] obs = PathmindHelperRegistry.getHelper().observationForTraining();\n"
+                + "        int obssize = obs[0].length;\n"
+                + "        float[] array = new float[obs.length * obssize];\n"
+                + "        for (int i = 0; i < array.length; i++) {\n"
+                + "            array[i] = (float)obs[i / obssize][i % obssize];\n"
+                + "        }\n"
+                + "        if (observation == null || observation.shape().size() < 2 || observation.length() != array.length) {\n"
+                + "            observation = new Array(new SSizeTVector().put(new long[] {obs.length, obssize}));\n"
+                + "        }\n"
+                + "        observation.data().put(array);\n"
+                + "        return observation;\n"
+                + "    }\n"
+                + "\n"
+
+                : "    @Override public Array getObservation() {\n"
+                + "        double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();\n"
+                + "        float[] array = new float[obs.length];\n"
+                + "        for (int i = 0; i < obs.length; i++) {\n"
+                + "            array[i] = (float)obs[i];\n"
+                + "        }\n"
+                + "        observation.data().put(array);\n"
+                + "        return observation;\n"
+                + "    }\n"
+                + "\n")
             + "    @Override public boolean isDone() {\n"
             + "        return PathmindHelperRegistry.getHelper().isDone();\n"
             + "    }\n"
@@ -246,19 +276,46 @@ public class AnyLogicHelper {
             + "        engine.start(agent);\n"
             + "    }\n"
             + "\n"
-            + "    @Override public float step(long action) {\n"
-            + "        double reward = 0;\n"
-            + "        engine.runFast();\n"
-            + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-            + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
-            + "        engine.runFast();\n"
-            + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
-            + "\n"
-            + rewardSnippet
-            + "\n"
-            + "        return (float)reward;\n"
-            + "    }\n"
-            + "\n"
+            + (multiAgent
+                ? "    @Override public Array step(Array action) {\n"
+                + "        double[] reward = new double[(int)action.length()];\n"
+                + "        engine.runFast();\n"
+                + "        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
+                + "        int[] array = new int[(int)action.length()];\n"
+                + "        for (int i = 0; i < array.length; i++) {\n"
+                + "            array[i] = (int)action.data().get(i);\n"
+                + "        }\n"
+                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
+                + "        engine.runFast();\n"
+                + "        double[][] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
+                + "\n"
+                + rewardSnippet
+                + "\n"
+                + "        float[] array2 = new float[reward.length];\n"
+                + "        for (int i = 0; i < reward.length; i++) {\n"
+                + "            array2[i] = (float)reward[i];\n"
+                + "        }\n"
+                + "        if (this.reward == null || this.reward.length() != array2.length) {\n"
+                + "            this.reward = new Array(new SSizeTVector().put(reward.length));\n"
+                + "        }\n"
+                + "        this.reward.data().put(array2);\n"
+                + "        return this.reward;\n"
+                + "    }\n"
+                + "\n"
+
+                : "    @Override public float step(long action) {\n"
+                + "        double reward = 0;\n"
+                + "        engine.runFast();\n"
+                + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
+                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
+                + "        engine.runFast();\n"
+                + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
+                + "\n"
+                + rewardSnippet
+                + "\n"
+                + "        return (float)reward;\n"
+                + "    }\n"
+                + "\n")
             + "    public double[] test() {\n"
             + "        double[] metrics = null;\n"
             + "        reset();\n"
@@ -307,6 +364,7 @@ public class AnyLogicHelper {
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --stepless");
+                System.out.println("    --multi-agent");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
                 helper.environmentClassName(args[++i]);
@@ -338,6 +396,8 @@ public class AnyLogicHelper {
                 helper.testIterations(Integer.parseInt(args[++i]));
             } else if ("--stepless".equals(args[i])) {
                 helper.setStepless(true);
+            } else if ("--multi-agent".equals(args[i])) {
+                helper.multiAgent = true;
             } else {
                 output = new File(args[i]);
             }
