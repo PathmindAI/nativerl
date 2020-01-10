@@ -78,6 +78,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --gammas $GAMMAS \
     --learning-rates $LEARNING_RATES \
     --train-batch-sizes $BATCH_SIZES \
+    --max-time-in-sec $MAX_TIME_IN_SEC \
     --multi-agent \
     rllibtrain.py
 
@@ -85,7 +86,7 @@ python3 rllibtrain.py
 
 # Execute the simulation with all models to get test metrics
 find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
-for DIR in `find "$OUTPUT_DIR" -iname model -type d`; do 
+for DIR in `find "$OUTPUT_DIR" -iname model -type d`; do
   cd $DIR
   zip -r $OLDPWD/policy.zip .
   cd $OLDPWD
