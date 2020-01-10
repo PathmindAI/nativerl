@@ -15,15 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HyperparametersDTO {
-
-    @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
-    @NotBlank(message = "Number of actions cannot be blank")
-    private String actions;
-
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
+
+    @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
+    @NotBlank(message = "Number of actions cannot be blank")
+    private String actions;
 
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList){
