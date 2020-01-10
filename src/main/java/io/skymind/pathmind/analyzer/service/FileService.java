@@ -71,7 +71,7 @@ public class FileService {
         final List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
-        if (result.size() != 2) {
+        if (!(result.size() == 2 || result.size() == 3)) {
             log.error(String.join(" ", result));
             final String errorMessage = "There was an unexpected result of extraction process";
             throw new UnexpectedScriptResultException(errorMessage);
