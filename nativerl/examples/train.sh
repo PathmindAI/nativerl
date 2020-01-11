@@ -68,6 +68,11 @@ java ai.skymind.nativerl.AnyLogicHelper \
 
 javac $(find -iname '*.java')
 
+CHECKPOINT_PARAM=""
+if [[ ! -z "$CHECKPOINT" ]]; then
+    CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
+fi
+
 java ai.skymind.nativerl.RLlibHelper \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
@@ -81,6 +86,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --multi-agent \
+    $CHECKPOINT_PARAM \
     rllibtrain.py
 
 python3 rllibtrain.py
