@@ -622,6 +622,7 @@ public class RLlibHelper {
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
             + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
             + "    checkpoint_freq=" + savePolicyInterval + ",\n"
+            + "    checkpoint_at_end=True,\n"
             + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n"
             + "\n"
