@@ -142,6 +142,7 @@ public class RLlibHelper {
     int numHiddenNodes = 256;
     int sampleBatchSize = 32;
     int maxIterations = 500;
+    int maxTimeInSec = -1;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
@@ -216,6 +217,7 @@ public class RLlibHelper {
         this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
+        this.maxTimeInSec = copy.maxTimeInSec;
         this.customParameters = copy.customParameters;
     }
 
@@ -283,6 +285,7 @@ public class RLlibHelper {
                 + "maxIterations=" + maxIterations + ", "
                 + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
+                + "maxTimeInSec=" + maxTimeInSec + ", "
                 + "redisAddress=" + redisAddress + ", "
                 + "customParameters=" + customParameters + "]";
     }
@@ -431,6 +434,15 @@ public class RLlibHelper {
         return this;
     }
 
+    public int maxTimeInSec() {
+        return maxTimeInSec;
+    }
+
+    public RLlibHelper maxTimeInSec(int maxTimeInSec) {
+        this.maxTimeInSec = maxTimeInSec;
+        return this;
+    }
+
     public int savePolicyInterval() {
         return savePolicyInterval;
     }
@@ -491,6 +503,7 @@ public class RLlibHelper {
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
+            + "from ray.tune.schedulers.trial_scheduler import FIFOScheduler\n"
             + "\n"
             + "jardir = os.getcwd()\n"
             + "\n"
@@ -535,6 +548,38 @@ public class RLlibHelper {
                 : "        reward = self.nativeEnv.step(action)\n"
                 + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
             + "\n"
+            + "class PathmindFIFO(FIFOScheduler):\n"
+            + "    def __init__(self, logpath):\n"
+            + "        # set status log file path\n"
+            + "        self.trial_list_file = os.path.join(logpath, 'trial_list')\n"
+            + "        self.trial_error_file = os.path.join(logpath,'trial_error')\n"
+            + "        self.trial_complete_file = os.path.join(logpath, 'trial_complete')\n"
+            + "\n"
+            + "        # inintialize files\n"
+            + "        open(self.trial_list_file, 'w').close()\n"
+            + "        open(self.trial_error_file, 'w').close()\n"
+            + "        open(self.trial_complete_file, 'w').close()\n"
+            + "        # whether experiment state file path is set or not\n"
+            + "        self.is_exp_state_set = False\n"
+            + "\n"
+            + "    def on_trial_add(self, trial_runner, trial):\n"
+            + "        with open(self.trial_list_file, 'a') as f:\n"
+            + "            if not self.is_exp_state_set:\n"
+            + "                self.is_exp_state_set = True\n"
+            + "                print(trial_runner.checkpoint_file, file=f)\n"
+            + "            print(str(trial), file=f)\n"
+            + "\n"
+            + "    def on_trial_error(self, trial_runner, trial):\n"
+            + "        with open(self.trial_error_file, 'a') as f:\n"
+            + "            print(str(trial.logdir), file=f)\n"
+            + "\n"
+            + "    def on_trial_complete(self, trial_runner, trial, result):\n"
+            + "        with open(self.trial_complete_file, 'a') as f:\n"
+            + "            print(trial.logdir, file=f)\n"
+            + "\n"
+            + "    def debug_string(self):\n"
+            + "        return 'Using Pathmind FIFO scheduling algorithm.'"
+            + "\n"
             + "# Make sure multiple processes can read the database from AnyLogic\n"
             + "with open('database/db.properties', 'r+') as f:\n"
             + "    lines = f.readlines()\n"
@@ -545,10 +590,14 @@ public class RLlibHelper {
             + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
+            + "\n"
+            + "pathmind_fifo = PathmindFIFO(jardir)\n"
+            + "\n"
             + "trials = ray.tune.run(\n"
             + "    '" + algorithm + "',\n"
             + "    stop={\n"
             + "         'training_iteration': " + maxIterations + ",\n"
+            + (maxTimeInSec > 0 ? "         'time_total_s': " + maxTimeInSec + ",\n" : "")
             + (Double.isFinite(maxRewardMean) ? "         'episode_reward_mean': " + maxRewardMean + ",\n" : "")
             + "    },\n"
             + "    config={\n"
@@ -566,12 +615,14 @@ public class RLlibHelper {
             + "        'model': model,\n"
             + "        'observation_filter': 'MeanStdFilter',\n"
             + "        'batch_mode': 'complete_episodes',\n"
-            + "        'vf_clip_param': numpy.inf,\n"                          
+            + "        'vf_clip_param': numpy.inf,\n"
             + "        'sample_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
             + "    },\n"
+            + "    scheduler=pathmind_fifo,\n"
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
             + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
             + "    checkpoint_freq=" + savePolicyInterval + ",\n"
+            + "    checkpoint_at_end=True,\n"
             + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n"
             + "\n"
@@ -618,6 +669,7 @@ public class RLlibHelper {
                 System.out.println("    --custom-parameters");
                 System.out.println("    --multi-agent");
                 System.out.println("    --subcombinations");
+                System.out.println("    --maxTimeInSec");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -666,6 +718,8 @@ public class RLlibHelper {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-reward-mean".equals(args[i])) {
                 helper.maxRewardMean(Double.parseDouble(args[++i]));
+            } else if ("--max-time-in-sec".equals(args[i])) {
+                helper.maxTimeInSec(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {
                 helper.savePolicyInterval(Integer.parseInt(args[++i]));
             } else if ("--redis-address".equals(args[i])) {
