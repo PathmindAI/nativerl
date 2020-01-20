@@ -68,10 +68,10 @@ java ai.skymind.nativerl.AnyLogicHelper \
 
 javac $(find -iname '*.java')
 
-CHECKPOINT_PARAM=""
-if [[ ! -z "$CHECKPOINT" ]]; then
-    CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
-fi
+# CHECKPOINT_PARAM=""
+# if [[ ! -z "$CHECKPOINT" ]]; then
+#     CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
+# fi
 
 java ai.skymind.nativerl.RLlibHelper \
     --algorithm "PPO" \

@@ -140,7 +140,7 @@ public class RLlibHelper {
     int[] trainBatchSizes = {128};
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
-    int sampleBatchSize = 32;
+    int sampleBatchSize = 4000;
     int maxIterations = 500;
     int maxTimeInSec = -1;
     double maxRewardMean = Double.POSITIVE_INFINITY;
@@ -611,12 +611,14 @@ public class RLlibHelper {
                     : !algorithm.contains("ES") && !algorithm.contains("ARS")
                             ? "        'lr': ray.tune.grid_search(" +  Arrays.toString(learningRates) + "),\n"
                             : "        # no learning rate\n")
-            + "        'train_batch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
+            + "        'sgd_minibatch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
+            // + "        'train_batch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
             + "        'model': model,\n"
             + "        'observation_filter': 'MeanStdFilter',\n"
             + "        'batch_mode': 'complete_episodes',\n"
             + "        'vf_clip_param': numpy.inf,\n"
-            + "        'sample_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
+            + "        'train_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
+            // + "        'sample_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
             + "    },\n"
             + "    scheduler=pathmind_fifo,\n"
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
