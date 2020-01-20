@@ -86,7 +86,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --multi-agent \
-    $CHECKPOINT_PARAM \
     rllibtrain.py
 
 python3 rllibtrain.py
