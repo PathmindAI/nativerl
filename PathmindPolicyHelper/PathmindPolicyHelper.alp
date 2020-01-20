@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.0.201908201752" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -220,21 +220,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<Type><![CDATA[boolean]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[isDone()]]></Code>
-						</InitialValue>
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1579540198694</Id>
-					<Name><![CDATA[debug]]></Name>
-					<X>320</X><Y>190</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
 						</InitialValue>
 					</Properties>
 				</Variable>
@@ -640,10 +625,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
 	this.triggerNextAction();
 	steps ++;
-	if (debug) {
-	trace(pathmindHelper.toString());
-	}
-}    ]]></Action>
+}    
+if (debugMode) {
+	trace(toString());
+}]]></Action>
 				</Event>
 			</Events>
 			<DynamicEvents>
