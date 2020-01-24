@@ -9,9 +9,9 @@ import java.util.List;
 import org.bytedeco.cpython.*;
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.indexer.*;
-import org.bytedeco.numpy.*;
+import org.bytedeco.np.*;
 import static org.bytedeco.cpython.global.python.*;
-import static org.bytedeco.numpy.global.numpy.*;
+import static org.bytedeco.np.global.np.*;
 
 /**
  * Currently available algorithms according to RLlib's registry.py:
@@ -50,7 +50,7 @@ public class RLlibHelper {
                     AbstractEnvironment.getContinuousSpace(continuousObservations));
         }
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String name, Space actionSpace, Space obsSpace) throws IOException {
-            File[] paths = org.bytedeco.numpy.global.numpy.cachePackages();
+            File[] paths = org.bytedeco.np.global.np.cachePackages();
             paths = Arrays.copyOf(paths, paths.length + rllibpaths.length);
             System.arraycopy(rllibpaths, 0, paths, paths.length - rllibpaths.length, rllibpaths.length);
             Py_SetPath(paths);
@@ -61,7 +61,7 @@ public class RLlibHelper {
             if (_import_array() < 0) {
                 PyErr_Print();
                 PyErr_Clear();
-                throw new RuntimeException("numpy.core.multiarray failed to import");
+                throw new RuntimeException("np.core.multiarray failed to import");
             }
             PyObject module = PyImport_AddModule("__main__");
             globals = PyModule_GetDict(module);
@@ -72,16 +72,16 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
-            PyRun_StringFlags("import gym, inspect, numpy, ray, sys\n"
+            PyRun_StringFlags("import gym, inspect, np, ray, sys\n"
                     + "from ray.rllib.agents import registry\n"
                     + "\n"
                     + "class " + name + "(gym.Env):\n"
                     + "    def __init__(self, env_config):\n"
                     + "        self.action_space = gym.spaces.Discrete(" + discreteActionSpace.n() + ")\n"
-                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "numpy.array(" + Arrays.toString(obsLow) + ")") + "\n"
-                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "numpy.array(" + Arrays.toString(obsHigh) + ")") + "\n"
-                    + "        shape = " + (obsShape.length == 0 ? "None" : "numpy.array(" + Arrays.toString(obsShape) + ")") + "\n"
-                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=numpy.float32)\n"
+                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "np.array(" + Arrays.toString(obsLow) + ")") + "\n"
+                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "np.array(" + Arrays.toString(obsHigh) + ")") + "\n"
+                    + "        shape = " + (obsShape.length == 0 ? "None" : "np.array(" + Arrays.toString(obsShape) + ")") + "\n"
+                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=np.float32)\n"
                     + "\n"
                     + "ray.init(local_mode=True)\n"
                     + "cls = registry.get_agent_class(\"" + algorithm + "\")\n"
@@ -499,7 +499,8 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, nativerl, numpy, ray, sys, os\n"
+        String trainer = "import glob, gym, nativerl, ray, sys, os\n"
+            + "import numpy as np\n"
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
@@ -517,27 +518,27 @@ public class RLlibHelper {
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
             + "        observationSpace = self.nativeEnv.getObservationSpace()\n"
             + "        self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
-            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
+            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], np.array(observationSpace.shape), dtype=np.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
             + (multiAgent
-                ? "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                ? "        obs = np.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
                 + "            obsdict[str(i)] = obs[i]\n"
                 + "        return obsdict\n"
 
-                : "        return numpy.array(self.nativeEnv.getObservation())\n")
+                : "        return np.array(self.nativeEnv.getObservation())\n")
             + "    def step(self, action):\n"
             + (multiAgent
-                ? "        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)\n"
+                ? "        actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)\n"
                 + "        for i in range(0, actionarray.shape[0]):\n"
-                + "            actionarray[i,:] = action[str(i)].astype(numpy.float32)\n"
-                + "        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
-                + "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                + "            actionarray[i,:] = action[str(i)].astype(np.float32)\n"
+                + "        reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
+                + "        obs = np.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        rewarddict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
@@ -546,7 +547,7 @@ public class RLlibHelper {
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
                 : "        reward = self.nativeEnv.step(action)\n"
-                + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
+                + "        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
                 + "\n"
                 + "class Stopper:\n"
                 + "    def __init__(self):\n"
