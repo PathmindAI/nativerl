@@ -9,9 +9,9 @@ import java.util.List;
 import org.bytedeco.cpython.*;
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.indexer.*;
-import org.bytedeco.np.*;
+import org.bytedeco.numpy.*;
 import static org.bytedeco.cpython.global.python.*;
-import static org.bytedeco.np.global.np.*;
+import static org.bytedeco.numpy.global.numpy.*;
 
 /**
  * Currently available algorithms according to RLlib's registry.py:
@@ -50,7 +50,7 @@ public class RLlibHelper {
                     AbstractEnvironment.getContinuousSpace(continuousObservations));
         }
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String name, Space actionSpace, Space obsSpace) throws IOException {
-            File[] paths = org.bytedeco.np.global.np.cachePackages();
+            File[] paths = org.bytedeco.numpy.global.numpy.cachePackages();
             paths = Arrays.copyOf(paths, paths.length + rllibpaths.length);
             System.arraycopy(rllibpaths, 0, paths, paths.length - rllibpaths.length, rllibpaths.length);
             Py_SetPath(paths);
@@ -61,7 +61,7 @@ public class RLlibHelper {
             if (_import_array() < 0) {
                 PyErr_Print();
                 PyErr_Clear();
-                throw new RuntimeException("np.core.multiarray failed to import");
+                throw new RuntimeException("numpy.core.multiarray failed to import");
             }
             PyObject module = PyImport_AddModule("__main__");
             globals = PyModule_GetDict(module);
@@ -72,7 +72,8 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
-            PyRun_StringFlags("import gym, inspect, np, ray, sys\n"
+            PyRun_StringFlags("import gym, inspect, ray, sys\n"
+                    + "import numpy as np\n"
                     + "from ray.rllib.agents import registry\n"
                     + "\n"
                     + "class " + name + "(gym.Env):\n"
@@ -104,7 +105,7 @@ public class RLlibHelper {
                 obsShape = new long[] {obsLow.length};
             }
             obsArray = new PyArrayObject(PyArray_New(PyArray_Type(), obsShape.length, new SizeTPointer(obsShape),
-                                                     NPY_FLOAT, null, null, 0, 0, null));
+                                                     NUMPY_FLOAT, null, null, 0, 0, null));
             obsData = new FloatPointer(PyArray_BYTES(obsArray)).capacity(PyArray_Size(obsArray));
             PyDict_SetItemString(globals, "obs", obsArray);
         }
