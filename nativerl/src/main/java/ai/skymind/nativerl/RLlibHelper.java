@@ -553,6 +553,7 @@ public class RLlibHelper {
                 + "\n"
                 + "class Stopper:\n"
                 + "    def __init__(self):\n"
+                + "        self.should_stop\n"
                 + "        self.too_long = False\n"
                 + "\n"
                 + "    def stop(self, trial_id, result):\n"
