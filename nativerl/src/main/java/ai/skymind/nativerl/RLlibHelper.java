@@ -626,7 +626,8 @@ public class RLlibHelper {
             + "            lambda spec: random.choice([128, 256, 512])),\n"
             + "        'train_batch_size': sample_from(\n"
             + "            lambda spec: random.choice([4000, 6000])),\n"
-            + "        'batch_mode': 'complete_episodes'\n"
+            + "        'batch_mode': 'complete_episodes',\n"
+            + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
             + "    checkpoint_freq = 1,\n"
@@ -672,6 +673,7 @@ public class RLlibHelper {
                 System.out.println("    --num-hidden-nodes");
                 System.out.println("    --sample-batch-size");
                 System.out.println("    --max-iterations");
+                System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
