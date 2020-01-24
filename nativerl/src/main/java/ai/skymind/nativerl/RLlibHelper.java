@@ -105,7 +105,7 @@ public class RLlibHelper {
                 obsShape = new long[] {obsLow.length};
             }
             obsArray = new PyArrayObject(PyArray_New(PyArray_Type(), obsShape.length, new SizeTPointer(obsShape),
-                                                     NUMPY_FLOAT, null, null, 0, 0, null));
+                                                     NPY_FLOAT, null, null, 0, 0, null));
             obsData = new FloatPointer(PyArray_BYTES(obsArray)).capacity(PyArray_Size(obsArray));
             PyDict_SetItemString(globals, "obs", obsArray);
         }
