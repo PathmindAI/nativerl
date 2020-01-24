@@ -632,9 +632,9 @@ public class RLlibHelper {
             + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
             + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
-            + "    checkpoint_freq = 1,\n"
-            + "    keep_checkpoints_num = 1,\n"
-            + "    checkpoint_score_attr = 'training_iteration',\n"
+            + "    checkpoint_freq = 100,\n"
+            + "    keep_checkpoints_num = 5,\n"
+            + "    checkpoint_score_attr = 'episode_reward_mean',\n"
             + "    resume=False,\n"
             + "    checkpoint_at_end = True,\n"
             + "    export_formats = ['model'], # Export TensorFlow SavedModel as well\n"
