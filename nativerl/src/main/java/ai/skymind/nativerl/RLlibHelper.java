@@ -500,7 +500,7 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, nativerl, ray, sys, os\n"
+        String trainer = "import glob, gym, nativerl, ray, sys, os, random\n"
             + "import numpy as np\n"
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
@@ -553,12 +553,20 @@ public class RLlibHelper {
                 + "\n"
                 + "class Stopper:\n"
                 + "    def __init__(self):\n"
-                + "        self.should_stop\n"
-                + "        self.too_long = False\n"
+                + "        self.should_stop = False\n"
+                + "        self.too_many_iter = False\n"
+                + "        self.too_much_time = False\n"
+                + "        self.too_much_reward = False\n"
                 + "\n"
                 + "    def stop(self, trial_id, result):\n"
-                + "        self.too_long = result['training_iteration'] > " + maxIterations + "\n"
-                + "        if not self.should_stop and self.too_long:\n"
+                + "        self.too_many_iter = result['training_iteration'] > " + maxIterations + "\n"
+                + (maxTimeInSec > 0
+                ? "        self.too_much_time = result['time_total_s'] > " + maxTimeInSec + "\n"
+                : "")
+                + (Double.isFinite(maxRewardMean)
+                ? "        self.too_much_reward = result['episode_reward_mean'] > " + maxRewardMean + "\n"
+                : "")
+                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_much_reward):\n"
                 + "            self.should_stop = True\n"
                 + "        return self.should_stop\n"
                 + "\n"
@@ -574,7 +582,7 @@ public class RLlibHelper {
                 + "    log_config = True,\n"
                 + "    hyperparam_mutations = {\n"
                 + "        'lambda': np.linspace(0.9, 1.0, 11).tolist(),\n"
-                + "        'lr': np.linspace(1e-6, 1e-2, 30).tolist(),\n"
+                + "        'lr': np.logspace(-7, -1, 50).tolist(),\n"
                 + "        'gamma': np.linspace(0.8, 0.9997, 9).tolist(),\n"
                 + "        'clip_param': np.linspace(0.1, 0.5, 5).tolist(),\n"
                 + "        'kl_coeff': np.linspace(0.1, 0.4, 4).tolist(),\n"
@@ -623,9 +631,9 @@ public class RLlibHelper {
             + "        'entropy_coeff': sample_from(\n"
             + "            lambda spec: random.choice(np.linspace(0, 0.07, 15).tolist())),\n"
             + "        'lr': sample_from(\n"
-            + "            lambda spec: random.choice(np.linspace(1e-6, 1e-2, 30).tolist())),\n"
+            + "            lambda spec: random.choice(np.logspace(-6, -1, 40).tolist())),\n"
             + "        'num_sgd_iter': sample_from(\n"
-            + "            lambda spec: random.choice([1, 10, 20, 30])),\n"
+            + "            lambda spec: random.choice([10, 20, 30])),\n"
             + "        'sgd_minibatch_size': sample_from(\n"
             + "            lambda spec: random.choice([128, 256, 512])),\n"
             + "        'train_batch_size': sample_from(\n"
