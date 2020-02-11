@@ -190,7 +190,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int[]]]></Type>        
+						<Type><![CDATA[int]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -262,7 +262,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<ParameterEditor>
 							<Id>1566825577746</Id>
-							<Label><![CDATA[Number of actions]]></Label>
+							<Label><![CDATA[Number of Actions]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
@@ -295,7 +295,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566825558175</Id>
-							<Label><![CDATA[actionType]]></Label>
+							<Label><![CDATA[Mode]]></Label>
 							<EditorContolType>RADIO_BUTTONS</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
@@ -372,7 +372,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[][]]]></Type>
+						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
@@ -398,7 +398,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[double[][]]]></Type>
+						<Type><![CDATA[double[]]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
@@ -428,11 +428,11 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* Set up instructions: https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int[]]]></Type>
+							<Type><![CDATA[int]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
@@ -462,7 +462,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1566471148669</Id>
-							<Label><![CDATA[isDone]]></Label>
+							<Label><![CDATA[Done]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -624,7 +624,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>
 					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
 	this.triggerNextAction();
-	steps ++;
 }    
 if (debugMode) {
 	trace(toString());
@@ -669,14 +668,14 @@ if (debugMode) {
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
 		// No trainer to do that for us, so we do it ourselves
-	    action = policyHelper.computeDiscreteAction(observationForTraining());
+	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
+	    steps ++;
     }else{
     	if(!usePolicy){
-    		double[][] obs = observationForTraining();
-    		action = new int[obs.length];
-    		Arrays.setAll(action, i -> getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount));
+    		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
     		doAction(action);
+    		steps ++;
     	}
     }
 }]]></Body>
@@ -710,21 +709,20 @@ if (debugMode) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double[][] training = observationForTraining();
-double[][] reward = observationForReward();  
+					<Body><![CDATA[double[] training = observationForTraining();
+double[] reward = observationForReward();  
 
 // Hide logging when training in Pathmind
 if (isTraining == false) {
 	String output = new String("Pathmind:\n"
-	      +"  Step: "+steps + "\n"	
-	      +"  Number of Agents: "+training.length+"\n"	      
+	      +"  Step: "+steps + "\n"	      
 	      +"  Observations:\n"
-	      +"    Array: "+Arrays.deepToString(training)+"\n"
-	      +"    Observations Per Agent: "+training[0].length+"\n"	      
+	      +"    Array: "+Arrays.toString(training)+"\n"
+	      +"    Number of Observation: "+training.length+"\n"	      
 	      +"  Reward Variables: \n"
-	      +"    Array: "+Arrays.deepToString(reward)+"\n"
-	      +"    Rewards Per Agent: "+reward[0].length+"\n"	               
-	      +"  Last Action: "+Arrays.toString(action)+"\n"
+	      +"    Array: "+Arrays.toString(reward)+"\n"
+	      +"    Number of Rewards: "+reward.length+"\n"	               
+	      +"  Last Action: "+action+"\n"
 	      +"  Done: "+isDone() + "\n");		           
 	// Reset steps to 0 upon simulation completion
 	if (done == true) {
