@@ -90,6 +90,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --learning-rates $LEARNING_RATES \
     --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
+    --num-samples $NUM_SAMPLES \
     $MULTIAGENT_PARAM \
     rllibtrain.py
 
