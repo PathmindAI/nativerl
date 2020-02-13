@@ -208,21 +208,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</InitialValue>
 					</Properties>
 				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1578431244660</Id>
-					<Name><![CDATA[done]]></Name>
-					<X>170</X><Y>130</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[isDone()]]></Code>
-						</InitialValue>
-					</Properties>
-				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563523942388</Id>
 					<Name><![CDATA[isEnabled]]></Name>
@@ -624,9 +609,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>
 					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
 	this.triggerNextAction();
-}    
-if (debugMode) {
-	trace(toString());
 }]]></Action>
 				</Event>
 			</Events>
@@ -667,17 +649,19 @@ if (debugMode) {
 	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
-		// No trainer to do that for us, so we do it ourselves
+		steps++;
 	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
-	    steps ++;
     }else{
     	if(!usePolicy){
+    		steps++;	
     		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
     		doAction(action);
-    		steps ++;
     	}
     }
+}
+if (debugMode) {
+	trace(toString());
 }]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
@@ -704,7 +688,7 @@ if (debugMode) {
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1566470575833</Id>
 					<Name><![CDATA[toString]]></Name>
-					<X>170</X><Y>160</Y>
+					<X>170</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -725,7 +709,7 @@ if (isTraining == false) {
 	      +"  Last Action: "+action+"\n"
 	      +"  Done: "+isDone() + "\n");		           
 	// Reset steps to 0 upon simulation completion
-	if (done == true) {
+	if (isDone()) {
 	  steps = 0;
 	}		      
 	return output;
