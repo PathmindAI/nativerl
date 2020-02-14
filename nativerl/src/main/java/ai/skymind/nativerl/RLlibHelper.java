@@ -144,7 +144,7 @@ public class RLlibHelper {
     int sampleBatchSize = 4000;
     int maxIterations = 500;
     int maxTimeInSec = -1;
-    int numSamples = 20;
+    int numSamples = 10;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
@@ -615,11 +615,7 @@ public class RLlibHelper {
             + "trials = run(\n"
             + "    'PPO',\n"
             + "    scheduler = pbt_scheduler,\n"
-<<<<<<< HEAD
-            + "    num_samples = 10,\n"
-=======
             + "    num_samples = " + numSamples + ",\n"
->>>>>>> 92b9ec233160ef1f56c31834c3e419cabbcb9ebc
             + "    stop = stopper.stop,\n"
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
