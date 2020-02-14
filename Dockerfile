@@ -38,6 +38,11 @@ COPY . .
 RUN mvn clean package \
   && cp target/pathmind-model-analyzer.jar ./
 
+ARG SCRIPT=src/main/resources/scripts/check_model.sh
+COPY ${SCRIPT} bin
+
+ARG EXTRACTOR_JAR=src/main/resources/hyperparameters_extractor.jar
+COPY ${EXTRACTOR_JAR} bin
 
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/pathmind-model-analyzer.jar"]
