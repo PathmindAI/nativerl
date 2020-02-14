@@ -136,12 +136,8 @@ public class RLlibHelper {
     int numGPUs = 0;
     int numWorkers = 1;
     long randomSeed = 0;
-    double[] gammas = {0.99};
-    double[] learningRates = {5e-5};
-    int[] trainBatchSizes = {128};
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
-    int sampleBatchSize = 4000;
     int maxIterations = 500;
     int maxTimeInSec = -1;
     int numSamples = 10;
@@ -150,52 +146,6 @@ public class RLlibHelper {
     String redisAddress = null;
     String customParameters = "";
     boolean multiAgent = false;
-
-    static <T> List<List<T>> subcombinations(List<T> input, int length, int start, List<T> temp) {
-        List<List<T>> output = new ArrayList<List<T>>();
-        if (temp == null) {
-            temp = new ArrayList<T>(length);
-            for (int i = 0; i < length; i++) {
-                temp.add(null);
-            }
-        }
-        if (length == 0) {
-            output.add(new ArrayList<T>(temp));
-            return output;
-        }
-        for (int i = start; i <= input.size() - length; i++) {
-            temp.set(temp.size() - length, input.get(i));
-            List<List<T>> o = subcombinations(input, length - 1, i + 1, temp);
-            if (o != null && o.size() > 0) {
-                output.addAll(o);
-            }
-        }
-        return output;
-    }
-
-    static <T> List<List<List<T>>> subcombinations(List<T> list) {
-        List<List<List<T>>> output = new ArrayList<List<List<T>>>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            output.add(subcombinations(list, i + 1, 0, null));
-        }
-        return output;
-    }
-
-    static List<List<List<Integer>>> subcombinations(int[] array) {
-        List<Integer> list = new ArrayList<Integer>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return subcombinations(list);
-    }
-
-    static List<List<List<Double>>> subcombinations(double[] array) {
-        List<Double> list = new ArrayList<Double>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return subcombinations(list);
-    }
 
     public RLlibHelper() {
     }
@@ -209,12 +159,8 @@ public class RLlibHelper {
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
         this.randomSeed = copy.randomSeed;
-        this.gammas = copy.gammas;
-        this.learningRates = copy.learningRates;
-        this.trainBatchSizes = copy.trainBatchSizes;
         this.numHiddenLayers = copy.numHiddenLayers;
         this.numHiddenNodes = copy.numHiddenNodes;
-        this.sampleBatchSize = copy.sampleBatchSize;
         this.maxIterations = copy.maxIterations;
         this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
@@ -224,54 +170,8 @@ public class RLlibHelper {
         this.numSamples = copy.numSamples;
     }
 
-    public List<RLlibHelper> createSubcombinations() {
-        List<List<List<Double>>> gammaSubcombinations = subcombinations(gammas);
-        List<List<List<Double>>> learningRateSubcombinations = subcombinations(learningRates);
-        List<List<List<Integer>>> trainBatchSizeSubcombinations = subcombinations(trainBatchSizes);
-
-        List<RLlibHelper> subcombinations = new ArrayList<RLlibHelper>();
-        for (int i = 0; i < gammaSubcombinations.size(); i++) {
-            for (int j = 0; j < learningRateSubcombinations.size(); j++) {
-                for (int k = 0; k < trainBatchSizeSubcombinations.size(); k++) {
-                    List<List<Double>> gammaCombinations = gammaSubcombinations.get(i);
-                    List<List<Double>> learningRateCombinations = learningRateSubcombinations.get(j);
-                    List<List<Integer>> trainBatchSizeCombinations = trainBatchSizeSubcombinations.get(k);
-                    for (int ii = 0; ii < gammaCombinations.size(); ii++) {
-                        for (int jj = 0; jj < learningRateCombinations.size(); jj++) {
-                            for (int kk = 0; kk < trainBatchSizeCombinations.size(); kk++) {
-                                List<Double> gammas = gammaCombinations.get(ii);
-                                List<Double> learningRates = learningRateCombinations.get(jj);
-                                List<Integer> trainBatchSizes = trainBatchSizeCombinations.get(kk);
-                                RLlibHelper r = new RLlibHelper(this);
-                                r.gammas = new double[gammas.size()];
-                                r.learningRates = new double[learningRates.size()];
-                                r.trainBatchSizes = new int[trainBatchSizes.size()];
-                                for (int n = 0; n < gammas.size(); n++) {
-                                    r.gammas[n] = gammas.get(n);
-                                }
-                                for (int n = 0; n < learningRates.size(); n++) {
-                                    r.learningRates[n] = learningRates.get(n);
-                                }
-                                for (int n = 0; n < trainBatchSizes.size(); n++) {
-                                    r.trainBatchSizes[n] = trainBatchSizes.get(n);
-                                }
-                                subcombinations.add(r);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return subcombinations;
-    }
-
-    public int numberOfTrials() {
-        return gammas.length * learningRates.length * trainBatchSizes.length;
-    }
-
     @Override public String toString() {
-        return "RLlibHelper[numberOfTrials=" + numberOfTrials() + ", "
-                + "rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
+        return "RLlibHelper[rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
                 + "algorithm=" + algorithm + ", "
                 + "outputDir=" + outputDir + ", "
                 + "checkpoint=" + checkpoint + ", "
@@ -279,12 +179,8 @@ public class RLlibHelper {
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
                 + "randomSeed=" + randomSeed + ", "
-                + "gammas=" + Arrays.toString(gammas) + ", "
-                + "learningRates=" + Arrays.toString(learningRates) + ", "
-                + "trainBatchSizes=" + Arrays.toString(trainBatchSizes) + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
-                + "sampleBatchSize=" + sampleBatchSize + ", "
                 + "maxIterations=" + maxIterations + ", "
                 + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
@@ -373,30 +269,6 @@ public class RLlibHelper {
         return this;
     }
 
-    public double[] gammas() {
-        return gammas;
-    }
-    public RLlibHelper gammas(double[] gammas) {
-        this.gammas = gammas;
-        return this;
-    }
-
-    public double[] learningRates() {
-        return learningRates;
-    }
-    public RLlibHelper learningRates(double[] learningRates) {
-        this.learningRates = learningRates;
-        return this;
-    }
-
-    public int[] trainBatchSizes() {
-        return trainBatchSizes;
-    }
-    public RLlibHelper trainBatchSizes(int[] trainBatchSizes) {
-        this.trainBatchSizes = trainBatchSizes;
-        return this;
-    }
-
     public int numHiddenLayers() {
         return numHiddenLayers;
     }
@@ -410,14 +282,6 @@ public class RLlibHelper {
     }
     public RLlibHelper numHiddenNodes(int numHiddenNodes) {
         this.numHiddenNodes = numHiddenNodes;
-        return this;
-    }
-
-    public int sampleBatchSize() {
-        return sampleBatchSize;
-    }
-    public RLlibHelper sampleBatchSize(int sampleBatchSize) {
-        this.sampleBatchSize = sampleBatchSize;
         return this;
     }
 
@@ -669,7 +533,6 @@ public class RLlibHelper {
     public static void main(String[] args) throws Exception {
         RLlibHelper helper = new RLlibHelper();
         File output = new File("rllibtrain.py");
-        boolean subcombinations = false;
         for (int i = 0; i < args.length; i++) {
             if ("-help".equals(args[i]) || "--help".equals(args[i])) {
                 System.out.println("usage: RLlibHelper [options] [output]");
@@ -682,19 +545,14 @@ public class RLlibHelper {
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
                 System.out.println("    --random-seed");
-                System.out.println("    --gammas");
-                System.out.println("    --learning-rates");
-                System.out.println("    --train-batch-sizes");
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
-                System.out.println("    --sample-batch-size");
                 System.out.println("    --max-iterations");
                 System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
                 System.out.println("    --multi-agent");
-                System.out.println("    --subcombinations");
                 System.out.println("    --maxTimeInSec");
                 System.out.println("    --num-samples");
                 System.exit(0);
@@ -714,33 +572,10 @@ public class RLlibHelper {
                 helper.numWorkers(Integer.parseInt(args[++i]));
             } else if ("--random-seed".equals(args[i])) {
                 helper.randomSeed(Long.parseLong(args[++i]));
-            } else if ("--gammas".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                double[] doubles = new double[strings.length];
-                for (int j = 0; j < doubles.length; j++) {
-                    doubles[j] = Double.parseDouble(strings[j]);
-                }
-                helper.gammas(doubles);
-            } else if ("--learning-rates".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                double[] doubles = new double[strings.length];
-                for (int j = 0; j < doubles.length; j++) {
-                    doubles[j] = Double.parseDouble(strings[j]);
-                }
-                helper.learningRates(doubles);
-            } else if ("--train-batch-sizes".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                int[] ints = new int[strings.length];
-                for (int j = 0; j < ints.length; j++) {
-                    ints[j] = Integer.parseInt(strings[j]);
-                }
-                helper.trainBatchSizes(ints);
             } else if ("--num-hidden-layers".equals(args[i])) {
                 helper.numHiddenLayers(Integer.parseInt(args[++i]));
             } else if ("--num-hidden-nodes".equals(args[i])) {
                 helper.numHiddenNodes(Integer.parseInt(args[++i]));
-            } else if ("--sample-batch-size".equals(args[i])) {
-                helper.sampleBatchSize(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-reward-mean".equals(args[i])) {
@@ -757,17 +592,10 @@ public class RLlibHelper {
                 helper.customParameters(args[++i]);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
-            } else if ("--subcombinations".equals(args[i])) {
-                subcombinations = true;
             } else {
                 output = new File(args[i]);
             }
         }
         helper.generatePythonTrainer(output);
-        if (subcombinations) {
-            for (RLlibHelper subcombination : helper.createSubcombinations()) {
-                System.out.println(subcombination);
-            }
-        }
     }
 }

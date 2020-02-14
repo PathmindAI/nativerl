@@ -86,9 +86,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --random-seed $RANDOM_SEED \
     --max-reward-mean $MAX_REWARD_MEAN \
     --max-iterations $MAX_ITERATIONS \
-    --gammas $GAMMAS \
-    --learning-rates $LEARNING_RATES \
-    --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
     $MULTIAGENT_PARAM \
