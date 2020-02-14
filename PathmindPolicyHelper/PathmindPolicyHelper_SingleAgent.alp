@@ -7,7 +7,7 @@
 <AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
 <Model>
 	<Id>1563523926925</Id>
-	<Name><![CDATA[PathmindPolicyHelper]]></Name>
+	<Name><![CDATA[PathmindPolicyHelper_SingleAgent]]></Name>
 	<EngineVersion>6</EngineVersion>
 	<JavaPackageName><![CDATA[pathmind.policyhelper]]></JavaPackageName>
 	<ModelTimeUnit><![CDATA[Second]]></ModelTimeUnit>
@@ -774,7 +774,7 @@ if (isTraining == false) {
 					<ImageFiles>
 						<ImageResourceReference>
 							<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-							<ClassName><![CDATA[pathmind-16x16.gif]]></ClassName>
+							<ClassName><![CDATA[Pathmind_Single.png]]></ClassName>
 						</ImageResourceReference>
 					</ImageFiles>
 					<OriginalSize>true</OriginalSize>
@@ -1024,17 +1024,17 @@ public class PathmindHelperRegistry {
 				<ActiveObjectClassId>1563523926930</ActiveObjectClassId>
 				<Icon16ResourceReference>
 					<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-					<ClassName><![CDATA[pathmind-16x16.gif]]></ClassName>
+					<ClassName><![CDATA[pathmind-single-16x16.png]]></ClassName>
 				</Icon16ResourceReference>
 				<Icon32ResourceReference>
 					<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-					<ClassName><![CDATA[pathmind-16x16.gif]]></ClassName>
+					<ClassName><![CDATA[pathmind-single-32x32.png]]></ClassName>
 				</Icon32ResourceReference>
 			</AOCEntry>
 
 			<IconResourceReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-				<ClassName><![CDATA[pathmind-16x16.gif]]></ClassName>
+				<ClassName><![CDATA[pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>0</VersionMinor>
@@ -1044,11 +1044,19 @@ public class PathmindHelperRegistry {
 	</Libraries>
 	<ModelResources>
 		<Resource>
-			<Path><![CDATA[pathmind-16x16.gif]]></Path>
+			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[pathmind-single-16x16.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[pathmind-single-32x32.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[Pathmind_Single.png]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
