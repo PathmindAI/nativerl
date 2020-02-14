@@ -608,7 +608,7 @@ public class RLlibHelper {
             + "trials = run(\n"
             + "    'PPO',\n"
             + "    scheduler = pbt_scheduler,\n"
-            + "    num_samples = 20,\n"
+            + "    num_samples = 10,\n"
             + "    stop = stopper.stop,\n"
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
