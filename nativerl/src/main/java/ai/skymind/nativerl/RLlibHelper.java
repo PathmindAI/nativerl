@@ -144,6 +144,7 @@ public class RLlibHelper {
     int sampleBatchSize = 4000;
     int maxIterations = 500;
     int maxTimeInSec = -1;
+    int numSamples = 20;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
@@ -220,6 +221,7 @@ public class RLlibHelper {
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
         this.customParameters = copy.customParameters;
+        this.numSamples = copy.numSamples;
     }
 
     public List<RLlibHelper> createSubcombinations() {
@@ -444,6 +446,11 @@ public class RLlibHelper {
         return this;
     }
 
+    public RLlibHelper numSamples(int numSamples) {
+        this.numSamples = numSamples;
+        return this;
+    }
+
     public int savePolicyInterval() {
         return savePolicyInterval;
     }
@@ -608,7 +615,11 @@ public class RLlibHelper {
             + "trials = run(\n"
             + "    'PPO',\n"
             + "    scheduler = pbt_scheduler,\n"
+<<<<<<< HEAD
             + "    num_samples = 10,\n"
+=======
+            + "    num_samples = " + numSamples + ",\n"
+>>>>>>> 92b9ec233160ef1f56c31834c3e419cabbcb9ebc
             + "    stop = stopper.stop,\n"
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
@@ -689,6 +700,7 @@ public class RLlibHelper {
                 System.out.println("    --multi-agent");
                 System.out.println("    --subcombinations");
                 System.out.println("    --maxTimeInSec");
+                System.out.println("    --num-samples");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -739,6 +751,8 @@ public class RLlibHelper {
                 helper.maxRewardMean(Double.parseDouble(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
+            } else if ("--num-samples".equals(args[i])) {
+                helper.numSamples(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {
                 helper.savePolicyInterval(Integer.parseInt(args[++i]));
             } else if ("--redis-address".equals(args[i])) {
