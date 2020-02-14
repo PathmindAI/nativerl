@@ -96,10 +96,3 @@ java ai.skymind.nativerl.RLlibHelper \
 
 python3 rllibtrain.py
 
-# Execute the simulation with all models to get test metrics
-find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
-for DIR in `find "$OUTPUT_DIR" -iname model -type d`; do
-  cd $DIR
-  zip -r $OLDPWD/policy.zip .
-  cd $OLDPWD
-done
