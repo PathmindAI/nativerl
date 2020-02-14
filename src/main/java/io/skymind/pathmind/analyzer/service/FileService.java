@@ -72,9 +72,7 @@ public class FileService {
         log.info("Bash script finished");
 
         if (!(result.size() == 2 || result.size() == 3)) {
-            log.error(String.join(" ", result));
-            final String errorMessage = "There was an unexpected result of extraction process";
-            throw new UnexpectedScriptResultException(errorMessage);
+            log.warn("Unexpected output for {} file: {}", unzippedPath, String.join(" ", result));
         }
         return result;
     }

@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -31,8 +32,21 @@ public class HyperparametersDTO {
     private String rewardFunction;
 
 
-    public static HyperparametersDTO of(@NotEmpty final List<String> hyperparametersList) {
+    public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
+        hyperparametersList = hyperparametersList.stream()
+                .filter(HyperparametersDTO::isHyperparameters)
+                .map(HyperparametersDTO::extractHyperparameters)
+                .collect(Collectors.toList());
+
         return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1),
                 hyperparametersList.get(2));
+    }
+
+    private static boolean isHyperparameters(String output) {
+        return output.contains("observations:") || output.contains("actions:") || output.contains("reward:");
+    }
+
+    private static String extractHyperparameters(String output) {
+        return output.substring(output.indexOf(":") + 1);
     }
 }
