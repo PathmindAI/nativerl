@@ -144,8 +144,10 @@ pipeline {
             }
             steps {
 		script {
+				echo "Cloning infra repository"
+				sh "git clone git@github.com:SkymindIO/pathmind-webapp.git"
 				echo "Updating helm chart"
-				sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
+				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
 		}
             }
         }
@@ -182,9 +184,10 @@ pipeline {
             steps {
 		script {
                 	DEPLOY_PROD = true
-			echo "Updating helm charts"
+			echo "Cloning infra repository"
+			sh "git clone git@github.com:SkymindIO/pathmind-webapp.git"
 			echo "Updating helm chart"
-			sh "helm upgrade --install pathmind-ma ${WORKSPACE}/infra/helm/pathmind-ma -f ${WORKSPACE}/infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
+			sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
 			sh "sleep 30"
 		}
             }
