@@ -1,5 +1,6 @@
 package io.skymind.pathmind.analyzer.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,11 +26,14 @@ public class HyperparametersDTO {
     @NotBlank(message = "Number of actions cannot be blank")
     private String actions;
 
-
     @ApiModelProperty(value = "Reward function definition", required =
             true)
     @NotBlank(message = "Reward function definition cannot be blank")
     private String rewardFunction;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @ApiModelProperty(value = "Steps which failed while extracting hyperparameters")
+    private String failedSteps;
 
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
@@ -39,11 +43,14 @@ public class HyperparametersDTO {
                 .collect(Collectors.toList());
 
         return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1),
-                hyperparametersList.get(2));
+                hyperparametersList.get(2), hyperparametersList.get(3));
     }
 
     private static boolean isHyperparameters(String output) {
-        return output.contains("observations:") || output.contains("actions:") || output.contains("reward:");
+        return output.contains("observations:") ||
+                output.contains("actions:") ||
+                output.contains("reward:") ||
+                output.contains("failed_steps:");
     }
 
     private static String extractHyperparameters(String output) {

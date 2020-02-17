@@ -71,7 +71,7 @@ public class FileService {
         final List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
-        if (!(result.size() == 2 || result.size() == 3)) {
+        if (result.size() != 4) {
             log.warn("Unexpected output for {} file: {}", unzippedPath, String.join(" ", result));
         }
         return result;
