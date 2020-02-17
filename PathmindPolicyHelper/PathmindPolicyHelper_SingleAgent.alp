@@ -710,7 +710,7 @@ if (isTraining == false) {
 	      +"  Done: "+isDone() + "\n");		           
 	// Reset steps to 0 upon simulation completion
 	if (isDone()) {
-	  steps = 0;
+	  steps = -1;
 	}		      
 	return output;
 } else {
