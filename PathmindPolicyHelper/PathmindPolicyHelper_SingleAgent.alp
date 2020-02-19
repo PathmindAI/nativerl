@@ -531,7 +531,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[true
-/* https://help.pathmind.com/en/articles/3634254-4-triggering-actions */]]></Code>
+/* 
+** Important **
+https://help.pathmind.com/en/articles/3634254-4-triggering-actions 
+*/]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1573833780186</Id>
@@ -774,7 +777,7 @@ if (isTraining == false) {
 					<ImageFiles>
 						<ImageResourceReference>
 							<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-							<ClassName><![CDATA[Pathmind_Single.png]]></ClassName>
+							<ClassName><![CDATA[pathmind-single-original.png]]></ClassName>
 						</ImageResourceReference>
 					</ImageFiles>
 					<OriginalSize>true</OriginalSize>
@@ -1056,7 +1059,7 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[Pathmind_Single.png]]></Path>
+			<Path><![CDATA[pathmind-single-original.png]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
