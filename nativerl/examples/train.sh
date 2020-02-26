@@ -48,11 +48,6 @@ public class Training extends ExperimentCustom {
 }
 EOF
 
-MULTIAGENT_PARAM=""
-if [[ "$MULTIAGENT" = true ]]; then
-    MULTIAGENT_PARAM="--multi-agent"
-fi
-
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -69,7 +64,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
-    $MULTIAGENT_PARAM \
+    --multi-agent
 
 javac $(find -iname '*.java')
 
@@ -90,7 +85,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --learning-rates $LEARNING_RATES \
     --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
-    $MULTIAGENT_PARAM \
+    --multi-agent \
     rllibtrain.py
 
 python3 rllibtrain.py
