@@ -48,6 +48,11 @@ public class Training extends ExperimentCustom {
 }
 EOF
 
+MULTIAGENT_PARAM=""
+if [[ "$MULTIAGENT" = true ]]; then
+    MULTIAGENT_PARAM="--multi-agent"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -64,7 +69,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
-    --multi-agent
+    $MULTIAGENT_PARAM \
 
 javac $(find -iname '*.java')
 
@@ -81,19 +86,10 @@ java ai.skymind.nativerl.RLlibHelper \
     --random-seed $RANDOM_SEED \
     --max-reward-mean $MAX_REWARD_MEAN \
     --max-iterations $MAX_ITERATIONS \
-    --gammas $GAMMAS \
-    --learning-rates $LEARNING_RATES \
-    --train-batch-sizes $BATCH_SIZES \
     --max-time-in-sec $MAX_TIME_IN_SEC \
-    --multi-agent \
+    --num-samples $NUM_SAMPLES \
+    $MULTIAGENT_PARAM \
     rllibtrain.py
 
 python3 rllibtrain.py
 
-# Execute the simulation with all models to get test metrics
-find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
-for DIR in `find "$OUTPUT_DIR" -iname model -type d`; do
-  cd $DIR
-  zip -r $OLDPWD/policy.zip .
-  cd $OLDPWD
-done

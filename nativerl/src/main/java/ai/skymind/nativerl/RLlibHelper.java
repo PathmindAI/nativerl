@@ -72,16 +72,17 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
-            PyRun_StringFlags("import gym, inspect, numpy, ray, sys\n"
+            PyRun_StringFlags("import gym, inspect, ray, sys\n"
+                    + "import numpy as np\n"
                     + "from ray.rllib.agents import registry\n"
                     + "\n"
                     + "class " + name + "(gym.Env):\n"
                     + "    def __init__(self, env_config):\n"
                     + "        self.action_space = gym.spaces.Discrete(" + discreteActionSpace.n() + ")\n"
-                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "numpy.array(" + Arrays.toString(obsLow) + ")") + "\n"
-                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "numpy.array(" + Arrays.toString(obsHigh) + ")") + "\n"
-                    + "        shape = " + (obsShape.length == 0 ? "None" : "numpy.array(" + Arrays.toString(obsShape) + ")") + "\n"
-                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=numpy.float32)\n"
+                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "np.array(" + Arrays.toString(obsLow) + ")") + "\n"
+                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "np.array(" + Arrays.toString(obsHigh) + ")") + "\n"
+                    + "        shape = " + (obsShape.length == 0 ? "None" : "np.array(" + Arrays.toString(obsShape) + ")") + "\n"
+                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=np.float32)\n"
                     + "\n"
                     + "ray.init(local_mode=True)\n"
                     + "cls = registry.get_agent_class(\"" + algorithm + "\")\n"
@@ -135,65 +136,16 @@ public class RLlibHelper {
     int numGPUs = 0;
     int numWorkers = 1;
     long randomSeed = 0;
-    double[] gammas = {0.99};
-    double[] learningRates = {5e-5};
-    int[] trainBatchSizes = {128};
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
-    int sampleBatchSize = 4000;
     int maxIterations = 500;
     int maxTimeInSec = -1;
+    int numSamples = 10;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
     String customParameters = "";
     boolean multiAgent = false;
-
-    static <T> List<List<T>> subcombinations(List<T> input, int length, int start, List<T> temp) {
-        List<List<T>> output = new ArrayList<List<T>>();
-        if (temp == null) {
-            temp = new ArrayList<T>(length);
-            for (int i = 0; i < length; i++) {
-                temp.add(null);
-            }
-        }
-        if (length == 0) {
-            output.add(new ArrayList<T>(temp));
-            return output;
-        }
-        for (int i = start; i <= input.size() - length; i++) {
-            temp.set(temp.size() - length, input.get(i));
-            List<List<T>> o = subcombinations(input, length - 1, i + 1, temp);
-            if (o != null && o.size() > 0) {
-                output.addAll(o);
-            }
-        }
-        return output;
-    }
-
-    static <T> List<List<List<T>>> subcombinations(List<T> list) {
-        List<List<List<T>>> output = new ArrayList<List<List<T>>>(list.size());
-        for (int i = 0; i < list.size(); i++) {
-            output.add(subcombinations(list, i + 1, 0, null));
-        }
-        return output;
-    }
-
-    static List<List<List<Integer>>> subcombinations(int[] array) {
-        List<Integer> list = new ArrayList<Integer>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return subcombinations(list);
-    }
-
-    static List<List<List<Double>>> subcombinations(double[] array) {
-        List<Double> list = new ArrayList<Double>(array.length);
-        for (int i = 0; i < array.length; i++) {
-            list.add(array[i]);
-        }
-        return subcombinations(list);
-    }
 
     public RLlibHelper() {
     }
@@ -207,68 +159,19 @@ public class RLlibHelper {
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
         this.randomSeed = copy.randomSeed;
-        this.gammas = copy.gammas;
-        this.learningRates = copy.learningRates;
-        this.trainBatchSizes = copy.trainBatchSizes;
         this.numHiddenLayers = copy.numHiddenLayers;
         this.numHiddenNodes = copy.numHiddenNodes;
-        this.sampleBatchSize = copy.sampleBatchSize;
         this.maxIterations = copy.maxIterations;
         this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
         this.customParameters = copy.customParameters;
-    }
-
-    public List<RLlibHelper> createSubcombinations() {
-        List<List<List<Double>>> gammaSubcombinations = subcombinations(gammas);
-        List<List<List<Double>>> learningRateSubcombinations = subcombinations(learningRates);
-        List<List<List<Integer>>> trainBatchSizeSubcombinations = subcombinations(trainBatchSizes);
-
-        List<RLlibHelper> subcombinations = new ArrayList<RLlibHelper>();
-        for (int i = 0; i < gammaSubcombinations.size(); i++) {
-            for (int j = 0; j < learningRateSubcombinations.size(); j++) {
-                for (int k = 0; k < trainBatchSizeSubcombinations.size(); k++) {
-                    List<List<Double>> gammaCombinations = gammaSubcombinations.get(i);
-                    List<List<Double>> learningRateCombinations = learningRateSubcombinations.get(j);
-                    List<List<Integer>> trainBatchSizeCombinations = trainBatchSizeSubcombinations.get(k);
-                    for (int ii = 0; ii < gammaCombinations.size(); ii++) {
-                        for (int jj = 0; jj < learningRateCombinations.size(); jj++) {
-                            for (int kk = 0; kk < trainBatchSizeCombinations.size(); kk++) {
-                                List<Double> gammas = gammaCombinations.get(ii);
-                                List<Double> learningRates = learningRateCombinations.get(jj);
-                                List<Integer> trainBatchSizes = trainBatchSizeCombinations.get(kk);
-                                RLlibHelper r = new RLlibHelper(this);
-                                r.gammas = new double[gammas.size()];
-                                r.learningRates = new double[learningRates.size()];
-                                r.trainBatchSizes = new int[trainBatchSizes.size()];
-                                for (int n = 0; n < gammas.size(); n++) {
-                                    r.gammas[n] = gammas.get(n);
-                                }
-                                for (int n = 0; n < learningRates.size(); n++) {
-                                    r.learningRates[n] = learningRates.get(n);
-                                }
-                                for (int n = 0; n < trainBatchSizes.size(); n++) {
-                                    r.trainBatchSizes[n] = trainBatchSizes.get(n);
-                                }
-                                subcombinations.add(r);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return subcombinations;
-    }
-
-    public int numberOfTrials() {
-        return gammas.length * learningRates.length * trainBatchSizes.length;
+        this.numSamples = copy.numSamples;
     }
 
     @Override public String toString() {
-        return "RLlibHelper[numberOfTrials=" + numberOfTrials() + ", "
-                + "rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
+        return "RLlibHelper[rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
                 + "algorithm=" + algorithm + ", "
                 + "outputDir=" + outputDir + ", "
                 + "checkpoint=" + checkpoint + ", "
@@ -276,12 +179,8 @@ public class RLlibHelper {
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
                 + "randomSeed=" + randomSeed + ", "
-                + "gammas=" + Arrays.toString(gammas) + ", "
-                + "learningRates=" + Arrays.toString(learningRates) + ", "
-                + "trainBatchSizes=" + Arrays.toString(trainBatchSizes) + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
-                + "sampleBatchSize=" + sampleBatchSize + ", "
                 + "maxIterations=" + maxIterations + ", "
                 + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
@@ -370,30 +269,6 @@ public class RLlibHelper {
         return this;
     }
 
-    public double[] gammas() {
-        return gammas;
-    }
-    public RLlibHelper gammas(double[] gammas) {
-        this.gammas = gammas;
-        return this;
-    }
-
-    public double[] learningRates() {
-        return learningRates;
-    }
-    public RLlibHelper learningRates(double[] learningRates) {
-        this.learningRates = learningRates;
-        return this;
-    }
-
-    public int[] trainBatchSizes() {
-        return trainBatchSizes;
-    }
-    public RLlibHelper trainBatchSizes(int[] trainBatchSizes) {
-        this.trainBatchSizes = trainBatchSizes;
-        return this;
-    }
-
     public int numHiddenLayers() {
         return numHiddenLayers;
     }
@@ -407,14 +282,6 @@ public class RLlibHelper {
     }
     public RLlibHelper numHiddenNodes(int numHiddenNodes) {
         this.numHiddenNodes = numHiddenNodes;
-        return this;
-    }
-
-    public int sampleBatchSize() {
-        return sampleBatchSize;
-    }
-    public RLlibHelper sampleBatchSize(int sampleBatchSize) {
-        this.sampleBatchSize = sampleBatchSize;
         return this;
     }
 
@@ -440,6 +307,11 @@ public class RLlibHelper {
 
     public RLlibHelper maxTimeInSec(int maxTimeInSec) {
         this.maxTimeInSec = maxTimeInSec;
+        return this;
+    }
+
+    public RLlibHelper numSamples(int numSamples) {
+        this.numSamples = numSamples;
         return this;
     }
 
@@ -499,11 +371,13 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, nativerl, numpy, ray, sys, os\n"
+        String trainer = "import glob, gym, nativerl, ray, sys, os, random\n"
+            + "import numpy as np\n"
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
-            + "from ray.tune.schedulers.trial_scheduler import FIFOScheduler\n"
+            + "from ray.tune import run, sample_from\n"
+            + "from ray.tune.schedulers import PopulationBasedTraining\n"
             + "\n"
             + "jardir = os.getcwd()\n"
             + "\n"
@@ -517,27 +391,27 @@ public class RLlibHelper {
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
             + "        observationSpace = self.nativeEnv.getObservationSpace()\n"
             + "        self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
-            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
+            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], np.array(observationSpace.shape), dtype=np.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
             + (multiAgent
-                ? "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                ? "        obs = np.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
                 + "            obsdict[str(i)] = obs[i]\n"
                 + "        return obsdict\n"
 
-                : "        return numpy.array(self.nativeEnv.getObservation())\n")
+                : "        return np.array(self.nativeEnv.getObservation())\n")
             + "    def step(self, action):\n"
             + (multiAgent
-                ? "        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)\n"
+                ? "        actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)\n"
                 + "        for i in range(0, actionarray.shape[0]):\n"
-                + "            actionarray[i,:] = action[str(i)].astype(numpy.float32)\n"
-                + "        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
-                + "        obs = numpy.array(self.nativeEnv.getObservation())\n"
+                + "            actionarray[i,:] = action[str(i)].astype(np.float32)\n"
+                + "        reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
+                + "        obs = np.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        rewarddict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
@@ -546,39 +420,50 @@ public class RLlibHelper {
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
                 : "        reward = self.nativeEnv.step(action)\n"
-                + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
-            + "\n"
-            + "class PathmindFIFO(FIFOScheduler):\n"
-            + "    def __init__(self, logpath):\n"
-            + "        # set status log file path\n"
-            + "        self.trial_list_file = os.path.join(logpath, 'trial_list')\n"
-            + "        self.trial_error_file = os.path.join(logpath,'trial_error')\n"
-            + "        self.trial_complete_file = os.path.join(logpath, 'trial_complete')\n"
-            + "\n"
-            + "        # inintialize files\n"
-            + "        open(self.trial_list_file, 'w').close()\n"
-            + "        open(self.trial_error_file, 'w').close()\n"
-            + "        open(self.trial_complete_file, 'w').close()\n"
-            + "        # whether experiment state file path is set or not\n"
-            + "        self.is_exp_state_set = False\n"
-            + "\n"
-            + "    def on_trial_add(self, trial_runner, trial):\n"
-            + "        with open(self.trial_list_file, 'a') as f:\n"
-            + "            if not self.is_exp_state_set:\n"
-            + "                self.is_exp_state_set = True\n"
-            + "                print(trial_runner.checkpoint_file, file=f)\n"
-            + "            print(str(trial), file=f)\n"
-            + "\n"
-            + "    def on_trial_error(self, trial_runner, trial):\n"
-            + "        with open(self.trial_error_file, 'a') as f:\n"
-            + "            print(str(trial.logdir), file=f)\n"
-            + "\n"
-            + "    def on_trial_complete(self, trial_runner, trial, result):\n"
-            + "        with open(self.trial_complete_file, 'a') as f:\n"
-            + "            print(trial.logdir, file=f)\n"
-            + "\n"
-            + "    def debug_string(self):\n"
-            + "        return 'Using Pathmind FIFO scheduling algorithm.'"
+                + "        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
+                + "\n"
+                + "class Stopper:\n"
+                + "    def __init__(self):\n"
+                + "        self.should_stop = False\n"
+                + "        self.too_many_iter = False\n"
+                + "        self.too_much_time = False\n"
+                + "        self.too_much_reward = False\n"
+                + "\n"
+                + "    def stop(self, trial_id, result):\n"
+                + "        self.too_many_iter = result['training_iteration'] > " + maxIterations + "\n"
+                + (maxTimeInSec > 0
+                ? "        self.too_much_time = result['time_total_s'] > " + maxTimeInSec + "\n"
+                : "")
+                + (Double.isFinite(maxRewardMean)
+                ? "        self.too_much_reward = result['episode_reward_mean'] > " + maxRewardMean + "\n"
+                : "")
+                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_much_reward):\n"
+                + "            self.should_stop = True\n"
+                + "        return self.should_stop\n"
+                + "\n"
+                + "stopper = Stopper()\n"
+                + "\n"
+                + "pbt_scheduler = PopulationBasedTraining(\n"
+                + "    time_attr = 'training_iteration',\n"
+                + "    metric = 'episode_reward_mean',\n"
+                + "    mode = 'max',\n"
+                + "    perturbation_interval = 5,\n"
+                + "    quantile_fraction = 0.25,\n"
+                + "    resample_probability = 0.25,\n"
+                + "    log_config = True,\n"
+                + "    hyperparam_mutations = {\n"
+                + "        'lambda': np.linspace(0.9, 1.0, 11).tolist(),\n"
+                + "        'lr': np.logspace(-7, -2, 50).tolist(),\n"
+                + "        'gamma': np.linspace(0.8, 0.99997, 9).tolist(),\n"
+                + "        'clip_param': np.linspace(0.1, 0.5, 5).tolist(),\n"
+                + "        'kl_coeff': np.linspace(0.1, 0.4, 4).tolist(),\n"
+                + "        'kl_target': np.linspace(0.01, 0.03, 3).tolist(),\n"
+                + "        'entropy_coeff': np.linspace(0, 0.07, 15).tolist(),\n"
+                + "        'sgd_minibatch_size': [128, 256, 512],\n"
+                + "        'num_sgd_iter': [1, 10, 20, 30],\n"
+                + "        'train_batch_size': [4000, 6000]\n"
+                + "    }\n"
+                + ")\n"
             + "\n"
             + "# Make sure multiple processes can read the database from AnyLogic\n"
             + "with open('database/db.properties', 'r+') as f:\n"
@@ -586,49 +471,52 @@ public class RLlibHelper {
             + "    if 'hsqldb.lock_file=false\\n' not in lines:\n"
             + "        f.write('hsqldb.lock_file=false\\n')\n"
             + "\n"
-            + "ray.init(" + (redisAddress != null ? "redis_address='" + redisAddress + "'" : "") + ")\n"
+            + "ray.init(num_cpus=6, num_gpus=0, memory=2500000000, object_store_memory=1200000000)\n"
             + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
             + "\n"
-            + "pathmind_fifo = PathmindFIFO(jardir)\n"
-            + "\n"
-            + "trials = ray.tune.run(\n"
-            + "    '" + algorithm + "',\n"
-            + "    stop={\n"
-            + "         'training_iteration': " + maxIterations + ",\n"
-            + (maxTimeInSec > 0 ? "         'time_total_s': " + maxTimeInSec + ",\n" : "")
-            + (Double.isFinite(maxRewardMean) ? "         'episode_reward_mean': " + maxRewardMean + ",\n" : "")
-            + "    },\n"
-            + "    config={\n"
+            + "trials = run(\n"
+            + "    'PPO',\n"
+            + "    scheduler = pbt_scheduler,\n"
+            + "    num_samples = " + numSamples + ",\n"
+            + "    stop = stopper.stop,\n"
+            + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
-            + "        'num_gpus': " + numGPUs + ",\n"
-            + "        'num_workers': " + numWorkers + ",\n"
-            + "        'gamma': ray.tune.grid_search(" +  Arrays.toString(gammas) + "),\n"
-            + (algorithm.contains("DDPG") || algorithm.contains("TD3")
-                    ? "        'critic_lr': ray.tune.grid_search(" +  Arrays.toString(learningRates) + "),\n"
-                    + "        'actor_lr': ray.tune.function(lambda spec: spec.config.critic_lr),\n"
-                    : !algorithm.contains("ES") && !algorithm.contains("ARS")
-                            ? "        'lr': ray.tune.grid_search(" +  Arrays.toString(learningRates) + "),\n"
-                            : "        # no learning rate\n")
-            + "        'sgd_minibatch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
-            // + "        'train_batch_size': ray.tune.grid_search(" + Arrays.toString(trainBatchSizes) + "),\n"
+            + "        'num_gpus': 0,\n"
+            + "        'num_workers': 1,\n"
             + "        'model': model,\n"
-            + "        'observation_filter': 'MeanStdFilter',\n"
+            + "        'use_gae': True,\n"
+            + "        'vf_loss_coeff': 1.0,\n"
+            + "        'vf_clip_param': np.inf,\n"
+            + "        'gamma': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0.8, 0.9997, 9).tolist())),\n"
+            + "         'lambda': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0.9, 1.0, 11).tolist())),\n"
+            + "        'clip_param': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0.2, 0.4, 3).tolist())),\n"
+            + "        'kl_coeff': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0.2, 0.4, 3).tolist())),\n"
+            + "        'kl_target': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0.01, 0.03, 3).tolist())),\n"
+            + "        'entropy_coeff': sample_from(\n"
+            + "            lambda spec: random.choice(np.linspace(0, 0.07, 15).tolist())),\n"
+            + "        'lr': sample_from(\n"
+            + "            lambda spec: random.choice(np.logspace(-6, -2, 40).tolist())),\n"
+            + "        'num_sgd_iter': sample_from(\n"
+            + "            lambda spec: random.choice([10, 20, 30])),\n"
+            + "        'sgd_minibatch_size': sample_from(\n"
+            + "            lambda spec: random.choice([128, 256, 512])),\n"
+            + "        'train_batch_size': sample_from(\n"
+            + "            lambda spec: random.choice([4000, 6000])),\n"
             + "        'batch_mode': 'complete_episodes',\n"
-            + "        'vf_clip_param': numpy.inf,\n"
-            + "        'train_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
-            // + "        'sample_batch_size': " + sampleBatchSize + "," + customParameters + "\n"
+            + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
-            + "    scheduler=pathmind_fifo,\n"
-            + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
-            + (checkpoint != null ? "    restore='" + checkpoint.getAbsolutePath() + "',\n" : "")
-            + "    checkpoint_freq=" + savePolicyInterval + ",\n"
-            + "    checkpoint_at_end=True,\n"
-            + "    export_formats=['model'], # Export TensorFlow SavedModel as well\n"
+            + (outputDir != null ? "    local_dir = '" + outputDir.getAbsolutePath() + "',\n" : "")
+            + "    resume = False,\n"
+            + "    checkpoint_at_end = True,\n"
+            + "    export_formats = ['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n"
-            + "\n"
-            + "print('Trials: ', trials)\n"
             + "\n"
             + "# Export all checkpoints to TensorFlow SavedModel as well\n"
             + "cls = get_agent_class('" + algorithm + "')\n"
@@ -645,7 +533,6 @@ public class RLlibHelper {
     public static void main(String[] args) throws Exception {
         RLlibHelper helper = new RLlibHelper();
         File output = new File("rllibtrain.py");
-        boolean subcombinations = false;
         for (int i = 0; i < args.length; i++) {
             if ("-help".equals(args[i]) || "--help".equals(args[i])) {
                 System.out.println("usage: RLlibHelper [options] [output]");
@@ -658,20 +545,16 @@ public class RLlibHelper {
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
                 System.out.println("    --random-seed");
-                System.out.println("    --gammas");
-                System.out.println("    --learning-rates");
-                System.out.println("    --train-batch-sizes");
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
-                System.out.println("    --sample-batch-size");
                 System.out.println("    --max-iterations");
                 System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
                 System.out.println("    --multi-agent");
-                System.out.println("    --subcombinations");
                 System.out.println("    --maxTimeInSec");
+                System.out.println("    --num-samples");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -689,39 +572,18 @@ public class RLlibHelper {
                 helper.numWorkers(Integer.parseInt(args[++i]));
             } else if ("--random-seed".equals(args[i])) {
                 helper.randomSeed(Long.parseLong(args[++i]));
-            } else if ("--gammas".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                double[] doubles = new double[strings.length];
-                for (int j = 0; j < doubles.length; j++) {
-                    doubles[j] = Double.parseDouble(strings[j]);
-                }
-                helper.gammas(doubles);
-            } else if ("--learning-rates".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                double[] doubles = new double[strings.length];
-                for (int j = 0; j < doubles.length; j++) {
-                    doubles[j] = Double.parseDouble(strings[j]);
-                }
-                helper.learningRates(doubles);
-            } else if ("--train-batch-sizes".equals(args[i])) {
-                String[] strings = args[++i].split(",");
-                int[] ints = new int[strings.length];
-                for (int j = 0; j < ints.length; j++) {
-                    ints[j] = Integer.parseInt(strings[j]);
-                }
-                helper.trainBatchSizes(ints);
             } else if ("--num-hidden-layers".equals(args[i])) {
                 helper.numHiddenLayers(Integer.parseInt(args[++i]));
             } else if ("--num-hidden-nodes".equals(args[i])) {
                 helper.numHiddenNodes(Integer.parseInt(args[++i]));
-            } else if ("--sample-batch-size".equals(args[i])) {
-                helper.sampleBatchSize(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-reward-mean".equals(args[i])) {
                 helper.maxRewardMean(Double.parseDouble(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
+            } else if ("--num-samples".equals(args[i])) {
+                helper.numSamples(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {
                 helper.savePolicyInterval(Integer.parseInt(args[++i]));
             } else if ("--redis-address".equals(args[i])) {
@@ -730,17 +592,10 @@ public class RLlibHelper {
                 helper.customParameters(args[++i]);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
-            } else if ("--subcombinations".equals(args[i])) {
-                subcombinations = true;
             } else {
                 output = new File(args[i]);
             }
         }
         helper.generatePythonTrainer(output);
-        if (subcombinations) {
-            for (RLlibHelper subcombination : helper.createSubcombinations()) {
-                System.out.println(subcombination);
-            }
-        }
     }
 }
