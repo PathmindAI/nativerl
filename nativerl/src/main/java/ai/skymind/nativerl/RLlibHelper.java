@@ -512,8 +512,8 @@ public class RLlibHelper {
             + "        'batch_mode': 'complete_episodes',\n"
             + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
-            + (outputDir != null ? "    local_dir='" + outputDir.getAbsolutePath() + "',\n" : "")
-            + "    resume=False,\n"
+            + (outputDir != null ? "    local_dir = '" + outputDir.getAbsolutePath() + "',\n" : "")
+            + "    resume = False,\n"
             + "    checkpoint_at_end = True,\n"
             + "    export_formats = ['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n"
