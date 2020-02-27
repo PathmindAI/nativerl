@@ -35,6 +35,10 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Steps which failed while extracting hyperparameters")
     private String failedSteps;
 
+    @ApiModelProperty(value = "Extraction mode (single/multi)", required = true)
+    @NotBlank(message = "Mode cannot be blank")
+    private String mode;
+
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
         hyperparametersList = hyperparametersList.stream()
@@ -43,14 +47,15 @@ public class HyperparametersDTO {
                 .collect(Collectors.toList());
 
         return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1),
-                hyperparametersList.get(2), hyperparametersList.get(3));
+                hyperparametersList.get(2), hyperparametersList.get(3), hyperparametersList.get(4));
     }
 
     private static boolean isHyperparameters(String output) {
         return output.contains("observations:") ||
                 output.contains("actions:") ||
                 output.contains("reward:") ||
-                output.contains("failed_steps:");
+                output.contains("failed_steps:") ||
+                output.contains("model-analyzer-mode:");
     }
 
     private static String extractHyperparameters(String output) {
