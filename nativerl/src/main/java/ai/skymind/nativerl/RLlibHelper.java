@@ -515,6 +515,7 @@ public class RLlibHelper {
             + (outputDir != null ? "    local_dir = '" + outputDir.getAbsolutePath() + "',\n" : "")
             + "    resume = False,\n"
             + "    checkpoint_at_end = True,\n"
+            + "    max_failures = 1,\n"
             + "    export_formats = ['model'], # Export TensorFlow SavedModel as well\n"
             + ")\n"
             + "\n"
