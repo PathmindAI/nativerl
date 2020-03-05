@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper_SingleAgent]]></Name>
@@ -24,7 +24,11 @@ isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
-}]]></StartupCode>
+}
+if (!isTraining) {
+    PathmindSerializer.writeMeta(this);
+}
+]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -1016,6 +1020,84 @@ public class PathmindHelperRegistry {
 	}
 }]]></Text>
 		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1583369247650</Id>
+			<Name><![CDATA[PathmindSerializer]]></Name>
+			<Text><![CDATA[/**
+ * PathmindSerializer
+ */
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.nio.charset.Charset;
+import lombok.Getter;
+
+public class PathmindSerializer implements Serializable {
+
+    /**
+     * Default constructor
+     */
+    public PathmindSerializer() {
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+	/**
+	 * This number is here for model snapshot storing purpose<br>
+	 * It needs to be changed when this class gets changed
+	 */
+	private static final long serialVersionUID = 1L;
+
+    private static ObjectMapper objectMapper = new ObjectMapper();
+	public static void writeMeta(PathmindHelper pathmindHelper) {
+        try {
+        	File f = new File("pathmind_meta.json");
+
+            PathmindMeta meta = new PathmindMeta(pathmindHelper);
+            FileUtils.write(f, objectMapper.writeValueAsString(meta), Charset.defaultCharset());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+	@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+	static class PathmindMeta {
+		private int possibleActionCount;
+		private int observationCount;
+		private int rewardCount;
+		private int actionTupleSize;
+		private boolean isEnabled;
+		private boolean autoRegressive;
+		private boolean usePolicy;
+		private String policyFile;
+		private boolean useEventTrigger;
+		private double recurrence;
+		private boolean debugMode;
+
+		public PathmindMeta(PathmindHelper pathmindHelper) {
+			this.possibleActionCount = pathmindHelper.possibleActionCount;
+			this.observationCount = pathmindHelper.observationForTraining().length;
+			this.rewardCount = pathmindHelper.observationForReward().length;
+			this.isEnabled = pathmindHelper.isEnabled;
+			//this.actionTupleSize = pathmindHelper.actionTupleSize;
+			//this.autoRegressive = pathmindHelper.autoRegressive;
+			this.usePolicy = pathmindHelper.usePolicy;
+			this.policyFile = pathmindHelper.policyFile;
+			this.useEventTrigger = pathmindHelper.useEventTrigger;
+			this.recurrence = pathmindHelper.recurrence;
+			this.debugMode = pathmindHelper.debugMode;
+		}
+	}
+
+}]]></Text>
+		</JavaClass>
 	</JavaClasses>
 	<Libraries>
 		<!--   =========   Library   ========  -->
@@ -1062,6 +1144,18 @@ public class PathmindHelperRegistry {
 			<Path><![CDATA[pathmind-single-original.png]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
+		<Resource>
+			<Path><![CDATA[commons-io-2.5.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[jackson-databind-2.10.1.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[lombok-1.18.10.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
 	</ModelResources>
     <RequiredLibraryReference>
 		<LibraryName><![CDATA[com.anylogic.libraries.processmodeling]]></LibraryName>
@@ -1093,6 +1187,30 @@ public class PathmindHelperRegistry {
 		<VersionMinor>0</VersionMinor>
 		<VersionBuild>5</VersionBuild>
     </RequiredLibraryReference>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+			<ClassName><![CDATA[commons-io-2.5.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+			<ClassName><![CDATA[jackson-databind-2.10.1.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+			<ClassName><![CDATA[lombok-1.18.10.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
