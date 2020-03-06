@@ -64,14 +64,14 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
             steps {
 		script {
         		DOCKER_TAG = 'test'
 		        if(env.BRANCH_NAME == 'master'){
-		                DOCKER_TAG = "prod"
+		                DOCKER_TAG = "master"
 		        }
 		        if(env.BRANCH_NAME == 'dev'){
 		                DOCKER_TAG = "dev"
@@ -104,7 +104,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
 		parallel {
@@ -122,7 +122,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
 		parallel {
