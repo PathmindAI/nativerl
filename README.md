@@ -6,7 +6,15 @@ Service exposes one endpoint for retrieving a ZIP file contains `model.jar` and 
 API specification is also available via [Swagger](https://swagger.io/), which can is accessible at `/swagger-ui.html` path.  
 
 ### POST `/extract-hyperparametrs`
-It requires one input `file` which has to be a valid ZIP file. In case of successful extraction, server will return JSON contains hyperparameters: `{"actions": "4", "observations": "5"}`.
+It requires one input `file` which has to be a valid ZIP file. Server will return JSON contains hyperparameters, reward function, information if model is single-agent or multi-agent (and a list of errors if any occurred):
+```
+{
+	"actions": "4",
+	"observations": "5",
+	"rewardFunction": "new double[]{this.kitchenCleanliness, this.payBill.out.count(), this.custFailExit.countPeds(), this.serviceTime_min.mean()}",
+	"mode": "single"
+}
+```
 
 
 ## Setting up local env
@@ -26,15 +34,22 @@ $ curl localhost:<HOST_PORT>/actuator/health
 ```
 
 ### IDE
-<i>(below instructions are based on current implementation which is likely to be changed and improved in the future)</i><br/>
 **NOTE: Current implementation uses shared library `jniNativeRL.so` which is built for Unix systems, therefore, it is impossible to run it locally on Windows OS without containerizing or using a Virtual Machine** <br/>
 
 To run local service instance using IDE:
-* Create `/pathmind-lib` folder contains `baseEnv`, `nativer-bin`, `PathmindPolicy`
-* Adjust `libDir` variable in `check_model.sh` script <br/>
+* prepare `/lib/pathmind` directory contains:
+  * unzipped content of `nativerl-1.0.0-SNAPSHOT-bin.zip`
+  * unzipped content of `baseEnv.zip`
+  * `cfr-0.148.jar` (curl -s https://www.benf.org/other/cfr/cfr-0.148.jar -o cfr-0.148.jar)
+* prepare `/lib/policy` directory contains (naming is important):
+  * PathmindPolicy_single.jar
+  * PathmindPolicy_multi.jar
+* copy both `check_model.sh` and `check_single_or_multi.sh` from `<repo>/resources/scripts` to `/bin`
+* copy both `multi_extractor.jar` and `single_extractor.jar` from `<repo>/resources/` to `/bin`
+
+You can also manually modify hardcoded paths in scripts, `FileService#CHECK_MODEL_SCRIPT` and `FileService#SINGLE_OR_MULTI_SCRIPT` variable to match your local ones.
+
 
 ### Building docker image
 
-* Run maven `package` goal to create new `jar` version 
-* Prepare `file` contains credentials to `Rescale API`, it should contains following content `Authorization: Token {token}` where `{token}` is a valid key to `Rescale`
-* At `Dockerfile` directory level run `$ docker build --secret id=rescale_token,src=[path_to_file_with_secret] -t pathmind-model-analyzer .`
+* At `Dockerfile` directory level run `$ docker build -t <image_name> --build-arg S3BUCKET='<s3_bucket>' --build-arg AWS_ACCESS_KEY_ID='<key_id>' --build-arg AWS_SECRET_ACCESS_KEY='<accesss_key>' .`
