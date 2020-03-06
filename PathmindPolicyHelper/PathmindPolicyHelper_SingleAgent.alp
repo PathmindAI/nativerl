@@ -1035,6 +1035,11 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.nio.charset.Charset;
 import lombok.Getter;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
 
 public class PathmindSerializer implements Serializable {
 
@@ -1080,6 +1085,12 @@ public class PathmindSerializer implements Serializable {
 		private boolean useEventTrigger;
 		private double recurrence;
 		private boolean debugMode;
+		private double startTime;
+		private double stopTime;
+		private String anyLogicVersion;
+		private String pathmindHelperVersion;
+		
+		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
 
 		public PathmindMeta(PathmindHelper pathmindHelper) {
 			this.possibleActionCount = pathmindHelper.possibleActionCount;
@@ -1093,7 +1104,37 @@ public class PathmindSerializer implements Serializable {
 			this.useEventTrigger = pathmindHelper.useEventTrigger;
 			this.recurrence = pathmindHelper.recurrence;
 			this.debugMode = pathmindHelper.debugMode;
+			this.startTime = pathmindHelper.getEngine().getStartTime();
+			this.stopTime = pathmindHelper.getEngine().getStopTime();
+			
+			Optional<String> engineLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+	                .filter(lib -> lib.endsWith(ENGINE_JAR))
+	                .findAny();
+			
+			if (engineLib.isPresent()) {
+				this.anyLogicVersion = anyLogicVersion(engineLib.get());
+			}
+			
+//			Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+//			.forEach(lib -> this.pathmindHelperVersion += lib);
+
 		}
+		
+		private static String anyLogicVersion(String libraryPath) {
+	        try (JarFile jar = new JarFile(libraryPath)) {
+	            JarEntry entry = jar.getJarEntry("com/anylogic/engine/Engine.properties");
+
+	            if (entry != null) {
+	                try (InputStream stream = jar.getInputStream(entry)) {
+	                    //"version=8.5.2.202001241923" -> "8.5.2.202001241923"
+	                    return IOUtils.toString(stream, Charset.defaultCharset()).replace("version=", "");
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
 	}
 
 }]]></Text>
