@@ -225,7 +225,7 @@ if (!isTraining) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1563523942386</Id>
@@ -571,7 +571,7 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
+							<Code><![CDATA[true]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1579541084518</Id>
@@ -1094,7 +1094,7 @@ public class PathmindSerializer implements Serializable {
 		private double stopTime;
 		private String anyLogicVersion;
 		private String pathmindHelperVersion;
-		
+
 		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
 		private static final String PATHMIND_JAR = "RLlibPolicyHelper";
 
@@ -1112,24 +1112,24 @@ public class PathmindSerializer implements Serializable {
 			this.debugMode = pathmindHelper.debugMode;
 			this.startTime = pathmindHelper.getEngine().getStartTime();
 			this.stopTime = pathmindHelper.getEngine().getStopTime();
-			
+
 			Optional<String> engineLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
 	                .filter(lib -> lib.endsWith(ENGINE_JAR))
 	                .findAny();
-			
+
 			if (engineLib.isPresent()) {
 				this.anyLogicVersion = anyLogicVersion(engineLib.get());
 			}
-			
+
 			Optional<String> pathmindHelperLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
 					.filter(lib -> lib.endsWith(".jar") && lib.contains(PATHMIND_JAR))
 					.findAny();
-			
+
 			if (pathmindHelperLib.isPresent()) {
 				this.pathmindHelperVersion = pathmindHelperVersion(pathmindHelperLib.get());
 			}
 		}
-		
+
 		private static String anyLogicVersion(String libraryPath) {
 	        try (JarFile jar = new JarFile(libraryPath)) {
 	            JarEntry entry = jar.getJarEntry("com/anylogic/engine/Engine.properties");
@@ -1145,7 +1145,7 @@ public class PathmindSerializer implements Serializable {
 	        }
 	        return null;
 	    }
-		
+
 		private static String pathmindHelperVersion(String libraryPath) {
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder builder = null;
@@ -1166,7 +1166,7 @@ public class PathmindSerializer implements Serializable {
 	                    String major = doc.getElementsByTagName("VersionMajor").item(0).getTextContent();
 	                    String minor = doc.getElementsByTagName("VersionMinor").item(0).getTextContent();
 	                    String build = doc.getElementsByTagName("VersionBuild").item(0).getTextContent();
-	                    
+
 	                    return String.join(".", major, minor, build);
 	                }
 	            }
