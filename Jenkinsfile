@@ -71,7 +71,7 @@ pipeline {
 		script {
         		DOCKER_TAG = 'test'
 		        if(env.BRANCH_NAME == 'master'){
-		                DOCKER_TAG = "master"
+		                DOCKER_TAG = "prod"
 		        }
 		        if(env.BRANCH_NAME == 'dev'){
 		                DOCKER_TAG = "dev"
