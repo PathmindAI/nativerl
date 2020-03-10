@@ -145,6 +145,8 @@ public class RLlibHelper {
     int savePolicyInterval = 100;
     String redisAddress = null;
     String customParameters = "";
+    boolean resume = false;
+    int checkpointFrequency = 50;
     boolean multiAgent = false;
 
     public RLlibHelper() {
@@ -168,6 +170,8 @@ public class RLlibHelper {
         this.maxTimeInSec = copy.maxTimeInSec;
         this.customParameters = copy.customParameters;
         this.numSamples = copy.numSamples;
+        this.resume = copy.resume;
+        this.checkpointFrequency = copy.checkpointFrequency;
     }
 
     @Override public String toString() {
@@ -186,6 +190,8 @@ public class RLlibHelper {
                 + "savePolicyInterval=" + savePolicyInterval + ", "
                 + "maxTimeInSec=" + maxTimeInSec + ", "
                 + "redisAddress=" + redisAddress + ", "
+                + "resume=" + resume + ", "
+                + "checkpointFrequency=" + checkpointFrequency + ", "
                 + "customParameters=" + customParameters + "]";
     }
 
@@ -310,8 +316,30 @@ public class RLlibHelper {
         return this;
     }
 
+    public int numSamples() {
+        return numSamples;
+    }
+
     public RLlibHelper numSamples(int numSamples) {
         this.numSamples = numSamples;
+        return this;
+    }
+
+    public boolean resume() {
+        return resume;
+    }
+
+    public RLlibHelper resume(boolean resume) {
+        this.resume = resume;
+        return this;
+    }
+
+    public int checkpointFrequency() {
+        return checkpointFrequency;
+    }
+
+    public RLlibHelper checkpointFrequency(int checkpointFrequency) {
+        this.checkpointFrequency = checkpointFrequency;
         return this;
     }
 
@@ -513,7 +541,8 @@ public class RLlibHelper {
             + "        'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
             + (outputDir != null ? "    local_dir = '" + outputDir.getAbsolutePath() + "',\n" : "")
-            + "    resume = False,\n"
+            + "    resume = " + (resume ? "True" : "False") + ",\n"
+            + "    checkpoint_freq=" + checkpointFrequency + ",\n"
             + "    checkpoint_at_end = True,\n"
             + "    max_failures = 1,\n"
             + "    export_formats = ['model'], # Export TensorFlow SavedModel as well\n"
@@ -556,6 +585,8 @@ public class RLlibHelper {
                 System.out.println("    --multi-agent");
                 System.out.println("    --maxTimeInSec");
                 System.out.println("    --num-samples");
+                System.out.println("    --resume");
+                System.out.println("    --checkpoint-freqeuncy");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -591,6 +622,10 @@ public class RLlibHelper {
                 helper.redisAddress(args[++i]);
             } else if ("--custom-parameters".equals(args[i])) {
                 helper.customParameters(args[++i]);
+            } else if ("--resume".equals(args[i])) {
+                helper.resume = true;
+            } else if ("--checkpoint-frequency".equals(args[i])) {
+                helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
             } else {

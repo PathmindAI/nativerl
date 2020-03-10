@@ -53,6 +53,11 @@ if [[ "$MULTIAGENT" = true ]]; then
     MULTIAGENT_PARAM="--multi-agent"
 fi
 
+RESUME_PARAM=""
+if [[ "$RESUME" = true ]]; then
+    RESUME_PARAM="--resume"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -88,6 +93,8 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
+    --checkpoint-frequency $CHECKPOINT_FREQUENCY \
+    $RESUME_PARAM \
     $MULTIAGENT_PARAM \
     rllibtrain.py
 
