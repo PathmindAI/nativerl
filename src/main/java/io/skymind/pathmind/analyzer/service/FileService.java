@@ -92,7 +92,7 @@ public class FileService {
         List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
-        if (result.size() != 4) {
+        if (result.size() != 5) {
             log.warn("Unexpected output for {} file ({} mode): {}", unzippedPath, mode, String.join(" ", result));
 
 //            boolean runMultiAgent = shouldRunMultiAgentMode(result);
