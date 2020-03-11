@@ -17,6 +17,15 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HyperparametersDTO {
+
+    private static List<String> knownOutputs = List.of(
+            "observations:",
+            "actions:",
+            "rewardVariablesCount:",
+            "reward:",
+            "failed_steps:",
+            "model-analyzer-mode:");
+
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
     @NotBlank(message = "Number of observations cannot be blank")
@@ -25,6 +34,10 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
     @NotBlank(message = "Number of actions cannot be blank")
     private String actions;
+
+    @ApiModelProperty(value = "Length of reward variables array extracted from model", example = "7", required = true)
+    @NotBlank(message = "Reward variables count cannot be blank")
+    private String rewardVariablesCount;
 
     @ApiModelProperty(value = "Reward function definition", required =
             true)
@@ -46,16 +59,17 @@ public class HyperparametersDTO {
                 .map(HyperparametersDTO::extractHyperparameters)
                 .collect(Collectors.toList());
 
-        return new HyperparametersDTO(hyperparametersList.get(0), hyperparametersList.get(1),
-                hyperparametersList.get(2), hyperparametersList.get(3), hyperparametersList.get(4));
+        return new HyperparametersDTO(
+                hyperparametersList.get(0),
+                hyperparametersList.get(1),
+                hyperparametersList.get(2),
+                hyperparametersList.get(3),
+                hyperparametersList.get(4),
+                hyperparametersList.get(5));
     }
 
     private static boolean isHyperparameters(String output) {
-        return output.contains("observations:") ||
-                output.contains("actions:") ||
-                output.contains("reward:") ||
-                output.contains("failed_steps:") ||
-                output.contains("model-analyzer-mode:");
+        return knownOutputs.stream().anyMatch(output::contains);
     }
 
     private static String extractHyperparameters(String output) {
