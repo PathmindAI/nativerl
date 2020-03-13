@@ -25,9 +25,6 @@ disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 }
-if (!isTraining) {
-    PathmindSerializer.writeMeta(this);
-}
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
@@ -667,6 +664,11 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
     	}
     }
 }
+
+if (!isTraining && steps == 1) {
+    PathmindSerializer.writeMeta(this);
+}
+
 if (debugMode) {
 	trace(toString());
 }]]></Body>
