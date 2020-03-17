@@ -481,7 +481,7 @@ public class RLlibHelper {
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
-            + "        'num_workers': 2,\n"
+            + "        'num_workers': 1,\n"
             + "        'model': model,\n"
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
