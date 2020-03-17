@@ -1232,56 +1232,18 @@ public class PathmindSerializer implements Serializable {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[jackson-databind-2.10.1.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
 			<Path><![CDATA[lombok-1.18.10.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
+		<Resource>
+			<Path><![CDATA[jackson-databind-2.8.5.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
 	</ModelResources>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.processmodeling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.material_handling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>3</VersionMinor>
-		<VersionBuild>0</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.road]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.pedestrian]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.rail]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 			<ClassName><![CDATA[commons-io-2.5.jar]]></ClassName>
-		</ResourceReference>
-		<Imported>true</Imported>
-		<Folder>false</Folder>
-	</ClassPathEntry>
-	<ClassPathEntry>
-		<ResourceReference>
-			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[jackson-databind-2.10.1.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>true</Imported>
 		<Folder>false</Folder>
@@ -1294,6 +1256,14 @@ public class PathmindSerializer implements Serializable {
 		<Imported>true</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
+    <ClassPathEntry>
+        <ResourceReference>
+            <PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+            <ClassName><![CDATA[jackson-databind-2.8.5.jar]]></ClassName>
+        </ResourceReference>
+        <Imported>true</Imported>
+        <Folder>false</Folder>
+    </ClassPathEntry>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
