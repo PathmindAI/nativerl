@@ -1227,43 +1227,7 @@ public class PathmindSerializer implements Serializable {
 			<Path><![CDATA[pathmind-single-original.png]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
-		<Resource>
-			<Path><![CDATA[commons-io-2.5.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
-			<Path><![CDATA[lombok-1.18.10.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
-			<Path><![CDATA[jackson-databind-2.8.5.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
 	</ModelResources>
-	<ClassPathEntry>
-		<ResourceReference>
-			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[commons-io-2.5.jar]]></ClassName>
-		</ResourceReference>
-		<Imported>true</Imported>
-		<Folder>false</Folder>
-	</ClassPathEntry>
-	<ClassPathEntry>
-		<ResourceReference>
-			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[lombok-1.18.10.jar]]></ClassName>
-		</ResourceReference>
-		<Imported>true</Imported>
-		<Folder>false</Folder>
-	</ClassPathEntry>
-    <ClassPathEntry>
-        <ResourceReference>
-            <PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-            <ClassName><![CDATA[jackson-databind-2.8.5.jar]]></ClassName>
-        </ResourceReference>
-        <Imported>true</Imported>
-        <Folder>false</Folder>
-    </ClassPathEntry>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
