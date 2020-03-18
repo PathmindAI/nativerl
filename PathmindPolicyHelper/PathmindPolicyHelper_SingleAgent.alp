@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241823" AlpVersion="8.5.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper_SingleAgent]]></Name>
@@ -24,7 +24,8 @@ isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
-}]]></StartupCode>
+}
+]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -663,6 +664,11 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
     	}
     }
 }
+
+if (!isTraining && steps == 1) {
+    PathmindSerializer.writeMeta(this);
+}
+
 if (debugMode) {
 	trace(toString());
 }]]></Body>
@@ -1016,6 +1022,165 @@ public class PathmindHelperRegistry {
 	}
 }]]></Text>
 		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1583369247650</Id>
+			<Name><![CDATA[PathmindSerializer]]></Name>
+			<Text><![CDATA[/**
+ * PathmindSerializer
+ */
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.nio.charset.Charset;
+import lombok.Getter;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+public class PathmindSerializer implements Serializable {
+
+    /**
+     * Default constructor
+     */
+    public PathmindSerializer() {
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+	/**
+	 * This number is here for model snapshot storing purpose<br>
+	 * It needs to be changed when this class gets changed
+	 */
+	private static final long serialVersionUID = 1L;
+
+    private static ObjectMapper objectMapper = new ObjectMapper();
+	public static void writeMeta(PathmindHelper pathmindHelper) {
+        try {
+        	File f = new File("pathmind_meta.json");
+
+            PathmindMeta meta = new PathmindMeta(pathmindHelper);
+            FileUtils.write(f, objectMapper.writeValueAsString(meta), Charset.defaultCharset());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+	@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+	static class PathmindMeta {
+		private int possibleActionCount;
+		private int observationCount;
+		private int rewardCount;
+		private int actionTupleSize;
+		private boolean isEnabled;
+		private boolean autoRegressive;
+		private boolean usePolicy;
+		private String policyFile;
+		private boolean useEventTrigger;
+		private double recurrence;
+		private boolean debugMode;
+		private double startTime;
+		private double stopTime;
+		private String anyLogicVersion;
+		private String pathmindHelperVersion;
+
+		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
+		private static final String PATHMIND_JAR = "RLlibPolicyHelper";
+
+		public PathmindMeta(PathmindHelper pathmindHelper) {
+			this.possibleActionCount = pathmindHelper.possibleActionCount;
+			this.observationCount = pathmindHelper.observationForTraining().length;
+			this.rewardCount = pathmindHelper.observationForReward().length;
+			this.isEnabled = pathmindHelper.isEnabled;
+			//this.actionTupleSize = pathmindHelper.actionTupleSize;
+			//this.autoRegressive = pathmindHelper.autoRegressive;
+			this.usePolicy = pathmindHelper.usePolicy;
+			this.policyFile = pathmindHelper.policyFile;
+			this.useEventTrigger = pathmindHelper.useEventTrigger;
+			this.recurrence = pathmindHelper.recurrence;
+			this.debugMode = pathmindHelper.debugMode;
+			this.startTime = pathmindHelper.getEngine().getStartTime();
+			this.stopTime = pathmindHelper.getEngine().getStopTime();
+
+			Optional<String> engineLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+	                .filter(lib -> lib.endsWith(ENGINE_JAR))
+	                .findAny();
+
+			if (engineLib.isPresent()) {
+				this.anyLogicVersion = anyLogicVersion(engineLib.get());
+			}
+
+			Optional<String> pathmindHelperLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+					.filter(lib -> lib.endsWith(".jar") && lib.contains(PATHMIND_JAR))
+					.findAny();
+
+			if (pathmindHelperLib.isPresent()) {
+				this.pathmindHelperVersion = pathmindHelperVersion(pathmindHelperLib.get());
+			}
+		}
+
+		private static String anyLogicVersion(String libraryPath) {
+	        try (JarFile jar = new JarFile(libraryPath)) {
+	            JarEntry entry = jar.getJarEntry("com/anylogic/engine/Engine.properties");
+
+	            if (entry != null) {
+	                try (InputStream stream = jar.getInputStream(entry)) {
+	                    //"version=8.5.2.202001241923" -> "8.5.2.202001241923"
+	                    return IOUtils.toString(stream, Charset.defaultCharset()).replace("version=", "");
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
+
+		private static String pathmindHelperVersion(String libraryPath) {
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder builder = null;
+	        try {
+	            builder = factory.newDocumentBuilder();
+	        } catch (ParserConfigurationException e) {
+	            e.printStackTrace();
+	            return null;
+	        }
+
+	        try (JarFile jar = new JarFile(libraryPath)) {
+	            JarEntry entry = jar.getJarEntry("library.xml");
+
+	            if (entry != null) {
+	                try (InputStream stream = jar.getInputStream(entry)) {
+	                    Document doc = builder.parse(stream);
+	                    doc.getDocumentElement();
+	                    String major = doc.getElementsByTagName("VersionMajor").item(0).getTextContent();
+	                    String minor = doc.getElementsByTagName("VersionMinor").item(0).getTextContent();
+	                    String build = doc.getElementsByTagName("VersionBuild").item(0).getTextContent();
+
+	                    return String.join(".", major, minor, build);
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
+	}
+
+}]]></Text>
+		</JavaClass>
 	</JavaClasses>
 	<Libraries>
 		<!--   =========   Library   ========  -->
@@ -1063,36 +1228,6 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.processmodeling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.material_handling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>3</VersionMinor>
-		<VersionBuild>0</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.road]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.pedestrian]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.rail]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
