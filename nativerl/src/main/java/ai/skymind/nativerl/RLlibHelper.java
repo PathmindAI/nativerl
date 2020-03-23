@@ -458,12 +458,12 @@ public class RLlibHelper {
                 + "        self.too_much_reward = False\n"
                 + "\n"
                 + "    def stop(self, trial_id, result):\n"
-                + "        self.too_many_iter = result['training_iteration'] > " + maxIterations + "\n"
+                + "        self.too_many_iter = result['training_iteration'] >= " + maxIterations + "\n"
                 + (maxTimeInSec > 0
-                ? "        self.too_much_time = result['time_total_s'] > " + maxTimeInSec + "\n"
+                ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
                 : "")
                 + (Double.isFinite(maxRewardMean)
-                ? "        self.too_much_reward = result['episode_reward_mean'] > " + maxRewardMean + "\n"
+                ? "        self.too_much_reward = result['episode_reward_mean'] >= " + maxRewardMean + "\n"
                 : "")
                 + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_much_reward):\n"
                 + "            self.should_stop = True\n"
@@ -529,7 +529,7 @@ public class RLlibHelper {
             + "        # Set rollout samples to episode length\n"
             + "        'batch_mode': 'complete_episodes',\n"
             + "        # Auto-normalize observations\n"
-            + "        'observation_filter': 'MeanStdFilter'\n"
+            + "        #'observation_filter': 'MeanStdFilter'\n"
             + "    },\n"
             + (outputDir != null ? "    local_dir = '" + outputDir.getAbsolutePath() + "',\n" : "")
             + "    resume = " + (resume ? "True" : "False") + ",\n"
