@@ -98,5 +98,6 @@ java ai.skymind.nativerl.RLlibHelper \
     $MULTIAGENT_PARAM \
     rllibtrain.py
 
+set -e
 python3 rllibtrain.py
 
