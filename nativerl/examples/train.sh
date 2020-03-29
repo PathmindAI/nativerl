@@ -99,5 +99,9 @@ java ai.skymind.nativerl.RLlibHelper \
     rllibtrain.py
 
 set -e
+if [[ "$RESUME" = true ]]; then
+    mv examples/pm_resume.py .
+    python3 pm_resume.py
+fi
 python3 rllibtrain.py
 
