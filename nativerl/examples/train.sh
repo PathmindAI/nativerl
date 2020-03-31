@@ -58,6 +58,11 @@ if [[ "$RESUME" = true ]]; then
     RESUME_PARAM="--resume"
 fi
 
+USER_LOG_PARAM=""
+if [[ "$USER_LOG" = true ]]; then
+    USER_LOG_PARAM="--user-log"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -96,6 +101,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $MULTIAGENT_PARAM \
+    $USER_LOG_PARAM \
     rllibtrain.py
 
 set -e
