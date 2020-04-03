@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.1.201910011746" AlpVersion="8.4.9">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241823" AlpVersion="8.5.1">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper_MultiAgent]]></Name>
@@ -145,21 +145,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
-						<InitialValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
-						</InitialValue>
-					</Properties>
-				</Variable>
-				<Variable Class="PlainVariable">
-					<Id>1566467051803</Id>
-					<Name><![CDATA[stepStarted]]></Name>
-					<X>320</X><Y>160</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
@@ -581,7 +566,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Event>
 					<Id>1573748399465</Id>
 					<Name><![CDATA[triggerAction]]></Name>
-					<X>660</X><Y>100</Y>
+					<X>450</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -612,28 +597,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 }]]></Action>
 				</Event>
 			</Events>
-			<DynamicEvents>
-				<DynamicEventClass>
-					<Id>1566552542751</Id>
-					<Name><![CDATA[TriggerNextActionEvent]]></Name>
-					<X>660</X><Y>70</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Action><![CDATA[if(stepStarted){
-	// if previous step wasn't finished, finish it now before starting a new one.
-	actionEffectIsObservable();
-	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
-}else{	
-	// Pause the Engine so the step function can do observation, and take action.
-	// thereby starting a step
-	engine.pause();
-	stepStarted = true;
-}]]></Action>
-					<Logging>false</Logging>
-				</DynamicEventClass>
-			</DynamicEvents>
 			<Functions>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -646,7 +609,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if(isTraining){
-	create_TriggerNextActionEvent(1, TimeUnits.MILLISECOND);
+	engine.pause();
 }else if(isEnabled){
 	if(usePolicy && policyHelper != null){
 		steps++;
@@ -664,25 +627,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 }
 if (debugMode) {
 	trace(toString());
-}]]></Body>
-				</Function>
-				<Function AccessType="public" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1566466783864</Id>
-					<Name><![CDATA[actionEffectIsObservable]]></Name>
-					<X>450</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if(isTraining && stepStarted){
-	// Pause for the engine to be able to observe the effect of the last action
-	// and calculate a reward, thereby finishing a step
-	engine.pause();
-	stepStarted = false;
-}else{
-	// Noop for inference
 }]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
