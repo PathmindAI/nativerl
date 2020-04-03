@@ -305,10 +305,9 @@ public class AnyLogicHelper {
 
                 : "    @Override public float step(long action) {\n"
                 + "        double reward = 0;\n"
-                + "        engine.runFast();\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
                 + "        engine.runFast();\n"
+                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
                 + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"
                 + rewardSnippet
