@@ -608,15 +608,15 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if(isTraining){
+					<Body><![CDATA[if(isTraining) {
 	engine.pause();
-}else if(isEnabled){
-	if(usePolicy && policyHelper != null){
+} else if(isEnabled) {
+	if(usePolicy && policyHelper != null) {
 		steps++;
 	    action = policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
-    }else{
-    	if(!usePolicy){
+    } else {
+    	if (!usePolicy) {
     		steps++;	
     		double[][] obs = observationForTraining();
     		action = new int[obs.length];
@@ -1007,36 +1007,6 @@ public class PathmindHelperRegistry {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.processmodeling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.material_handling]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>3</VersionMinor>
-		<VersionBuild>0</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.road]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.pedestrian]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
-    <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.anylogic.libraries.rail]]></LibraryName>
-		<VersionMajor>8</VersionMajor>
-		<VersionMinor>0</VersionMinor>
-		<VersionBuild>5</VersionBuild>
-    </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
