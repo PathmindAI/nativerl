@@ -279,14 +279,13 @@ public class AnyLogicHelper {
             + (multiAgent
                 ? "    @Override public Array step(Array action) {\n"
                 + "        double[] reward = new double[(int)action.length()];\n"
-                + "        engine.runFast();\n"
                 + "        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
+                + "        engine.runFast();\n"                
                 + "        int[] array = new int[(int)action.length()];\n"
                 + "        for (int i = 0; i < array.length; i++) {\n"
                 + "            array[i] = (int)action.data().get(i);\n"
                 + "        }\n"
                 + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
-                + "        engine.runFast();\n"
                 + "        double[][] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"
                 + rewardSnippet
