@@ -984,7 +984,7 @@ public class PathmindHelperRegistry {
 				<ClassName><![CDATA[pathmind-multi-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>0</VersionMajor>
-			<VersionMinor>1</VersionMinor>
+			<VersionMinor>2</VersionMinor>
 			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
