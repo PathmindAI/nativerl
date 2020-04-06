@@ -148,6 +148,7 @@ public class RLlibHelper {
     boolean resume = false;
     int checkpointFrequency = 50;
     boolean multiAgent = false;
+    boolean userLog = false;
 
     public RLlibHelper() {
     }
@@ -172,6 +173,7 @@ public class RLlibHelper {
         this.numSamples = copy.numSamples;
         this.resume = copy.resume;
         this.checkpointFrequency = copy.checkpointFrequency;
+        this.userLog = userLog;
     }
 
     @Override public String toString() {
@@ -192,6 +194,7 @@ public class RLlibHelper {
                 + "redisAddress=" + redisAddress + ", "
                 + "resume=" + resume + ", "
                 + "checkpointFrequency=" + checkpointFrequency + ", "
+                + "userLog=" + userLog + ", "
                 + "customParameters=" + customParameters + "]";
     }
 
@@ -375,6 +378,15 @@ public class RLlibHelper {
         return this;
     }
 
+    public boolean userLog() {
+        return userLog;
+    }
+
+    public RLlibHelper userLog(boolean userLog) {
+        this.userLog = userLog;
+        return this;
+    }
+
     public String hiddenLayers() {
         String s = "[";
         for (int i = 0; i < numHiddenLayers; i++) {
@@ -496,7 +508,7 @@ public class RLlibHelper {
             + "    if 'hsqldb.lock_file=false\\n' not in lines:\n"
             + "        f.write('hsqldb.lock_file=false\\n')\n"
             + "\n"
-            + "ray.init()\n"
+            + "ray.init(log_to_driver=" + (userLog ? "True" : "False") + ")\n"
             + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
@@ -568,6 +580,7 @@ public class RLlibHelper {
                 System.out.println("    --num-samples");
                 System.out.println("    --resume");
                 System.out.println("    --checkpoint-freqeuncy");
+                System.out.println("    --user-log");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -609,6 +622,8 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
+            } else if ("--user-log".equals(args[i])) {
+                helper.userLog = true;
             } else {
                 output = new File(args[i]);
             }
