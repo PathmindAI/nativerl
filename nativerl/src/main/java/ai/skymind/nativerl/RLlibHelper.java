@@ -468,7 +468,6 @@ public class RLlibHelper {
                 + "        self.should_stop = False # Stop criteria met\n"
                 + "        self.too_many_iter = False # Max iterations\n"
                 + "        self.too_much_time = False # Max training time\n"
-                + "        self.too_much_reward = False # Double ceiling\n"
                 + "\n"
                 + "        # Initial stopping criteria at iteration self.initial_check\n"
                 + "        self.too_many_steps = False # Max steps\n"
@@ -511,10 +510,8 @@ public class RLlibHelper {
                 + (maxTimeInSec > 0
                 ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
                 : "")
-                + (Double.isFinite(maxRewardMean)
-                ? "        self.too_much_reward = result['episode_reward_mean'] >= " + maxRewardMean + "\n"
-                : "")
-                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_much_reward):\n"
+                + "\n"
+                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time:\n"
                 + "            self.should_stop = True\n"
                 + "            return self.should_stop\n"
                 + "\n"
