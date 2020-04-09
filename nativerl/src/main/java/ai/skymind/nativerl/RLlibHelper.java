@@ -515,12 +515,12 @@ public class RLlibHelper {
                 + "            self.should_stop = True\n"
                 + "            return self.should_stop\n"
                 + "\n"
-                + "        # Append episode rewards to list used for trend observations
+                + "        # Append episode rewards to list used for trend observations\n"
                 + "        self.episode_reward_window.append(result['episode_reward_mean'])\n"
                 + "\n"
                 + "        # Experimental Criteria\n"
                 + "\n"
-                + "        # Episode steps filter\n" 
+                + "        # Episode steps filter\n"
                 + "        if result['training_iteration'] == self.initial_check:\n"
                 + "            self.entropy_start = result['info/learner/default_policy/entropy'] # Set start value\n"
                 + "            self.vf_loss_start = result['info/learner/default_policy/vf_loss'] # Set start value\n"
@@ -567,7 +567,7 @@ public class RLlibHelper {
                 + "                self.should_stop = True\n"
                 + "                return self.should_stop\n"
                 + "\n"
-                + "        return self.should_stop
+                + "        return self.should_stop\n"
                 + "\n"
                 + "stopper = Stopper()\n"
                 + "\n"
