@@ -511,7 +511,7 @@ public class RLlibHelper {
                 ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
                 : "")
                 + "\n"
-                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time:\n"
+                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time):\n"
                 + "            self.should_stop = True\n"
                 + "            return self.should_stop\n"
                 + "\n"
