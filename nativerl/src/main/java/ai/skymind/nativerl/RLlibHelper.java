@@ -521,7 +521,7 @@ public class RLlibHelper {
                 + "\n"
                 + "        # Up until early stopping Filter, append value loss list to measure range\n"
                 + "        if result['training_iteration'] <= self.early_check:\n"
-                + "            self.vf_loss_window.append(result['info/learner/default_policy/'])\n"
+                + "            self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])\n"
                 + "\n"
                 + "        # Experimental Criteria\n"
                 + "\n"
