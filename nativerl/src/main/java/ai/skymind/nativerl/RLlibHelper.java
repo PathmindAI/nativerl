@@ -519,8 +519,8 @@ public class RLlibHelper {
                 + "        # Append episode rewards list used for trend behaviour\n"
                 + "        self.episode_reward_window.append(result['episode_reward_mean'])\n"
                 + "\n"
-                + "        # Up until early stopping Filter, append value loss list to measure range
-                + "        if result['training_iteration'] <= self.early_check:
+                + "        # Up until early stopping Filter, append value loss list to measure range\n"
+                + "        if result['training_iteration'] <= self.early_check:\n"
                 + "            self.vf_loss_window.append(result['vf_loss'])\n"
                 + "\n"
                 + "        # Experimental Criteria\n"
@@ -554,19 +554,19 @@ public class RLlibHelper {
                 + "\n"
                 + "        # Convergence Filter\n"
                 + "        if result['training_iteration'] >= self.converge_check:\n"
-                + "            # Episode reward slope activity
+                + "            # Episode reward slope activity\n"
                 + "            self.episode_reward_slope = (self.episode_reward_window[-1] - self.episode_reward_window[-50]) / 50\n"
                 + "            self.episode_reward_slope_later = (self.episode_reward_window[-1] - self.episode_reward_window[-25]) / 25\n"
                 + "            self.episode_reward_slope_latest = (self.episode_reward_window[-1] - self.episode_reward_window[-5]) / 5\n"
                 + "\n"
-                + "            # Episode reward range activity
+                + "            # Episode reward range activity\n"
                 + "            self.episode_reward_range = np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))\n"
                 + "            self.episode_reward_range_latest = np.max(np.array(self.episode_reward_window[-5:])) - np.min(np.array(self.episode_reward_window[-5:]))\n"
                 + "\n"
-                + "            # Convergence signal
+                + "            # Convergence signal\n"
                 + "            if (np.abs(self.episode_reward_slope) < np.abs(self.episode_reward_window[-50] * self.reward_slope_threshold))"
                 + " and (np.abs(self.episode_reward_slope_later) < np.abs(self.episode_reward_slope))"
-                + " and (np.abs(self.episode_reward_slope_latest) < np.abs(self.episode_reward_slope_later))
+                + " and (np.abs(self.episode_reward_slope_latest) < np.abs(self.episode_reward_slope_later))\n"
                 + " and (np.abs(self.episode_reward_range_latest) < np.abs(self.episode_reward_range))\n"
                 + "                self.converged = True\n"
                 + "\n"
@@ -578,7 +578,7 @@ public class RLlibHelper {
                 + "                self.should_stop = True\n"
                 + "                return self.should_stop\n"
                 + "\n"
-                + "        # Returns False by default until stopping decision made
+                + "        # Returns False by default until stopping decision made\n"
                 + "        return self.should_stop\n"
                 + "\n"
                 + "stopper = Stopper()\n"
