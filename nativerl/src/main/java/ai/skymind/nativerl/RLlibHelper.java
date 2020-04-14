@@ -555,7 +555,7 @@ public class RLlibHelper {
                 + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-5:]))\n"
                 + "\n"
                 + "            # Convergence check\n"
-                + "            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (np.abs(self.episode_reward_range) < np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 2)):\n"
+                + "            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (np.abs(self.episode_reward_range) < np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 3)):\n"
                 + "                self.converged = True\n"
                 + "\n"
                 + "            # Optional: Extra convergence check\n"
