@@ -535,7 +535,7 @@ public class RLlibHelper {
                 + "        # Early stopping filter\n"
                 + "        if result['training_iteration'] == self.early_check:\n"
                 + "            self.entropy_now = result['info/learner/default_policy/entropy']\n"
-                + "            self.episode_reward_range = self.episode_reward_window[-1] - self.episode_reward_window[0]\n"
+                + "            self.episode_reward_range = np.max(np.array(self.episode_reward_window)) - np.min(np.array(self.episode_reward_window))\n"
                 + "            self.entropy_slope = self.entropy_now - self.entropy_start\n"
                 + "            self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))\n"
                 + "            if np.abs(self.episode_reward_range) < np.abs(self.episode_reward_window[0] * self.episode_reward_range_threshold):\n"
