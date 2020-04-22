@@ -552,7 +552,7 @@ public class RLlibHelper {
                 + "            self.episode_reward_range = np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))\n"
                 + "            # Episode reward mean activity\n"
                 + "            self.episode_reward_mean = np.mean(np.array(self.episode_reward_window[-50:]))\n"
-                + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-5:]))\n"
+                + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-10:]))\n"
                 + "\n"
                 + "            # Convergence check\n"
                 + "            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (np.abs(self.episode_reward_range) < np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 3)):\n"
