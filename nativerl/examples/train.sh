@@ -72,7 +72,6 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --continuous-observations $CONTINUOUS_OBSERVATIONS \
     --step-time $STEP_TIME \
     --stop-time $STOP_TIME \
-    --random-seed $RANDOM_SEED \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
@@ -93,7 +92,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers $NUM_WORKERS \
-    --random-seed $RANDOM_SEED \
     --max-reward-mean $MAX_REWARD_MEAN \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
@@ -110,4 +108,3 @@ if [[ "$RESUME" = true ]]; then
     python3 pm_resume.py
 fi
 python3 rllibtrain.py
-

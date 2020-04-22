@@ -135,7 +135,6 @@ public class RLlibHelper {
     Environment environment = null;
     int numGPUs = 0;
     int numWorkers = 1;
-    long randomSeed = 0;
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
     int maxIterations = 500;
@@ -161,7 +160,6 @@ public class RLlibHelper {
         this.environment = copy.environment;
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
-        this.randomSeed = copy.randomSeed;
         this.numHiddenLayers = copy.numHiddenLayers;
         this.numHiddenNodes = copy.numHiddenNodes;
         this.maxIterations = copy.maxIterations;
@@ -184,7 +182,6 @@ public class RLlibHelper {
                 + "environment=" + environment + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
-                + "randomSeed=" + randomSeed + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
                 + "maxIterations=" + maxIterations + ", "
@@ -267,14 +264,6 @@ public class RLlibHelper {
     }
     public RLlibHelper numWorkers(int numWorkers) {
         this.numWorkers = numWorkers;
-        return this;
-    }
-
-    public long randomSeed() {
-        return randomSeed;
-    }
-    public RLlibHelper randomSeed(long randomSeed) {
-        this.randomSeed = randomSeed;
         return this;
     }
 
@@ -654,7 +643,6 @@ public class RLlibHelper {
                 System.out.println("    --environment");
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
-                System.out.println("    --random-seed");
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
                 System.out.println("    --max-iterations");
@@ -683,8 +671,6 @@ public class RLlibHelper {
                 helper.numGPUs(Integer.parseInt(args[++i]));
             } else if ("--num-workers".equals(args[i])) {
                 helper.numWorkers(Integer.parseInt(args[++i]));
-            } else if ("--random-seed".equals(args[i])) {
-                helper.randomSeed(Long.parseLong(args[++i]));
             } else if ("--num-hidden-layers".equals(args[i])) {
                 helper.numHiddenLayers(Integer.parseInt(args[++i]));
             } else if ("--num-hidden-nodes".equals(args[i])) {
