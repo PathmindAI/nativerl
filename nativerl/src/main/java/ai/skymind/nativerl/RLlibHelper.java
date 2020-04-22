@@ -140,7 +140,6 @@ public class RLlibHelper {
     int maxIterations = 500;
     int maxTimeInSec = -1;
     int numSamples = 4;
-    double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
     String customParameters = "";
@@ -163,7 +162,6 @@ public class RLlibHelper {
         this.numHiddenLayers = copy.numHiddenLayers;
         this.numHiddenNodes = copy.numHiddenNodes;
         this.maxIterations = copy.maxIterations;
-        this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
@@ -185,7 +183,6 @@ public class RLlibHelper {
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
                 + "maxIterations=" + maxIterations + ", "
-                + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
                 + "maxTimeInSec=" + maxTimeInSec + ", "
                 + "redisAddress=" + redisAddress + ", "
@@ -288,14 +285,6 @@ public class RLlibHelper {
     }
     public RLlibHelper maxIterations(int maxIterations) {
         this.maxIterations = maxIterations;
-        return this;
-    }
-
-    public double maxRewardMean() {
-        return maxRewardMean;
-    }
-    public RLlibHelper maxRewardMean(double maxRewardMean) {
-        this.maxRewardMean = maxRewardMean;
         return this;
     }
 
@@ -646,7 +635,6 @@ public class RLlibHelper {
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
                 System.out.println("    --max-iterations");
-                System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
@@ -677,8 +665,6 @@ public class RLlibHelper {
                 helper.numHiddenNodes(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
                 helper.maxIterations(Integer.parseInt(args[++i]));
-            } else if ("--max-reward-mean".equals(args[i])) {
-                helper.maxRewardMean(Double.parseDouble(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
             } else if ("--num-samples".equals(args[i])) {
