@@ -140,7 +140,7 @@ public class RLlibHelper {
     int numHiddenNodes = 256;
     int maxIterations = 500;
     int maxTimeInSec = -1;
-    int numSamples = 10;
+    int numSamples = 4;
     double maxRewardMean = Double.POSITIVE_INFINITY;
     int savePolicyInterval = 100;
     String redisAddress = null;
@@ -609,7 +609,7 @@ public class RLlibHelper {
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
-            + "        'num_workers': 1,\n"
+            + "        'num_workers': " + numWorkers + ",\n"
             + "        'model': model,\n"
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
