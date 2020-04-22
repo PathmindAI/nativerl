@@ -597,7 +597,6 @@ public class RLlibHelper {
             + "        f.write('hsqldb.lock_file=false\\n')\n"
             + "\n"
             + "ray.init(log_to_driver=" + (userLog ? "True" : "False") + ")\n"
-            + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
             + "\n"
