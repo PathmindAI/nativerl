@@ -3,9 +3,6 @@ export MODEL_PACKAGE=$(unzip -l model.jar | grep Main.class | awk '{print $4}' |
 export MODEL_PACKAGE_NAME=$(echo $MODEL_PACKAGE | sed 's/\//\./g')
 export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
 export AGENT_CLASS="$MODEL_PACKAGE_NAME.Main"
-PHYSICAL_CPU_COUNT=$(lscpu -p | egrep -v '^#' | sort -u -t, -k 2,4 | wc -l)
-let WORKERS=$PHYSICAL_CPU_COUNT-1
-export NUM_WORKERS=$WORKERS
 export OUTPUT_DIR=$(pwd)
 
 mkdir -p $MODEL_PACKAGE
