@@ -5,6 +5,17 @@ export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
 export AGENT_CLASS="$MODEL_PACKAGE_NAME.Main"
 export OUTPUT_DIR=$(pwd)
 
+if [[ -z "$NUM_WORKERS" ]]; then
+    CPU_COUNT=$(lscpu -p | egrep -v '^#' | wc -l)
+    SAMPLES="${NUM_SAMPLES:-4}"
+    let WORKERS=(CPU_COUNT/SAMPLES)-1
+    export NUM_WORKERS=$WORKERS
+fi
+
+if [[ $NUM_WORKERS < 1 ]]; then
+    export NUM_WORKERS=1
+fi
+
 mkdir -p $MODEL_PACKAGE
 
 cat <<EOF > $MODEL_PACKAGE/Training.java
@@ -89,7 +100,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers $NUM_WORKERS \
-    --max-reward-mean $MAX_REWARD_MEAN \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
