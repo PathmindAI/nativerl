@@ -135,13 +135,11 @@ public class RLlibHelper {
     Environment environment = null;
     int numGPUs = 0;
     int numWorkers = 1;
-    long randomSeed = 0;
     int numHiddenLayers = 2;
     int numHiddenNodes = 256;
     int maxIterations = 500;
     int maxTimeInSec = -1;
-    int numSamples = 10;
-    double maxRewardMean = Double.POSITIVE_INFINITY;
+    int numSamples = 4;
     int savePolicyInterval = 100;
     String redisAddress = null;
     String customParameters = "";
@@ -161,11 +159,9 @@ public class RLlibHelper {
         this.environment = copy.environment;
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
-        this.randomSeed = copy.randomSeed;
         this.numHiddenLayers = copy.numHiddenLayers;
         this.numHiddenNodes = copy.numHiddenNodes;
         this.maxIterations = copy.maxIterations;
-        this.maxRewardMean = copy.maxRewardMean;
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
@@ -184,11 +180,9 @@ public class RLlibHelper {
                 + "environment=" + environment + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
-                + "randomSeed=" + randomSeed + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
                 + "maxIterations=" + maxIterations + ", "
-                + "maxRewardMean=" + maxRewardMean + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
                 + "maxTimeInSec=" + maxTimeInSec + ", "
                 + "redisAddress=" + redisAddress + ", "
@@ -270,14 +264,6 @@ public class RLlibHelper {
         return this;
     }
 
-    public long randomSeed() {
-        return randomSeed;
-    }
-    public RLlibHelper randomSeed(long randomSeed) {
-        this.randomSeed = randomSeed;
-        return this;
-    }
-
     public int numHiddenLayers() {
         return numHiddenLayers;
     }
@@ -299,14 +285,6 @@ public class RLlibHelper {
     }
     public RLlibHelper maxIterations(int maxIterations) {
         this.maxIterations = maxIterations;
-        return this;
-    }
-
-    public double maxRewardMean() {
-        return maxRewardMean;
-    }
-    public RLlibHelper maxRewardMean(double maxRewardMean) {
-        this.maxRewardMean = maxRewardMean;
         return this;
     }
 
@@ -552,7 +530,7 @@ public class RLlibHelper {
                 + "            self.episode_reward_range = np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))\n"
                 + "            # Episode reward mean activity\n"
                 + "            self.episode_reward_mean = np.mean(np.array(self.episode_reward_window[-50:]))\n"
-                + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-5:]))\n"
+                + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-10:]))\n"
                 + "\n"
                 + "            # Convergence check\n"
                 + "            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (np.abs(self.episode_reward_range) < np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 3)):\n"
@@ -597,7 +575,6 @@ public class RLlibHelper {
             + "        f.write('hsqldb.lock_file=false\\n')\n"
             + "\n"
             + "ray.init(log_to_driver=" + (userLog ? "True" : "False") + ")\n"
-            + "seed.seed(" + randomSeed + ")\n"
             + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
             + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
             + "\n"
@@ -609,7 +586,7 @@ public class RLlibHelper {
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
-            + "        'num_workers': 1,\n"
+            + "        'num_workers': " + numWorkers + ",\n"
             + "        'model': model,\n"
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
@@ -655,11 +632,9 @@ public class RLlibHelper {
                 System.out.println("    --environment");
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
-                System.out.println("    --random-seed");
                 System.out.println("    --num-hidden-layers");
                 System.out.println("    --num-hidden-nodes");
                 System.out.println("    --max-iterations");
-                System.out.println("    --max-reward-mean");
                 System.out.println("    --save-policy-interval");
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
@@ -684,16 +659,12 @@ public class RLlibHelper {
                 helper.numGPUs(Integer.parseInt(args[++i]));
             } else if ("--num-workers".equals(args[i])) {
                 helper.numWorkers(Integer.parseInt(args[++i]));
-            } else if ("--random-seed".equals(args[i])) {
-                helper.randomSeed(Long.parseLong(args[++i]));
             } else if ("--num-hidden-layers".equals(args[i])) {
                 helper.numHiddenLayers(Integer.parseInt(args[++i]));
             } else if ("--num-hidden-nodes".equals(args[i])) {
                 helper.numHiddenNodes(Integer.parseInt(args[++i]));
             } else if ("--max-iterations".equals(args[i])) {
                 helper.maxIterations(Integer.parseInt(args[++i]));
-            } else if ("--max-reward-mean".equals(args[i])) {
-                helper.maxRewardMean(Double.parseDouble(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
             } else if ("--num-samples".equals(args[i])) {

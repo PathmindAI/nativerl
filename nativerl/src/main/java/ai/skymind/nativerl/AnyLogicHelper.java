@@ -13,7 +13,6 @@ public class AnyLogicHelper {
     long discreteActions;
     long continuousActions;
     long continuousObservations;
-    long randomSeed = 0;
     long stepTime = 1;
     long stopTime = 1000;
     String classSnippet = "";
@@ -62,14 +61,6 @@ public class AnyLogicHelper {
     }
     public AnyLogicHelper continuousObservations(long continuousObservations) {
         this.continuousObservations = continuousObservations;
-        return this;
-    }
-
-    public long randomSeed() {
-        return randomSeed;
-    }
-    public AnyLogicHelper randomSeed(long randomSeed) {
-        this.randomSeed = randomSeed;
         return this;
     }
 
@@ -280,7 +271,7 @@ public class AnyLogicHelper {
                 ? "    @Override public Array step(Array action) {\n"
                 + "        double[] reward = new double[(int)action.length()];\n"
                 + "        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        engine.runFast();\n"                
+                + "        engine.runFast();\n"
                 + "        int[] array = new int[(int)action.length()];\n"
                 + "        for (int i = 0; i < array.length; i++) {\n"
                 + "            array[i] = (int)action.data().get(i);\n"
@@ -352,7 +343,6 @@ public class AnyLogicHelper {
                 System.out.println("    --discrete-actions");
                 System.out.println("    --continuous-actions");
                 System.out.println("    --continuous-observations");
-                System.out.println("    --random-seed");
                 System.out.println("    --step-time");
                 System.out.println("    --stop-time");
                 System.out.println("    --class-snippet");
@@ -374,8 +364,6 @@ public class AnyLogicHelper {
                 helper.continuousActions(Integer.parseInt(args[++i]));
             } else if ("--continuous-observations".equals(args[i])) {
                 helper.continuousObservations(Integer.parseInt(args[++i]));
-            } else if ("--random-seed".equals(args[i])) {
-                helper.randomSeed(Long.parseLong(args[++i]));
             } else if ("--step-time".equals(args[i])) {
                 helper.stepTime(Long.parseLong(args[++i]));
             } else if ("--stop-time".equals(args[i])) {
