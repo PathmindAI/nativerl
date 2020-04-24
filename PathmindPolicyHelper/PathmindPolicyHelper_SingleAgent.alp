@@ -974,7 +974,7 @@ public class PathmindHelperRegistry {
     }
 
     private static void installLibrary() {
-        // check this code is being executed on anylogic cloud
+        // check if this code is being executed on anylogic cloud
         if (!isCloud) {
             return;
         }
@@ -986,7 +986,7 @@ public class PathmindHelperRegistry {
 
         File libstdcPath = new File("./usr/lib/gcc/x86_64-alpine-linux-musl/6.4.0");
 
-        // create a direcotry for javacpp cache
+        // create a directory for javacpp cache
         File javacppPath = new File(System.getProperty("user.dir") + "/.javacpp/cache");
         javacppPath.mkdirs();
         javacppPath.setExecutable(true, false);
