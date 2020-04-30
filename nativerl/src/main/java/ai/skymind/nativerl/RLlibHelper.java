@@ -551,7 +551,7 @@ public class RLlibHelper {
                 + "                self.value_pred_converged = True\n"
                 + "\n"
                 + "            # Convergence stopping decision\n"
-                + "            if not self.should_stop and self.episode_reward_converged and self.value_pred_converged\n"
+                + "            if not self.should_stop and self.episode_reward_converged and self.value_pred_converged:\n"
                 + "                self.should_stop = True\n"
                 + "                return self.should_stop\n"
                 + "\n"
