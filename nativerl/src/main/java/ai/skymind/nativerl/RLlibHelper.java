@@ -453,7 +453,7 @@ public class RLlibHelper {
                 + "        self.no_converge_risk = False # Entropy never drops\n"
                 + "\n"
                 + "        # Convergence signals at each iteration from converge check onward\n"
-                + "        self.converged = False # Reward mean changes very little\n"
+                + "        self.episode_reward_converged = False # Reward mean changes very little\n"
                 + "        self.value_pred_converged = False # Explained variance changes very little\n"
                 + "        self.value_pred_adequate = False # Explained variance adequate\n"
                 + "\n"
