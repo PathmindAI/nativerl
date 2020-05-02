@@ -541,7 +541,7 @@ public class RLlibHelper {
                 + "                self.episode_reward_converged = True\n"
                 + "\n"
                 + "            # Explained variance leveled off\n"
-                + "            if (np.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / np.abs(self.vf_pred_mean) < self.value_pred_range_threshold):\n"
+                + "            if (np.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / np.abs(self.vf_pred_mean) < self.value_pred_threshold):\n"
                 + "                self.value_pred_converged = True\n"
                 + "\n"
                 + "            # Convergence stopping decision\n"
