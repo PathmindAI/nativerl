@@ -979,7 +979,7 @@ public class PathmindHelperRegistry {
             return;
         }
 
-        // untar libstdc++6 since default anylgic cloud instance(Alpine) doesn't have this library
+        // untar libstdc++6 since default AnyLogic cloud instance(Alpine) doesn't have this library
         String[] cmd = {
                 "/bin/sh", "-c", "tar -xzf libstdc++6-6.4.0-r9.apk"};
         exec(cmd);
