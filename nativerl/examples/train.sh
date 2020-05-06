@@ -133,6 +133,9 @@ java ai.skymind.nativerl.RLlibHelper \
     $USER_LOG_PARAM \
     rllibtrain.py
 
+mkdir $OUTPUT_DIR/PPO
+cp rllibtrain.py $OUTPUT_DIR/PPO
+
 set -e
 if [[ "$RESUME" = true ]]; then
     mv examples/pm_resume.py .
