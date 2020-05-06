@@ -618,8 +618,18 @@ public class RLlibHelper {
             + "    checkpoint_freq = " + checkpointFrequency + ",\n"
             + "    checkpoint_at_end = True,\n"
             + "    max_failures = 1,\n"
-            + "    export_formats = ['model']\n"
-            + ")\n";
+            + "    export_formats = ['model'],\n"
+            + "    return_trials = True\n"
+            + ")\n\n"
+            + "errored_trials = []\n"
+            + "for trial in trials:\n"
+            + "    if trial.status != 'TERMINATED':\n"
+            + "        errored_trials += [trial]\n"
+            + "\n"
+            + "if errored_trials:\n"
+            + "    print(errored_trials)\n"
+            + "else:\n"
+            + "    print(\"Training has been completed\")\n";
         return trainer;
     }
 
