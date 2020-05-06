@@ -148,6 +148,12 @@ public class RLlibHelper {
     boolean multiAgent = false;
     boolean userLog = false;
 
+    // thresholds for stopper
+    double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
+    double entropySlopeTh = 0.01;       // entropy_slope_threshold
+    double vfLossRangeTh = 0.1;         // vf_loss_range_threshold
+    double valuePredTh = 0.01;          // value_pred_threshold
+
     public RLlibHelper() {
     }
 
@@ -169,7 +175,11 @@ public class RLlibHelper {
         this.numSamples = copy.numSamples;
         this.resume = copy.resume;
         this.checkpointFrequency = copy.checkpointFrequency;
-        this.userLog = userLog;
+        this.userLog = copy.userLog;
+        this.episodeRewardRangeTh = copy.episodeRewardRangeTh;
+        this.entropySlopeTh = copy.entropySlopeTh;
+        this.vfLossRangeTh = copy.vfLossRangeTh;
+        this.valuePredTh = copy.valuePredTh;
     }
 
     @Override public String toString() {
@@ -188,6 +198,10 @@ public class RLlibHelper {
                 + "redisAddress=" + redisAddress + ", "
                 + "resume=" + resume + ", "
                 + "checkpointFrequency=" + checkpointFrequency + ", "
+                + "episodeRewardRangeTh=" + episodeRewardRangeTh + ", "
+                + "entropySlopeTh=" + entropySlopeTh + ", "
+                + "entropySlopeTh=" + entropySlopeTh + ", "
+                + "vfLossRangeTh=" + vfLossRangeTh + ", "
                 + "userLog=" + userLog + ", "
                 + "customParameters=" + customParameters + "]";
     }
@@ -356,6 +370,42 @@ public class RLlibHelper {
         return this;
     }
 
+    public double episodeRewardRangeTh() {
+        return episodeRewardRangeTh;
+    }
+
+    public RLlibHelper episodeRewardRangeTh(double episodeRewardRangeTh) {
+        this.episodeRewardRangeTh = episodeRewardRangeTh;
+        return this;
+    }
+
+    public double entropySlopeTh() {
+        return entropySlopeTh;
+    }
+
+    public RLlibHelper entropySlopeTh(double entropySlopeTh) {
+        this.entropySlopeTh = entropySlopeTh;
+        return this;
+    }
+
+    public double vfLossRangeTh() {
+        return vfLossRangeTh;
+    }
+
+    public RLlibHelper vfLossRangeTh(double vfLossRangeTh) {
+        this.vfLossRangeTh = vfLossRangeTh;
+        return this;
+    }
+
+    public double valuePredTh() {
+        return valuePredTh;
+    }
+
+    public RLlibHelper valuePredTh(double valuePredTh) {
+        this.valuePredTh = valuePredTh;
+        return this;
+    }
+
     public boolean userLog() {
         return userLog;
     }
@@ -475,10 +525,10 @@ public class RLlibHelper {
                 + "        self.vf_pred_mean_latest = 0\n"
                 + "\n"
                 + "        # Configs\n"
-                + "        self.episode_reward_range_threshold = 0.01 # Remove with 0\n"
-                + "        self.entropy_slope_threshold = 0.01 # Remove with 1\n"
-                + "        self.vf_loss_range_threshold = 0.1 # Remove with 0\n"
-                + "        self.value_pred_threshold = 0.01 # Remove with 0\n"
+                + "        self.episode_reward_range_threshold = " + episodeRewardRangeTh + " # Remove with 0\n"
+                + "        self.entropy_slope_threshold = " + entropySlopeTh + " # Remove with 1\n"
+                + "        self.vf_loss_range_threshold = " + vfLossRangeTh + " # Remove with 0\n"
+                + "        self.value_pred_threshold = " + valuePredTh + " # Remove with 0\n"
                 + "\n"
                 + "    def stop(self, trial_id, result):\n"
                 + "        # Core Criteria\n"
@@ -657,7 +707,11 @@ public class RLlibHelper {
                 System.out.println("    --maxTimeInSec");
                 System.out.println("    --num-samples");
                 System.out.println("    --resume");
-                System.out.println("    --checkpoint-freqeuncy");
+                System.out.println("    --checkpoint-frequency");
+                System.out.println("    --episode-reward-range");
+                System.out.println("    --entropy-slope");
+                System.out.println("    --vf-loss-range");
+                System.out.println("    --value-pred");
                 System.out.println("    --user-log");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
@@ -696,6 +750,14 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
+            } else if ("--episode-reward-range".equals(args[i])) {
+                helper.episodeRewardRangeTh(Double.parseDouble(args[++i]));
+            } else if ("--entropy-slope".equals(args[i])) {
+                helper.entropySlopeTh(Double.parseDouble(args[++i]));
+            } else if ("--vf-loss-range".equals(args[i])) {
+                helper.vfLossRangeTh(Double.parseDouble(args[++i]));
+            } else if ("--value-pred".equals(args[i])) {
+                helper.valuePredTh(Double.parseDouble(args[++i]));
             } else if ("--user-log".equals(args[i])) {
                 helper.userLog = true;
             } else {

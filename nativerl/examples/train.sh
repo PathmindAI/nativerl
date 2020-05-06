@@ -71,6 +71,26 @@ if [[ "$USER_LOG" = true ]]; then
     USER_LOG_PARAM="--user-log"
 fi
 
+EPISODE_REWARD_RANGE_PARAM=""
+if [[ ! -z "$EPISODE_REWARD_RANGE" ]]; then
+    EPISODE_REWARD_RANGE_PARAM="--episode-reward-range ${EPISODE_REWARD_RANGE}"
+fi
+
+ENTROPY_SLOPE_PARAM=""
+if [[ ! -z "$ENTROPY_SLOPE" ]]; then
+    ENTROPY_SLOPE_PARAM="--entropy-slope ${ENTROPY_SLOPE}"
+fi
+
+VF_LOSS_RANGE_PARAM=""
+if [[ ! -z "$VF_LOSS_RANGE" ]]; then
+    VF_LOSS_RANGE_PARAM="--vf-loss-range ${VF_LOSS_RANGE}"
+fi
+
+VALUE_PRED_PARAM=""
+if [[ ! -z "$VALUE_PRED" ]]; then
+    VALUE_PRED_PARAM="--value-pred ${VALUE_PRED}"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -106,8 +126,15 @@ java ai.skymind.nativerl.RLlibHelper \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $MULTIAGENT_PARAM \
+    $EPISODE_REWARD_RANGE_PARAM \
+    $ENTROPY_SLOPE_PARAM \
+    $VF_LOSS_RANGE_PARAM \
+    $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
     rllibtrain.py
+
+mkdir $OUTPUT_DIR/PPO
+cp rllibtrain.py $OUTPUT_DIR/PPO
 
 set -e
 if [[ "$RESUME" = true ]]; then
