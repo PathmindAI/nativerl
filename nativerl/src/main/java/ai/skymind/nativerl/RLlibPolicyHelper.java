@@ -8,6 +8,10 @@ import org.bytedeco.javacpp.indexer.*;
 import org.bytedeco.tensorflow.*;
 import static org.bytedeco.tensorflow.global.tensorflow.*;
 
+/**
+ * A PolicyHelper for RLlib, which can load only TensorFlow SavedModel exported by RLlib.
+ * Does not require CPython so has none of its limitations, such as the GIL.
+ */
 public class RLlibPolicyHelper implements PolicyHelper {
     static final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
     static final String[] outputNames = {"actions", "action_prob", "behaviour_logits", "vf_preds"};
