@@ -30,6 +30,22 @@ Build Instructions
  3. Run `mvn clean package` where the `pom.xml` file resides
  4. Find all output files inside the `target/nativerl-1.0.0-SNAPSHOT-bin.zip` archive
 
+### Building with Docker
+
+First build the image.
+
+```bash
+docker build . -t nativerl
+```
+
+Then start the container by mounting your current working directory.
+
+```bash
+docker run --mount "src=$(pwd),target=/app,type=bind" nativerl
+```
+
+After a successful build you'll find the results in the `target` folder. These instructions work
+on Unix machines, on Windows you'll likely have to use `${PWD}` instead of `$(pwd)` in the `run` step.
 
 ### Sample Build Steps on CentOS 7 with Anaconda
 
