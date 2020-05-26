@@ -1,0 +1,111 @@
+def SLACK_URL = "https://hooks.slack.com/services/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"
+def icon = ":heavy_check_mark:"
+/*
+    nativerl pipeline
+    The pipeline is made up of following steps
+    1. Git clone and setup
+    2. Build and s3 push
+    4. Optionally deploy to production and test
+ */
+
+/*
+    Build a docker image
+*/
+def buildNativerl(image_name) {
+    echo "Building the nativerl Docker Image"
+    sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
+    sh "docker run --mount \"src=${WORKSPACE}/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/pr_test/nativerl-1.0.0-SNAPSHOT-bin.zip"
+    sh "aws s3 sync ${WORKSPACE}/nativerl/pr_test/ s3://nativerl-training-dynamic-files.pathmind.com/id${env.BUILD_NUMBER}/"
+}
+
+/*
+    This is the main pipeline section with the stages of the CI/CD
+ */
+pipeline {
+
+    options {
+        // Build auto timeout 4 days
+        timeout(time: 5760, unit: 'MINUTES')
+    }
+
+    // Some global default variables
+    environment {
+        IMAGE_NAME = 'nativerl'
+        DEPLOY_PROD = false
+    }
+
+    parameters {
+        string(name: 'GIT_BRANCH', defaultValue: 'test', description: 'Git branch to build')
+        booleanParam(name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
+
+    }
+
+    //all is built and run from the master
+    agent {
+        node {
+            label 'master'
+            customWorkspace "nativerl_${env.BUILD_NUMBER}"
+        }
+    }
+
+    // Pipeline stages
+    stages {
+        stage('Initialize') {
+            steps {
+                buildDescription "#${ghprbPullId} - ${env.ghprbPullTitle}"
+            }
+        }
+        stage('Git clone and setup') {
+            steps {
+                echo "Notifying slack"
+                sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Nativerl Jenkins Job\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
+                echo "Check out code"
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build nativerl image') {
+                    steps {
+                        buildNativerl("${IMAGE_NAME}")
+                    }
+                }
+            }
+        }
+
+        stage('Start training') {
+            parallel {
+                stage('Start Training') {
+                    steps {
+                        script{
+                            sh "aws sqs send-message --queue-url https://queue.amazonaws.com/839270835622/dev-training-queue.fifo --message-body \"{\\\"S3Bucket\\\": \\\"nativerl-training-dynamic-files.pathmind.com\\\",\\\"S3Path\\\":\\\"id${env.BUILD_NUMBER}\\\"}\" --message-group-id training"
+                            echo "Waiting for thetraining to start"
+                            sh "timeout 900 bash -c 'while ! kubectl get pods -n dev | grep '^id${env.BUILD_NUMBER}-'; do sleep 60; done'"
+                            echo "Waiting for thetraining to finish"
+                            sh "bash -c 'while kubectl get pods -n dev | grep '^id${env.BUILD_NUMBER}-'; do sleep 60; done'"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Deleting workspace'
+            deleteDir()
+
+            echo 'Notifying Slack'
+            script {
+                if (currentBuild.result != "SUCCESS") {
+                    icon = ":x:"
+                }
+            }
+            echo "Stop training"
+            sh "aws sqs send-message --queue-url https://queue.amazonaws.com/839270835622/dev-training-queue.fifo --message-body \"{\\\"S3Bucket\\\": \\\"nativerl-training-dynamic-files.pathmind.com\\\",\\\"S3Path\\\":\\\"id${env.BUILD_NUMBER}\\\", \\\"destroy\\\":\\\"1\\\"}\" --message-group-id training"
+            echo "Notifying slack"
+            sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Nativerl Jenkins Job Finished\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\nResults: https://s3.console.aws.amazon.com/s3/buckets/nativerl-training-dynamic-files.pathmind.com/id${env.BUILD_NUMBER}/\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
+        }
+    }
+}
