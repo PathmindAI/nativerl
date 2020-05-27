@@ -23,7 +23,7 @@
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
-   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
+   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile, actionTupleSize);
 }
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
@@ -220,6 +220,64 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1579541084520</Id>
+					<Name><![CDATA[debugMode]]></Name>
+					<X>20</X><Y>430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1579541084518</Id>
+							<Label><![CDATA[Debug Mode]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1590618532129</Id>
+					<Name><![CDATA[actionTupleSize]]></Name>
+					<X>20</X><Y>310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1590618532127</Id>
+							<Label><![CDATA[Number of Agents]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1566825577748</Id>
 					<Name><![CDATA[possibleActionCount]]></Name>
 					<X>20</X><Y>280</Y>
@@ -310,7 +368,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<ParameterEditor>
 							<Id>1563524634304</Id>
-							<Label><![CDATA[policyFile]]></Label>
+							<Label><![CDATA[Policy File]]></Label>
 							<EditorContolType>FILE_CHOOSER</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
@@ -529,64 +587,6 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 							<HideCondition>
 								<Id>0</Id>
 								<ParameterId>1573849287879</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1579541084520</Id>
-					<Name><![CDATA[debugMode]]></Name>
-					<X>20</X><Y>430</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1579541084518</Id>
-							<Label><![CDATA[Debug Mode]]></Label>
-							<EditorContolType>CHECK_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1590618532129</Id>
-					<Name><![CDATA[actionTupleSize]]></Name>
-					<X>20</X><Y>310</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1590618532127</Id>
-							<Label><![CDATA[Number of Agents]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
 								<Operation>EQUALS</Operation>
 								<Value Class="CodeValue">
 									<Code><![CDATA[false]]></Code>
@@ -862,6 +862,12 @@ if (isTraining == false) {
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
+					<ParameterName><![CDATA[debugMode]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[actionTupleSize]]></ParameterName>
+				</Parameter>
+				<Parameter>
 					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -893,12 +899,6 @@ if (isTraining == false) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[eventCondition]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[debugMode]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[actionTupleSize]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -972,7 +972,7 @@ public class PathmindHelperRegistry {
 		return registeredHelpers;
 	}
 	
-	public static PolicyHelper loadPolicy(String policyFile) {
+	public static PolicyHelper loadPolicy(String policyFile, int actionTupleSize) {
 		if(policyCache.containsKey(policyFile)) {
 			return policyCache.get(policyFile);
 		}else {
@@ -992,7 +992,7 @@ public class PathmindHelperRegistry {
 			    	
 			    	policyPackage.close();
 			    
-			        PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+			        PolicyHelper helper = new RLlibPolicyHelper(target.toFile(), actionTupleSize);
 			        policyCache.put(policyFile, helper);
 			        return helper;
 			    } catch (IOException e) {
