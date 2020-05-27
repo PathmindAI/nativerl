@@ -1,0 +1,1221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+*************************************************
+	         AnyLogic Project File 
+*************************************************	         
+-->
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241823" AlpVersion="8.5.1">
+<Model>
+	<Id>1563523926925</Id>
+	<Name><![CDATA[PathmindPolicyHelper_Tuples]]></Name>
+	<EngineVersion>6</EngineVersion>
+	<JavaPackageName><![CDATA[pathmind.policyhelper]]></JavaPackageName>
+	<ModelTimeUnit><![CDATA[Second]]></ModelTimeUnit>
+	<ActiveObjectClasses>
+		<!--   =========   Active Object Class   ========  -->
+		<ActiveObjectClass>
+			<Id>1563523926930</Id>
+			<Name><![CDATA[PathmindHelper]]></Name>
+			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
+			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;]]></Import>
+			<StartupCode><![CDATA[PathmindHelperRegistry.register(this);
+
+isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
+disconnectFromAll();
+if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
+   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
+}
+]]></StartupCode>
+			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
+			<Generic>false</Generic>
+			<GenericParameter>
+				<Id>1563534160693</Id>
+				<Name><![CDATA[1563534160693]]></Name>
+				<GenericParameterValue Class="CodeValue">
+					<Code><![CDATA[T extends Agent]]></Code>
+				</GenericParameterValue>
+				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
+			</GenericParameter>
+			<Logging>false</Logging>
+			<FlowChartsUsage>ENTITY</FlowChartsUsage>
+			<SamplesToKeep>100</SamplesToKeep>
+			<LimitNumberOfArrayElements>false</LimitNumberOfArrayElements>
+			<ElementsLimitValue>100</ElementsLimitValue>
+			<MakeDefaultViewArea>false</MakeDefaultViewArea>
+			<SceneGridColor/>
+			<SceneBackgroundColor/>
+			<SceneSkybox>null</SceneSkybox>
+			<AgentProperties>
+	 			<SpaceType>CONTINUOUS</SpaceType>			
+				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
+				<RotateAnimationTowardsMovement>false</RotateAnimationTowardsMovement>
+				<RotateAnimationVertically>false</RotateAnimationVertically>
+				<VelocityCode Class="CodeUnitValue">
+					<Code><![CDATA[10]]></Code>
+					<Unit Class="SpeedUnits"><![CDATA[MPS]]></Unit>
+				</VelocityCode>
+				<PhysicalLength Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalLength>
+				<PhysicalWidth Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalWidth>
+				<PhysicalHeight Class="CodeUnitValue">
+					<Code><![CDATA[1]]></Code>
+					<Unit Class="LengthUnits"><![CDATA[METER]]></Unit>
+				</PhysicalHeight>
+			</AgentProperties>
+			<EnvironmentProperties>
+					<EnableSteps>false</EnableSteps>
+					<StepDurationCode Class="CodeUnitValue">
+						<Code><![CDATA[1.0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</StepDurationCode>
+					<SpaceType>CONTINUOUS</SpaceType>
+					<WidthCode><![CDATA[500]]></WidthCode>
+					<HeightCode><![CDATA[500]]></HeightCode>
+					<ZHeightCode><![CDATA[0]]></ZHeightCode>
+					<ColumnsCountCode><![CDATA[100]]></ColumnsCountCode>
+					<RowsCountCode><![CDATA[100]]></RowsCountCode>
+					<NeigborhoodType>MOORE</NeigborhoodType>
+					<LayoutType>USER_DEF</LayoutType>
+					<LayoutTypeApplyOnStartup>true</LayoutTypeApplyOnStartup>
+					<NetworkType>USER_DEF</NetworkType>
+					<NetworkTypeApplyOnStartup>true</NetworkTypeApplyOnStartup>
+					<ConnectionsPerAgentCode><![CDATA[2]]></ConnectionsPerAgentCode>
+					<ConnectionsRangeCode><![CDATA[50]]></ConnectionsRangeCode>
+					<NeighborLinkFractionCode><![CDATA[0.95]]></NeighborLinkFractionCode>
+					<MCode><![CDATA[10]]></MCode>
+			</EnvironmentProperties>
+			<DatasetsCreationProperties>
+				<AutoCreate>false</AutoCreate>
+					<OccurrenceAtTime>true</OccurrenceAtTime>
+					<OccurrenceDate>1563609600000</OccurrenceDate>
+					<OccurrenceTime Class="CodeUnitValue">
+						<Code><![CDATA[0]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</OccurrenceTime>
+					<RecurrenceCode Class="CodeUnitValue">
+						<Code><![CDATA[1]]></Code>
+						<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+					</RecurrenceCode>
+			</DatasetsCreationProperties>
+			<ScaleRuler>
+				<Id>1563523926927</Id>
+				<Name><![CDATA[scale]]></Name>
+				<ExcludeFromBuild>true</ExcludeFromBuild>
+				<X>0</X><Y>-150</Y>
+				<PublicFlag>false</PublicFlag>
+				<PresentationFlag>false</PresentationFlag>
+				<ShowLabel>false</ShowLabel>
+				<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+				<Length>100</Length>
+				<Rotation>0</Rotation>
+				<ScaleType>BASED_ON_LENGTH</ScaleType>
+				<ModelLength>10</ModelLength>
+				<LengthUnits>METER</LengthUnits>
+				<Scale>10</Scale>
+				<InheritedFromParentAgentType>true</InheritedFromParentAgentType>
+			</ScaleRuler>
+			<CurrentLevel>1566891812071</CurrentLevel>
+			<ConnectionsId>1563523926926</ConnectionsId>
+			<Variables>
+				<Variable Class="PlainVariable">
+					<Id>1563529489111</Id>
+					<Name><![CDATA[policyHelper]]></Name>
+					<X>320</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[PolicyHelper]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[null]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566466833512</Id>
+					<Name><![CDATA[isTraining]]></Name>
+					<X>320</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[boolean]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566467201295</Id>
+					<Name><![CDATA[engine]]></Name>
+					<X>320</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
+						<Type><![CDATA[Engine]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[getEngine()]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1566468010477</Id>
+					<Name><![CDATA[action]]></Name>
+					<X>170</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[long[]]]></Type>        
+					</Properties>
+				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1578425082743</Id>
+					<Name><![CDATA[steps]]></Name>
+					<X>170</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[int]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[0]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1563523942388</Id>
+					<Name><![CDATA[isEnabled]]></Name>
+					<X>20</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1563523942386</Id>
+							<Label><![CDATA[Enabled]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566825577748</Id>
+					<Name><![CDATA[possibleActionCount]]></Name>
+					<X>20</X><Y>280</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1566825577746</Id>
+							<Label><![CDATA[Number of Actions]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566825558177</Id>
+					<Name><![CDATA[usePolicy]]></Name>
+					<X>20</X><Y>250</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1566825558175</Id>
+							<Label><![CDATA[Mode]]></Label>
+							<EditorContolType>RADIO_BUTTONS</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<PredefParamValue>
+								<Id>0</Id>
+								<Name><![CDATA[Use Policy]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</PredefParamValue>
+							<PredefParamValue>
+								<Id>0</Id>
+								<Name><![CDATA[Use Random Actions]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</PredefParamValue>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1563524634306</Id>
+					<Name><![CDATA[policyFile]]></Name>
+					<X>20</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1563524634304</Id>
+							<Label><![CDATA[policyFile]]></Label>
+							<EditorContolType>FILE_CHOOSER</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1563523991195</Id>
+					<Name><![CDATA[observationForTraining]]></Name>
+					<X>20</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[double[]]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1563523991193</Id>
+							<Label><![CDATA[Observations]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566471864343</Id>
+					<Name><![CDATA[observationForReward]]></Name>
+					<X>20</X><Y>190</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[double[]]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1566471864341</Id>
+							<Label><![CDATA[Reward Variables]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1563524030804</Id>
+					<Name><![CDATA[doAction]]></Name>
+					<X>20</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="ACTION">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[action]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
+						<ParameterEditor>
+							<Id>1563524030802</Id>
+							<Label><![CDATA[Actions]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1566471148671</Id>
+					<Name><![CDATA[isDone]]></Name>
+					<X>20</X><Y>220</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[getEngine().getStopTime() <= time()
+/* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1566471148669</Id>
+							<Label><![CDATA[Done]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1573849287879</Id>
+					<Name><![CDATA[useEventTrigger]]></Name>
+					<X>20</X><Y>400</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1573849287877</Id>
+							<Label><![CDATA[Use Pathmind Event Trigger]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[Event Trigger]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1573833451402</Id>
+					<Name><![CDATA[recurrence]]></Name>
+					<X>20</X><Y>340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[]]></Type>
+						<UnitType><![CDATA[TIME]]></UnitType>
+						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1573833451400</Id>
+							<Label><![CDATA[Recurrence]]></Label>
+							<EditorContolType>UNIT_EDITOR</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1573849287879</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1573833780188</Id>
+					<Name><![CDATA[eventCondition]]></Name>
+					<X>20</X><Y>370</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true
+/* 
+** Important **
+https://help.pathmind.com/en/articles/3634254-4-triggering-actions 
+*/]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1573833780186</Id>
+							<Label><![CDATA[Event Condition]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1573849287879</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1579541084520</Id>
+					<Name><![CDATA[debugMode]]></Name>
+					<X>20</X><Y>430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1579541084518</Id>
+							<Label><![CDATA[Debug Mode]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1590618532129</Id>
+					<Name><![CDATA[actionTupleSize]]></Name>
+					<X>20</X><Y>310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1590618532127</Id>
+							<Label><![CDATA[Number of Agents]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+			</Variables>
+			<Events>
+				<Event>
+					<Id>1573748399465</Id>
+					<Name><![CDATA[triggerAction]]></Name>
+					<X>450</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties TriggerType="timeout" Mode="cyclic">
+						<Timeout Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
+						</Timeout>
+						<Rate Class="CodeUnitValue">
+							<Code><![CDATA[1]]></Code>
+							<Unit Class="RateUnits"><![CDATA[PER_MINUTE]]></Unit>
+						</Rate>
+						<OccurrenceAtTime>true</OccurrenceAtTime>
+						<OccurrenceDate>1566892800000</OccurrenceDate>
+						<OccurrenceTime Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
+						</OccurrenceTime>
+						<RecurrenceCode Class="CodeUnitValue">
+							<Code><![CDATA[recurrence(SECOND)]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</RecurrenceCode>
+						<Condition><![CDATA[false]]></Condition>
+					</Properties>
+					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
+	this.triggerNextAction();
+}]]></Action>
+				</Event>
+			</Events>
+			<Functions>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1566466772537</Id>
+					<Name><![CDATA[triggerNextAction]]></Name>
+					<X>450</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[if (isTraining) {
+	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
+} else if (isEnabled) {
+	if (usePolicy && policyHelper != null) {
+		steps++;
+	    action = (long[])policyHelper.computeDiscreteAction(observationForTraining());
+	    doAction(action);
+    } else {
+    	if (!usePolicy) {
+    		steps++;
+    		long[] randomActions = new long[actionTupleSize];
+    		for (int n=0; n < actionTupleSize; n++) {
+    			randomActions[n] = (long)getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
+    		}
+    		action = randomActions;
+    		doAction(action);
+    	}
+    }
+}
+
+if (!isTraining && steps == 1) {
+    PathmindSerializer.writeMeta(this);
+}
+
+if (debugMode) {
+	trace(toString());
+}]]></Body>
+				</Function>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[String]]></ReturnType>
+					<Id>1566470575833</Id>
+					<Name><![CDATA[toString]]></Name>
+					<X>170</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[double[] training = observationForTraining();
+double[] reward = observationForReward();  
+
+if (isTraining == false) {
+	String output = new String("Pathmind:\n"
+	      +"  Step: "+steps + "\n"	      
+	      +"  Observations:\n"
+	      +"    Array: "+Arrays.toString(training)+"\n"
+	      +"    Number of Observations: "+training.length+"\n"	      
+	      +"  Reward Variables: \n"
+	      +"    Array: "+Arrays.toString(reward)+"\n"
+	      +"    Number of Rewards: "+reward.length+"\n"	               
+	      +"  Last Action: "+Arrays.toString(action)+"\n"
+	      +"  Done: "+isDone() + "\n");		           	      
+	return output;
+} else if (isDone()) {
+	return ""; // End debug string when done is true
+} else {
+	return ""; // Hide debug string when training in Pathmind
+}]]></Body>
+				</Function>
+			</Functions>
+			<AgentLinks>
+				<AgentLink>
+					<Id>1563523926926</Id>
+					<Name><![CDATA[connections]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>50</X><Y>-50</Y>
+					<Label><X>15</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<HandleReceiveInConnections>false</HandleReceiveInConnections>
+					<AgentLinkType>COLLECTION_OF_LINKS</AgentLinkType>
+					<AgentReferenceId>1563523926930</AgentReferenceId>
+					<AgentLinkBidirectional>true</AgentLinkBidirectional>
+					<MessageType><![CDATA[Object]]></MessageType>
+					<LineStyle>SOLID</LineStyle>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineZOrder>UNDER_AGENTS</LineZOrder>
+					<LineArrow>NONE</LineArrow>
+					<LineArrowPosition>END</LineArrowPosition>
+				</AgentLink>
+			</AgentLinks>
+
+
+			<Presentation>
+				<Level>
+					<Id>1566891812071</Id>
+					<Name><![CDATA[level]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<Z>0</Z>
+					<LevelVisibility>ALWAYS_SHOW</LevelVisibility>
+
+			<Presentation>
+				<Image>
+					<Id>1564400828815</Id>
+					<Name><![CDATA[image]]></Name>
+					<X>-8</X><Y>-8</Y>
+					<Label><X>8</X><Y>8</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>true</EmbeddedIcon>
+					<Z>0</Z>
+					<Width>16</Width>
+					<Height>16</Height>
+					<Rotation>0.0</Rotation>
+					<ImageFiles>
+						<ImageResourceReference>
+							<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+							<ClassName><![CDATA[pathmind-single-original.png]]></ClassName>
+						</ImageResourceReference>
+					</ImageFiles>
+					<OriginalSize>true</OriginalSize>
+				</Image>
+			</Presentation>
+
+				</Level>
+			</Presentation>
+
+		</ActiveObjectClass>
+	</ActiveObjectClasses>	
+	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
+	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
+	<AlgebraicEquationsMethod>MODIFIED_NEWTON</AlgebraicEquationsMethod>
+	<AbsoluteAccuracy>1.0E-5</AbsoluteAccuracy>
+	<FixedTimeStep>0.001</FixedTimeStep>
+	<RelativeAccuracy>1.0E-5</RelativeAccuracy>
+	<TimeAccuracy>1.0E-5</TimeAccuracy>
+	<Frame>
+		<Width>1000</Width>
+		<Height>600</Height>
+	</Frame>
+	<Database>
+		<Logging>false</Logging>
+		<AutoExport>false</AutoExport>
+		<ShutdownCompact>false</ShutdownCompact>
+		<ImportSettings>
+		</ImportSettings>
+		<ExportSettings>
+		</ExportSettings>
+	</Database>
+	
+	<RunConfiguration ActiveObjectClassId="1563523926930">
+		<Id>1563523926934</Id>
+		<Name><![CDATA[RunConfiguration]]></Name>
+		<MaximumMemory>512</MaximumMemory>
+		<ModelTimeProperties>
+			<StopOption><![CDATA[Stop at specified time]]></StopOption>
+			<InitialDate><![CDATA[1563494400000]]></InitialDate>	
+			<InitialTime><![CDATA[0.0]]></InitialTime>	
+			<FinalDate><![CDATA[1566172800000]]></FinalDate>	
+			<FinalTime><![CDATA[100.0]]></FinalTime>	
+		</ModelTimeProperties>
+		<AnimationProperties>
+			<StopNever>true</StopNever>
+			<ExecutionMode>realTimeScaled</ExecutionMode>
+			<RealTimeScale>1.0</RealTimeScale>
+			<EnableZoomAndPanning>true</EnableZoomAndPanning>
+			<EnableDeveloperPanel>false</EnableDeveloperPanel>
+			<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+		</AnimationProperties>
+		<Inputs>		
+		</Inputs>
+		<Outputs>
+		</Outputs>
+	</RunConfiguration>
+	<Experiments>	
+		<!--   =========   Simulation Experiment   ========  -->
+		<SimulationExperiment ActiveObjectClassId="1563523926930">
+			<Id>1563523926933</Id>
+			<Name><![CDATA[Simulation]]></Name>
+			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<MaximumMemory>1024</MaximumMemory>
+			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
+			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
+			<SeedValue>1</SeedValue>
+			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
+
+			<Presentation>
+				<Text>
+					<Id>0</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>50</X><Y>30</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-12490271</Color>
+					<Text><![CDATA[PathmindPolicyHelper]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>24</Size>
+						<Style>0</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+			</Presentation>
+
+			<Parameters>			
+				<Parameter>
+					<ParameterName><![CDATA[isEnabled]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[usePolicy]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[policyFile]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[observationForTraining]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[observationForReward]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[doAction]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[isDone]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[useEventTrigger]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[recurrence]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[eventCondition]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[debugMode]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[actionTupleSize]]></ParameterName>
+				</Parameter>
+			</Parameters>			
+			<PresentationProperties>
+				<EnableZoomAndPanning>true</EnableZoomAndPanning>
+				<ExecutionMode><![CDATA[realTimeScaled]]></ExecutionMode>
+				<Title><![CDATA[PathmindPolicyHelper : Simulation]]></Title>	
+				<EnableDeveloperPanel>true</EnableDeveloperPanel>
+				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
+				<RealTimeScale>1.0</RealTimeScale>
+			</PresentationProperties>
+			<ModelTimeProperties>
+				<StopOption><![CDATA[Never]]></StopOption>
+				<InitialDate><![CDATA[1563494400000]]></InitialDate>	
+				<InitialTime><![CDATA[0.0]]></InitialTime>	
+				<FinalDate><![CDATA[1566172800000]]></FinalDate>	
+				<FinalTime><![CDATA[100.0]]></FinalTime>	
+			</ModelTimeProperties>
+		</SimulationExperiment>	
+	</Experiments>
+	<JavaClasses>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1566473119411</Id>
+			<Name><![CDATA[PathmindHelperRegistry]]></Name>
+			<Text><![CDATA[import java.nio.file.Files;
+import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Collections;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import ai.skymind.nativerl.RLlibPolicyHelper;
+import ai.skymind.nativerl.PolicyHelper;
+
+public class PathmindHelperRegistry {
+    private static List<PathmindHelper> registeredHelpers = new ArrayList<PathmindHelper>();
+    private static Map<String, PolicyHelper> policyCache = new HashMap<>();
+	
+    private static PolicyHelper forceLoadPolicy = null;
+
+    public static void setForceLoadPolicy(PolicyHelper h) {
+    	forceLoadPolicy = h;
+    }
+    
+	public static void register(PathmindHelper helper) {
+		if(!registeredHelpers.contains(helper)) {
+			registeredHelpers.add(helper);
+			if(forceLoadPolicy != null) {
+				helper.policyHelper = forceLoadPolicy;
+			}
+		}
+	}
+
+	
+	public static void unregister(PathmindHelper helper) {
+		registeredHelpers.remove(helper);
+	}
+	
+	public static PathmindHelper getHelper() {
+		if(registeredHelpers.size() == 0) {
+			throw new IllegalStateException("No helper registered yet!");
+		}else if(registeredHelpers.size() > 1) {
+			throw new IllegalStateException("Too many registered helpers! Found: "+registeredHelpers.size());
+		}
+		return registeredHelpers.get(0);
+	}
+	
+	public static List<PathmindHelper> getHelpers(){
+		return registeredHelpers;
+	}
+	
+	public static PolicyHelper loadPolicy(String policyFile) {
+		if(policyCache.containsKey(policyFile)) {
+			return policyCache.get(policyFile);
+		}else {
+			 try {
+			        ZipFile policyPackage = new ZipFile(policyFile);
+			    	Path target = Files.createTempDirectory("pathmind-");
+					target.toFile().deleteOnExit();
+			    	
+			    	for(ZipEntry entry: Collections.list(policyPackage.entries())){
+				    	Path targetFile = target.resolve(entry.getName());
+				    	
+					    targetFile.getParent().toFile().mkdirs();
+				        if(!entry.isDirectory()){
+					        Files.copy(policyPackage.getInputStream(entry), targetFile);
+				        }
+			    	}
+			    	
+			    	policyPackage.close();
+			    
+			        PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+			        policyCache.put(policyFile, helper);
+			        return helper;
+			    } catch (IOException e) {
+			    	traceln(e);
+			    	return null;
+			    }			
+		}
+	}
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1583369247650</Id>
+			<Name><![CDATA[PathmindSerializer]]></Name>
+			<Text><![CDATA[/**
+ * PathmindSerializer
+ */
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import org.apache.commons.io.FileUtils;
+import java.io.File;
+import java.nio.charset.Charset;
+import lombok.Getter;
+import java.util.Optional;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.io.InputStream;
+import org.apache.commons.io.IOUtils;
+import org.w3c.dom.Document;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+public class PathmindSerializer implements Serializable {
+
+    /**
+     * Default constructor
+     */
+    public PathmindSerializer() {
+    }
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
+	/**
+	 * This number is here for model snapshot storing purpose<br>
+	 * It needs to be changed when this class gets changed
+	 */
+	private static final long serialVersionUID = 1L;
+
+    private static ObjectMapper objectMapper = new ObjectMapper();
+	public static void writeMeta(PathmindHelper pathmindHelper) {
+        try {
+        	File f = new File("pathmind_meta.json");
+
+            PathmindMeta meta = new PathmindMeta(pathmindHelper);
+            FileUtils.write(f, objectMapper.writeValueAsString(meta), Charset.defaultCharset());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+	@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+	static class PathmindMeta {
+		private int possibleActionCount;
+		private int observationCount;
+		private int rewardCount;
+		private int actionTupleSize;
+		private boolean isEnabled;
+		private boolean autoRegressive;
+		private boolean usePolicy;
+		private String policyFile;
+		private boolean useEventTrigger;
+		private double recurrence;
+		private boolean debugMode;
+		private double startTime;
+		private double stopTime;
+		private String anyLogicVersion;
+		private String pathmindHelperVersion;
+
+		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
+		private static final String PATHMIND_JAR = "RLlibPolicyHelper";
+
+		public PathmindMeta(PathmindHelper pathmindHelper) {
+			this.possibleActionCount = pathmindHelper.possibleActionCount;
+			this.observationCount = pathmindHelper.observationForTraining().length;
+			this.rewardCount = pathmindHelper.observationForReward().length;
+			this.isEnabled = pathmindHelper.isEnabled;
+			//this.actionTupleSize = pathmindHelper.actionTupleSize;
+			//this.autoRegressive = pathmindHelper.autoRegressive;
+			this.usePolicy = pathmindHelper.usePolicy;
+			this.policyFile = pathmindHelper.policyFile;
+			this.useEventTrigger = pathmindHelper.useEventTrigger;
+			this.recurrence = pathmindHelper.recurrence;
+			this.debugMode = pathmindHelper.debugMode;
+			this.startTime = pathmindHelper.getEngine().getStartTime();
+			this.stopTime = pathmindHelper.getEngine().getStopTime();
+
+			Optional<String> engineLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+	                .filter(lib -> lib.endsWith(ENGINE_JAR))
+	                .findAny();
+
+			if (engineLib.isPresent()) {
+				this.anyLogicVersion = anyLogicVersion(engineLib.get());
+			}
+
+			Optional<String> pathmindHelperLib = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+					.filter(lib -> lib.endsWith(".jar") && lib.contains(PATHMIND_JAR))
+					.findAny();
+
+			if (pathmindHelperLib.isPresent()) {
+				this.pathmindHelperVersion = pathmindHelperVersion(pathmindHelperLib.get());
+			}
+		}
+
+		private static String anyLogicVersion(String libraryPath) {
+	        try (JarFile jar = new JarFile(libraryPath)) {
+	            JarEntry entry = jar.getJarEntry("com/anylogic/engine/Engine.properties");
+
+	            if (entry != null) {
+	                try (InputStream stream = jar.getInputStream(entry)) {
+	                    //"version=8.5.2.202001241923" -> "8.5.2.202001241923"
+	                    return IOUtils.toString(stream, Charset.defaultCharset()).replace("version=", "");
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
+
+		private static String pathmindHelperVersion(String libraryPath) {
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder builder = null;
+	        try {
+	            builder = factory.newDocumentBuilder();
+	        } catch (ParserConfigurationException e) {
+	            e.printStackTrace();
+	            return null;
+	        }
+
+	        try (JarFile jar = new JarFile(libraryPath)) {
+	            JarEntry entry = jar.getJarEntry("library.xml");
+
+	            if (entry != null) {
+	                try (InputStream stream = jar.getInputStream(entry)) {
+	                    Document doc = builder.parse(stream);
+	                    doc.getDocumentElement();
+	                    String major = doc.getElementsByTagName("VersionMajor").item(0).getTextContent();
+	                    String minor = doc.getElementsByTagName("VersionMinor").item(0).getTextContent();
+	                    String build = doc.getElementsByTagName("VersionBuild").item(0).getTextContent();
+
+	                    return String.join(".", major, minor, build);
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        return null;
+	    }
+	}
+
+}]]></Text>
+		</JavaClass>
+	</JavaClasses>
+	<Libraries>
+		<!--   =========   Library   ========  -->
+		<Library>
+			<Id>1563529858312</Id>
+			<Name><![CDATA[Pathmind]]></Name>
+			<Description><![CDATA[Apply Reinforcement Learning to AnyLogic Simulations]]></Description>
+			<AOCEntry>
+				<ActiveObjectClassId>1563523926930</ActiveObjectClassId>
+				<Icon16ResourceReference>
+					<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+					<ClassName><![CDATA[pathmind-single-16x16.png]]></ClassName>
+				</Icon16ResourceReference>
+				<Icon32ResourceReference>
+					<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+					<ClassName><![CDATA[pathmind-single-32x32.png]]></ClassName>
+				</Icon32ResourceReference>
+			</AOCEntry>
+
+			<IconResourceReference>
+				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+				<ClassName><![CDATA[pathmind-single-16x16.png]]></ClassName>
+			</IconResourceReference>
+			<VersionMajor>1</VersionMajor>
+			<VersionMinor>0</VersionMinor>
+			<VersionBuild>2</VersionBuild>
+			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
+		</Library>
+	</Libraries>
+	<ModelResources>
+		<Resource>
+			<Path><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[pathmind-single-16x16.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[pathmind-single-32x32.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[pathmind-single-original.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+	</ModelResources>
+	<ClassPathEntry>
+		<ResourceReference>
+			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
+			<ClassName><![CDATA[RLlibPolicyHelper-0.0.1-SNAPSHOT.jar]]></ClassName>
+		</ResourceReference>
+		<Imported>true</Imported>
+		<Folder>false</Folder>
+	</ClassPathEntry>
+</Model>
+</AnyLogicWorkspace>
