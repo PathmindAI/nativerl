@@ -97,8 +97,8 @@ pipeline {
    }
    post {
         always {
-		echo 'Deleting workspace'
-                deleteDir()
+		//echo 'Deleting workspace'
+                //deleteDir()
 
 		echo 'Notifying Slack'
 		script {
@@ -107,7 +107,7 @@ pipeline {
 			}
 		}
 		echo "Stop training"
-		sh "ws sqs send-message --queue-url https://queue.amazonaws.com/839270835622/dev-training-queue.fifo --message-body \"{\\\"S3Bucket\\\": \\\"nativerl-training-dynamic-files.pathmind.com\\\",\\\"S3Path\\\":\\\"id1\\\", \\\"destroy\\\":\\\"1\\\"}\" --message-group-id training"
+		sh "aws sqs send-message --queue-url https://queue.amazonaws.com/839270835622/dev-training-queue.fifo --message-body \"{\\\"S3Bucket\\\": \\\"nativerl-training-dynamic-files.pathmind.com\\\",\\\"S3Path\\\":\\\"id1\\\", \\\"destroy\\\":\\\"1\\\"}\" --message-group-id training"
                 echo "Notifying slack"
 		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Nativerl Jenkins Job Finished\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\nResults: https://s3.console.aws.amazon.com/s3/buckets/nativerl-training-dynamic-files.pathmind.com/id1/\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
         }
