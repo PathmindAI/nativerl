@@ -461,7 +461,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int]]></Type>
+							<Type><![CDATA[long[]]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
