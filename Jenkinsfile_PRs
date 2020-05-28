@@ -14,9 +14,9 @@ def icon=":heavy_check_mark:"
 def buildNativerl(image_name) {
         echo "Building the nativerl Docker Image"
         sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
-	sh "docker run --mount \"src=${WORKSPACE}/nativerl/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
-	sh "aws s3 cp ${WORKSPACE}/nativerl/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/pr_test/nativerl-1.0.0-SNAPSHOT-bin.zip"
-	sh "aws s3 sync ${WORKSPACE}/nativerl/nativerl/pr_test/ s3://nativerl-training-dynamic-files.pathmind.com/id1/"
+	sh "docker run --mount \"src=${WORKSPACE}/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
+	sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/pr_test/nativerl-1.0.0-SNAPSHOT-bin.zip"
+	sh "aws s3 sync ${WORKSPACE}/nativerl/pr_test/ s3://nativerl-training-dynamic-files.pathmind.com/id1/"
 }
 
 /*
@@ -44,7 +44,7 @@ pipeline {
     //all is built and run from the master
     agent { node { 
 		label 'master' 
-		customWorkspace "${env.BUILD_NUMBER}"
+		customWorkspace "nativerl_${env.BUILD_NUMBER}"
 	} }
 
     // Pipeline stages
@@ -97,8 +97,8 @@ pipeline {
    }
    post {
         always {
-		//echo 'Deleting workspace'
-                //deleteDir()
+		echo 'Deleting workspace'
+                deleteDir()
 
 		echo 'Notifying Slack'
 		script {
