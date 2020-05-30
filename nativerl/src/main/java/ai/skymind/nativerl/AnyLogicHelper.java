@@ -23,6 +23,7 @@ public class AnyLogicHelper {
     int testIterations = 10;
     boolean stepless = false;
     boolean multiAgent = false;
+    int actionTupleSize;
 
     public String environmentClassName() {
         return environmentClassName;
@@ -141,6 +142,14 @@ public class AnyLogicHelper {
     }
     public AnyLogicHelper setMultiAgent(boolean multiAgent) {
         this.multiAgent = multiAgent;
+        return this;
+    }
+
+    public int actionTupleSize() {
+        return actionTupleSize;
+    }
+    public AnyLogicHelper actionTupleSize(int actionTupleSize) {
+        this.actionTupleSize = actionTupleSize;
         return this;
     }
 
@@ -297,7 +306,11 @@ public class AnyLogicHelper {
                 + "        double reward = 0;\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "        engine.runFast();\n"
-                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
+                + "        long[] array = new long[(int)action.length()];\n"
+                + "        for (int i = 0; i < array.length; i++) {\n"
+                + "            array[i] = (long)action.data().get(i);\n"
+                + "        }\n"
+                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
                 + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"
                 + rewardSnippet
@@ -352,6 +365,7 @@ public class AnyLogicHelper {
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --stepless");
+                System.out.println("    --action-tuple-size");
                 System.out.println("    --multi-agent");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
@@ -384,6 +398,8 @@ public class AnyLogicHelper {
                 helper.setStepless(true);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else {
                 output = new File(args[i]);
             }

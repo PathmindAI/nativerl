@@ -1,16 +1,21 @@
 package ai.skymind.nativerl;
 
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.FloatPointer;
+import org.bytedeco.javacpp.LongPointer;
+import org.bytedeco.tensorflow.*;
+
 import java.io.File;
 import java.io.IOException;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.bytedeco.tensorflow.*;
 import static org.bytedeco.tensorflow.global.tensorflow.*;
 
 public class RLlibPolicyHelper implements PolicyHelper {
-    static final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
-    static final String[] outputNames = {"actions", "action_prob", "behaviour_logits", "vf_preds"};
+    final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
+    final String[] outputNames;
 
     SavedModelBundle bundle = null;
     SessionOptions options = null;
@@ -21,12 +26,32 @@ public class RLlibPolicyHelper implements PolicyHelper {
     String[] realOutputNames = null;
     Tensor[] inputTensors = null;
     FloatPointer obsData = null;
-    TensorVector outputTensors = null;
+    TensorVector[] outputTensors = null;
+    int actionTupleSize;
 
     public RLlibPolicyHelper(File savedModel) throws IOException {
+        this(savedModel, 1);
+    }
+
+    public RLlibPolicyHelper(File savedModel, int actionTupleSize) throws IOException {
+        // initialize output names along with action tuple size
+        this.actionTupleSize = actionTupleSize;
+
+        List<String> tempOutputNames = new ArrayList<>();
+        if (actionTupleSize == 1) {
+            tempOutputNames.add("actions");
+        } else {
+            for (int i = 0; i < actionTupleSize; i++) {
+                tempOutputNames.add("actions_" + i);
+            }
+        }
+        tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "behaviour_logits", "vf_preds"}));
+        outputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
+
         if (disablePolicyHelper) {
             return;
         }
+
         bundle = new SavedModelBundle();
         options = new SessionOptions();
         runOptions = new RunOptions();
@@ -74,7 +99,11 @@ public class RLlibPolicyHelper implements PolicyHelper {
                 Tensor.create(new boolean[1]),
                 Tensor.create(new int[1])};
         obsData = new FloatPointer(inputTensors[0].tensor_data());
-        outputTensors = new TensorVector(outputNames.length);
+
+        outputTensors = new TensorVector[actionTupleSize];
+        for (int i = 0; i < actionTupleSize; i++) {
+            outputTensors[i] = new TensorVector(outputNames.length);
+        }
     }
 
     @Override public float[] computeContinuousAction(float[] state) {
@@ -84,19 +113,26 @@ public class RLlibPolicyHelper implements PolicyHelper {
         throw new UnsupportedOperationException();
     }
 
-    @Override public long computeDiscreteAction(float[] state) {
+    @Override public long[] computeDiscreteAction(float[] state) {
         if (disablePolicyHelper) {
-            return -1;
+            return null;
         }
         obsData.put(state);
-        Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors),
-                new StringVector(realOutputNames), new StringVector(), outputTensors);
-        if (!s.ok()) {
-            throw new RuntimeException(s.error_message().getString());
+
+        long[] actionArray = new long[actionTupleSize];
+        for (int i = 0; i < actionArray.length; i++) {
+            Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors),
+                    new StringVector(realOutputNames), new StringVector(), outputTensors[i]);
+            if (!s.ok()) {
+                throw new RuntimeException(s.error_message().getString());
+            }
+            actionArray[i] = new LongPointer(outputTensors[i].get(0).tensor_data()).get();
         }
 //        for (int i = 0; i < outputTensors.size(); i++) {
 //            System.out.println(outputTensors.get(i).createIndexer());
 //        }
-        return new LongPointer(outputTensors.get(0).tensor_data()).get();
+        return actionArray;
+
     }
+
 }
