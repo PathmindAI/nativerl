@@ -13,8 +13,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>8</java.version>
-    <tensorflow.version>1.14.0-1.5.1</tensorflow.version>
-    <mkldnn.version>0.20-1.5.1</mkldnn.version>
+    <tensorflow.version>1.15.0-1.5.2</tensorflow.version>
+    <mkldnn.version>0.21.2-1.5.2</mkldnn.version>
   </properties>
 
   <dependencies>
