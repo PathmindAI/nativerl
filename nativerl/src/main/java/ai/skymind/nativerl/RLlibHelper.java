@@ -120,7 +120,7 @@ public class RLlibHelper {
             throw new UnsupportedOperationException();
         }
 
-        @Override public long computeDiscreteAction(float[] state) {
+        @Override public long[] computeDiscreteAction(float[] state) {
             obsData.put(state);
             PyRun_StringFlags("action = trainer.compute_action(obs)\n", Py_file_input, globals, globals, null);
 
