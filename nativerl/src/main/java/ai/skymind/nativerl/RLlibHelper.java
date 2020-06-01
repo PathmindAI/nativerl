@@ -133,6 +133,7 @@ public class RLlibHelper {
     File outputDir = null;
     File checkpoint = null;
     Environment environment = null;
+    int numCPUs = 1;
     int numGPUs = 0;
     int numWorkers = 1;
     int numHiddenLayers = 2;
@@ -163,6 +164,7 @@ public class RLlibHelper {
         this.outputDir = copy.outputDir;
         this.checkpoint = copy.checkpoint;
         this.environment = copy.environment;
+        this.numCPUs = copy.numCPUs;
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
         this.numHiddenLayers = copy.numHiddenLayers;
@@ -188,6 +190,7 @@ public class RLlibHelper {
                 + "outputDir=" + outputDir + ", "
                 + "checkpoint=" + checkpoint + ", "
                 + "environment=" + environment + ", "
+                + "numCPUs=" + numCPUs + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
@@ -259,6 +262,14 @@ public class RLlibHelper {
     }
     public RLlibHelper environment(Environment environment) {
         this.environment = environment;
+        return this;
+    }
+
+    public int numCPUs() {
+        return numCPUs;
+    }
+    public RLlibHelper numCPUs(int numCPUs) {
+        this.numCPUs = numCPUs;
         return this;
     }
 
@@ -636,6 +647,7 @@ public class RLlibHelper {
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
             + "        'num_workers': " + numWorkers + ",\n"
+            + "        'num_cpus_per_worker': " + numCPUs + ",\n"
             + "        'model': model,\n"
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
@@ -718,6 +730,8 @@ public class RLlibHelper {
                 helper.checkpoint(args[++i]);
             } else if ("--environment".equals(args[i])) {
                 helper.environment(Class.forName(args[++i]).asSubclass(Environment.class).newInstance());
+            } else if ("--num-cpus".equals(args[i])) {
+                helper.numCPUs(Integer.parseInt(args[++i]));
             } else if ("--num-gpus".equals(args[i])) {
                 helper.numGPUs(Integer.parseInt(args[++i]));
             } else if ("--num-workers".equals(args[i])) {
