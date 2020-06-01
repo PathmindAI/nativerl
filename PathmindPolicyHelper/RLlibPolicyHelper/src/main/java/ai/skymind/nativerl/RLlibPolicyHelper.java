@@ -10,7 +10,7 @@ import static org.bytedeco.tensorflow.global.tensorflow.*;
 
 public class RLlibPolicyHelper implements PolicyHelper {
     static final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
-    static final String[] outputNames = {"actions", "action_prob", "behaviour_logits", "vf_preds"};
+    static final String[] outputNames = {"actions_0", "action_prob", "action_dist_inputs", "vf_preds", "action_logp"};
 
     SavedModelBundle bundle = null;
     SessionOptions options = null;
