@@ -332,7 +332,7 @@ public class AnyLogicHelper {
             + "\n"
             + "    public static void main(String[] args) throws Exception {\n"
             + (policyHelper != null
-                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0])));\n"
+                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0]), " + actionTupleSize + "));\n"
                     + "        ArrayList<String> lines = new ArrayList<String>(" + testIterations + ");\n"
                     + "        for (int i = 0; i < " + testIterations + "; i++) {\n"
                     + "            lines.add(Arrays.toString(e.test()));\n"
