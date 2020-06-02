@@ -1,4 +1,4 @@
-def DOCKER_TAG
+def ENVIRONMENT
 def SLACK_URL="https://hooks.slack.com/services/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"
 def icon=":heavy_check_mark:"
 /*
@@ -12,11 +12,11 @@ def icon=":heavy_check_mark:"
 /*
     Build a docker image
 */
-def buildNativerl(image_name,tag,version) {
+def buildNativerl(image_name,environment,version) {
         echo "Building the nativerl Docker Image"
         sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
 	sh "docker run --mount \"src=${WORKSPACE}/nativerl/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
-	sh "aws s3 cp ${WORKSPACE}/nativerl/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://${tag}-training-static-files.pathmind.com/nativerl/${version}/nativerl-1.0.0-SNAPSHOT-bin.zip
+	sh "aws s3 cp ${WORKSPACE}/nativerl/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://${environment}-training-static-files.pathmind.com/nativerl/${version}/nativerl-1.0.0-SNAPSHOT-bin.zip"
 }
 
 /*
@@ -48,37 +48,31 @@ pipeline {
     // Pipeline stages
     stages {
         stage('Git clone and setup') {
-            when {
-                anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev'
-                    environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
-                }
-            }
+            //when {
+            //    anyOf {
+            //        environment name: 'GIT_BRANCH', value: 'dev'
+            //        environment name: 'GIT_BRANCH', value: 'test'
+            //        environment name: 'GIT_BRANCH', value: 'master'
+            //    }
+            //}
             steps {
                 echo "Notifying slack"
 		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Nativerl Jenkins Job\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
+		sh "env"
 		script {
-		        DOCKER_TAG = "dev"
+		        ENVIRONMENT = "dev"
 		        if(env.BRANCH_NAME == 'master'){
-		                DOCKER_TAG = "prod"
+		                ENVIRONMENT = "prod"
 		        }
 		        if(env.BRANCH_NAME == 'dev'){
-		                DOCKER_TAG = "dev"
+		                ENVIRONMENT = "dev"
 		        }
 		        if(env.BRANCH_NAME == 'test'){
-		                DOCKER_TAG = "test"
+		                ENVIRONMENT = "test"
 		        }
 		}
                 echo "Check out code"
 		checkout scm
-
-                // Define a unique name for the tests container and helm release
-                script {
-                    branch = GIT_BRANCH.replaceAll('/', '-').replaceAll('\\*', '-')
-                    NATIVERL_ID = "${IMAGE_NAME}-${DOCKER_TAG}-${branch}"
-                    echo "Global nativerl Id set to ${NATIVERL_ID}"
-                }
             }
         }
 
@@ -93,7 +87,7 @@ pipeline {
 		parallel {
 			stage('Build nativerl image') {
 				steps {
-					buildNativerl("${IMAGE_NAME}","${DOCKER_TAG}","${VERSION}")
+					buildNativerl("${IMAGE_NAME}","${ENVIRONMENT}","${VERSION}")
 				}
 			}
 		}

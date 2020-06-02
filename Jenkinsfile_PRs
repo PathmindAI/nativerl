@@ -55,14 +55,6 @@ pipeline {
                 }
         }
         stage('Git clone and setup') {
-            when {
-                anyOf {
-                    environment name: 'GIT_BRANCH', value: 'dev'
-                    environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: '58-nativrl-ci-cd'
-                    environment name: 'GIT_BRANCH', value: 'master'
-                }
-            }
             steps {
                 echo "Notifying slack"
 		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Nativerl Jenkins Job\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
