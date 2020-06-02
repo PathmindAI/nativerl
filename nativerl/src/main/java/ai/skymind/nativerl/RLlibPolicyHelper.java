@@ -45,7 +45,7 @@ public class RLlibPolicyHelper implements PolicyHelper {
                 tempOutputNames.add("actions_" + i);
             }
         }
-        tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "behaviour_logits", "vf_preds"}));
+        tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "action_dist_inputs", "vf_preds", "action_logp"}));
         outputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
 
         if (disablePolicyHelper) {
