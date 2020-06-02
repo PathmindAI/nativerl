@@ -1,6 +1,6 @@
 def ENVIRONMENT
-def SLACK_URL="https://hooks.slack.com/services/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"
-def icon=":heavy_check_mark:"
+def SLACK_URL = "https://hooks.slack.com/services/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"
+def icon = ":heavy_check_mark:"
 /*
     nativerl pipeline
     The pipeline is made up of following steps
@@ -12,11 +12,11 @@ def icon=":heavy_check_mark:"
 /*
     Build a docker image
 */
-def buildNativerl(image_name,environment,version) {
-        echo "Building the nativerl Docker Image"
-        sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
-	sh "docker run --mount \"src=${WORKSPACE}/nativerl/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
-	sh "aws s3 cp ${WORKSPACE}/nativerl/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://${environment}-training-static-files.pathmind.com/nativerl/${version}/nativerl-1.0.0-SNAPSHOT-bin.zip"
+def buildNativerl(image_name, environment, version) {
+    echo "Building the nativerl Docker Image"
+    sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
+    sh "docker run --mount \"src=${WORKSPACE}/nativerl/nativerl,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://${environment}-training-static-files.pathmind.com/nativerl/${version}/nativerl-1.0.0-SNAPSHOT-bin.zip"
 }
 
 /*
@@ -33,12 +33,12 @@ pipeline {
     // Some global default variables
     environment {
         IMAGE_NAME = 'nativerl'
-	DEPLOY_PROD = false
+        DEPLOY_PROD = false
     }
 
     parameters {
-        string (name: 'GIT_BRANCH', defaultValue: 'test', description: 'Git branch to build')
-        booleanParam (name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
+        string(name: 'GIT_BRANCH', defaultValue: 'test', description: 'Git branch to build')
+        booleanParam(name: 'DEPLOY_TO_PROD', defaultValue: false, description: 'If build and tests are good, proceed and deploy to production without manual approval')
 
     }
 
@@ -57,22 +57,22 @@ pipeline {
             //}
             steps {
                 echo "Notifying slack"
-		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Nativerl Jenkins Job\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
-		sh "env"
-		script {
-		        ENVIRONMENT = "dev"
-		        if(env.BRANCH_NAME == 'master'){
-		                ENVIRONMENT = "prod"
-		        }
-		        if(env.BRANCH_NAME == 'dev'){
-		                ENVIRONMENT = "dev"
-		        }
-		        if(env.BRANCH_NAME == 'test'){
-		                ENVIRONMENT = "test"
-		        }
-		}
+                sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
+                sh "env"
+                script {
+                    ENVIRONMENT = "dev"
+                    if (env.BRANCH_NAME == 'master') {
+                        ENVIRONMENT = "prod"
+                    }
+                    if (env.BRANCH_NAME == 'dev') {
+                        ENVIRONMENT = "dev"
+                    }
+                    if (env.BRANCH_NAME == 'test') {
+                        ENVIRONMENT = "test"
+                    }
+                }
                 echo "Check out code"
-		checkout scm
+                checkout scm
             }
         }
 
@@ -84,25 +84,26 @@ pipeline {
                     environment name: 'GIT_BRANCH', value: 'master'
                 }
             }
-		parallel {
-			stage('Build nativerl image') {
-				steps {
-					buildNativerl("${IMAGE_NAME}","${ENVIRONMENT}","${VERSION}")
-				}
-			}
-		}
+            parallel {
+                stage('Build nativerl image') {
+                    steps {
+                        buildNativerl("${IMAGE_NAME}", "${ENVIRONMENT}", "${VERSION}")
+                    }
+                }
+            }
         }
-   }
-   post {
+    }
+    post {
         always {
-		echo 'Notifying Slack'
-		script {
-			if ( currentBuild.result != "SUCCESS" ) {
-				icon=":x:"
-			}
-		}
-                echo "Notifying slack"
-		sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Nativerl Jenkins Job Finished\n#${ghprbPullId} - ${env.ghprbPullTitle}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
+            echo 'Notifying Slack'
+            script {
+                if (currentBuild.result != "SUCCESS") {
+                    icon = ":x:"
+                }
+            }
+            echo "Notifying slack"
+            sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
         }
     }
 }
+
