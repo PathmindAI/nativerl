@@ -163,7 +163,7 @@ public class AnyLogicHelper {
         if (multiAgent) {
             c.getDeclaredMethod("doAction", int[].class);
         } else {
-            c.getDeclaredMethod("doAction", int.class);
+            c.getDeclaredMethod("doAction", int[].class);
         }
         Method m = c.getDeclaredMethod("getObservation", boolean.class);
         if (multiAgent && m.getReturnType() != double[][].class) {
@@ -302,7 +302,7 @@ public class AnyLogicHelper {
                 + "    }\n"
                 + "\n"
 
-                : "    @Override public float step(long action) {\n"
+                : "    @Override public float step(Array action) {\n"
                 + "        double reward = 0;\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "        engine.runFast();\n"

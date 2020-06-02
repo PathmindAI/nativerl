@@ -478,7 +478,7 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, nativerl, ray, sys, os, random\n"
+        String trainer = "import glob, gym, nativerl, ray, sys, os, random, numpy\n"
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"

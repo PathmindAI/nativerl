@@ -29,6 +29,6 @@ public class Environment extends Pointer {
     @Virtual(true) public native @Const @ByRef Array getObservation();
     @Virtual(true) public native @Cast("bool") boolean isDone();
     @Virtual(true) public native void reset();
-    @Virtual(true) public native float step(@Cast("ssize_t") long action);
-    @Virtual(true) public native @Const @ByRef Array step(@Const @ByRef Array action);
+    @Virtual(true) public native float step(@Const @ByRef Array action);
+//    virtual const Array& step(const Array& action) = 0;
 }
