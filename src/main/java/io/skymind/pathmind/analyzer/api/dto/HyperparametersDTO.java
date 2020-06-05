@@ -24,7 +24,8 @@ public class HyperparametersDTO {
             "rewardVariablesCount:",
             "reward:",
             "failed_steps:",
-            "model-analyzer-mode:");
+            "model-analyzer-mode:",
+            "actionTupleSize:");
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -52,7 +53,10 @@ public class HyperparametersDTO {
     @NotBlank(message = "Mode cannot be blank")
     private String mode;
 
-
+    @ApiModelProperty(value = "Action tuple size extracted from model", example = "2", required = true)
+    @NotBlank(message = "Tuple size cannot be blank")
+    private String actionTupleSize;
+    
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
         hyperparametersList = hyperparametersList.stream()
                 .filter(HyperparametersDTO::isHyperparameters)
@@ -65,7 +69,8 @@ public class HyperparametersDTO {
                 hyperparametersList.get(2),
                 hyperparametersList.get(3),
                 hyperparametersList.get(4),
-                hyperparametersList.get(5));
+                hyperparametersList.get(5),
+                hyperparametersList.get(6));
     }
 
     private static boolean isHyperparameters(String output) {

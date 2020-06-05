@@ -102,6 +102,7 @@ public class FileService {
 //            }
         }
         result.add("model-analyzer-mode:" + mode.toString());
+        result.add("actionTupleSize:" + 17);
         return result;
     }
 
