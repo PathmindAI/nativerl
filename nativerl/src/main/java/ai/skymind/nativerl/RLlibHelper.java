@@ -488,6 +488,9 @@ public class RLlibHelper {
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
                 : "        reward = self.nativeEnv.step(action)\n"
+                + "        f = open('reward'+self.nativeEnv.getObservation().__str__()+'.txt', 'a')\n"
+                + "        f.write(str(reward)+'\\n')\n"
+                + "        f.close()"
                 + "        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
                 + "\n"
                 + "class Stopper:\n"
