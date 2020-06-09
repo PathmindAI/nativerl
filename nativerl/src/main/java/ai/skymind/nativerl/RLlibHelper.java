@@ -511,7 +511,7 @@ public class RLlibHelper {
             + "        self.action_space = Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, "gym.spaces.Discrete(actionSpace.n)")) + " ])\n"
             + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
-            + "        self.max_episode_steps = 200000\n"
+            + "        self.max_episode_steps = 20000\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
