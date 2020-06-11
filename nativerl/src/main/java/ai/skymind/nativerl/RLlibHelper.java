@@ -519,7 +519,8 @@ public class RLlibHelper {
             + "        self.nativeEnv = nativerl.createEnvironment('" + environment.getClass().getName() + "')\n"
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
             + "        observationSpace = self.nativeEnv.getObservationSpace()\n"
-            + "        self.action_space = Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, "gym.spaces.Discrete(actionSpace.n)")) + " ])\n"
+            + "        self.action_space = "
+            + (actionTupleSize == 1 ? "gym.spaces.Discrete(actionSpace.n)\n" : "Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, "gym.spaces.Discrete(actionSpace.n)")) + " ])\n")
             + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
             + "        self.max_episode_steps = 20000\n"
@@ -548,9 +549,13 @@ public class RLlibHelper {
                 + "            rewarddict[str(i)] = reward[i]\n"
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
-                : "        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)\n"
+                : (actionTupleSize == 1
+                    ? "        actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)\n"
+                    : "        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)\n")
                 + "        for i in range(0, actionarray.shape[1]):\n"
-                + "            actionarray[0,i] = action[i].astype(numpy.float32)\n"
+                + (actionTupleSize == 1
+                    ? "            actionarray[0,i] = action\n"
+                    : "            actionarray[0,i] = action[i].astype(numpy.float32)\n")
                 + "        reward = self.nativeEnv.step(nativerl.Array(actionarray))\n"
                 + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
             + "\n"
