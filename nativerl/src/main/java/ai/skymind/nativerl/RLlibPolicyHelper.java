@@ -37,14 +37,20 @@ public class RLlibPolicyHelper implements PolicyHelper {
         // initialize output names along with action tuple size
         this.actionTupleSize = actionTupleSize;
 
+        // we may need this logic for Ray 0.9.0
         List<String> tempOutputNames = new ArrayList<>();
-        if (actionTupleSize == 1) {
-            tempOutputNames.add("actions");
-        } else {
-            for (int i = 0; i < actionTupleSize; i++) {
-                tempOutputNames.add("actions_" + i);
-            }
+//        if (actionTupleSize == 1) {
+//            tempOutputNames.add("actions");
+//        } else {
+//            for (int i = 0; i < actionTupleSize; i++) {
+//                tempOutputNames.add("actions_" + i);
+//            }
+//        }
+
+        for (int i = 0; i < actionTupleSize; i++) {
+            tempOutputNames.add("actions_" + i);
         }
+
         tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "action_dist_inputs", "vf_preds", "action_logp"}));
         outputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
 
