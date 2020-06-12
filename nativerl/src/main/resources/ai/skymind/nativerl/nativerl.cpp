@@ -71,7 +71,8 @@ PYBIND11_MODULE(nativerl, m) {
         .def("isDone", &nativerl::Environment::isDone)
         .def("reset", &nativerl::Environment::reset)
         .def("step", (float (nativerl::Environment::*)(ssize_t action))&nativerl::Environment::step)
-        .def("step", (const nativerl::Array& (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step);
+        .def("step", (const nativerl::Array& (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step)
+        .def("getMetrics", &nativerl::Environment::getMetrics);
 
     m.def("createEnvironment", &createEnvironment);
     m.def("releaseEnvironment", &releaseEnvironment);

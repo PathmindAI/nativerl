@@ -17,12 +17,14 @@ public abstract class AbstractEnvironment extends Environment {
     protected Space observationSpace;
     protected Array observation;
     protected Array reward;
+    protected Array metrics;
 
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
         actionSpace = getDiscreteSpace(discreteActions);
         observationSpace = getContinuousSpace(continuousObservations);
         observation = new Array(new SSizeTVector().put(continuousObservations));
         reward = null;
+        metrics = null;
     }
 
     @Override public Space getActionSpace() {
@@ -35,5 +37,9 @@ public abstract class AbstractEnvironment extends Environment {
 
     @Override public Array getObservation() {
         return observation;
+    }
+
+    @Override public Array getMetrics() {
+        return metrics;
     }
 }
