@@ -152,9 +152,11 @@ public class RLlibHelper {
     File checkpoint = null;
     /** A concrete instance of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     Environment environment = null;
+    /** The number of CPU cores to let RLlib use during training. */
+    int numCPUs = 1;
     /** The number of GPUs to let RLlib use during training. */
     int numGPUs = 0;
-    /** The number of CPU cores to let RLlib use during training. */
+    /** number of workers **/
     int numWorkers = 1;
     /** A random seed that we can set to obtain reproducible results. */
     long randomSeed = 0;
@@ -208,6 +210,7 @@ public class RLlibHelper {
         this.outputDir = copy.outputDir;
         this.checkpoint = copy.checkpoint;
         this.environment = copy.environment;
+        this.numCPUs = copy.numCPUs;
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
         this.numHiddenLayers = copy.numHiddenLayers;
@@ -233,6 +236,7 @@ public class RLlibHelper {
                 + "outputDir=" + outputDir + ", "
                 + "checkpoint=" + checkpoint + ", "
                 + "environment=" + environment + ", "
+                + "numCPUs=" + numCPUs + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
@@ -304,6 +308,14 @@ public class RLlibHelper {
     }
     public RLlibHelper environment(Environment environment) {
         this.environment = environment;
+        return this;
+    }
+
+    public int numCPUs() {
+        return numCPUs;
+    }
+    public RLlibHelper numCPUs(int numCPUs) {
+        this.numCPUs = numCPUs;
         return this;
     }
 
@@ -506,7 +518,7 @@ public class RLlibHelper {
             + "        self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
             + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], np.array(observationSpace.shape), dtype=np.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
-            + "        self.max_episode_steps = " + Integer.MAX_VALUE + "\n"
+            + "        self.max_episode_steps = 200000\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
@@ -541,7 +553,7 @@ public class RLlibHelper {
                 + "        self.should_stop = False # Stop criteria met\n"
                 + "        self.too_many_iter = False # Max iterations\n"
                 + "        self.too_much_time = False # Max training time\n"
-                + "        self.too_many_steps = False # Max steps\n"
+                + "        self.too_many_episodes = False # Max total episodes\n"
                 + "\n"
                 + "        # Stopping criteria at early check\n"
                 + "        self.no_discovery_risk = False # Value loss never changes\n"
@@ -581,29 +593,23 @@ public class RLlibHelper {
                 + (maxTimeInSec > 0
                 ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
                 : "")
+                + "        self.too_many_episodes = result['episodes_total'] >= 30000\n"
                 + "\n"
-                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time):\n"
+                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_many_episodes):\n"
                 + "            self.should_stop = True\n"
                 + "            return self.should_stop\n"
                 + "\n"
-                + "        # Append episode rewards list used for trend behaviour\n"
-                + "        self.episode_reward_window.append(result['episode_reward_mean'])\n"
-                + "        self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])\n"
+                + "        # Collecting metrics for stopping criteria\n"
+                + "        if result['training_iteration'] == 1:\n"
+                + "            self.entropy_start = result['info/learner/default_policy/entropy']\n"
                 + "\n"
-                + "        # Up until early stopping filter, append value loss list to measure range\n"
                 + "        if result['training_iteration'] <= 50:\n"
                 + "            self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])\n"
                 + "\n"
-                + "        # Experimental Criteria\n"
+                + "        self.episode_reward_window.append(result['episode_reward_mean'])\n"
+                + "        self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])\n"
                 + "\n"
-                + "        # Episode steps filter\n"
-                + "        if result['training_iteration'] == 1:\n"
-                + "            self.entropy_start = result['info/learner/default_policy/entropy'] # Set start value\n"
-                + "            # Too many steps within episode\n"
-                + "            self.too_many_steps = result['timesteps_this_iter'] > 200000 # Max steps\n"
-                + "            if not self.should_stop and self.too_many_steps:\n"
-                + "                self.should_stop = True\n"
-                + "                return self.should_stop\n"
+                + "        # Experimental Criteria\n"
                 + "\n"
                 + "        # Early stopping filter\n"
                 + "        if result['training_iteration'] == 50:\n"
@@ -687,6 +693,7 @@ public class RLlibHelper {
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
             + "        'num_workers': " + numWorkers + ",\n"
+            + "        'num_cpus_per_worker': " + numCPUs + ",\n"
             + "        'model': model,\n"
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
@@ -769,6 +776,8 @@ public class RLlibHelper {
                 helper.checkpoint(args[++i]);
             } else if ("--environment".equals(args[i])) {
                 helper.environment(Class.forName(args[++i]).asSubclass(Environment.class).newInstance());
+            } else if ("--num-cpus".equals(args[i])) {
+                helper.numCPUs(Integer.parseInt(args[++i]));
             } else if ("--num-gpus".equals(args[i])) {
                 helper.numGPUs(Integer.parseInt(args[++i]));
             } else if ("--num-workers".equals(args[i])) {

@@ -7,13 +7,24 @@ export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
     CPU_COUNT=$(lscpu -p | egrep -v '^#' | wc -l)
-    SAMPLES="${NUM_SAMPLES:-4}"
-    let WORKERS=(CPU_COUNT/SAMPLES)-1
-    export NUM_WORKERS=$WORKERS
+    if [[ $CPU_COUNT = 36 ]]; then
+        export NUM_WORKERS=2
+        export NUM_CPUS=4
+    elif [[ $CPU_COUNT = 16 ]]; then
+        export NUM_WORKERS=3
+        export NUM_CPUS=1
+    else
+        export NUM_WORKERS=1
+        export NUM_CPUS=1
+    fi
 fi
 
 if [[ $NUM_WORKERS < 1 ]]; then
     export NUM_WORKERS=1
+fi
+
+if [[ $NUM_CPUS < 1 ]]; then
+    export NUM_CPUS=1
 fi
 
 mkdir -p $MODEL_PACKAGE
@@ -119,6 +130,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
+    --num-cpus $NUM_CPUS \
     --num-workers $NUM_WORKERS \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
@@ -133,7 +145,7 @@ java ai.skymind.nativerl.RLlibHelper \
     $USER_LOG_PARAM \
     rllibtrain.py
 
-mkdir $OUTPUT_DIR/PPO
+mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
 set -e
