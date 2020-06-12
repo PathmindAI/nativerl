@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A PolicyHelper for RLlib, which can load only TensorFlow SavedModel exported by RLlib.
+ * Does not require CPython so has none of its limitations, such as the GIL.
+ */
 import static org.bytedeco.tensorflow.global.tensorflow.*;
 
 public class RLlibPolicyHelper implements PolicyHelper {

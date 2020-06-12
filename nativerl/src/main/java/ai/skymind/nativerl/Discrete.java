@@ -8,7 +8,10 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static ai.skymind.nativerl.NativeRL.*;
 
-
+/**
+ * Describes a discrete space for action spaces.
+ * Includes the number of actions supported by the Environment.
+ */
 @Namespace("nativerl") @NoOffset @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class Discrete extends Space {
     static { Loader.load(); }

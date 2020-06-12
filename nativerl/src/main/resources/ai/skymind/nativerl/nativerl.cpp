@@ -2,12 +2,17 @@
 #include <pybind11/stl_bind.h>
 #include <pybind11/stl.h>
 
+/**
+ * This file basically contains the configuration to map the API from nativerl.h to Python using pybind11.
+ * Also provides init() and uninit() functions to load and unload the JVM via JavaCPP.
+ */
 PYBIND11_MAKE_OPAQUE(std::vector<float>);
 PYBIND11_MAKE_OPAQUE(std::vector<ssize_t>);
 
 #include "nativerl.h"
 #include "jniNativeRL.h"
 
+/** Loads the JVM using JavaCPP and the given arguments. */
 int init(const std::vector<std::string>& jvmargs) {
     const char *argv[256];
     for (size_t i = 0; i < jvmargs.size() && i < 256; i++) {
@@ -16,11 +21,13 @@ int init(const std::vector<std::string>& jvmargs) {
     return JavaCPP_init(jvmargs.size(), argv);
 }
 
+/** Unloads the JVM using JavaCPP. */
 int uninit() {
     return JavaCPP_uninit();
 }
 
 PYBIND11_MODULE(nativerl, m) {
+// Do not initialize here, let users pass arguments to the JVM via init()
 //    JavaCPP_init(0, nullptr);
 
     pybind11::bind_vector<std::vector<float>>(m, "FloatVector", pybind11::buffer_protocol());

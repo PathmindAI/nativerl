@@ -8,7 +8,19 @@ import org.bytedeco.javacpp.annotation.*;
 
 import static ai.skymind.nativerl.NativeRL.*;
 
-
+/**
+ * The pure virtual (abstract) interface of a "native" environment. This gets mapped,
+ * for example, with JavaCPP and implemented by a Java class. The implementation needs
+ * to export functions to create and release Environment objects. In the case of JavaCPP,
+ * the createEnvironment() and releaseEnvironment() are available in the generated
+ * jniNativeRL.h header file.
+ * <p>
+ * However, we can just as well implement it in pure C++, which we would do in the case of,
+ * for example, ROS or MATLAB Simulink.
+ * <p>
+ * On the Python side, these functions are picked up by, for example, pybind11 and used
+ * to implement Python interfaces of environments, such as gym.Env, for RLlib, etc.
+ */
 @Namespace("nativerl") @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class Environment extends Pointer {
     static { Loader.load(); }

@@ -19,6 +19,11 @@ import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
 
 /**
+* This is a helper class to help users use an implementation of
+* the reinforcement learning Environment interface using RLlib.
+* The output is a Python script that can executed with an existing
+* installation of RLlib.
+* <p>
  * Currently available algorithms according to RLlib's registry.py:
  *   "DDPG" *
  *   "APEX_DDPG" *
@@ -37,11 +42,17 @@ import static org.bytedeco.numpy.global.numpy.*;
  *   "APPO"
  *   "MARWIL"
  *
+ * <p>
  *   * Works only with continuous actions (doesn't work with discrete ones)
  *   ** Requires PyTorch (doesn't work with TensorFlow)
+ * <p>
  */
 public class RLlibHelper {
 
+  /**
+   * A PolicyHelper for RLlib, which can load its checkpoint files.
+   * Requires CPython and comes with all its limitations, such as the GIL.
+   */
     public static class PythonPolicyHelper implements PolicyHelper {
         PyObject globals = null;
         PyArrayObject obsArray = null;
@@ -140,31 +151,54 @@ public class RLlibHelper {
         }
     }
 
+    /** The paths where to find RLlib itself and all of its Python dependencies. */
     File[] rllibpaths = null;
+    /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
     String algorithm = "PPO";
+    /** The directory where to output the logs of RLlib. */
     File outputDir = null;
+    /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     File checkpoint = null;
+    /** A concrete instance of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     Environment environment = null;
+    /** The number of CPU cores to let RLlib use during training. */
     int numCPUs = 1;
+    /** The number of GPUs to let RLlib use during training. */
     int numGPUs = 0;
+    /** The number of parallel workers that RLlib should execute during training. */
     int numWorkers = 1;
+    /** The number of hidden layers in the MLP to use for the learning model. */
     int numHiddenLayers = 2;
+    /** The number of nodes per layer in the MLP to use for the learning model. */
     int numHiddenNodes = 256;
+    /** The maximum number of training iterations as a stopping criterion. */
     int maxIterations = 500;
-    int maxTimeInSec = -1;
+    /** Max time in seconds */
+    int maxTimeInSec = 43200;
+    /** Number of population-based training samples */
     int numSamples = 4;
+    /** Length of actions array for tuples */
     int actionTupleSize = 1;
+    /** The frequency at which policies should be saved to files, given as an interval in the number of training iterations. */
     int savePolicyInterval = 100;
+    /** Initialize actions as a long */
     long discreteActions;
+    /** The address of the Redis server for distributed training sessions. */
     String redisAddress = null;
+    /** Any number custom parameters written in Python appended to the config of ray.tune.run() as is. */
     String customParameters = "";
+    /** Resume training when AWS spot instance terminates */
     boolean resume = false;
+    /** Periodic checkpointing to allow training to recover from AWS spot instance termination */
     int checkpointFrequency = 50;
+    /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
     boolean multiAgent = false;
+    /** Reduce size of output log file */
     boolean userLog = false;
+    /** Optional layer on top of tuples */
     boolean autoregressive = false;
 
-    // thresholds for stopper
+    // Thresholds for stopper
     double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
     double entropySlopeTh = 0.01;       // entropy_slope_threshold
     double vfLossRangeTh = 0.1;         // vf_loss_range_threshold
