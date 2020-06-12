@@ -53,9 +53,6 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return obsdict, rewarddict, {'__all__': self.nativeEnv.isDone()}, {}
         {{else}}
         reward = self.nativeEnv.step(action)
-        f = open('reward' + self.nativeEnv.getObservation().__str__() + '.txt', 'a')
-        f.write(str(reward) + '\n')
-        f.close()
         return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
         {{/if}}
 

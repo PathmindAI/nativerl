@@ -1,21 +1,25 @@
 package ai.skymind.nativerl;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.helper.ConditionalHelpers;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.bytedeco.cpython.PyObject;
+import org.bytedeco.javacpp.FloatPointer;
+import org.bytedeco.javacpp.Pointer;
+import org.bytedeco.javacpp.SizeTPointer;
+import org.bytedeco.numpy.PyArrayObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import com.github.jknack.handlebars.Handlebars;
-import com.github.jknack.handlebars.Helper;
-import com.github.jknack.handlebars.Options;
-import com.github.jknack.handlebars.Template;
-import com.github.jknack.handlebars.helper.ConditionalHelpers;
-import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
-import com.github.jknack.handlebars.io.TemplateLoader;
-import lombok.Getter;
-import org.bytedeco.cpython.*;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.numpy.*;
 import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
 
@@ -42,6 +46,9 @@ import static org.bytedeco.numpy.global.numpy.*;
  *   ** Requires PyTorch (doesn't work with TensorFlow)
  */
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RLlibHelper {
 
     public static class PythonPolicyHelper implements PolicyHelper {
@@ -136,33 +143,58 @@ public class RLlibHelper {
     }
 
     File[] rllibpaths = null;
-    String algorithm = "PPO";
     File outputDir = null;
     File checkpoint = null;
     Environment environment = null;
-    int numGPUs = 0;
-    int numWorkers = 1;
-    int numHiddenLayers = 2;
-    int numHiddenNodes = 256;
-    int maxIterations = 500;
-    int maxTimeInSec = -1;
-    int numSamples = 4;
-    int savePolicyInterval = 100;
     String redisAddress = null;
-    String customParameters = "";
     boolean resume = false;
-    int checkpointFrequency = 50;
     boolean multiAgent = false;
     boolean userLog = false;
 
-    // thresholds for stopper
-    double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
-    double entropySlopeTh = 0.01;       // entropy_slope_threshold
-    double vfLossRangeTh = 0.1;         // vf_loss_range_threshold
-    double valuePredTh = 0.01;          // value_pred_threshold
+    int numGPUs = 0;
 
-    public RLlibHelper() {
-    }
+    @Builder.Default
+    String algorithm = "PPO";
+
+    @Builder.Default
+    int numWorkers = 1;
+
+    @Builder.Default
+    int numHiddenLayers = 2;
+
+    @Builder.Default
+    int numHiddenNodes = 256;
+
+    @Builder.Default
+    int maxIterations = 500;
+
+    @Builder.Default
+    int maxTimeInSec = -1;
+
+    @Builder.Default
+    int numSamples = 4;
+
+    @Builder.Default
+    int savePolicyInterval = 100;
+
+    @Builder.Default
+    String customParameters = "";
+
+    @Builder.Default
+    int checkpointFrequency = 50;
+
+    // thresholds for stopper
+    @Builder.Default
+    double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
+
+    @Builder.Default
+    double entropySlopeTh = 0.01;       // entropy_slope_threshold
+
+    @Builder.Default
+    double vfLossRangeTh = 0.1;         // vf_loss_range_threshold
+
+    @Builder.Default
+    double valuePredTh = 0.01;          // value_pred_threshold
 
     public RLlibHelper(RLlibHelper copy) {
         this.rllibpaths = copy.rllibpaths;
@@ -213,215 +245,6 @@ public class RLlibHelper {
                 + "customParameters=" + customParameters + "]";
     }
 
-    public File[] rllibpaths() {
-        return rllibpaths;
-    }
-    public RLlibHelper rllibpaths(File[] rllibpaths) {
-        this.rllibpaths = rllibpaths;
-        return this;
-    }
-    public RLlibHelper rllibpaths(String[] rllibpaths) {
-        File[] files = new File[rllibpaths.length];
-        for (int i = 0; i < files.length; i++) {
-            files[i] = new File(rllibpaths[i]);
-        }
-        this.rllibpaths = files;
-        return this;
-    }
-
-    public String algorithm() {
-        return algorithm;
-    }
-    public RLlibHelper algorithm(String algorithm) {
-        this.algorithm = algorithm;
-        return this;
-    }
-
-    public File outputDir() {
-        return outputDir;
-    }
-    public RLlibHelper outputDir(File outputDir) {
-        this.outputDir = outputDir;
-        return this;
-    }
-    public RLlibHelper outputDir(String outputDir) {
-        this.outputDir = new File(outputDir);
-        return this;
-    }
-
-    public File checkpoint() {
-        return checkpoint;
-    }
-    public RLlibHelper checkpoint(File checkpoint) {
-        this.checkpoint = checkpoint;
-        return this;
-    }
-    public RLlibHelper checkpoint(String checkpoint) {
-        this.checkpoint = new File(checkpoint);
-        return this;
-    }
-
-    public Environment environment() {
-        return environment;
-    }
-    public RLlibHelper environment(Environment environment) {
-        this.environment = environment;
-        return this;
-    }
-
-    public int numGPUs() {
-        return numGPUs;
-    }
-    public RLlibHelper numGPUs(int numGPUs) {
-        this.numGPUs = numGPUs;
-        return this;
-    }
-
-    public int numWorkers() {
-        return numWorkers;
-    }
-    public RLlibHelper numWorkers(int numWorkers) {
-        this.numWorkers = numWorkers;
-        return this;
-    }
-
-    public int numHiddenLayers() {
-        return numHiddenLayers;
-    }
-    public RLlibHelper numHiddenLayers(int numHiddenLayers) {
-        this.numHiddenLayers = numHiddenLayers;
-        return this;
-    }
-
-    public int numHiddenNodes() {
-        return numHiddenNodes;
-    }
-    public RLlibHelper numHiddenNodes(int numHiddenNodes) {
-        this.numHiddenNodes = numHiddenNodes;
-        return this;
-    }
-
-    public int maxIterations() {
-        return maxIterations;
-    }
-    public RLlibHelper maxIterations(int maxIterations) {
-        this.maxIterations = maxIterations;
-        return this;
-    }
-
-    public int maxTimeInSec() {
-        return maxTimeInSec;
-    }
-
-    public RLlibHelper maxTimeInSec(int maxTimeInSec) {
-        this.maxTimeInSec = maxTimeInSec;
-        return this;
-    }
-
-    public int numSamples() {
-        return numSamples;
-    }
-
-    public RLlibHelper numSamples(int numSamples) {
-        this.numSamples = numSamples;
-        return this;
-    }
-
-    public boolean resume() {
-        return resume;
-    }
-
-    public RLlibHelper resume(boolean resume) {
-        this.resume = resume;
-        return this;
-    }
-
-    public int checkpointFrequency() {
-        return checkpointFrequency;
-    }
-
-    public RLlibHelper checkpointFrequency(int checkpointFrequency) {
-        this.checkpointFrequency = checkpointFrequency;
-        return this;
-    }
-
-    public int savePolicyInterval() {
-        return savePolicyInterval;
-    }
-    public RLlibHelper savePolicyInterval(int savePolicyInterval) {
-        this.savePolicyInterval = savePolicyInterval;
-        return this;
-    }
-
-    public String redisAddress() {
-        return redisAddress;
-    }
-    public RLlibHelper redisAddress(String redisAddress) {
-        this.redisAddress = redisAddress;
-        return this;
-    }
-
-    public String customParameters() {
-        return customParameters;
-    }
-    public RLlibHelper customParameters(String customParameters) {
-        this.customParameters = customParameters;
-        return this;
-    }
-
-    public boolean isMultiAgent() {
-        return multiAgent;
-    }
-    public RLlibHelper setMultiAgent(boolean multiAgent) {
-        this.multiAgent = multiAgent;
-        return this;
-    }
-
-    public double episodeRewardRangeTh() {
-        return episodeRewardRangeTh;
-    }
-
-    public RLlibHelper episodeRewardRangeTh(double episodeRewardRangeTh) {
-        this.episodeRewardRangeTh = episodeRewardRangeTh;
-        return this;
-    }
-
-    public double entropySlopeTh() {
-        return entropySlopeTh;
-    }
-
-    public RLlibHelper entropySlopeTh(double entropySlopeTh) {
-        this.entropySlopeTh = entropySlopeTh;
-        return this;
-    }
-
-    public double vfLossRangeTh() {
-        return vfLossRangeTh;
-    }
-
-    public RLlibHelper vfLossRangeTh(double vfLossRangeTh) {
-        this.vfLossRangeTh = vfLossRangeTh;
-        return this;
-    }
-
-    public double valuePredTh() {
-        return valuePredTh;
-    }
-
-    public RLlibHelper valuePredTh(double valuePredTh) {
-        this.valuePredTh = valuePredTh;
-        return this;
-    }
-
-    public boolean userLog() {
-        return userLog;
-    }
-
-    public RLlibHelper userLog(boolean userLog) {
-        this.userLog = userLog;
-        return this;
-    }
-
     public String hiddenLayers() {
         String s = "[";
         for (int i = 0; i < numHiddenLayers; i++) {
@@ -465,7 +288,7 @@ public class RLlibHelper {
     }
 
     public static void main(String[] args) throws Exception {
-        RLlibHelper helper = new RLlibHelper();
+        RLlibHelper.RLlibHelperBuilder helper = RLlibHelper.builder();
         File output = new File("rllibtrain.py");
         for (int i = 0; i < args.length; i++) {
             if ("-help".equals(args[i]) || "--help".equals(args[i])) {
@@ -496,13 +319,13 @@ public class RLlibHelper {
                 System.out.println("    --user-log");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
-                helper.rllibpaths(args[++i].split(File.pathSeparator));
+                helper.rllibpaths(rllibpaths(args[++i].split(File.pathSeparator)));
             } else if ("--algorithm".equals(args[i])) {
                 helper.algorithm(args[++i]);
             } else if ("--output-dir".equals(args[i])) {
-                helper.outputDir(args[++i]);
+                helper.outputDir(new File(args[++i]));
             } else if ("--checkpoint".equals(args[i])) {
-                helper.checkpoint(args[++i]);
+                helper.checkpoint(new File(args[++i]));
             } else if ("--environment".equals(args[i])) {
                 helper.environment(Class.forName(args[++i]).asSubclass(Environment.class).newInstance());
             } else if ("--num-gpus".equals(args[i])) {
@@ -526,11 +349,11 @@ public class RLlibHelper {
             } else if ("--custom-parameters".equals(args[i])) {
                 helper.customParameters(args[++i]);
             } else if ("--resume".equals(args[i])) {
-                helper.resume = true;
+                helper.resume(true);
             } else if ("--checkpoint-frequency".equals(args[i])) {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
-                helper.multiAgent = true;
+                helper.multiAgent(true);
             } else if ("--episode-reward-range".equals(args[i])) {
                 helper.episodeRewardRangeTh(Double.parseDouble(args[++i]));
             } else if ("--entropy-slope".equals(args[i])) {
@@ -540,11 +363,20 @@ public class RLlibHelper {
             } else if ("--value-pred".equals(args[i])) {
                 helper.valuePredTh(Double.parseDouble(args[++i]));
             } else if ("--user-log".equals(args[i])) {
-                helper.userLog = true;
+                helper.userLog(true);
             } else {
                 output = new File(args[i]);
             }
         }
-        helper.generatePythonTrainer(output);
+        helper.build().generatePythonTrainer(output);
     }
+
+    public static File[] rllibpaths(String[] rllibpaths) {
+        File[] files = new File[rllibpaths.length];
+        for (int i = 0; i < files.length; i++) {
+            files[i] = new File(rllibpaths[i]);
+        }
+        return files;
+    }
+
 }
