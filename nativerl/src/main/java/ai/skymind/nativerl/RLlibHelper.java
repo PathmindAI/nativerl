@@ -41,9 +41,6 @@ import static org.bytedeco.numpy.global.numpy.*;
  *   * Works only with continuous actions (doesn't work with discrete ones)
  *   ** Requires PyTorch (doesn't work with TensorFlow)
  * <p>
- *
- * The parameters exposed with arrays are available for hyperparameter tuning using a grid search.
- * Currently, the 3 such parameters available are gammas, learningRates, and traingBatchSizes.
  */
 public class RLlibHelper {
 
