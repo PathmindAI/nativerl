@@ -1,4 +1,4 @@
-{{#if packageName}}package {{packageName}};{/if}}
+{{#if packageName}}package {{packageName}};{{/if}}
 import ai.skymind.nativerl.*;
 import com.anylogic.engine.*;
 import java.io.File;
@@ -15,7 +15,7 @@ public class {{className}}  extends AbstractEnvironment {
     protected {{agentClassName}}  agent;
     protected PolicyHelper policyHelper;
 
-    {{classSnippet}}
+    {{{classSnippet}}}
 
     public {{className}}() {
         super( {{discreteActions}}, {{continuousObservations}} );
@@ -82,7 +82,7 @@ public class {{className}}  extends AbstractEnvironment {
         agent.setParametersToDefaultValues();
         PathmindHelperRegistry.setForceLoadPolicy(policyHelper);
 
-        {{resetSnippet}}
+        {{{resetSnippet}}}
 
         engine.start(agent);
     }
@@ -100,7 +100,7 @@ public class {{className}}  extends AbstractEnvironment {
         PathmindHelperRegistry.getHelper().doAction(array);
         double[][] after = PathmindHelperRegistry.getHelper().observationForReward();
 
-        {{rewardSnippet}}
+        {{{rewardSnippet}}}
 
         float[] array2 = new float[reward.length];
         for (int i = 0; i < reward.length; i++) {
@@ -121,7 +121,7 @@ public class {{className}}  extends AbstractEnvironment {
         PathmindHelperRegistry.getHelper().doAction((int)action);
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
 
-        {{rewardSnippet}}
+        {{{rewardSnippet}}}
 
         return (float)reward;
     }
@@ -134,7 +134,7 @@ public class {{className}}  extends AbstractEnvironment {
             engine.runFast();
         }
 
-        {{metricsSnippet}}
+        {{{metricsSnippet}}}
 
         return metrics;
     }
