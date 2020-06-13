@@ -41,7 +41,7 @@ docker build . -t nativerl
 Then start the container by mounting your current working directory.
 
 ```bash
-docker run --mount "src=$(pwd),target=/app,type=bind" nativerl
+docker run -v $HOME/.m2:/root/.m2 --mount "src=$(pwd),target=/app,type=bind" nativerl
 ```
 
 After a successful build you'll find the results in the `target` folder. These instructions work
