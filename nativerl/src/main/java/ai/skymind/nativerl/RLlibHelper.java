@@ -673,7 +673,7 @@ public class RLlibHelper {
             + "                return self.should_stop\n"
             + "\n"
             + "        # Convergence Filter\n"
-            + "        if result['training_iteration'] >= 125:\n"
+            + "        if result['training_iteration'] >= 150:\n"
             + "            # Episode reward range activity\n"
             + "            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[-50:])) - numpy.min(numpy.array(self.episode_reward_window[-50:]))\n"
             + "            # Episode reward mean activity\n"
