@@ -136,7 +136,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
-    --num-cpus $NUM_CPUS \    
+    --num-cpus $NUM_CPUS \
     --num-workers $NUM_WORKERS \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
