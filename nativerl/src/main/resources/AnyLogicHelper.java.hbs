@@ -14,6 +14,7 @@ public class {{className}}  extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}}  agent;
     protected PolicyHelper policyHelper;
+    protected double[] lastMetrics;
 
     {{{classSnippet}}}
 
@@ -120,12 +121,25 @@ public class {{className}}  extends AbstractEnvironment {
         engine.runFast();
         PathmindHelperRegistry.getHelper().doAction((int)action);
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
+        lastMetrics = after;
 
         {{{rewardSnippet}}}
 
         return (float)reward;
     }
     {{/if}}
+
+    public Array getMetrics() {
+        if (this.metrics == null || this.metrics.length() != lastMetrics.length) {
+            this.metrics = new Array(new SSizeTVector().put(lastMetrics.length));
+        }
+        float[] array2 = new float[lastMetrics.length];
+        for (int i = 0; i < lastMetrics.length; i++) {
+            array2[i] = (float)lastMetrics[i];
+        }
+        this.metrics.data().put(array2);
+        return this.metrics;
+    }
 
     public double[] test() {
         double[] metrics = null;
