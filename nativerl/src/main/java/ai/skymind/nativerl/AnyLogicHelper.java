@@ -298,6 +298,10 @@ public class AnyLogicHelper {
             + resetSnippet
             + "\n"
             + "        engine.start(agent);\n"
+            + "        // Workaround to trigger all events at time 0.0\n"
+            + "        while (engine.getNextEventTime() == 0.0) {\n"
+            + "            engine.runFast(Math.ulp(0.0));\n"
+            + "        }\n"
             + "    }\n"
             + "\n"
             + (multiAgent
