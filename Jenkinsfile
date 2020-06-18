@@ -13,7 +13,12 @@ def DOCKER_TAG
 */
 def buildDockerImage(image_name, image_id) {
         echo "Building the pathmind Docker Image"
-        sh "docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile --build-arg S3BUCKET='${env.S3BUCKET}' --build-arg AWS_ACCESS_KEY_ID='${env.AWS_ACCESS_KEY_ID}' --build-arg AWS_SECRET_ACCESS_KEY='${env.AWS_SECRET_ACCESS_KEY}' ${WORKSPACE}/"
+        //Dont quit if there is an error
+        NULL = sh(returnStatus: true, script: "docker image rm pathmind-ma")
+        sh """
+            set +x
+            docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile --build-arg S3BUCKET='${env.S3BUCKET}' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/
+        """
 }
 
 /*
