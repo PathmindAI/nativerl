@@ -1,23 +1,29 @@
 package io.skymind.pathmind.analyzer.service;
 
-import io.skymind.pathmind.analyzer.exception.InvalidZipFileException;
-import io.skymind.pathmind.analyzer.exception.ZipExtractionException;
-import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import org.apache.commons.io.IOUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import io.skymind.pathmind.analyzer.exception.InvalidZipFileException;
+import io.skymind.pathmind.analyzer.exception.ZipExtractionException;
+import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 
 @Service
 @Slf4j
@@ -92,14 +98,14 @@ public class FileService {
         List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
-        if (result.size() != 5) {
+        if (result.size() < 5) {
             log.warn("Unexpected output for {} file ({} mode): {}", unzippedPath, mode, String.join(" ", result));
 
-//            boolean runMultiAgent = shouldRunMultiAgentMode(result);
-//
-//            if(mode == SINGLE_AGENT && runMultiAgent) {
-//                return runExtractorScript(unzippedPath, newFile, MULTI_AGENT);
-//            }
+            // boolean runMultiAgent = shouldRunMultiAgentMode(result);
+            //
+            // if(mode == SINGLE_AGENT && runMultiAgent) {
+            // return runExtractorScript(unzippedPath, newFile, MULTI_AGENT);
+            // }
         }
         result.add("model-analyzer-mode:" + mode.toString());
         return result;
@@ -109,13 +115,10 @@ public class FileService {
      * NPE may be thrown because model was multi-agent
      */
     private boolean shouldRunMultiAgentMode(List<String> result) {
-        return result.stream()
-                .anyMatch(msg -> msg.contains("java.lang.NullPointerException"));
+        return result.stream().anyMatch(msg -> msg.contains("java.lang.NullPointerException"));
     }
 
     private List<String> readResult(final InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream))
-                .lines()
-                .collect(Collectors.toList());
+        return new BufferedReader(new InputStreamReader(inputStream)).lines().collect(Collectors.toList());
     }
 }
