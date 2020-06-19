@@ -37,8 +37,6 @@ def publishDockerImage(image_name,DOCKER_TAG) {
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
-    triggers { pollSCM('* * * * *') }
-
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
@@ -153,7 +151,7 @@ pipeline {
                                 sh "if [ -d pathmind-webapp ]; then rm -rf pathmind-webapp; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-webapp.git"
 				echo "Updating helm chart"
-				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
+				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
 		}
             }
         }
