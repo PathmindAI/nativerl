@@ -37,8 +37,6 @@ def publishDockerImage(image_name,DOCKER_TAG) {
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
-    triggers { pollSCM('* * * * *') }
-
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
