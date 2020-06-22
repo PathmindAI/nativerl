@@ -256,12 +256,9 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<Type><![CDATA[int]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
-						</DefaultValue>
 						<ParameterEditor>
 							<Id>1590618532127</Id>
-							<Label><![CDATA[Number of Agents]]></Label>
+							<Label><![CDATA[Action Outputs]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
@@ -825,7 +822,7 @@ if (isTraining == false) {
 			<Name><![CDATA[Simulation]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
 			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
-			<MaximumMemory>1024</MaximumMemory>
+			<MaximumMemory>512</MaximumMemory>
 			<RandomNumberGenerationType>fixedSeed</RandomNumberGenerationType>
 			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
 			<SeedValue>1</SeedValue>
