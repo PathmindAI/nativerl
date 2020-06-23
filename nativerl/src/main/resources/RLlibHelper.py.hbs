@@ -63,8 +63,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
         {{/if}}
 
-   def getMetrics(self):
-       return self.nativeEnv.getMetrics()
+    def getMetrics(self):
+        return self.nativeEnv.getMetrics()
 
       
 class MyCallbacks(DefaultCallbacks):
