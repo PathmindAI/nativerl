@@ -63,8 +63,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
         {{/if}}
 
-   def getMetrics(self):
-       return self.nativeEnv.getMetrics()
+    def getMetrics(self):
+        return self.nativeEnv.getMetrics()
 
       
 class MyCallbacks(DefaultCallbacks):
@@ -157,19 +157,23 @@ class Stopper:
 
         # Collecting metrics for stopping criteria
         if result['training_iteration'] == 1:
-            self.entropy_start = result['info/learner/default_policy/entropy']
+            #self.entropy_start = result['info/learner/default_policy/entropy']
+            self.entropy_start = result['info']['learner']['default_policy']['entropy']
 
         if result['training_iteration'] <= 50:
-            self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])
+            #self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])
+            self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])
 
         self.episode_reward_window.append(result['episode_reward_mean'])
-        self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])
+        #self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])
+        self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
 
         # Experimental Criteria
 
         # Early stopping filter
         if result['training_iteration'] == 50:
-            self.entropy_now = result['info/learner/default_policy/entropy']
+            #self.entropy_now = result['info/learner/default_policy/entropy']
+            self.entropy_now = result['info']['learner']['default_policy']['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
             self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))
             if self.entropy_slope > np.abs(self.entropy_start * self.entropy_slope_threshold):
@@ -252,6 +256,7 @@ trials = run(
     stop = stopper.stop,
     config = {
         'env': {{classSimpleName environment}},
+        'callbacks': MyCallbacks,
         'num_gpus': 0,
         'num_workers': {{numWorkers}} ,
         'num_cpus_per_worker': {{numCPUs}},

@@ -304,7 +304,7 @@ public class RLlibHelper {
         handlebars.registerHelper("className", (context, options) -> context.getClass().getName());
         handlebars.registerHelper("classSimpleName", (context, options) -> context.getClass().getSimpleName());
 
-        Template template = handlebars.compile("RLlibHelper.py.hbs");
+        Template template = handlebars.compile("RLlibHelper.py");
 
         String trainer = template.apply(this);
         return trainer;
