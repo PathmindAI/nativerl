@@ -64,44 +64,26 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         {{/if}}
 
     def getMetrics(self):
-        return self.nativeEnv.getMetrics()
+        return np.array(self.nativeEnv.getMetrics())
 
       
-class MyCallbacks(DefaultCallbacks):
-   def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv, policies: Dict[str, Policy],
-                        episode: MultiAgentEpisode, **kwargs):
-       print("kepricondebug : episode {} started".format(episode.episode_id))
-
-   def on_episode_step(self, worker: RolloutWorker, base_env: BaseEnv, episode: MultiAgentEpisode, **kwargs):
-       #print("kepricondebug : agent_rewards : " +  str(episode.agent_rewards))
-       #print("kepricondebug : last_raw_obs_for : " + str(episode.last_raw_obs_for()))
-       #print("kepricondebug : lasT_observation_for : " + str(episode.last_observation_for()))
-       #print("kepricondebug : prev reward : " + str(episode.prev_reward_for()))
-       a=3
-
+class Callbacks(DefaultCallbacks):
    def on_episode_end(self, worker: RolloutWorker, base_env: BaseEnv,
                       policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
-       print("kepricondebug : logdir {} ".format(worker.io_context.log_dir))
-       print("kepricondebug : episode.reward: {}".format(episode.agent_rewards))
-       print("kepricondebug : episode.length : {}".format(episode.length))
-       print("kepricondebug : episode {} end".format(episode.episode_id))
-       print("kepricondebug : {} ".format(worker.env.getMetrics()))
+       print("kepricondebug on_episode_end : {} ".format(worker.env.getMetrics()))
 
-   def on_sample_end(self, worker: RolloutWorker, samples: SampleBatch, **kwargs):
-       print("returned sample batch of size {}".format(samples.count))
 
    def on_train_result(self, trainer, result: dict, **kwargs):
-       print("trainer.train() result: {} -> {} episodes".format(trainer, result["episodes_this_iter"]))
-       # you can mutate the result dict to add new fields to return
-       result["callback_ok"] = True
+       #print("trainer.train() result: {} -> {} episodes".format(trainer, result["episodes_this_iter"]))
 
-   def on_postprocess_trajectory(self, worker: RolloutWorker, episode: MultiAgentEpisode, agent_id: str,
-                                 policy_id: str, policies: Dict[str, Policy], postprocessed_batch: SampleBatch,
-                                 original_batches: Dict[str, SampleBatch], **kwargs):
-       print("postprocessed {} steps".format(postprocessed_batch.count))
-       if "num_batches" not in episode.custom_metrics:
-           episode.custom_metrics["num_batches"] = 0
-       episode.custom_metrics["num_batches"] += 1
+       from ray.rllib.utils.memory import ray_get_and_free
+       remote_results = ray_get_and_free(
+           [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
+       print("kepricondebug on_train_result : {}".format(remote_results))
+
+       # you can mutate the result dict to add new fields to return
+       result["metrics"] = remote_results
+
 
 class Stopper:
     def __init__(self):
@@ -256,7 +238,7 @@ trials = run(
     stop = stopper.stop,
     config = {
         'env': {{classSimpleName environment}},
-        'callbacks': MyCallbacks,
+        'callbacks': Callbacks,
         'num_gpus': 0,
         'num_workers': {{numWorkers}} ,
         'num_cpus_per_worker': {{numCPUs}},
