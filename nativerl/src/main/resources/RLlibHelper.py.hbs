@@ -43,13 +43,13 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)
         for i in range(0, actionarray.shape[0]):
             actionarray[i, :] = action[str(i)].astype(np.float32)
-            reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))
-            obs = np.array(self.nativeEnv.getObservation())
-            obsdict = {}
-            rewarddict = {}
-            for i in range(0, obs.shape[0]):
-                obsdict[str(i)] = obs[i]
-                rewarddict[str(i)] = reward[i]
+        reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))
+        obs = np.array(self.nativeEnv.getObservation())
+        obsdict = {}
+        rewarddict = {}
+        for i in range(0, obs.shape[0]):
+            obsdict[str(i)] = obs[i]
+            rewarddict[str(i)] = reward[i]
         return obsdict, rewarddict, {'__all__': self.nativeEnv.isDone()}, {}
         {{else}}
         reward = self.nativeEnv.step(action)
