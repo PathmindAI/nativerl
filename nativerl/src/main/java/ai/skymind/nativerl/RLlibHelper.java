@@ -5,10 +5,7 @@ import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bytedeco.cpython.PyObject;
 import org.bytedeco.javacpp.FloatPointer;
 import org.bytedeco.javacpp.Pointer;
@@ -262,6 +259,9 @@ public class RLlibHelper {
     @Builder.Default
     boolean autoregressive = false;
 
+    @Setter
+    String autoregressiveModel;
+
     // Thresholds for stopper
 
     @Builder.Default
@@ -373,6 +373,10 @@ public class RLlibHelper {
         handlebars.registerHelper("classSimpleName", (context, options) -> context.getClass().getSimpleName());
 
         Template template = handlebars.compile("RLlibHelper.py");
+
+        if (autoregressive) {
+            setAutoregressiveModel(AutoregressiveModelHelper.generateAutoregressiveClass(actionTupleSize, discreteActions));
+        }
 
         String trainer = template.apply(this);
         return trainer;

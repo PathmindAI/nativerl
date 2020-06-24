@@ -217,7 +217,7 @@ with open('database/db.properties', 'r+') as f:
 
 ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
 {{#if autoregressive}}
-AutoregressiveModelHelper.generateAutoregressiveClass(actionTupleSize, discreteActions) // TODO
+{{autoregressiveModel}}
 {{else}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
 {{/if}}
