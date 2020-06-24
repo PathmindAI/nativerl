@@ -68,22 +68,25 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
 
       
 class Callbacks(DefaultCallbacks):
+   def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
+                        policies: Dict[str, Policy],
+                        episode: MultiAgentEpisode, **kwargs):
+       episode.hist_data["metrics_raw"] = []
+
    def on_episode_end(self, worker: RolloutWorker, base_env: BaseEnv,
                       policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
-       print("kepricondebug on_episode_end : {} ".format(worker.env.getMetrics()))
+       metrics = worker.env.getMetrics().tolist()
 
+       episode.hist_data["metrics_raw"] = metrics
+       for i, val in enumerate(metrics):
+           episode.custom_metrics["metrics_" + str(i)] = metrics[i]
 
    def on_train_result(self, trainer, result: dict, **kwargs):
-       #print("trainer.train() result: {} -> {} episodes".format(trainer, result["episodes_this_iter"]))
-
        from ray.rllib.utils.memory import ray_get_and_free
-       remote_results = ray_get_and_free(
+       results = ray_get_and_free(
            [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
-       print("kepricondebug on_train_result : {}".format(remote_results))
 
-       # you can mutate the result dict to add new fields to return
-       result["metrics"] = remote_results
-
+       result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
 
 class Stopper:
     def __init__(self):
