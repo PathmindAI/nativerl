@@ -10,9 +10,9 @@ This is the "PathmindHelper" palette item that users can import in their AnyLogi
 Required Software
 -----------------
 
- * Linux, Mac, or Windows (untested)
- * JDK 8+
- * Maven 3+  https://maven.apache.org/download.cgi
+* Linux, Mac, or Windows (untested)
+* JDK 8+
+* [Maven 3+](https://maven.apache.org/download.cgi)
 
 
 Build Instructions
@@ -31,4 +31,4 @@ By default, this outputs a `PathmindPolicy.jar` file. We can further add to that
 End User Guide
 --------------
 
-Currently maintained on Basecamp at https://3.basecamp.com/3684163/buckets/11875773/messages/2017431518
+Currently maintained on [Basecamp](https://3.basecamp.com/3684163/buckets/11875773/messages/2017431518).

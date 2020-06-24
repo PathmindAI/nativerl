@@ -114,11 +114,15 @@ public class {{className}}  extends AbstractEnvironment {
     }
     {{else}}
     @Override
-    public float step(long action) {
+    public float step(Array action) {
         double reward = 0;
         double[] before = PathmindHelperRegistry.getHelper().observationForReward();
         engine.runFast();
-        PathmindHelperRegistry.getHelper().doAction((int)action);
+        long[] array = new long[(int)action.length()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = (long)action.data().get(i);
+        }
+        PathmindHelperRegistry.getHelper().doAction(array);
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
 
         {{{rewardSnippet}}}
@@ -142,7 +146,7 @@ public class {{className}}  extends AbstractEnvironment {
     public static void main(String[] args) throws Exception {
         ArrayList<String> lines = new ArrayList<String>({{testIterations}});
         {{#if policyHelper}}
-        {{className}} e = new {{className}} (new {{policyHelper}} (new File(args[0])));
+        {{className}} e = new {{className}} (new {{policyHelper}} (new File(args[0]), actionTupleSize));
         for (int i = 0; i < {{testIterations}} ; i++) {
             lines.add(Arrays.toString(e.test()));
         }

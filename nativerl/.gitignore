@@ -6,3 +6,5 @@ dependency-reduced-pom.xml
 **/*.dylib
 database
 lib
+
+.idea/

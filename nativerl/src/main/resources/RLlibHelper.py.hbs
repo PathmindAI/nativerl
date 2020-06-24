@@ -1,10 +1,21 @@
-import glob, gym, nativerl, ray, sys, os, random
-import numpy as np
+import glob, gym, nativerl, ray, sys, os, random, numpy
 from ray.rllib.env import MultiAgentEnv
 from ray.rllib.agents.registry import get_agent_class
 from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
+from gym.spaces import Box, Discrete, Tuple
+{{#if autoregressive}}
+from ray.rllib.models import ModelCatalog
+from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
+from ray.rllib.models.tf.tf_modelv2 import TFModelV2
+from ray.rllib.utils.tuple_actions import TupleActions
+from ray.rllib.models.tf.misc import normc_initializer
+from ray.rllib.utils import try_import_tf
+
+
+tf = try_import_tf()
+{{/if}}
 
 jardir = os.getcwd()
 
@@ -17,11 +28,15 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         self.nativeEnv = nativerl.createEnvironment('{{className environment}}')
         actionSpace = self.nativeEnv.getActionSpace()
         observationSpace = self.nativeEnv.getObservationSpace()
+        {{#if (eq actionTupleSize 1)}}
         self.action_space = gym.spaces.Discrete(actionSpace.n)
-        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0],
-                                                np.array(observationSpace.shape), dtype=np.float32)
+        {{else}}
+        self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range(actionTupleSize)])
+        {{/if}}
+        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
+
         self.id = '{{classSimpleName environment}}'
-        self.max_episode_steps = 200000
+        self.max_episode_steps = 20000
         {{#unless multiAgent}}
         self.unwrapped.spec = self
         {{/unless}}
@@ -29,31 +44,42 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
     def reset(self):
         self.nativeEnv.reset()
         {{#if multiAgent}}
-        obs = np.array(self.nativeEnv.getObservation())
+        obs = numpy.array(self.nativeEnv.getObservation())
         obsdict = {}
         for i in range(0, obs.shape[0]):
             obsdict[str(i)] = obs[i]
         return obsdict
         {{else}}
-        return np.array(self.nativeEnv.getObservation())
+        return numpy.array(self.nativeEnv.getObservation())
         {{/if}}
 
     def step(self, action):
         {{#if multiAgent}}
-        actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)
+        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)
         for i in range(0, actionarray.shape[0]):
-            actionarray[i, :] = action[str(i)].astype(np.float32)
-            reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))
-            obs = np.array(self.nativeEnv.getObservation())
-            obsdict = {}
-            rewarddict = {}
-            for i in range(0, obs.shape[0]):
-                obsdict[str(i)] = obs[i]
-                rewarddict[str(i)] = reward[i]
+            actionarray[i,:] = action[str(i)].astype(numpy.float32)
+        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))
+        obs = numpy.array(self.nativeEnv.getObservation())
+        obsdict = {}
+        rewarddict = {}
+        for i in range(0, obs.shape[0]):
+            obsdict[str(i)] = obs[i]
+            rewarddict[str(i)] = reward[i]
         return obsdict, rewarddict, {'__all__': self.nativeEnv.isDone()}, {}
         {{else}}
-        reward = self.nativeEnv.step(action)
-        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
+        {{#if (eq actionTupleSize 1)}}
+        actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)
+        {{else}}
+        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)
+        {{/if}}
+        for i in range(0, actionarray.shape[1]):
+            {{#if (eq actionTupleSize 1)}}
+            actionarray[0,i] = action
+            {{else}}
+            actionarray[0,i] = action[i].astype(numpy.float32)
+            {{/if}}
+        reward = self.nativeEnv.step(nativerl.Array(actionarray))
+        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
         {{/if}}
 
 class Stopper:
@@ -110,24 +136,24 @@ class Stopper:
 
         # Collecting metrics for stopping criteria
         if result['training_iteration'] == 1:
-            self.entropy_start = result['info/learner/default_policy/entropy']
+            self.entropy_start = result['info']['learner']['default_policy']['entropy']
 
         if result['training_iteration'] <= 50:
-            self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])
+            self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])
 
         self.episode_reward_window.append(result['episode_reward_mean'])
-        self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])
+        self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
 
         # Experimental Criteria
 
         # Early stopping filter
         if result['training_iteration'] == 50:
-            self.entropy_now = result['info/learner/default_policy/entropy']
+            self.entropy_now = result['info']['learner']['default_policy']['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
-            self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))
-            if self.entropy_slope > np.abs(self.entropy_start * self.entropy_slope_threshold):
+            self.vf_loss_range = numpy.max(numpy.array(self.vf_loss_window)) - numpy.min(numpy.array(self.vf_loss_window))
+            if self.entropy_slope > numpy.abs(self.entropy_start * self.entropy_slope_threshold):
                 self.no_converge_risk = True
-            if np.abs(self.vf_loss_range) < np.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):
+            if numpy.abs(self.vf_loss_range) < numpy.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):
                 self.no_discovery_risk = True
 
             # Early stopping decision
@@ -136,27 +162,22 @@ class Stopper:
                 return self.should_stop
 
         # Convergence Filter
-        if result['training_iteration'] >= 125:
+        if result['training_iteration'] >= 150:
             # Episode reward range activity
-            self.episode_reward_range = \
-                np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))
+            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[-50:])) - numpy.min(numpy.array(self.episode_reward_window[-50:]))
             # Episode reward mean activity
-            self.episode_reward_mean = np.mean(np.array(self.episode_reward_window[-75:]))
-            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-15:]))
+            self.episode_reward_mean = numpy.mean(numpy.array(self.episode_reward_window[-75:]))
+            self.episode_reward_mean_latest = numpy.mean(numpy.array(self.episode_reward_window[-15:]))
             # Value function activity
-            self.vf_pred_mean = np.mean(np.array(self.vf_pred_window[-25:]))
-            self.vf_pred_mean_latest = np.mean(np.array(self.vf_pred_window[-5:]))
+            self.vf_pred_mean = numpy.mean(numpy.array(self.vf_pred_window[-25:]))
+            self.vf_pred_mean_latest = numpy.mean(numpy.array(self.vf_pred_window[-5:]))
 
             # Episode reward leveled off
-            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean)
-                < self.episode_reward_range_threshold) and \
-                    (np.abs(self.episode_reward_range) <
-                     np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 2)):
+            if (numpy.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / numpy.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (numpy.abs(self.episode_reward_range) < numpy.abs(numpy.mean(numpy.array(self.episode_reward_window[-50:])) * 2)):
                 self.episode_reward_converged = True
 
             # Explained variance leveled off
-            if (np.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / np.abs(self.vf_pred_mean)
-                    < self.value_pred_threshold):
+            if (numpy.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / numpy.abs(self.vf_pred_mean) < self.value_pred_threshold):
                 self.value_pred_converged = True
 
             # Convergence stopping decision
@@ -178,9 +199,9 @@ pbt_scheduler = PopulationBasedTraining(
     resample_probability = 0.25,
     log_config = True,
     hyperparam_mutations = {
-        'lambda': np.linspace(0.9, 1.0, 5).tolist(),
-        'clip_param': np.linspace(0.01, 0.5, 5).tolist(),
-        'entropy_coeff': np.linspace(0, 0.03, 5).tolist(),
+        'lambda': numpy.linspace(0.9, 1.0, 5).tolist(),
+        'clip_param': numpy.linspace(0.01, 0.5, 5).tolist(),
+        'entropy_coeff': numpy.linspace(0, 0.03, 5).tolist(),
         'lr': [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
         'num_sgd_iter': [5, 10, 15, 20, 30],
         'sgd_minibatch_size': [128, 256, 512, 1024, 2048],
@@ -194,8 +215,12 @@ with open('database/db.properties', 'r+') as f:
     if 'hsqldb.lock_file=false\n' not in lines:
         f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}})
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
+{{#if autoregressive}}
+AutoregressiveModelHelper.generateAutoregressiveClass(actionTupleSize, discreteActions) // TODO
+{{else}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
+{{/if}}
 model['fcnet_hiddens'] = {{hiddenLayers}}
 
 trials = run(
@@ -208,10 +233,17 @@ trials = run(
         'num_gpus': 0,
         'num_workers': {{numWorkers}} ,
         'num_cpus_per_worker': {{numCPUs}},
+        {{#if autoregressive}}
+        'model': {
+            'custom_model': 'autoregressive_model',
+            'custom_action_dist': 'nary_autoreg_output',
+        }
+        {{else}}
         'model': model,
+        {{/if}}
         'use_gae': True,
         'vf_loss_coeff': 1.0,
-        'vf_clip_param': np.inf,
+        'vf_clip_param': numpy.inf,
         # These params are tuned from a fixed starting value.
         'lambda': 0.95,
         'clip_param': 0.2,
