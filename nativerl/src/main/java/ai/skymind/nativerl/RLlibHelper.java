@@ -228,7 +228,7 @@ public class RLlibHelper {
     int savePolicyInterval = 100;
 
     /** Initialize actions as a long */
-    @Builder.Default
+//    @Builder.Default
     long discreteActions;
 
     /** The address of the Redis server for distributed training sessions. */
@@ -468,7 +468,7 @@ public class RLlibHelper {
             } else if ("--action-tuple-size".equals(args[i])) {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else if ("--autoregressive".equals(args[i])) {
-                helper.autoregressive = true;
+                helper.autoregressive(true);
             } else if ("--discrete-actions".equals(args[i])) {
                 helper.discreteActions(Long.parseLong(args[++i]));
             } else {
