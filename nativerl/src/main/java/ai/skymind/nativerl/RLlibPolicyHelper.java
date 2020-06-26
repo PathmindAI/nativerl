@@ -39,13 +39,9 @@ public class RLlibPolicyHelper implements PolicyHelper {
             };
         }
     };
-    ThreadLocal<TensorVector[]> outputTensors = new ThreadLocal<TensorVector[]>() {
-        @Override protected TensorVector[] initialValue() {
-            TensorVector[] outputTensors = new TensorVector[actionTupleSize];
-            for (int i = 0; i < actionTupleSize; i++) {
-                outputTensors[i] = new TensorVector(outputNames.length);
-            }
-            return outputTensors;
+    ThreadLocal<TensorVector> outputTensors = new ThreadLocal<TensorVector>() {
+        @Override protected TensorVector initialValue() {
+            return new TensorVector(outputNames.length);
         }
     };
     int actionTupleSize;
@@ -134,16 +130,16 @@ public class RLlibPolicyHelper implements PolicyHelper {
         new FloatPointer(inputTensors.get()[0].tensor_data()).put(state);
 
         long[] actionArray = new long[actionTupleSize];
+        Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors.get()),
+                new StringVector(realOutputNames), new StringVector(), outputTensors.get());
+        if (!s.ok()) {
+            throw new RuntimeException(s.error_message().getString());
+        }
         for (int i = 0; i < actionArray.length; i++) {
-            Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors.get()),
-                    new StringVector(realOutputNames), new StringVector(), outputTensors.get()[i]);
-            if (!s.ok()) {
-                throw new RuntimeException(s.error_message().getString());
-            }
-            actionArray[i] = new LongPointer(outputTensors.get()[i].get(0).tensor_data()).get();
+            actionArray[i] = new LongPointer(outputTensors.get().get(i).tensor_data()).get();
         }
 //        for (int i = 0; i < outputTensors.size(); i++) {
-//            System.out.println(outputTensors.get(i).createIndexer());
+//            System.out.println(outputTensors.get().get(i).createIndexer());
 //        }
         return actionArray;
     }
