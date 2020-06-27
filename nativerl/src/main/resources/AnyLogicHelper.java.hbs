@@ -85,6 +85,10 @@ public class {{className}}  extends AbstractEnvironment {
         {{{resetSnippet}}}
 
         engine.start(agent);
+        // Workaround to trigger all events at time 0.0
+        while (engine.getNextEventTime() == 0.0) {
+            engine.runFast(Math.ulp(0.0));
+        }
     }
 
     {{#if multiAgent}}
