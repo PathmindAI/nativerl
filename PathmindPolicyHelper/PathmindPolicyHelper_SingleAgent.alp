@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241823" AlpVersion="8.5.1">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper_SingleAgent]]></Name>
@@ -895,21 +895,15 @@ import java.util.List;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
-import java.io.FileInputStream;
 
 import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;
-
-import java.security.Permission;
 
 public class PathmindHelperRegistry {
     private static List<PathmindHelper> registeredHelpers = new ArrayList<PathmindHelper>();
     private static Map<String, PolicyHelper> policyCache = new HashMap<>();
 
     private static PolicyHelper forceLoadPolicy = null;
-
-    private static Boolean isCloud = null;
 
     public static void setForceLoadPolicy(PolicyHelper h) {
         forceLoadPolicy = h;
@@ -923,7 +917,6 @@ public class PathmindHelperRegistry {
             }
         }
     }
-
 
     public static void unregister(PathmindHelper helper) {
         registeredHelpers.remove(helper);
@@ -942,77 +935,17 @@ public class PathmindHelperRegistry {
         return registeredHelpers;
     }
 
-
-    private static class MySecurityManager extends SecurityManager {
-        @Override
-        public void checkPermission(Permission perm) {
-            return;
-        }
-    }
-
-    static {
-        isCloud = new File(".").getAbsolutePath().startsWith("/run/executor/disk") ? Boolean.TRUE : Boolean.FALSE;
-
-        if (isCloud) {
-            SecurityManager sm = new MySecurityManager();
-            System.setSecurityManager(sm);
-        }
-    }
-
-    private static void exec(String[] cmd) {
-        try {
-            Process p = Runtime.getRuntime().exec(cmd);
-            java.io.BufferedReader bri = new java.io.BufferedReader(new java.io.InputStreamReader(
-                    p.getInputStream()));
-            String line = "";
-            while ((line = bri.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void installLibrary() {
-        // check if this code is being executed on anylogic cloud
-        if (!isCloud) {
-            return;
-        }
-
-        // untar libstdc++6 since default AnyLogic cloud instance(Alpine) doesn't have this library
-        String[] cmd = {
-                "/bin/sh", "-c", "tar -xzf libstdc++6-6.4.0-r9.apk"};
-        exec(cmd);
-
-        File libstdcPath = new File("./usr/lib/gcc/x86_64-alpine-linux-musl/6.4.0");
-
-        // create a directory for javacpp cache
-        File javacppPath = new File(System.getProperty("user.dir") + "/.javacpp/cache");
-        javacppPath.mkdirs();
-        javacppPath.setExecutable(true, false);
-
-        // set necessary property
-        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
-        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-
-        File dest = new File(javacppPath, "RLlibPolicyHelper-0.0.1-SNAPSHOT.jar/org/bytedeco/tensorflow/linux-x86_64");
-        dest.mkdirs();
-
-        // copy libstdc++ so files to javacpp cache due to ld.library.path
-        String[] cmd1 = {
-                "/bin/sh", "-c", "cp " + libstdcPath.getAbsolutePath() + "/* " + dest.getAbsolutePath()};
-        exec(cmd1);
-
-    }
-
     public static PolicyHelper loadPolicy(String policyFile) {
-        installLibrary();
+        AnyLogicCloudHelper.installLibrary();
         if (policyCache.containsKey(policyFile)) {
             return policyCache.get(policyFile);
         } else {
+            if (!new File(policyFile).exists()) {
+                throw new RuntimeException("Policy File doesn't Exist.");
+            }
             try {
                 Path target = null;
-                if (isCloud) {
+                if (AnyLogicCloudHelper.isCloud()) {
                     File destDir = new File(System.getProperty("user.dir") + "/policy");
                     destDir.mkdir();
 
@@ -1039,7 +972,7 @@ public class PathmindHelperRegistry {
                 return helper;
             } catch (UnsatisfiedLinkError e) {
                 traceln(e);
-                return null;
+                throw new RuntimeException("Cannot find the appropriate libraries.");
             } catch (IOException e) {
                 traceln(e);
                 return null;
@@ -1205,6 +1138,105 @@ public class PathmindSerializer implements Serializable {
 	        return null;
 	    }
 	}
+
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1593463056585</Id>
+			<Name><![CDATA[AnyLogicCloudHelper]]></Name>
+			<Text><![CDATA[import java.security.Permission;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+public class AnyLogicCloudHelper {
+
+    private static class MySecurityManager extends SecurityManager {
+        @Override
+        public void checkPermission(Permission perm) {
+            return;
+        }
+    }
+    
+    private static final String LIB_STDCPP_URL = "https://s3.amazonaws.com/public-pathmind.com/libstdc%2B%2B6-6.4.0-r9.apk";
+    private static final String LIB_STDCPP = "libstdc++6-6.4.0-r9.apk";
+	private static Boolean isCloud = null;
+
+    static {
+        isCloud = new File(".").getAbsolutePath().startsWith("/run/executor/disk") ? Boolean.TRUE : Boolean.FALSE;
+
+        if (isCloud) {
+            SecurityManager sm = new MySecurityManager();
+            System.setSecurityManager(sm);
+        }
+    }
+	
+	public static boolean isCloud() {
+		return isCloud;
+	}
+
+    private static void exec(String[] cmd) {
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            java.io.BufferedReader bri = new java.io.BufferedReader(new java.io.InputStreamReader(
+                    p.getInputStream()));
+            String line = "";
+            while ((line = bri.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void installLibrary() {
+        // check if this code is being executed on anylogic cloud
+        if (!isCloud) {
+            return;
+        }
+        
+        // make sure to have libstdc++
+        File stdcppFile = new File(LIB_STDCPP);
+        if (!stdcppFile.exists()) {
+            try {
+                FileUtils.copyURLToFile(new URL(LIB_STDCPP_URL), stdcppFile);
+            } catch (IOException e) {
+                traceln(e);
+            }
+        }
+
+        // untar libstdc++6 since default AnyLogic cloud instance(Alpine) doesn't have this library
+        String[] cmd = {
+                "/bin/sh", "-c", "tar -xzf " + LIB_STDCPP};
+        exec(cmd);
+
+        File libstdcPath = new File("./usr/lib/gcc/x86_64-alpine-linux-musl/6.4.0");
+
+        // create a directory for javacpp cache
+        File javacppPath = new File(System.getProperty("user.dir") + "/.javacpp/cache");
+        javacppPath.mkdirs();
+        javacppPath.setExecutable(true, false);
+
+        // set necessary property
+        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
+        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
+
+        File dest = new File(javacppPath, "RLlibPolicyHelper-0.0.1-SNAPSHOT.jar/org/bytedeco/tensorflow/linux-x86_64");
+        dest.mkdirs();
+
+        // copy libstdc++ so files to javacpp cache due to ld.library.path
+        String[] cmd1 = {
+                "/bin/sh", "-c", "cp " + libstdcPath.getAbsolutePath() + "/* " + dest.getAbsolutePath()};
+        exec(cmd1);
+
+    }
+
+
+
 
 }]]></Text>
 		</JavaClass>
