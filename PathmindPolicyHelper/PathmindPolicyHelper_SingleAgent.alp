@@ -596,7 +596,12 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 						</RecurrenceCode>
 						<Condition><![CDATA[false]]></Condition>
 					</Properties>
-					<Action><![CDATA[if (isEnabled && useEventTrigger && eventCondition()) {
+					<Action><![CDATA[if (!useEventTrigger) {
+	self.reset();
+	return;
+}
+
+if (isEnabled && useEventTrigger && eventCondition()) {
 	this.triggerNextAction();
 }]]></Action>
 				</Event>
@@ -628,13 +633,15 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
     }
 }
 
+if (debugMode) {
+	trace(toString());
+}
+
+/*
 if (!isTraining && steps == 1) {
     PathmindSerializer.writeMeta(this);
 }
-
-if (debugMode) {
-	trace(toString());
-}]]></Body>
+*/]]></Body>
 				</Function>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -970,6 +977,7 @@ public class PathmindHelperRegistry {
 		<JavaClass>
 			<Id>1583369247650</Id>
 			<Name><![CDATA[PathmindSerializer]]></Name>
+			<ExcludeFromBuild>true</ExcludeFromBuild>
 			<Text><![CDATA[/**
  * PathmindSerializer
  */
