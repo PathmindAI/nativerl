@@ -217,11 +217,11 @@ with open('database/db.properties', 'r+') as f:
 
 ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
 {{#if autoregressive}}
-{{autoregressiveModel}}
+{{{autoregressiveModel}}}
 {{else}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
-{{/if}}
 model['fcnet_hiddens'] = {{hiddenLayers}}
+{{/if}}
 
 trials = run(
     'PPO',
@@ -237,7 +237,7 @@ trials = run(
         'model': {
             'custom_model': 'autoregressive_model',
             'custom_action_dist': 'nary_autoreg_output',
-        }
+        },
         {{~else~}}
         'model': model,
         {{/if~}}

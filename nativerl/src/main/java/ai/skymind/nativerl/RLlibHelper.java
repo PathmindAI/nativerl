@@ -1,5 +1,6 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.util.AutoregressiveModelHelper;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
@@ -12,20 +13,11 @@ import org.bytedeco.javacpp.Pointer;
 import org.bytedeco.javacpp.SizeTPointer;
 import org.bytedeco.numpy.PyArrayObject;
 
-import ai.skymind.nativerl.util.AutoregressiveModelHelper;
-import org.bytedeco.cpython.PyObject;
-import org.bytedeco.javacpp.FloatPointer;
-import org.bytedeco.javacpp.Pointer;
-import org.bytedeco.javacpp.SizeTPointer;
-import org.bytedeco.numpy.PyArrayObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-
 import java.util.Collections;
-import java.util.List;
 
 import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
