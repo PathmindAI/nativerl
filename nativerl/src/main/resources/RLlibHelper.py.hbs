@@ -31,7 +31,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         {{#if (eq actionTupleSize 1)}}
         self.action_space = gym.spaces.Discrete(actionSpace.n)
         {{else}}
-        self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range(actionTupleSize)])
+        self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range({{actionTupleSize}})])
         {{/if}}
         self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
 
@@ -233,14 +233,14 @@ trials = run(
         'num_gpus': 0,
         'num_workers': {{numWorkers}} ,
         'num_cpus_per_worker': {{numCPUs}},
-        {{#if autoregressive}}
+        {{#if autoregressive~}}
         'model': {
             'custom_model': 'autoregressive_model',
             'custom_action_dist': 'nary_autoreg_output',
         }
-        {{else}}
+        {{~else~}}
         'model': model,
-        {{/if}}
+        {{/if~}}
         'use_gae': True,
         'vf_loss_coeff': 1.0,
         'vf_clip_param': numpy.inf,
