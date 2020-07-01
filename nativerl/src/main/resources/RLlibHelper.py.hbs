@@ -1,11 +1,10 @@
 import glob, gym, nativerl, ray, sys, os, random, numpy
-from ray.rllib.env import MultiAgentEnv
 from ray.rllib.agents.registry import get_agent_class
 from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
 from gym.spaces import Box, Discrete, Tuple
-{{#if autoregressive}}
+{{~#if autoregressive}}
 from ray.rllib.models import ModelCatalog
 from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
 from ray.rllib.models.tf.tf_modelv2 import TFModelV2
@@ -13,13 +12,11 @@ from ray.rllib.utils.tuple_actions import TupleActions
 from ray.rllib.models.tf.misc import normc_initializer
 from ray.rllib.utils import try_import_tf
 
-
 tf = try_import_tf()
 {{/if}}
-
 jardir = os.getcwd()
 
-class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym.Env{{/if}}):
+class {{classSimpleName environment}}(gym.Env):
     def __init__(self, env_config):
         # Put all JAR files found here in the class path
         jars = glob.glob(jardir + '/**/*.jar', recursive=True)
@@ -28,59 +25,34 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         self.nativeEnv = nativerl.createEnvironment('{{className environment}}')
         actionSpace = self.nativeEnv.getActionSpace()
         observationSpace = self.nativeEnv.getObservationSpace()
-        {{#if (eq actionTupleSize 1)}}
+        {{#if (eq actionTupleSize 1)~}}
         self.action_space = gym.spaces.Discrete(actionSpace.n)
-        {{else}}
+        {{~else~}}
         self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range({{actionTupleSize}})])
-        {{/if}}
+        {{~/if}}
         self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
-
         self.id = '{{classSimpleName environment}}'
         self.max_episode_steps = 20000
-        {{#unless multiAgent}}
         self.unwrapped.spec = self
-        {{/unless}}
 
     def reset(self):
         self.nativeEnv.reset()
-        {{#if multiAgent}}
-        obs = numpy.array(self.nativeEnv.getObservation())
-        obsdict = {}
-        for i in range(0, obs.shape[0]):
-            obsdict[str(i)] = obs[i]
-        return obsdict
-        {{else}}
         return numpy.array(self.nativeEnv.getObservation())
-        {{/if}}
 
     def step(self, action):
-        {{#if multiAgent}}
-        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)
-        for i in range(0, actionarray.shape[0]):
-            actionarray[i,:] = action[str(i)].astype(numpy.float32)
-        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))
-        obs = numpy.array(self.nativeEnv.getObservation())
-        obsdict = {}
-        rewarddict = {}
-        for i in range(0, obs.shape[0]):
-            obsdict[str(i)] = obs[i]
-            rewarddict[str(i)] = reward[i]
-        return obsdict, rewarddict, {'__all__': self.nativeEnv.isDone()}, {}
-        {{else}}
-        {{#if (eq actionTupleSize 1)}}
+        {{~#if (eq actionTupleSize 1)}}
         actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)
-        {{else}}
+        {{~else}}
         actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)
-        {{/if}}
+        {{~/if}}
         for i in range(0, actionarray.shape[1]):
-            {{#if (eq actionTupleSize 1)}}
+            {{~#if (eq actionTupleSize 1)}}
             actionarray[0,i] = action
-            {{else}}
+            {{~else}}
             actionarray[0,i] = action[i].astype(numpy.float32)
-            {{/if}}
+            {{~/if}}
         reward = self.nativeEnv.step(nativerl.Array(actionarray))
         return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
-        {{/if}}
 
 class Stopper:
     def __init__(self):
@@ -125,9 +97,9 @@ class Stopper:
     def stop(self, trial_id, result):
         # Core Criteria
         self.too_many_iter = result['training_iteration'] >= {{maxIterations}}
-        {{#if (gt maxTimeInSec 0)}}
+        {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
-        {{/if}}
+        {{/if~}}
         self.too_many_episodes = result['episodes_total'] >= 30000
 
         if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_many_episodes):
@@ -143,8 +115,6 @@ class Stopper:
 
         self.episode_reward_window.append(result['episode_reward_mean'])
         self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
-
-        # Experimental Criteria
 
         # Early stopping filter
         if result['training_iteration'] == 50:
@@ -216,17 +186,17 @@ with open('database/db.properties', 'r+') as f:
         f.write('hsqldb.lock_file=false\n')
 
 ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
-{{#if autoregressive}}
+{{#if autoregressive~}}
 {{{autoregressiveModel}}}
-{{else}}
+{{~else~}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
 model['fcnet_hiddens'] = {{hiddenLayers}}
-{{/if}}
+{{~/if}}
 
 trials = run(
     'PPO',
-    scheduler=pbt_scheduler,
-    num_samples={{numSamples}},
+    scheduler = pbt_scheduler,
+    num_samples = {{numSamples}},
     stop = stopper.stop,
     config = {
         'env': {{classSimpleName environment}},
@@ -239,8 +209,7 @@ trials = run(
             'custom_action_dist': 'nary_autoreg_output',
         },
         {{~else~}}
-        'model': model,
-        {{/if~}}
+        'model': model, {{/if}}
         'use_gae': True,
         'vf_loss_coeff': 1.0,
         'vf_clip_param': numpy.inf,
@@ -261,7 +230,7 @@ trials = run(
         # Auto-normalize observations
         #'observation_filter': 'MeanStdFilter'
     },
-    {{#if outputDir}}local_dir='{{outputDir.absolutePath}}{{else}}""{{/if}}',
+    {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
     checkpoint_freq = {{checkpointFrequency}} ,
     checkpoint_at_end = True,
@@ -269,6 +238,7 @@ trials = run(
     export_formats = ['model'],
     return_trials = True
 )
+
 errored_trials = []
 for trial in trials:
     if trial.status != 'TERMINATED':

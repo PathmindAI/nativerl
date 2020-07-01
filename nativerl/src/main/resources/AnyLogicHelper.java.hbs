@@ -14,9 +14,7 @@ public class {{className}}  extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}}  agent;
     protected PolicyHelper policyHelper;
-
     {{{classSnippet}}}
-
     public {{className}}() {
         super( {{discreteActions}}, {{continuousObservations}} );
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
@@ -34,22 +32,6 @@ public class {{className}}  extends AbstractEnvironment {
         engine.stop();
     }
 
-    {{#if multiAgent}}
-    @Override
-    public Array getObservation() {
-        double[][] obs = PathmindHelperRegistry.getHelper().observationForTraining();
-        int obssize = obs[0].length;
-        float[] array = new float[obs.length * obssize];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = (float)obs[i / obssize][i % obssize];
-        }
-        if (observation == null || observation.shape().size() < 2 || observation.length() != array.length) {
-            observation = new Array(new SSizeTVector().put(new long[] {obs.length, obssize}));
-        }
-        observation.data().put(array);
-        return observation;
-    }
-    {{else}}
     @Override
     public Array getObservation() {
         double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();
@@ -60,7 +42,6 @@ public class {{className}}  extends AbstractEnvironment {
         observation.data().put(array);
         return observation;
     }
-    {{/if}}
 
     @Override
     public boolean isDone() {
@@ -81,9 +62,7 @@ public class {{className}}  extends AbstractEnvironment {
         agent = new {{agentClassName}}(engine, null, null);
         agent.setParametersToDefaultValues();
         PathmindHelperRegistry.setForceLoadPolicy(policyHelper);
-
         {{{resetSnippet}}}
-
         engine.start(agent);
         // Workaround to trigger all events at time 0.0
         while (engine.getNextEventTime() == 0.0) {
@@ -91,32 +70,6 @@ public class {{className}}  extends AbstractEnvironment {
         }
     }
 
-    {{#if multiAgent}}
-    @Override
-    public Array step(Array action) {
-        double[] reward = new double[(int)action.length()];
-        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();
-        engine.runFast();
-        int[] array = new int[(int)action.length()];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = (int)action.data().get(i);
-        }
-        PathmindHelperRegistry.getHelper().doAction(array);
-        double[][] after = PathmindHelperRegistry.getHelper().observationForReward();
-
-        {{{rewardSnippet}}}
-
-        float[] array2 = new float[reward.length];
-        for (int i = 0; i < reward.length; i++) {
-            array2[i] = (float)reward[i];
-        }
-        if (this.reward == null || this.reward.length() != array2.length) {
-            this.reward = new Array(new SSizeTVector().put(reward.length));
-        }
-        this.reward.data().put(array2);
-        return this.reward;
-    }
-    {{else}}
     @Override
     public float step(Array action) {
         double reward = 0;
@@ -128,12 +81,9 @@ public class {{className}}  extends AbstractEnvironment {
         }
         PathmindHelperRegistry.getHelper().doAction(array);
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
-
         {{{rewardSnippet}}}
-
         return (float)reward;
     }
-    {{/if}}
 
     public double[] test() {
         double[] metrics = null;
@@ -141,20 +91,18 @@ public class {{className}}  extends AbstractEnvironment {
         while (!isDone()) {
             engine.runFast();
         }
-
         {{{metricsSnippet}}}
-
         return metrics;
     }
 
     public static void main(String[] args) throws Exception {
         ArrayList<String> lines = new ArrayList<String>({{testIterations}});
-        {{#if policyHelper}}
+        {{~#if policyHelper}}
         {{className}} e = new {{className}} (new {{policyHelper}} (new File(args[0]), {{actionTupleSize}}));
         for (int i = 0; i < {{testIterations}} ; i++) {
             lines.add(Arrays.toString(e.test()));
         }
-        {{/if}}
+        {{~/if}}
         Files.write(Paths.get(args[0], "metrics.txt"), lines, Charset.defaultCharset());
     }
 }
