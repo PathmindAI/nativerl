@@ -77,7 +77,10 @@ class Callbacks(DefaultCallbacks):
                       policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
        metrics = worker.env.getMetrics().tolist()
 
+       {{#if debugMetrics}}
        episode.hist_data["metrics_raw"] = metrics
+       {{/if}}
+
        for i, val in enumerate(metrics):
            episode.custom_metrics["metrics_" + str(i)] = metrics[i]
 
@@ -230,7 +233,7 @@ with open('database/db.properties', 'r+') as f:
     if 'hsqldb.lock_file=false\n' not in lines:
         f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}})
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1')
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
 model['fcnet_hiddens'] = {{hiddenLayers}}
 

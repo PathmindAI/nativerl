@@ -72,6 +72,11 @@ if [[ "$MULTIAGENT" = true ]]; then
     MULTIAGENT_PARAM="--multi-agent"
 fi
 
+DEBUGMETRICS_PARAM=""
+if [[ "$DEBUGMETRICS" = true ]]; then
+    MULTIAGENT_PARAM="--debug-metrics"
+fi
+
 RESUME_PARAM=""
 if [[ "$RESUME" = true ]]; then
     RESUME_PARAM="--resume"
@@ -138,6 +143,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $MULTIAGENT_PARAM \
+    $DEBUGMETRICS_PARAM \
     $EPISODE_REWARD_RANGE_PARAM \
     $ENTROPY_SLOPE_PARAM \
     $VF_LOSS_RANGE_PARAM \
@@ -148,9 +154,9 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-set -e
-if [[ "$RESUME" = true ]]; then
-    mv examples/pm_resume.py .
-    python3 pm_resume.py
-fi
+#set -e
+#if [[ "$RESUME" = true ]]; then
+#    mv examples/pm_resume.py .
+#    python3 pm_resume.py
+#fi
 python3 rllibtrain.py

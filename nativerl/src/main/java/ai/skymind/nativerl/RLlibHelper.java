@@ -200,6 +200,9 @@ public class RLlibHelper {
     boolean multiAgent = false;
 
     @Builder.Default
+    boolean debugMetrics = false;
+
+    @Builder.Default
     boolean userLog = false;
 
 
@@ -379,6 +382,8 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+            } else if ("--debug-metrics".equals(args[i])) {
+                helper.debugMetrics(true);
             } else if ("--episode-reward-range".equals(args[i])) {
                 helper.episodeRewardRangeTh(Double.parseDouble(args[++i]));
             } else if ("--entropy-slope".equals(args[i])) {
