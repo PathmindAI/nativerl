@@ -157,9 +157,9 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-set -e
-if [[ "$RESUME" = true ]]; then
-    mv examples/pm_resume.py .
-    python3 pm_resume.py
-fi
+#set -e
+#if [[ "$RESUME" = true ]]; then
+#    mv examples/pm_resume.py .
+#    python3 pm_resume.py
+#fi
 python3 rllibtrain.py
