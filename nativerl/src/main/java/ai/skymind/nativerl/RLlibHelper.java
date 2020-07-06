@@ -632,7 +632,7 @@ public class RLlibHelper {
             + "        self.vf_loss_range_threshold = " + vfLossRangeTh + " # Remove with 0\n"
             + "        self.value_pred_threshold = " + valuePredTh + " # Remove with 0\n"
             + "\n"
-            + "    def stop(self, trial_id, result):\n"
+            + "    def __call__(self, trial_id, result):\n"
             + "        # Core Criteria\n"
             + "        self.too_many_iter = result['training_iteration'] >= " + maxIterations + "\n"
             + (maxTimeInSec > 0
