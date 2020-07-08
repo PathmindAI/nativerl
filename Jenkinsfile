@@ -16,7 +16,7 @@ def buildDockerImage(image_name, image_id,docker_tag) {
         //Dont quit if there is an error
         sh """
             set +x
-            docker image ls | grep pathmind-ma | awk '{print \$3}' | xargs -I {} docker rmi {}
+            docker image ls | grep pathmind-ma | awk '{print \$3}' | xargs -I {} docker rmi {} -f
             docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile --build-arg S3BUCKET='${docker_tag}-model-analyzer-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/
         """
 }
