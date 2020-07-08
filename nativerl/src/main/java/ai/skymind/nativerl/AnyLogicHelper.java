@@ -6,23 +6,45 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 
+/**
+ * This is a helper class to help users implement the reinforcement learning
+ * Environment interface based on a simulation model from AnyLogic. The output
+ * is the source code of a Java class that can be compiled and executed together
+ * with an exported simulation model that is using the Pathmind Helper.
+ */
 public class AnyLogicHelper {
 
+    /** The name of the class to generate. */
     String environmentClassName = "AnyLogicEnvironment";
+    /** The class name of the main AnyLogic agent to use. */
     String agentClassName = "MainAgent";
+    /** The number of actions in the case of a discrete action space. */
     long discreteActions;
+    /** The number of array elements in the case of a continuous action space. */
     long continuousActions;
+    /** The number of array elements in the case of a continuous action space. */
     long continuousObservations;
+    /** Currently unused since the PathmindHelper is able to manage this. */
     long stepTime = 1;
+    /** Currently unused since the PathmindHelper is able to manage this. */
     long stopTime = 1000;
+    /** Arbitrary code to add to the generated class such as fields or methods. */
     String classSnippet = "";
+    /** Arbitrary code to add to the reset() method of the generated class. */
     String resetSnippet = "";
+    /** Arbitrary code to add to the step() method of the generated class to calculate the reward. */
     String rewardSnippet = "";
+    /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     String metricsSnippet = "";
+    /** The name of the PolicyHelper, such as RLlibPolicyHelper, to run the metrics code as part of the main() method. */
     String policyHelper = null;
+    /** The number of episodes to run the PolicyHelper and compute the metrics on as part of the main() method. */
     int testIterations = 10;
+    /** Currently unused since the PathmindHelper is able to manage this. */
     boolean stepless = false;
+    /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
     boolean multiAgent = false;
+    int actionTupleSize;
 
     public String environmentClassName() {
         return environmentClassName;
@@ -144,6 +166,15 @@ public class AnyLogicHelper {
         return this;
     }
 
+    public int actionTupleSize() {
+        return actionTupleSize;
+    }
+    public AnyLogicHelper actionTupleSize(int actionTupleSize) {
+        this.actionTupleSize = actionTupleSize;
+        return this;
+    }
+
+    /** Currently unused since the PathmindHelper is able to manage this. */
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         int n = agentClassName.lastIndexOf(".");
         String className = agentClassName.substring(n + 1);
@@ -154,7 +185,7 @@ public class AnyLogicHelper {
         if (multiAgent) {
             c.getDeclaredMethod("doAction", int[].class);
         } else {
-            c.getDeclaredMethod("doAction", int.class);
+            c.getDeclaredMethod("doAction", int[].class);
         }
         Method m = c.getDeclaredMethod("getObservation", boolean.class);
         if (multiAgent && m.getReturnType() != double[][].class) {
@@ -169,6 +200,7 @@ public class AnyLogicHelper {
         return this;
     }
 
+    /** Calls {@link #generateEnvironment()} and writes the result to a File. */
     public void generateEnvironment(File file) throws IOException {
         File directory = file.getParentFile();
         if (directory != null) {
@@ -177,6 +209,7 @@ public class AnyLogicHelper {
         Files.write(file.toPath(), generateEnvironment().getBytes());
     }
 
+    /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() {
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
@@ -265,6 +298,10 @@ public class AnyLogicHelper {
             + resetSnippet
             + "\n"
             + "        engine.start(agent);\n"
+            + "        // Workaround to trigger all events at time 0.0\n"
+            + "        while (engine.getNextEventTime() == 0.0) {\n"
+            + "            engine.runFast(Math.ulp(0.0));\n"
+            + "        }\n"
             + "    }\n"
             + "\n"
             + (multiAgent
@@ -293,11 +330,15 @@ public class AnyLogicHelper {
                 + "    }\n"
                 + "\n"
 
-                : "    @Override public float step(long action) {\n"
+                : "    @Override public float step(Array action) {\n"
                 + "        double reward = 0;\n"
                 + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "        engine.runFast();\n"
-                + "        PathmindHelperRegistry.getHelper().doAction((int)action);\n"
+                + "        long[] array = new long[(int)action.length()];\n"
+                + "        for (int i = 0; i < array.length; i++) {\n"
+                + "            array[i] = (long)action.data().get(i);\n"
+                + "        }\n"
+                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
                 + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
                 + "\n"
                 + rewardSnippet
@@ -319,7 +360,7 @@ public class AnyLogicHelper {
             + "\n"
             + "    public static void main(String[] args) throws Exception {\n"
             + (policyHelper != null
-                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0])));\n"
+                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0]), " + actionTupleSize + "));\n"
                     + "        ArrayList<String> lines = new ArrayList<String>(" + testIterations + ");\n"
                     + "        for (int i = 0; i < " + testIterations + "; i++) {\n"
                     + "            lines.add(Arrays.toString(e.test()));\n"
@@ -330,6 +371,7 @@ public class AnyLogicHelper {
         return env;
     }
 
+    /** The command line interface of this helper. */
     public static void main(String[] args) throws Exception {
         AnyLogicHelper helper = new AnyLogicHelper();
         File output = null;
@@ -352,6 +394,7 @@ public class AnyLogicHelper {
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --stepless");
+                System.out.println("    --action-tuple-size");
                 System.out.println("    --multi-agent");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
@@ -384,6 +427,8 @@ public class AnyLogicHelper {
                 helper.setStepless(true);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent = true;
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else {
                 output = new File(args[i]);
             }

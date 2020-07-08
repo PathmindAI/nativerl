@@ -1,19 +1,29 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.util.AutoregressiveModelHelper;
+import org.bytedeco.cpython.PyObject;
+import org.bytedeco.javacpp.FloatPointer;
+import org.bytedeco.javacpp.Pointer;
+import org.bytedeco.javacpp.SizeTPointer;
+import org.bytedeco.numpy.PyArrayObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import org.bytedeco.cpython.*;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
-import org.bytedeco.numpy.*;
+
 import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
 
 /**
+* This is a helper class to help users use an implementation of
+* the reinforcement learning Environment interface using RLlib.
+* The output is a Python script that can executed with an existing
+* installation of RLlib.
+* <p>
  * Currently available algorithms according to RLlib's registry.py:
  *   "DDPG" *
  *   "APEX_DDPG" *
@@ -32,15 +42,22 @@ import static org.bytedeco.numpy.global.numpy.*;
  *   "APPO"
  *   "MARWIL"
  *
+ * <p>
  *   * Works only with continuous actions (doesn't work with discrete ones)
  *   ** Requires PyTorch (doesn't work with TensorFlow)
+ * <p>
  */
 public class RLlibHelper {
 
+  /**
+   * A PolicyHelper for RLlib, which can load its checkpoint files.
+   * Requires CPython and comes with all its limitations, such as the GIL.
+   */
     public static class PythonPolicyHelper implements PolicyHelper {
         PyObject globals = null;
         PyArrayObject obsArray = null;
         FloatPointer obsData = null;
+        int actionTupleSize;
 
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Environment env) throws IOException {
             this(rllibpaths, algorithm, checkpoint, env.getClass().getSimpleName(), env.getActionSpace(), env.getObservationSpace());
@@ -72,17 +89,17 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
-            PyRun_StringFlags("import gym, inspect, ray, sys\n"
-                    + "import numpy as np\n"
+            String actionSpaceStr = "gym.spaces.Discrete(" + discreteActionSpace.n() + ")";
+            PyRun_StringFlags("import gym, inspect, numpy, ray, sys\n"
                     + "from ray.rllib.agents import registry\n"
                     + "\n"
                     + "class " + name + "(gym.Env):\n"
                     + "    def __init__(self, env_config):\n"
-                    + "        self.action_space = gym.spaces.Discrete(" + discreteActionSpace.n() + ")\n"
-                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "np.array(" + Arrays.toString(obsLow) + ")") + "\n"
-                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "np.array(" + Arrays.toString(obsHigh) + ")") + "\n"
-                    + "        shape = " + (obsShape.length == 0 ? "None" : "np.array(" + Arrays.toString(obsShape) + ")") + "\n"
-                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=np.float32)\n"
+                    + "        self.action_space = gym.spaces.Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, actionSpaceStr)) + " ])\n"
+                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "numpy.array(" + Arrays.toString(obsLow) + ")") + "\n"
+                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "numpy.array(" + Arrays.toString(obsHigh) + ")") + "\n"
+                    + "        shape = " + (obsShape.length == 0 ? "None" : "numpy.array(" + Arrays.toString(obsShape) + ")") + "\n"
+                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=numpy.float32)\n"
                     + "\n"
                     + "ray.init(local_mode=True)\n"
                     + "cls = registry.get_agent_class(\"" + algorithm + "\")\n"
@@ -114,7 +131,7 @@ public class RLlibHelper {
             throw new UnsupportedOperationException();
         }
 
-        @Override public long computeDiscreteAction(float[] state) {
+        @Override public long[] computeDiscreteAction(float[] state) {
             obsData.put(state);
             PyRun_StringFlags("action = trainer.compute_action(obs)\n", Py_file_input, globals, globals, null);
 
@@ -124,32 +141,64 @@ public class RLlibHelper {
                 PyRun_StringFlags("sys.stderr.flush()", Py_file_input, globals, globals, null);
                 throw new RuntimeException("Python error occurred");
             }
-            return PyLong_AsLongLong(PyDict_GetItemString(globals, "action"));
+
+            long[] arrayOfActions = new long[actionTupleSize];
+            for (int i=0; i < actionTupleSize; i++) {
+                arrayOfActions[i] = PyLong_AsLongLong(PyDict_GetItemString(globals, "action[i]"));
+            }
+            return arrayOfActions;
+            //return PyLong_AsLongLong(PyDict_GetItemString(globals, "action",));
         }
     }
 
+    /** The paths where to find RLlib itself and all of its Python dependencies. */
     File[] rllibpaths = null;
+    /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
     String algorithm = "PPO";
+    /** The directory where to output the logs of RLlib. */
     File outputDir = null;
+    /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     File checkpoint = null;
+    /** A concrete instance of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     Environment environment = null;
+    /** The number of CPU cores to let RLlib use during training. */
     int numCPUs = 1;
+    /** The number of GPUs to let RLlib use during training. */
     int numGPUs = 0;
+    /** The number of parallel workers that RLlib should execute during training. */
     int numWorkers = 1;
+    /** The number of hidden layers in the MLP to use for the learning model. */
     int numHiddenLayers = 2;
+    /** The number of nodes per layer in the MLP to use for the learning model. */
     int numHiddenNodes = 256;
+    /** The maximum number of training iterations as a stopping criterion. */
     int maxIterations = 500;
-    int maxTimeInSec = -1;
+    /** Max time in seconds */
+    int maxTimeInSec = 43200;
+    /** Number of population-based training samples */
     int numSamples = 4;
+    /** Length of actions array for tuples */
+    int actionTupleSize = 1;
+    /** The frequency at which policies should be saved to files, given as an interval in the number of training iterations. */
     int savePolicyInterval = 100;
+    /** Initialize actions as a long */
+    long discreteActions;
+    /** The address of the Redis server for distributed training sessions. */
     String redisAddress = null;
+    /** Any number custom parameters written in Python appended to the config of ray.tune.run() as is. */
     String customParameters = "";
+    /** Resume training when AWS spot instance terminates */
     boolean resume = false;
+    /** Periodic checkpointing to allow training to recover from AWS spot instance termination */
     int checkpointFrequency = 50;
+    /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
     boolean multiAgent = false;
+    /** Reduce size of output log file */
     boolean userLog = false;
+    /** Optional layer on top of tuples */
+    boolean autoregressive = false;
 
-    // thresholds for stopper
+    // Thresholds for stopper
     double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
     double entropySlopeTh = 0.01;       // entropy_slope_threshold
     double vfLossRangeTh = 0.1;         // vf_loss_range_threshold
@@ -182,17 +231,23 @@ public class RLlibHelper {
         this.entropySlopeTh = copy.entropySlopeTh;
         this.vfLossRangeTh = copy.vfLossRangeTh;
         this.valuePredTh = copy.valuePredTh;
+        this.actionTupleSize = copy.actionTupleSize;
+        this.autoregressive = copy.autoregressive;
+        this.discreteActions = copy.discreteActions;
     }
 
     @Override public String toString() {
         return "RLlibHelper[rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
                 + "algorithm=" + algorithm + ", "
                 + "outputDir=" + outputDir + ", "
+                + "actionTupleSize=" + actionTupleSize + ", "
+                + "autoregressive=" + autoregressive + ", "
                 + "checkpoint=" + checkpoint + ", "
                 + "environment=" + environment + ", "
                 + "numCPUs=" + numCPUs + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
+                + "numSamples=" + numSamples + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
                 + "maxIterations=" + maxIterations + ", "
@@ -206,6 +261,7 @@ public class RLlibHelper {
                 + "entropySlopeTh=" + entropySlopeTh + ", "
                 + "vfLossRangeTh=" + vfLossRangeTh + ", "
                 + "userLog=" + userLog + ", "
+                + "discreteActions=" + discreteActions + ", "
                 + "customParameters=" + customParameters + "]";
     }
 
@@ -242,6 +298,30 @@ public class RLlibHelper {
     }
     public RLlibHelper outputDir(String outputDir) {
         this.outputDir = new File(outputDir);
+        return this;
+    }
+
+    public int actionTupleSize() {
+        return actionTupleSize;
+    }
+    public RLlibHelper actionTupleSize(int actionTupleSize) {
+        this.actionTupleSize = actionTupleSize;
+        return this;
+    }
+
+    public long discreteActions() {
+        return discreteActions;
+    }
+    public RLlibHelper discreteActions(long discreteActions) {
+        this.discreteActions = discreteActions;
+        return this;
+    }
+
+    public boolean autoregressive() {
+        return autoregressive;
+    }
+    public RLlibHelper autoregressive(boolean autoregressive) {
+        this.autoregressive = autoregressive;
         return this;
     }
 
@@ -316,7 +396,6 @@ public class RLlibHelper {
     public int maxTimeInSec() {
         return maxTimeInSec;
     }
-
     public RLlibHelper maxTimeInSec(int maxTimeInSec) {
         this.maxTimeInSec = maxTimeInSec;
         return this;
@@ -325,7 +404,6 @@ public class RLlibHelper {
     public int numSamples() {
         return numSamples;
     }
-
     public RLlibHelper numSamples(int numSamples) {
         this.numSamples = numSamples;
         return this;
@@ -334,7 +412,6 @@ public class RLlibHelper {
     public boolean resume() {
         return resume;
     }
-
     public RLlibHelper resume(boolean resume) {
         this.resume = resume;
         return this;
@@ -343,7 +420,6 @@ public class RLlibHelper {
     public int checkpointFrequency() {
         return checkpointFrequency;
     }
-
     public RLlibHelper checkpointFrequency(int checkpointFrequency) {
         this.checkpointFrequency = checkpointFrequency;
         return this;
@@ -384,7 +460,6 @@ public class RLlibHelper {
     public double episodeRewardRangeTh() {
         return episodeRewardRangeTh;
     }
-
     public RLlibHelper episodeRewardRangeTh(double episodeRewardRangeTh) {
         this.episodeRewardRangeTh = episodeRewardRangeTh;
         return this;
@@ -393,7 +468,6 @@ public class RLlibHelper {
     public double entropySlopeTh() {
         return entropySlopeTh;
     }
-
     public RLlibHelper entropySlopeTh(double entropySlopeTh) {
         this.entropySlopeTh = entropySlopeTh;
         return this;
@@ -402,7 +476,6 @@ public class RLlibHelper {
     public double vfLossRangeTh() {
         return vfLossRangeTh;
     }
-
     public RLlibHelper vfLossRangeTh(double vfLossRangeTh) {
         this.vfLossRangeTh = vfLossRangeTh;
         return this;
@@ -411,7 +484,6 @@ public class RLlibHelper {
     public double valuePredTh() {
         return valuePredTh;
     }
-
     public RLlibHelper valuePredTh(double valuePredTh) {
         this.valuePredTh = valuePredTh;
         return this;
@@ -420,7 +492,6 @@ public class RLlibHelper {
     public boolean userLog() {
         return userLog;
     }
-
     public RLlibHelper userLog(boolean userLog) {
         this.userLog = userLog;
         return this;
@@ -434,6 +505,8 @@ public class RLlibHelper {
         return s;
     }
 
+    //todo I'm not sure we use this method
+    //if we use this method, we need to change this method to pass tuple action size
     public PolicyHelper createPythonPolicyHelper() throws IOException {
         return new PythonPolicyHelper(rllibpaths, algorithm, checkpoint, environment);
     }
@@ -450,14 +523,25 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        String trainer = "import glob, gym, nativerl, ray, sys, os, random\n"
-            + "import numpy as np\n"
+        String trainer = "import glob, gym, nativerl, ray, sys, os, random, numpy\n"
             + "from ray.rllib.env import MultiAgentEnv\n"
             + "from ray.rllib.agents.registry import get_agent_class\n"
             + "from ray.rllib.utils import seed\n"
             + "from ray.tune import run, sample_from\n"
             + "from ray.tune.schedulers import PopulationBasedTraining\n"
+            + "from gym.spaces import Box, Discrete, Tuple\n"
+            + (autoregressive
+                ? "from ray.rllib.models import ModelCatalog\n"
+                + "from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution\n"
+                + "from ray.rllib.models.tf.tf_modelv2 import TFModelV2\n"
+                + "from ray.rllib.utils.tuple_actions import TupleActions\n"
+                + "from ray.rllib.models.tf.misc import normc_initializer\n"
+                + "from ray.rllib.utils import try_import_tf\n"
+                : "")
             + "\n"
+            + (autoregressive
+                ? "tf = try_import_tf()\n\n"
+                : "")
             + "jardir = os.getcwd()\n"
             + "\n"
             + "class " + environment.getClass().getSimpleName() + "(" + (multiAgent ? "MultiAgentEnv" : "gym.Env") + "):\n"
@@ -469,28 +553,29 @@ public class RLlibHelper {
             + "        self.nativeEnv = nativerl.createEnvironment('" + environment.getClass().getName() + "')\n"
             + "        actionSpace = self.nativeEnv.getActionSpace()\n"
             + "        observationSpace = self.nativeEnv.getObservationSpace()\n"
-            + "        self.action_space = gym.spaces.Discrete(actionSpace.n)\n"
-            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], np.array(observationSpace.shape), dtype=np.float32)\n"
+            + "        self.action_space = "
+            + (actionTupleSize == 1 ? "gym.spaces.Discrete(actionSpace.n)\n" : "Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, "gym.spaces.Discrete(actionSpace.n)")) + " ])\n")
+            + "        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)\n"
             + "        self.id = '" + environment.getClass().getSimpleName() + "'\n"
-            + "        self.max_episode_steps = 200000\n"
+            + "        self.max_episode_steps = 20000\n"
             + (multiAgent ? "" : "        self.unwrapped.spec = self\n")
             + "    def reset(self):\n"
             + "        self.nativeEnv.reset()\n"
             + (multiAgent
-                ? "        obs = np.array(self.nativeEnv.getObservation())\n"
+                ? "        obs = numpy.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
                 + "            obsdict[str(i)] = obs[i]\n"
                 + "        return obsdict\n"
 
-                : "        return np.array(self.nativeEnv.getObservation())\n")
+                : "        return numpy.array(self.nativeEnv.getObservation())\n")
             + "    def step(self, action):\n"
             + (multiAgent
-                ? "        actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)\n"
+                ? "        actionarray = numpy.ndarray(shape=(len(action), 1), dtype=numpy.float32)\n"
                 + "        for i in range(0, actionarray.shape[0]):\n"
-                + "            actionarray[i,:] = action[str(i)].astype(np.float32)\n"
-                + "        reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
-                + "        obs = np.array(self.nativeEnv.getObservation())\n"
+                + "            actionarray[i,:] = action[str(i)].astype(numpy.float32)\n"
+                + "        reward = numpy.array(self.nativeEnv.step(nativerl.Array(actionarray)))\n"
+                + "        obs = numpy.array(self.nativeEnv.getObservation())\n"
                 + "        obsdict = {}\n"
                 + "        rewarddict = {}\n"
                 + "        for i in range(0, obs.shape[0]):\n"
@@ -498,135 +583,134 @@ public class RLlibHelper {
                 + "            rewarddict[str(i)] = reward[i]\n"
                 + "        return obsdict, rewarddict, {'__all__' : self.nativeEnv.isDone()}, {}\n"
 
-                : "        reward = self.nativeEnv.step(action)\n"
-                + "        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
-                + "\n"
-                + "class Stopper:\n"
-                + "    def __init__(self):\n"
-                + "        # Core criteria\n"
-                + "        self.should_stop = False # Stop criteria met\n"
-                + "        self.too_many_iter = False # Max iterations\n"
-                + "        self.too_much_time = False # Max training time\n"
-                + "        self.too_many_episodes = False # Max total episodes\n"
-                + "\n"
-                + "        # Stopping criteria at early check\n"
-                + "        self.no_discovery_risk = False # Value loss never changes\n"
-                + "        self.no_converge_risk = False # Entropy never drops\n"
-                + "\n"
-                + "        # Convergence signals at each iteration from converge check onward\n"
-                + "        self.episode_reward_converged = False # Reward mean changes very little\n"
-                + "        self.value_pred_converged = False # Explained variance changes very little\n"
-                + "\n"
-                + "        # Episode reward behaviour\n"
-                + "        self.episode_reward_window = []\n"
-                + "        self.episode_reward_range = 0\n"
-                + "        self.episode_reward_mean = 0\n"
-                + "        self.episode_reward_mean_latest = 0\n"
-                + "\n"
-                + "        # Entropy behaviour\n"
-                + "        self.entropy_start = 0\n"
-                + "        self.entropy_now = 0\n"
-                + "        self.entropy_slope = 0\n"
-                + "\n"
-                + "        # Value loss behaviour\n"
-                + "        self.vf_loss_window = []\n"
-                + "        self.vf_loss_range = 0\n"
-                + "        self.vf_pred_window = []\n"
-                + "        self.vf_pred_mean = 0\n"
-                + "        self.vf_pred_mean_latest = 0\n"
-                + "\n"
-                + "        # Configs\n"
-                + "        self.episode_reward_range_threshold = " + episodeRewardRangeTh + " # Remove with 0\n"
-                + "        self.entropy_slope_threshold = " + entropySlopeTh + " # Remove with 1\n"
-                + "        self.vf_loss_range_threshold = " + vfLossRangeTh + " # Remove with 0\n"
-                + "        self.value_pred_threshold = " + valuePredTh + " # Remove with 0\n"
-                + "\n"
-                + "    def stop(self, trial_id, result):\n"
-                + "        # Core Criteria\n"
-                + "        self.too_many_iter = result['training_iteration'] >= " + maxIterations + "\n"
-                + (maxTimeInSec > 0
-                ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
-                : "")
-                + "        self.too_many_episodes = result['episodes_total'] >= 30000\n"
-                + "\n"
-                + "        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_many_episodes):\n"
-                + "            self.should_stop = True\n"
-                + "            return self.should_stop\n"
-                + "\n"
-                + "        # Collecting metrics for stopping criteria\n"
-                + "        if result['training_iteration'] == 1:\n"
-                + "            self.entropy_start = result['info/learner/default_policy/entropy']\n"
-                + "\n"
-                + "        if result['training_iteration'] <= 50:\n"
-                + "            self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])\n"
-                + "\n"
-                + "        self.episode_reward_window.append(result['episode_reward_mean'])\n"
-                + "        self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])\n"
-                + "\n"
-                + "        # Experimental Criteria\n"
-                + "\n"
-                + "        # Early stopping filter\n"
-                + "        if result['training_iteration'] == 50:\n"
-                + "            self.entropy_now = result['info/learner/default_policy/entropy']\n"
-                + "            self.entropy_slope = self.entropy_now - self.entropy_start\n"
-                + "            self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))\n"
-                + "            if self.entropy_slope > np.abs(self.entropy_start * self.entropy_slope_threshold):\n"
-                + "                self.no_converge_risk = True\n"
-                + "            if np.abs(self.vf_loss_range) < np.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):\n"
-                + "                self.no_discovery_risk = True\n"
-                + "\n"
-                + "            # Early stopping decision\n"
-                + "            if not self.should_stop and (self.no_converge_risk or self.no_discovery_risk):\n"
-                + "                self.should_stop = True\n"
-                + "                return self.should_stop\n"
-                + "\n"
-                + "        # Convergence Filter\n"
-                + "        if result['training_iteration'] >= 125:\n"
-                + "            # Episode reward range activity\n"
-                + "            self.episode_reward_range = np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))\n"
-                + "            # Episode reward mean activity\n"
-                + "            self.episode_reward_mean = np.mean(np.array(self.episode_reward_window[-75:]))\n"
-                + "            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-15:]))\n"
-                + "            # Value function activity\n"
-                + "            self.vf_pred_mean = np.mean(np.array(self.vf_pred_window[-25:]))\n"
-                + "            self.vf_pred_mean_latest = np.mean(np.array(self.vf_pred_window[-5:]))\n"
-                + "\n"
-                + "            # Episode reward leveled off\n"
-                + "            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (np.abs(self.episode_reward_range) < np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 2)):\n"
-                + "                self.episode_reward_converged = True\n"
-                + "\n"
-                + "            # Explained variance leveled off\n"
-                + "            if (np.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / np.abs(self.vf_pred_mean) < self.value_pred_threshold):\n"
-                + "                self.value_pred_converged = True\n"
-                + "\n"
-                + "            # Convergence stopping decision\n"
-                + "            if not self.should_stop and self.episode_reward_converged and self.value_pred_converged:\n"
-                + "                self.should_stop = True\n"
-                + "                return self.should_stop\n"
-                + "\n"
-                + "        # Returns False by default until stopping decision made\n"
-                + "        return self.should_stop\n"
-                + "\n"
-                + "stopper = Stopper()\n"
-                + "\n"
-                + "pbt_scheduler = PopulationBasedTraining(\n"
-                + "    time_attr = 'training_iteration',\n"
-                + "    metric = 'episode_reward_mean',\n"
-                + "    mode = 'max',\n"
-                + "    perturbation_interval = 10,\n"
-                + "    quantile_fraction = 0.25,\n"
-                + "    resample_probability = 0.25,\n"
-                + "    log_config = True,\n"
-                + "    hyperparam_mutations = {\n"
-                + "        'lambda': np.linspace(0.9, 1.0, 5).tolist(),\n"
-                + "        'clip_param': np.linspace(0.01, 0.5, 5).tolist(),\n"
-                + "        'entropy_coeff': np.linspace(0, 0.03, 5).tolist(),\n"
-                + "        'lr': [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],\n"
-                + "        'num_sgd_iter': [5, 10, 15, 20, 30],\n"
-                + "        'sgd_minibatch_size': [128, 256, 512, 1024, 2048],\n"
-                + "        'train_batch_size': [4000, 6000, 8000, 10000, 12000]\n"
-                + "    }\n"
-                + ")\n"
+                : (actionTupleSize == 1
+                    ? "        actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)\n"
+                    : "        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)\n")
+                + "        for i in range(0, actionarray.shape[1]):\n"
+                + (actionTupleSize == 1
+                    ? "            actionarray[0,i] = action\n"
+                    : "            actionarray[0,i] = action[i].astype(numpy.float32)\n")
+                + "        reward = self.nativeEnv.step(nativerl.Array(actionarray))\n"
+                + "        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}\n")
+            + "\n"
+            + "class Stopper:\n"
+            + "    def __init__(self):\n"
+            + "        # Core criteria\n"
+            + "        self.too_many_iter = False # Max iterations\n"
+            + "        self.too_much_time = False # Max training time\n"
+            + "        self.too_many_episodes = False # Max total episodes\n"
+            + "\n"
+            + "        # Stopping criteria at early check\n"
+            + "        self.no_discovery_risk = False # Value loss never changes\n"
+            + "        self.no_converge_risk = False # Entropy never drops\n"
+            + "\n"
+            + "        # Convergence signals at each iteration from converge check onward\n"
+            + "        self.episode_reward_converged = False # Reward mean changes very little\n"
+            + "        self.value_pred_converged = False # Explained variance changes very little\n"
+            + "\n"
+            + "        # Episode reward behaviour\n"
+            + "        self.episode_reward_window = {}\n"
+            + "        self.episode_reward_range = 0\n"
+            + "        self.episode_reward_mean = 0\n"
+            + "        self.episode_reward_mean_latest = 0\n"
+            + "\n"
+            + "        # Entropy behaviour\n"
+            + "        self.entropy_start = 0\n"
+            + "        self.entropy_now = 0\n"
+            + "        self.entropy_slope = 0\n"
+            + "\n"
+            + "        # Value loss behaviour\n"
+            + "        self.vf_loss_window = []\n"
+            + "        self.vf_loss_range = 0\n"
+            + "        self.vf_pred_window = []\n"
+            + "        self.vf_pred_mean = 0\n"
+            + "        self.vf_pred_mean_latest = 0\n"
+            + "\n"
+            + "        # Configs\n"
+            + "        self.episode_reward_range_threshold = " + episodeRewardRangeTh + " # Turn off with 0\n"
+            + "        self.entropy_slope_threshold = " + entropySlopeTh + " # Turn off with 1\n"
+            + "        self.vf_loss_range_threshold = " + vfLossRangeTh + " # Turn off with 0\n"
+            + "        self.value_pred_threshold = " + valuePredTh + " # Turn off with 0\n"
+            + "\n"
+            + "    def stop(self, trial_id, result):\n"
+            + "        # Core stopping criteria\n"
+            + "        self.too_many_iter = result['training_iteration'] >= " + maxIterations + "\n"
+            + (maxTimeInSec > 0
+            ? "        self.too_much_time = result['time_total_s'] >= " + maxTimeInSec + "\n"
+            : "")
+            + "        self.too_many_episodes = result['episodes_total'] >= 30000\n"
+            + "\n"
+            + "        # Stop entire experiment if max training ceiling reached\n"
+            + "        if self.too_many_iter or self.too_much_time or self.too_many_episodes:\n"
+            + "            return True\n"
+            + "\n"
+            + "        # Collect metrics for stopping criteria\n"
+            + "        if result['training_iteration'] == 1:\n"
+            + "            self.entropy_start = result['info']['learner']['default_policy']['entropy']\n"
+            + "\n"
+            + "        if result['training_iteration'] <= 50:\n"
+            + "            self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])\n"
+            + "\n"
+            + "        if (not trial_id in self.episode_reward_window):\n"
+            + "            self.episode_reward_window[trial_id] = []\n"
+            + "        self.episode_reward_window[trial_id].append(result['episode_reward_mean'])\n"
+            + "        self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])\n"
+            + "\n"
+            + "        # Early learning check\n"
+            + "        if result['training_iteration'] == 50:\n"
+            + "            self.entropy_now = result['info']['learner']['default_policy']['entropy']\n"
+            + "            self.entropy_slope = self.entropy_now - self.entropy_start\n"
+            + "            self.vf_loss_range = numpy.max(numpy.array(self.vf_loss_window)) - numpy.min(numpy.array(self.vf_loss_window))\n"
+            + "\n"
+            + "            if self.entropy_slope > numpy.abs(self.entropy_start * self.entropy_slope_threshold):\n"
+            + "                self.no_converge_risk = True\n"
+            + "            if numpy.abs(self.vf_loss_range) < numpy.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):\n"
+            + "                self.no_discovery_risk = True\n"
+            + "\n"
+            + "            # Stop entire experiment if no learning occurs\n"
+            + "            if self.no_converge_risk or self.no_discovery_risk:\n"
+            + "                return True\n"
+            + "\n"
+            + "        # Convergence check\n"
+            + "        if result['training_iteration'] >= 150:\n"
+            + "            # Episode reward range activity\n"
+            + "            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[trial_id][-50:])) - numpy.min(numpy.array(self.episode_reward_window[trial_id][-50:]))\n"
+            + "            # Episode reward mean activity\n"
+            + "            self.episode_reward_mean = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-75:]))\n"
+            + "            self.episode_reward_mean_latest = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-15:]))\n"
+            + "            # Value function activity\n"
+            + "            self.vf_pred_mean = numpy.mean(numpy.array(self.vf_pred_window[-25:]))\n"
+            + "            self.vf_pred_mean_latest = numpy.mean(numpy.array(self.vf_pred_window[-5:]))\n"
+            + "\n"
+            + "            # Episode reward leveled off\n"
+            + "            if (numpy.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / numpy.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (numpy.abs(self.episode_reward_range) < numpy.abs(numpy.mean(numpy.array(self.episode_reward_window[trial_id][-50:])) * 2)):\n"
+            + "                self.episode_reward_converged = True\n"
+            + "            # Explained variance leveled off\n"
+            + "            if (numpy.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / numpy.abs(self.vf_pred_mean) < self.value_pred_threshold):\n"
+            + "                self.value_pred_converged = True\n"
+            + "\n"
+            + "            # Stop individual trial when convergence criteria met\n"
+            + "            if self.episode_reward_converged and self.value_pred_converged:\n"
+            + "                return trial_id\n"
+            + "\n"
+            + "pbt_scheduler = PopulationBasedTraining(\n"
+            + "    time_attr = 'training_iteration',\n"
+            + "    metric = 'episode_reward_mean',\n"
+            + "    mode = 'max',\n"
+            + "    perturbation_interval = 10,\n"
+            + "    quantile_fraction = 0.25,\n"
+            + "    resample_probability = 0.25,\n"
+            + "    log_config = True,\n"
+            + "    hyperparam_mutations = {\n"
+            + "        'lambda': numpy.linspace(0.9, 1.0, 5).tolist(),\n"
+            + "        'clip_param': numpy.linspace(0.01, 0.5, 5).tolist(),\n"
+            + "        'entropy_coeff': numpy.linspace(0, 0.03, 5).tolist(),\n"
+            + "        'lr': [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],\n"
+            + "        'num_sgd_iter': [5, 10, 15, 20, 30],\n"
+            + "        'sgd_minibatch_size': [128, 256, 512, 1024, 2048],\n"
+            + "        'train_batch_size': [4000, 6000, 8000, 10000, 12000]\n"
+            + "    }\n"
+            + ")\n"
             + "\n"
             + "# Make sure multiple processes can read the database from AnyLogic\n"
             + "with open('database/db.properties', 'r+') as f:\n"
@@ -634,24 +718,31 @@ public class RLlibHelper {
             + "    if 'hsqldb.lock_file=false\\n' not in lines:\n"
             + "        f.write('hsqldb.lock_file=false\\n')\n"
             + "\n"
-            + "ray.init(log_to_driver=" + (userLog ? "True" : "False") + ")\n"
-            + "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
-            + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n"
+            + "ray.init(log_to_driver=" + (userLog ? "True" : "False") + ", webui_host='127.0.0.1', lru_evict=True)\n"
+            + (autoregressive
+                ? AutoregressiveModelHelper.generateAutoregressiveClass(actionTupleSize, discreteActions)
+                : "model = ray.rllib.models.MODEL_DEFAULTS.copy()\n"
+                + "model['fcnet_hiddens'] = " + hiddenLayers() + "\n")
             + "\n"
             + "trials = run(\n"
             + "    'PPO',\n"
             + "    scheduler = pbt_scheduler,\n"
             + "    num_samples = " + numSamples + ",\n"
-            + "    stop = stopper.stop,\n"
+            + "    stop = Stopper().stop,\n"
             + "    config = {\n"
             + "        'env': " + environment.getClass().getSimpleName() + ",\n"
             + "        'num_gpus': 0,\n"
             + "        'num_workers': " + numWorkers + ",\n"
             + "        'num_cpus_per_worker': " + numCPUs + ",\n"
-            + "        'model': model,\n"
+            + (autoregressive
+                ? "        'model': {\n"
+                + "             'custom_model': 'autoregressive_model',\n"
+                + "             'custom_action_dist': 'nary_autoreg_output',\n"
+                + "         },\n"
+                : "        'model': model,\n")
             + "        'use_gae': True,\n"
             + "        'vf_loss_coeff': 1.0,\n"
-            + "        'vf_clip_param': np.inf,\n"
+            + "        'vf_clip_param': numpy.inf,\n"
             + "        # These params are tuned from a fixed starting value.\n"
             + "        'lambda': 0.95,\n"
             + "        'clip_param': 0.2,\n"
@@ -701,6 +792,7 @@ public class RLlibHelper {
                 System.out.println("    --algorithm");
                 System.out.println("    --checkpoint");
                 System.out.println("    --environment");
+                System.out.println("    --num-cpus");
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
                 System.out.println("    --num-hidden-layers");
@@ -719,6 +811,9 @@ public class RLlibHelper {
                 System.out.println("    --vf-loss-range");
                 System.out.println("    --value-pred");
                 System.out.println("    --user-log");
+                System.out.println("    --action-tuple-size");
+                System.out.println("    --autoregressive");
+                System.out.println("    --discrete-actions");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(args[++i].split(File.pathSeparator));
@@ -768,6 +863,12 @@ public class RLlibHelper {
                 helper.valuePredTh(Double.parseDouble(args[++i]));
             } else if ("--user-log".equals(args[i])) {
                 helper.userLog = true;
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
+            } else if ("--autoregressive".equals(args[i])) {
+                helper.autoregressive = true;
+            } else if ("--discrete-actions".equals(args[i])) {
+                helper.discreteActions(Long.parseLong(args[++i]));
             } else {
                 output = new File(args[i]);
             }

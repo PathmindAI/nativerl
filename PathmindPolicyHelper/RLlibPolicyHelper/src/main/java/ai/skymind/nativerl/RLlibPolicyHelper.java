@@ -1,16 +1,25 @@
 package ai.skymind.nativerl;
 
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.FloatPointer;
+import org.bytedeco.javacpp.LongPointer;
+import org.bytedeco.tensorflow.*;
+
 import java.io.File;
 import java.io.IOException;
-import org.bytedeco.javacpp.*;
-import org.bytedeco.javacpp.indexer.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.bytedeco.tensorflow.*;
 import static org.bytedeco.tensorflow.global.tensorflow.*;
 
+/**
+ * A PolicyHelper for RLlib, which can load only TensorFlow SavedModel exported by RLlib.
+ * Does not require CPython so has none of its limitations, such as the GIL.
+ */
 public class RLlibPolicyHelper implements PolicyHelper {
-    static final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
-    static final String[] outputNames = {"actions", "action_prob", "behaviour_logits", "vf_preds"};
+    final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
+    final String[] outputNames;
 
     SavedModelBundle bundle = null;
     SessionOptions options = null;
@@ -19,14 +28,53 @@ public class RLlibPolicyHelper implements PolicyHelper {
     TensorShape[] inputTensorShapes = null;
     String[] realInputNames = null;
     String[] realOutputNames = null;
-    Tensor[] inputTensors = null;
-    FloatPointer obsData = null;
-    TensorVector outputTensors = null;
+    ThreadLocal<Tensor[]> inputTensors = new ThreadLocal<Tensor[]>() {
+        @Override protected Tensor[] initialValue() {
+            return new Tensor[] {
+                new Tensor(DT_FLOAT, inputTensorShapes[0]),
+                Tensor.create(new long[1]),
+                Tensor.create(new float[1]),
+                Tensor.create(new boolean[1]),
+                Tensor.create(new int[1])
+            };
+        }
+    };
+    ThreadLocal<TensorVector> outputTensors = new ThreadLocal<TensorVector>() {
+        @Override protected TensorVector initialValue() {
+            return new TensorVector(outputNames.length);
+        }
+    };
+    int actionTupleSize;
 
     public RLlibPolicyHelper(File savedModel) throws IOException {
+        this(savedModel, 1);
+    }
+
+    public RLlibPolicyHelper(File savedModel, int actionTupleSize) throws IOException {
+        // initialize output names along with action tuple size
+        this.actionTupleSize = actionTupleSize;
+
+        // we may need this logic for Ray 0.9.0
+        List<String> tempOutputNames = new ArrayList<>();
+//        if (actionTupleSize == 1) {
+//            tempOutputNames.add("actions");
+//        } else {
+//            for (int i = 0; i < actionTupleSize; i++) {
+//                tempOutputNames.add("actions_" + i);
+//            }
+//        }
+
+        for (int i = 0; i < actionTupleSize; i++) {
+            tempOutputNames.add("actions_" + i);
+        }
+
+        tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "action_dist_inputs", "vf_preds", "action_logp"}));
+        outputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
+
         if (disablePolicyHelper) {
             return;
         }
+
         bundle = new SavedModelBundle();
         options = new SessionOptions();
         runOptions = new RunOptions();
@@ -66,15 +114,6 @@ public class RLlibPolicyHelper implements PolicyHelper {
         for (int i = 0; i < outputNames.length; i++) {
             realOutputNames[i] = signature.outputs().get(new BytePointer(outputNames[i])).name().getString();
         }
-
-        inputTensors = new Tensor[] {
-                new Tensor(DT_FLOAT, inputTensorShapes[0]),
-                Tensor.create(new long[1]),
-                Tensor.create(new float[1]),
-                Tensor.create(new boolean[1]),
-                Tensor.create(new int[1])};
-        obsData = new FloatPointer(inputTensors[0].tensor_data());
-        outputTensors = new TensorVector(outputNames.length);
     }
 
     @Override public float[] computeContinuousAction(float[] state) {
@@ -84,19 +123,25 @@ public class RLlibPolicyHelper implements PolicyHelper {
         throw new UnsupportedOperationException();
     }
 
-    @Override public long computeDiscreteAction(float[] state) {
+    @Override public long[] computeDiscreteAction(float[] state) {
         if (disablePolicyHelper) {
-            return -1;
+            return null;
         }
-        obsData.put(state);
-        Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors),
-                new StringVector(realOutputNames), new StringVector(), outputTensors);
+        new FloatPointer(inputTensors.get()[0].tensor_data()).put(state);
+
+        long[] actionArray = new long[actionTupleSize];
+        Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors.get()),
+                new StringVector(realOutputNames), new StringVector(), outputTensors.get());
         if (!s.ok()) {
             throw new RuntimeException(s.error_message().getString());
         }
+        for (int i = 0; i < actionArray.length; i++) {
+            actionArray[i] = new LongPointer(outputTensors.get().get(i).tensor_data()).get();
+        }
 //        for (int i = 0; i < outputTensors.size(); i++) {
-//            System.out.println(outputTensors.get(i).createIndexer());
+//            System.out.println(outputTensors.get().get(i).createIndexer());
 //        }
-        return new LongPointer(outputTensors.get(0).tensor_data()).get();
+        return actionArray;
     }
+
 }

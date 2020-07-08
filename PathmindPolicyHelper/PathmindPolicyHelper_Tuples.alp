@@ -4,10 +4,10 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241823" AlpVersion="8.5.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
 <Model>
 	<Id>1563523926925</Id>
-	<Name><![CDATA[PathmindPolicyHelper_SingleAgent]]></Name>
+	<Name><![CDATA[PathmindPolicyHelper_Tuples]]></Name>
 	<EngineVersion>6</EngineVersion>
 	<JavaPackageName><![CDATA[pathmind.policyhelper]]></JavaPackageName>
 	<ModelTimeUnit><![CDATA[Second]]></ModelTimeUnit>
@@ -23,7 +23,7 @@
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
-   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
+   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile, actionTupleSize);
 }
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
@@ -176,7 +176,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[long[]]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -213,6 +213,61 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<Id>1563523942386</Id>
 							<Label><![CDATA[Enabled]]></Label>
 							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1579541084520</Id>
+					<Name><![CDATA[debugMode]]></Name>
+					<X>20</X><Y>430</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1579541084518</Id>
+							<Label><![CDATA[Debug Mode]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1590618532129</Id>
+					<Name><![CDATA[actionTupleSize]]></Name>
+					<X>20</X><Y>310</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1590618532127</Id>
+							<Label><![CDATA[Action Outputs]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -310,7 +365,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<ParameterEditor>
 							<Id>1563524634304</Id>
-							<Label><![CDATA[policyFile]]></Label>
+							<Label><![CDATA[Policy File]]></Label>
 							<EditorContolType>FILE_CHOOSER</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
@@ -403,7 +458,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[action]]></Name>
-							<Type><![CDATA[int]]></Type>
+							<Type><![CDATA[long[]]]></Type>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
@@ -444,7 +499,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573849287879</Id>
 					<Name><![CDATA[useEventTrigger]]></Name>
-					<X>20</X><Y>370</Y>
+					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -470,7 +525,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
-					<X>20</X><Y>310</Y>
+					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -505,7 +560,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
 					<Name><![CDATA[eventCondition]]></Name>
-					<X>20</X><Y>340</Y>
+					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -534,31 +589,6 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 									<Code><![CDATA[false]]></Code>
 								</Value>
 							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1579541084520</Id>
-					<Name><![CDATA[debugMode]]></Name>
-					<X>20</X><Y>400</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[true]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1579541084518</Id>
-							<Label><![CDATA[Debug Mode]]></Label>
-							<EditorContolType>CHECK_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -622,12 +652,16 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 } else if (isEnabled) {
 	if (usePolicy && policyHelper != null) {
 		steps++;
-	    action = (int)policyHelper.computeDiscreteAction(observationForTraining());
+	    action = (long[])policyHelper.computeDiscreteAction(observationForTraining());
 	    doAction(action);
     } else {
     	if (!usePolicy) {
-    		steps++;	
-    		action = getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
+    		steps++;
+    		long[] randomActions = new long[actionTupleSize];
+    		for (int n=0; n < actionTupleSize; n++) {
+    			randomActions[n] = (long)getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
+    		}
+    		action = randomActions;
     		doAction(action);
     	}
     }
@@ -656,25 +690,22 @@ if (!isTraining && steps == 1) {
 					<Body><![CDATA[double[] training = observationForTraining();
 double[] reward = observationForReward();  
 
-// Hide logging when training in Pathmind
 if (isTraining == false) {
 	String output = new String("Pathmind:\n"
 	      +"  Step: "+steps + "\n"	      
 	      +"  Observations:\n"
 	      +"    Array: "+Arrays.toString(training)+"\n"
-	      +"    Number of Observation: "+training.length+"\n"	      
+	      +"    Number of Observations: "+training.length+"\n"	      
 	      +"  Reward Variables: \n"
 	      +"    Array: "+Arrays.toString(reward)+"\n"
 	      +"    Number of Rewards: "+reward.length+"\n"	               
-	      +"  Last Action: "+action+"\n"
-	      +"  Done: "+isDone() + "\n");		           
-	// Reset steps to 0 upon simulation completion
-	if (isDone()) {
-	  steps = -1;
-	}		      
+	      +"  Last Action: "+Arrays.toString(action)+"\n"
+	      +"  Done: "+isDone() + "\n");		           	      
 	return output;
+} else if (isDone()) {
+	return ""; // End debug string when done is true
 } else {
-	return "";
+	return ""; // Hide debug string when training in Pathmind
 }]]></Body>
 				</Function>
 			</Functions>
@@ -835,6 +866,12 @@ if (isTraining == false) {
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
 				<Parameter>
+					<ParameterName><![CDATA[debugMode]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[actionTupleSize]]></ParameterName>
+				</Parameter>
+				<Parameter>
 					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -866,9 +903,6 @@ if (isTraining == false) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[eventCondition]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[debugMode]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -902,75 +936,91 @@ import java.util.List;
 import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
 import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;
 
 public class PathmindHelperRegistry {
     private static List<PathmindHelper> registeredHelpers = new ArrayList<PathmindHelper>();
     private static Map<String, PolicyHelper> policyCache = new HashMap<>();
-	
+
     private static PolicyHelper forceLoadPolicy = null;
 
     public static void setForceLoadPolicy(PolicyHelper h) {
-    	forceLoadPolicy = h;
+        forceLoadPolicy = h;
     }
-    
-	public static void register(PathmindHelper helper) {
-		if(!registeredHelpers.contains(helper)) {
-			registeredHelpers.add(helper);
-			if(forceLoadPolicy != null) {
-				helper.policyHelper = forceLoadPolicy;
-			}
-		}
-	}
 
-	
-	public static void unregister(PathmindHelper helper) {
-		registeredHelpers.remove(helper);
-	}
-	
-	public static PathmindHelper getHelper() {
-		if(registeredHelpers.size() == 0) {
-			throw new IllegalStateException("No helper registered yet!");
-		}else if(registeredHelpers.size() > 1) {
-			throw new IllegalStateException("Too many registered helpers! Found: "+registeredHelpers.size());
-		}
-		return registeredHelpers.get(0);
-	}
-	
-	public static List<PathmindHelper> getHelpers(){
-		return registeredHelpers;
-	}
-	
-	public static PolicyHelper loadPolicy(String policyFile) {
-		if(policyCache.containsKey(policyFile)) {
-			return policyCache.get(policyFile);
-		}else {
-			 try {
-			        ZipFile policyPackage = new ZipFile(policyFile);
-			    	Path target = Files.createTempDirectory("pathmind-");
-					target.toFile().deleteOnExit();
-			    	
-			    	for(ZipEntry entry: Collections.list(policyPackage.entries())){
-				    	Path targetFile = target.resolve(entry.getName());
-				    	
-					    targetFile.getParent().toFile().mkdirs();
-				        if(!entry.isDirectory()){
-					        Files.copy(policyPackage.getInputStream(entry), targetFile);
-				        }
-			    	}
-			    	
-			    	policyPackage.close();
-			    
-			        PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
-			        policyCache.put(policyFile, helper);
-			        return helper;
-			    } catch (IOException e) {
-			    	traceln(e);
-			    	return null;
-			    }			
-		}
-	}
+    public static void register(PathmindHelper helper) {
+        if (!registeredHelpers.contains(helper)) {
+            registeredHelpers.add(helper);
+            if (forceLoadPolicy != null) {
+                helper.policyHelper = forceLoadPolicy;
+            }
+        }
+    }
+
+    public static void unregister(PathmindHelper helper) {
+        registeredHelpers.remove(helper);
+    }
+
+    public static PathmindHelper getHelper() {
+        if (registeredHelpers.size() == 0) {
+            throw new IllegalStateException("No helper registered yet!");
+        } else if (registeredHelpers.size() > 1) {
+            throw new IllegalStateException("Too many registered helpers! Found: " + registeredHelpers.size());
+        }
+        return registeredHelpers.get(0);
+    }
+
+    public static List<PathmindHelper> getHelpers() {
+        return registeredHelpers;
+    }
+
+    public static PolicyHelper loadPolicy(String policyFile, int actionTupleSize) {
+        AnyLogicCloudHelper.installLibrary();
+        if (policyCache.containsKey(policyFile)) {
+            return policyCache.get(policyFile);
+        } else {
+            if (!new File(policyFile).exists()) {
+                throw new RuntimeException("Policy File doesn't Exist.");
+            }
+            try {
+                Path target = null;
+                if (AnyLogicCloudHelper.isCloud()) {
+                    File destDir = new File(System.getProperty("user.dir") + "/policy");
+                    destDir.mkdir();
+
+                    target = Files.createTempDirectory(destDir.toPath(), "pathmind-");
+                } else {
+                    target = Files.createTempDirectory("pathmind-");
+                }
+                target.toFile().deleteOnExit();
+
+                ZipFile policyPackage = new ZipFile(policyFile);
+                for (ZipEntry entry : Collections.list(policyPackage.entries())) {
+                    Path targetFile = target.resolve(entry.getName());
+
+                    targetFile.getParent().toFile().mkdirs();
+                    if (!entry.isDirectory()) {
+                        Files.copy(policyPackage.getInputStream(entry), targetFile);
+                    }
+                }
+
+                policyPackage.close();
+
+                PolicyHelper helper = new RLlibPolicyHelper(target.toFile(), actionTupleSize);
+                policyCache.put(policyFile, helper);
+                return helper;
+            } catch (UnsatisfiedLinkError e) {
+                traceln(e);
+                throw new RuntimeException("Cannot find the appropriate libraries.");
+            } catch (IOException e) {
+                traceln(e);
+                return null;
+            }
+        }
+
+    }
 }]]></Text>
 		</JavaClass>
 		<!--   =========   Java Class   ========  -->
@@ -1133,6 +1183,110 @@ public class PathmindSerializer implements Serializable {
 
 }]]></Text>
 		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1593470224518</Id>
+			<Name><![CDATA[AnyLogicCloudHelper]]></Name>
+			<Text><![CDATA[import java.security.Permission;
+
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import ai.skymind.nativerl.PolicyHelper;
+
+public class AnyLogicCloudHelper {
+
+    private static class MySecurityManager extends SecurityManager {
+        @Override
+        public void checkPermission(Permission perm) {
+            return;
+        }
+    }
+    
+    private static final String LIB_STDCPP_URL = "https://s3.amazonaws.com/public-pathmind.com/libstdc%2B%2B6-6.4.0-r9.apk";
+    private static final String LIB_STDCPP = "libstdc++6-6.4.0-r9.apk";
+	private static Boolean isCloud = null;
+
+    static {
+        isCloud = new File(".").getAbsolutePath().startsWith("/run/executor/disk") ? Boolean.TRUE : Boolean.FALSE;
+
+        if (isCloud) {
+            SecurityManager sm = new MySecurityManager();
+            System.setSecurityManager(sm);
+        }
+    }
+	
+	public static boolean isCloud() {
+		return isCloud;
+	}
+
+    private static void exec(String[] cmd) {
+        try {
+            Process p = Runtime.getRuntime().exec(cmd);
+            java.io.BufferedReader bri = new java.io.BufferedReader(new java.io.InputStreamReader(
+                    p.getInputStream()));
+            String line = "";
+            while ((line = bri.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void installLibrary() {
+        // check if this code is being executed on anylogic cloud
+        if (!isCloud) {
+            return;
+        }
+        
+        // make sure to have libstdc++
+        File stdcppFile = new File(LIB_STDCPP);
+        if (!stdcppFile.exists()) {
+            try {
+                FileUtils.copyURLToFile(new URL(LIB_STDCPP_URL), stdcppFile);
+            } catch (IOException e) {
+                traceln(e);
+            }
+        }
+
+        // untar libstdc++6 since default AnyLogic cloud instance(Alpine) doesn't have this library
+        String[] cmd = {
+                "/bin/sh", "-c", "tar -xzf " + LIB_STDCPP};
+        exec(cmd);
+
+        File libstdcPath = new File("./usr/lib/gcc/x86_64-alpine-linux-musl/6.4.0");
+
+        // create a directory for javacpp cache
+        File javacppPath = new File(System.getProperty("user.dir") + "/.javacpp/cache");
+        javacppPath.mkdirs();
+        javacppPath.setExecutable(true, false);
+
+        // set necessary property
+        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
+        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
+      
+        // extract the proper jar file name
+        Class klass = PolicyHelper.class;
+        File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
+        
+        File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
+        dest.mkdirs();
+
+        // copy libstdc++ so files to javacpp cache due to ld.library.path
+        String[] cmd1 = {
+                "/bin/sh", "-c", "cp " + libstdcPath.getAbsolutePath() + "/* " + dest.getAbsolutePath()};
+        exec(cmd1);
+
+    }
+
+
+
+
+}]]></Text>
+		</JavaClass>
 	</JavaClasses>
 	<Libraries>
 		<!--   =========   Library   ========  -->
@@ -1158,7 +1312,7 @@ public class PathmindSerializer implements Serializable {
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>0</VersionMinor>
-			<VersionBuild>1</VersionBuild>
+			<VersionBuild>2</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
