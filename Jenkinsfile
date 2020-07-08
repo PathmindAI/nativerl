@@ -11,13 +11,13 @@ def DOCKER_TAG
 /*
     Build a docker image
 */
-def buildDockerImage(image_name, image_id) {
+def buildDockerImage(image_name, image_id,docker_tag) {
         echo "Building the pathmind Docker Image"
         //Dont quit if there is an error
         NULL = sh(returnStatus: true, script: "docker image rm pathmind-ma")
         sh """
             set +x
-            docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile --build-arg S3BUCKET='${env.S3BUCKET}' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/
+            docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile --build-arg S3BUCKET='${docker_tag}-model-analyzer-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/
         """
 }
 
@@ -37,8 +37,6 @@ def publishDockerImage(image_name,DOCKER_TAG) {
     This is the main pipeline section with the stages of the CI/CD
  */
 pipeline {
-    triggers { pollSCM('* * * * *') }
-
     options {
         // Build auto timeout
         timeout(time: 60, unit: 'MINUTES')
@@ -115,7 +113,7 @@ pipeline {
 		parallel {
 			stage('Build pathmind image') {
 				steps {
-					buildDockerImage("${IMAGE_NAME}","${PATHMIND_ID}")
+					buildDockerImage("${IMAGE_NAME}","${PATHMIND_ID}","${DOCKER_TAG}")
 				}
 			}
 		}
@@ -153,7 +151,7 @@ pipeline {
                                 sh "if [ -d pathmind-webapp ]; then rm -rf pathmind-webapp; fi"
 				sh "git clone git@github.com:SkymindIO/pathmind-webapp.git"
 				echo "Updating helm chart"
-				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml"
+				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
 		}
             }
         }
