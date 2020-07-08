@@ -85,8 +85,7 @@ class Callbacks(DefaultCallbacks):
            episode.custom_metrics["metrics_" + str(i)] = metrics[i]
 
    def on_train_result(self, trainer, result: dict, **kwargs):
-       from ray.rllib.utils.memory import ray_get_and_free
-       results = ray_get_and_free(
+       results = ray.get(
            [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
        result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
