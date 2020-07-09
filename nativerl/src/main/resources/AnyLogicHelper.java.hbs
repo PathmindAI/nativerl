@@ -1,0 +1,110 @@
+{{#if packageName}}package {{packageName}};{{/if}}
+import ai.skymind.nativerl.*;
+import com.anylogic.engine.*;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import pathmind.policyhelper.PathmindHelperRegistry;
+
+public class {{className}} extends AbstractEnvironment {
+    final static Training experiment = new Training(null);
+    protected Engine engine;
+    protected {{agentClassName}} agent;
+    protected PolicyHelper policyHelper;
+    {{{classSnippet}}}
+    public {{className}}() {
+        super({{discreteActions}}, {{continuousObservations}});
+        System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
+    }
+
+    public {{className}}(PolicyHelper policyHelper) {
+        super({{discreteActions}}, {{continuousObservations}});
+        this.policyHelper = policyHelper;
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        // Destroy the model:
+        engine.stop();
+    }
+
+    @Override
+    public Array getObservation() {
+        double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();
+        float[] array = new float[obs.length];
+        for (int i = 0; i < obs.length; i++) {
+            array[i] = (float)obs[i];
+        }
+        observation.data().put(array);
+        return observation;
+    }
+
+    @Override
+    public boolean isDone() {
+        return PathmindHelperRegistry.getHelper().isDone();
+    }
+
+    @Override
+    public void reset() {
+        if (engine != null) {
+            engine.stop();
+        }
+        // Create Engine, initialize random number generator:
+        engine = experiment.createEngine();
+        Simulation sim = new Simulation();
+        sim.setupEngine(engine);
+        sim.initDefaultRandomNumberGenerator(engine);
+        // Create new agent object:
+        agent = new {{agentClassName}}(engine, null, null);
+        agent.setParametersToDefaultValues();
+        PathmindHelperRegistry.setForceLoadPolicy(policyHelper);
+        {{{resetSnippet}}}
+        engine.start(agent);
+        // Workaround to trigger all events at time 0.0
+        while (engine.getNextEventTime() == 0.0) {
+            engine.runFast(Math.ulp(0.0));
+        }
+    }
+
+    @Override
+    public float step(Array action) {
+        double reward = 0;
+        double[] before = PathmindHelperRegistry.getHelper().observationForReward();
+        engine.runFast();
+        long[] array = new long[(int)action.length()];
+        for (int i = 0; i < array.length; i++) {
+            array[i] = (long)action.data().get(i);
+        }
+        PathmindHelperRegistry.getHelper().doAction(array);
+        double[] after = PathmindHelperRegistry.getHelper().observationForReward();
+
+        {{{rewardSnippet}}}
+
+        return (float)reward;
+    }
+
+    public double[] test() {
+        double[] metrics = null;
+        reset();
+        while (!isDone()) {
+            engine.runFast();
+        }
+        {{{metricsSnippet}}}
+        return metrics;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ArrayList<String> lines = new ArrayList<String>({{testIterations}});
+        {{~#if policyHelper}}
+        {{className}} e = new {{className}}(new {{policyHelper}}(new File(args[0]), {{actionTupleSize}}));
+        for (int i = 0; i < {{testIterations}}; i++) {
+            lines.add(Arrays.toString(e.test()));
+        }
+        {{~/if}}
+        Files.write(Paths.get(args[0], "metrics.txt"), lines, Charset.defaultCharset());
+    }
+}

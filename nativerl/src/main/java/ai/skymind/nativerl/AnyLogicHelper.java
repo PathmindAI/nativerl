@@ -1,5 +1,14 @@
 package ai.skymind.nativerl;
 
+import com.github.jknack.handlebars.Handlebars;
+import com.github.jknack.handlebars.Template;
+import com.github.jknack.handlebars.helper.ConditionalHelpers;
+import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
+import com.github.jknack.handlebars.io.TemplateLoader;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -12,167 +21,77 @@ import java.nio.file.Files;
  * is the source code of a Java class that can be compiled and executed together
  * with an exported simulation model that is using the Pathmind Helper.
  */
+@Getter
+@Builder
 public class AnyLogicHelper {
 
     /** The name of the class to generate. */
+    @Builder.Default
     String environmentClassName = "AnyLogicEnvironment";
+
     /** The class name of the main AnyLogic agent to use. */
+    @Builder.Default
     String agentClassName = "MainAgent";
+
     /** The number of actions in the case of a discrete action space. */
+    @Builder.Default
     long discreteActions;
+
     /** The number of array elements in the case of a continuous action space. */
+    @Builder.Default
     long continuousActions;
+
     /** The number of array elements in the case of a continuous action space. */
+    @Builder.Default
     long continuousObservations;
+
     /** Currently unused since the PathmindHelper is able to manage this. */
+    @Builder.Default
     long stepTime = 1;
+
     /** Currently unused since the PathmindHelper is able to manage this. */
+    @Builder.Default
     long stopTime = 1000;
+
     /** Arbitrary code to add to the generated class such as fields or methods. */
+    @Builder.Default
     String classSnippet = "";
+
     /** Arbitrary code to add to the reset() method of the generated class. */
+    @Builder.Default
     String resetSnippet = "";
+
     /** Arbitrary code to add to the step() method of the generated class to calculate the reward. */
+    @Builder.Default
     String rewardSnippet = "";
+
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
+    @Builder.Default
     String metricsSnippet = "";
+
     /** The name of the PolicyHelper, such as RLlibPolicyHelper, to run the metrics code as part of the main() method. */
+    @Builder.Default
     String policyHelper = null;
+
     /** The number of episodes to run the PolicyHelper and compute the metrics on as part of the main() method. */
+    @Builder.Default
     int testIterations = 10;
+
     /** Currently unused since the PathmindHelper is able to manage this. */
+    @Builder.Default
     boolean stepless = false;
+
     /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
+    @Builder.Default
     boolean multiAgent = false;
+
     int actionTupleSize;
 
-    public String environmentClassName() {
-        return environmentClassName;
-    }
-    public AnyLogicHelper environmentClassName(String environmentClassName) {
-        this.environmentClassName = environmentClassName;
-        return this;
-    }
+    @Builder.Default
+    boolean setStepless = false;
 
-    public String agentClassName() {
-        return agentClassName;
-    }
-    public AnyLogicHelper agentClassName(String agentClassName) {
-        this.agentClassName = agentClassName;
-        return this;
-    }
-
-    public long discreteActions() {
-        return discreteActions;
-    }
-    public AnyLogicHelper discreteActions(long discreteActions) {
-        this.discreteActions = discreteActions;
-        return this;
-    }
-
-    public long continuousActions() {
-        return continuousActions;
-    }
-    public AnyLogicHelper continuousActions(long continuousActions) {
-        this.continuousActions = continuousActions;
-        return this;
-    }
-
-    public long continuousObservations() {
-        return continuousObservations;
-    }
-    public AnyLogicHelper continuousObservations(long continuousObservations) {
-        this.continuousObservations = continuousObservations;
-        return this;
-    }
-
-    public long stepTime() {
-        return stepTime;
-    }
-    public AnyLogicHelper stepTime(long stepTime) {
-        this.stepTime = stepTime;
-        return this;
-    }
-
-    public long stopTime() {
-        return stopTime;
-    }
-    public AnyLogicHelper stopTime(long stopTime) {
-        this.stopTime = stopTime;
-        return this;
-    }
-
-    public String classSnippet() {
-        return classSnippet;
-    }
-    public AnyLogicHelper classSnippet(String classSnippet) {
-        this.classSnippet = classSnippet;
-        return this;
-    }
-
-    public String resetSnippet() {
-        return resetSnippet;
-    }
-    public AnyLogicHelper resetSnippet(String resetSnippet) {
-        this.resetSnippet = resetSnippet;
-        return this;
-    }
-
-    public String rewardSnippet() {
-        return rewardSnippet;
-    }
-    public AnyLogicHelper rewardSnippet(String rewardSnippet) {
-        this.rewardSnippet = rewardSnippet;
-        return this;
-    }
-
-    public String metricsSnippet() {
-        return metricsSnippet;
-    }
-    public AnyLogicHelper metricsSnippet(String metricsSnippet) {
-        this.metricsSnippet = metricsSnippet;
-        return this;
-    }
-
-    public String policyHelper() {
-        return policyHelper;
-    }
-    public AnyLogicHelper policyHelper(String policyHelper) {
-        this.policyHelper = policyHelper;
-        return this;
-    }
-
-    public int testIterations() {
-        return testIterations;
-    }
-    public AnyLogicHelper testIterations(int testIterations) {
-        this.testIterations = testIterations;
-        return this;
-    }
-
-    public boolean isStepless() {
-        return stepless;
-    }
-
-    public void setStepless(boolean stepless) {
-        this.stepless = stepless;
-    }
-
-    public boolean isMultiAgent() {
-        return multiAgent;
-    }
-    public AnyLogicHelper setMultiAgent(boolean multiAgent) {
-        this.multiAgent = multiAgent;
-        return this;
-    }
-
-    public int actionTupleSize() {
-        return actionTupleSize;
-    }
-    public AnyLogicHelper actionTupleSize(int actionTupleSize) {
-        this.actionTupleSize = actionTupleSize;
-        return this;
-    }
+    @Setter
+    String className, packageName;
 
     /** Currently unused since the PathmindHelper is able to manage this. */
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
@@ -210,170 +129,29 @@ public class AnyLogicHelper {
     }
 
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
-    public String generateEnvironment() {
+    public String generateEnvironment() throws IOException {
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
 
-        String env = (packageName != null ? "package " + packageName + ";\n" : "")
-            + "import ai.skymind.nativerl.*;\n"
-            + "import com.anylogic.engine.*;\n"
-            + "import java.io.File;\n"
-            + "import java.nio.charset.Charset;\n"
-            + "import java.nio.file.Files;\n"
-            + "import java.nio.file.Paths;\n"
-            + "import java.util.ArrayList;\n"
-            + "import java.util.Arrays;\n"
-            + "import pathmind.policyhelper.PathmindHelperRegistry;\n"
-            + "\n"
-            + "public class " + className + " extends AbstractEnvironment {\n"
-            + "    final static Training experiment = new Training(null);\n"
-            + "    protected Engine engine;\n"
-            + "    protected " + agentClassName + " agent;\n"
-            + "    protected PolicyHelper policyHelper;\n"
-            + "\n"
-            + classSnippet
-            + "\n"
-            + "    public " + className + "() {\n"
-            + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
-            + "        System.setProperty(\"ai.skymind.nativerl.disablePolicyHelper\", \"true\");\n"
-            + "    }\n"
-            + "\n"
-            + "    public " + className + "(PolicyHelper policyHelper) {\n"
-            + "        super(" + discreteActions + ", " + continuousObservations + ");\n"
-            + "        this.policyHelper = policyHelper;\n"
-            + "    }\n"
-            + "\n"
-            + "    @Override public void close() {\n"
-            + "        super.close();\n"
-            + "\n"
-            + "        // Destroy the model:\n"
-            + "        engine.stop();\n"
-            + "    }\n"
-            + "\n"
-            + (multiAgent
-                ? "    @Override public Array getObservation() {\n"
-                + "        double[][] obs = PathmindHelperRegistry.getHelper().observationForTraining();\n"
-                + "        int obssize = obs[0].length;\n"
-                + "        float[] array = new float[obs.length * obssize];\n"
-                + "        for (int i = 0; i < array.length; i++) {\n"
-                + "            array[i] = (float)obs[i / obssize][i % obssize];\n"
-                + "        }\n"
-                + "        if (observation == null || observation.shape().size() < 2 || observation.length() != array.length) {\n"
-                + "            observation = new Array(new SSizeTVector().put(new long[] {obs.length, obssize}));\n"
-                + "        }\n"
-                + "        observation.data().put(array);\n"
-                + "        return observation;\n"
-                + "    }\n"
-                + "\n"
+        this.setClassName(className);
+        this.setPackageName(packageName);
 
-                : "    @Override public Array getObservation() {\n"
-                + "        double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();\n"
-                + "        float[] array = new float[obs.length];\n"
-                + "        for (int i = 0; i < obs.length; i++) {\n"
-                + "            array[i] = (float)obs[i];\n"
-                + "        }\n"
-                + "        observation.data().put(array);\n"
-                + "        return observation;\n"
-                + "    }\n"
-                + "\n")
-            + "    @Override public boolean isDone() {\n"
-            + "        return PathmindHelperRegistry.getHelper().isDone();\n"
-            + "    }\n"
-            + "\n"
-            + "    @Override public void reset() {\n"
-            + "        if (engine != null) {\n"
-            + "            engine.stop();\n"
-            + "        }\n"
-            + "        // Create Engine, initialize random number generator:\n"
-            + "        engine = experiment.createEngine();\n"
-            + "        Simulation sim = new Simulation();\n"
-            + "        sim.setupEngine(engine);\n"
-            + "        sim.initDefaultRandomNumberGenerator(engine);\n"
-            + "        // Create new agent object:\n"
-            + "        agent = new " + agentClassName + "(engine, null, null);\n"
-            + "        agent.setParametersToDefaultValues();\n"
-            + "        PathmindHelperRegistry.setForceLoadPolicy(policyHelper);\n"
-            + "\n"
-            + resetSnippet
-            + "\n"
-            + "        engine.start(agent);\n"
-            + "        // Workaround to trigger all events at time 0.0\n"
-            + "        while (engine.getNextEventTime() == 0.0) {\n"
-            + "            engine.runFast(Math.ulp(0.0));\n"
-            + "        }\n"
-            + "    }\n"
-            + "\n"
-            + (multiAgent
-                ? "    @Override public Array step(Array action) {\n"
-                + "        double[] reward = new double[(int)action.length()];\n"
-                + "        double[][] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        engine.runFast();\n"
-                + "        int[] array = new int[(int)action.length()];\n"
-                + "        for (int i = 0; i < array.length; i++) {\n"
-                + "            array[i] = (int)action.data().get(i);\n"
-                + "        }\n"
-                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
-                + "        double[][] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "\n"
-                + rewardSnippet
-                + "\n"
-                + "        float[] array2 = new float[reward.length];\n"
-                + "        for (int i = 0; i < reward.length; i++) {\n"
-                + "            array2[i] = (float)reward[i];\n"
-                + "        }\n"
-                + "        if (this.reward == null || this.reward.length() != array2.length) {\n"
-                + "            this.reward = new Array(new SSizeTVector().put(reward.length));\n"
-                + "        }\n"
-                + "        this.reward.data().put(array2);\n"
-                + "        return this.reward;\n"
-                + "    }\n"
-                + "\n"
+        TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setSuffix(".hbs");
+        Handlebars handlebars = new Handlebars(loader);
 
-                : "    @Override public float step(Array action) {\n"
-                + "        double reward = 0;\n"
-                + "        double[] before = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "        engine.runFast();\n"
-                + "        long[] array = new long[(int)action.length()];\n"
-                + "        for (int i = 0; i < array.length; i++) {\n"
-                + "            array[i] = (long)action.data().get(i);\n"
-                + "        }\n"
-                + "        PathmindHelperRegistry.getHelper().doAction(array);\n"
-                + "        double[] after = PathmindHelperRegistry.getHelper().observationForReward();\n"
-                + "\n"
-                + rewardSnippet
-                + "\n"
-                + "        return (float)reward;\n"
-                + "    }\n"
-                + "\n")
-            + "    public double[] test() {\n"
-            + "        double[] metrics = null;\n"
-            + "        reset();\n"
-            + "        while (!isDone()) {\n"
-            + "            engine.runFast();\n"
-            + "        }\n"
-            + "\n"
-            + metricsSnippet
-            + "\n"
-            + "        return metrics;\n"
-            + "    }\n"
-            + "\n"
-            + "    public static void main(String[] args) throws Exception {\n"
-            + (policyHelper != null
-                    ? "        " + className + " e = new " + className + "(new " + policyHelper + "(new File(args[0]), " + actionTupleSize + "));\n"
-                    + "        ArrayList<String> lines = new ArrayList<String>(" + testIterations + ");\n"
-                    + "        for (int i = 0; i < " + testIterations + "; i++) {\n"
-                    + "            lines.add(Arrays.toString(e.test()));\n"
-                    + "        }\n" : "")
-                    + "        Files.write(Paths.get(args[0], \"metrics.txt\"), lines, Charset.defaultCharset());\n"
-            + "    }\n"
-            + "}\n";
+        handlebars.registerHelpers(ConditionalHelpers.class);
+        Template template = handlebars.compile("AnyLogicHelper.java");
+
+        String env = template.apply(this);
+
         return env;
     }
 
     /** The command line interface of this helper. */
     public static void main(String[] args) throws Exception {
-        AnyLogicHelper helper = new AnyLogicHelper();
+        AnyLogicHelper.AnyLogicHelperBuilder helper = AnyLogicHelper.builder();
         File output = null;
         for (int i = 0; i < args.length; i++) {
             if ("-help".equals(args[i]) || "--help".equals(args[i])) {
@@ -426,16 +204,17 @@ public class AnyLogicHelper {
             } else if ("--stepless".equals(args[i])) {
                 helper.setStepless(true);
             } else if ("--multi-agent".equals(args[i])) {
-                helper.multiAgent = true;
+                helper.multiAgent(true);
             } else if ("--action-tuple-size".equals(args[i])) {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else {
                 output = new File(args[i]);
             }
         }
+        AnyLogicHelper anyLogicHelper = helper.build();
         if (output == null) {
-            output = new File(helper.environmentClassName.replace('.', '/') + ".java");
+            output = new File(anyLogicHelper.getEnvironmentClassName().replace('.', '/') + ".java");
         }
-        helper/*.checkAgentClass()*/.generateEnvironment(output);
+        anyLogicHelper/*.checkAgentClass()*/.generateEnvironment(output);
     }
 }
