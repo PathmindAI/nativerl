@@ -1,14 +1,12 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.util.AutoregressiveModelHelper;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Template;
 import com.github.jknack.handlebars.helper.ConditionalHelpers;
 import com.github.jknack.handlebars.io.ClassPathTemplateLoader;
 import com.github.jknack.handlebars.io.TemplateLoader;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.bytedeco.cpython.PyObject;
 import org.bytedeco.javacpp.FloatPointer;
 import org.bytedeco.javacpp.Pointer;
@@ -19,11 +17,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.bytedeco.cpython.global.python.*;
 import static org.bytedeco.numpy.global.numpy.*;
 
 /**
+* This is a helper class to help users use an implementation of
+* the reinforcement learning Environment interface using RLlib.
+* The output is a Python script that can executed with an existing
+* installation of RLlib.
+* <p>
  * Currently available algorithms according to RLlib's registry.py:
  *   "DDPG" *
  *   "APEX_DDPG" *
@@ -42,8 +46,10 @@ import static org.bytedeco.numpy.global.numpy.*;
  *   "APPO"
  *   "MARWIL"
  *
+ * <p>
  *   * Works only with continuous actions (doesn't work with discrete ones)
  *   ** Requires PyTorch (doesn't work with TensorFlow)
+ * <p>
  */
 @Getter
 @Builder
@@ -51,10 +57,15 @@ import static org.bytedeco.numpy.global.numpy.*;
 @AllArgsConstructor
 public class RLlibHelper {
 
+  /**
+   * A PolicyHelper for RLlib, which can load its checkpoint files.
+   * Requires CPython and comes with all its limitations, such as the GIL.
+   */
     public static class PythonPolicyHelper implements PolicyHelper {
         PyObject globals = null;
         PyArrayObject obsArray = null;
         FloatPointer obsData = null;
+        int actionTupleSize;
 
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Environment env) throws IOException {
             this(rllibpaths, algorithm, checkpoint, env.getClass().getSimpleName(), env.getActionSpace(), env.getObservationSpace());
@@ -86,17 +97,17 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
-            PyRun_StringFlags("import gym, inspect, ray, sys\n"
-                    + "import numpy as np\n"
+            String actionSpaceStr = "gym.spaces.Discrete(" + discreteActionSpace.n() + ")";
+            PyRun_StringFlags("import gym, inspect, numpy, ray, sys\n"
                     + "from ray.rllib.agents import registry\n"
                     + "\n"
                     + "class " + name + "(gym.Env):\n"
                     + "    def __init__(self, env_config):\n"
-                    + "        self.action_space = gym.spaces.Discrete(" + discreteActionSpace.n() + ")\n"
-                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "np.array(" + Arrays.toString(obsLow) + ")") + "\n"
-                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "np.array(" + Arrays.toString(obsHigh) + ")") + "\n"
-                    + "        shape = " + (obsShape.length == 0 ? "None" : "np.array(" + Arrays.toString(obsShape) + ")") + "\n"
-                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=np.float32)\n"
+                    + "        self.action_space = gym.spaces.Tuple([" + String.join(",", Collections.nCopies(actionTupleSize, actionSpaceStr)) + " ])\n"
+                    + "        low = " + (obsLow.length == 1 ? obsLow[0] : "numpy.array(" + Arrays.toString(obsLow) + ")") + "\n"
+                    + "        high = " + (obsHigh.length == 1 ? obsHigh[0] : "numpy.array(" + Arrays.toString(obsHigh) + ")") + "\n"
+                    + "        shape = " + (obsShape.length == 0 ? "None" : "numpy.array(" + Arrays.toString(obsShape) + ")") + "\n"
+                    + "        self.observation_space = gym.spaces.Box(low, high, shape=shape, dtype=numpy.float32)\n"
                     + "\n"
                     + "ray.init(local_mode=True)\n"
                     + "cls = registry.get_agent_class(\"" + algorithm + "\")\n"
@@ -128,7 +139,7 @@ public class RLlibHelper {
             throw new UnsupportedOperationException();
         }
 
-        @Override public long computeDiscreteAction(float[] state) {
+        @Override public long[] computeDiscreteAction(float[] state) {
             obsData.put(state);
             PyRun_StringFlags("action = trainer.compute_action(obs)\n", Py_file_input, globals, globals, null);
 
@@ -138,75 +149,116 @@ public class RLlibHelper {
                 PyRun_StringFlags("sys.stderr.flush()", Py_file_input, globals, globals, null);
                 throw new RuntimeException("Python error occurred");
             }
-            return PyLong_AsLongLong(PyDict_GetItemString(globals, "action"));
+
+            long[] arrayOfActions = new long[actionTupleSize];
+            for (int i=0; i < actionTupleSize; i++) {
+                arrayOfActions[i] = PyLong_AsLongLong(PyDict_GetItemString(globals, "action[i]"));
+            }
+            return arrayOfActions;
+            //return PyLong_AsLongLong(PyDict_GetItemString(globals, "action",));
         }
     }
 
+    /** The paths where to find RLlib itself and all of its Python dependencies. */
     @Builder.Default
     File[] rllibpaths = null;
 
+    /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
     @Builder.Default
     String algorithm = "PPO";
 
+    /** The directory where to output the logs of RLlib. */
     @Builder.Default
     File outputDir = null;
 
+    /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     @Builder.Default
     File checkpoint = null;
 
+    /** A concrete instance of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     @Builder.Default
     Environment environment = null;
 
+    /** The number of CPU cores to let RLlib use during training. */
     @Builder.Default
     int numCPUs = 1;
 
+    /** The number of GPUs to let RLlib use during training. */
     @Builder.Default
     int numGPUs = 0;
 
+    /** The number of parallel workers that RLlib should execute during training. */
     @Builder.Default
     int numWorkers = 1;
 
+    /** The number of hidden layers in the MLP to use for the learning model. */
     @Builder.Default
     int numHiddenLayers = 2;
 
+    /** The number of nodes per layer in the MLP to use for the learning model. */
     @Builder.Default
     int numHiddenNodes = 256;
 
+    /** The maximum number of training iterations as a stopping criterion. */
     @Builder.Default
     int maxIterations = 500;
 
+    /** Max time in seconds */
     @Builder.Default
-    int maxTimeInSec = -1;
+    int maxTimeInSec = 43200;
 
+    /** Number of population-based training samples */
     @Builder.Default
     int numSamples = 4;
 
+    /** Length of actions array for tuples */
+    @Builder.Default
+    int actionTupleSize = 1;
+
+    /** The frequency at which policies should be saved to files, given as an interval in the number of training iterations. */
     @Builder.Default
     int savePolicyInterval = 100;
 
+    /** Initialize actions as a long */
+//    @Builder.Default
+    long discreteActions;
+
+    /** The address of the Redis server for distributed training sessions. */
     @Builder.Default
     String redisAddress = null;
 
+    /** Any number custom parameters written in Python appended to the config of ray.tune.run() as is. */
     @Builder.Default
     String customParameters = "";
 
+    /** Resume training when AWS spot instance terminates */
     @Builder.Default
     boolean resume = false;
 
+    /** Periodic checkpointing to allow training to recover from AWS spot instance termination */
     @Builder.Default
     int checkpointFrequency = 50;
 
+    /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
     @Builder.Default
     boolean multiAgent = false;
 
+    /** Indicates that we save a raw metrics tata to metrics_raw column in progress.csv*/
     @Builder.Default
     boolean debugMetrics = false;
 
+    /** Reduce size of output log file */
     @Builder.Default
     boolean userLog = false;
 
+    /** Optional layer on top of tuples */
+    @Builder.Default
+    boolean autoregressive = false;
 
-    // thresholds for stopper
+    @Setter
+    String autoregressiveModel;
+
+    // Thresholds for stopper
 
     @Builder.Default
     double episodeRewardRangeTh = 0.01; // episode_reward_range_threshold
@@ -244,17 +296,24 @@ public class RLlibHelper {
         this.entropySlopeTh = copy.entropySlopeTh;
         this.vfLossRangeTh = copy.vfLossRangeTh;
         this.valuePredTh = copy.valuePredTh;
+        this.actionTupleSize = copy.actionTupleSize;
+        this.autoregressive = copy.autoregressive;
+        this.discreteActions = copy.discreteActions;
+        this.debugMetrics = copy.debugMetrics;
     }
 
     @Override public String toString() {
         return "RLlibHelper[rllibpaths=" + Arrays.deepToString(rllibpaths) + ", "
                 + "algorithm=" + algorithm + ", "
                 + "outputDir=" + outputDir + ", "
+                + "actionTupleSize=" + actionTupleSize + ", "
+                + "autoregressive=" + autoregressive + ", "
                 + "checkpoint=" + checkpoint + ", "
                 + "environment=" + environment + ", "
                 + "numCPUs=" + numCPUs + ", "
                 + "numGPUs=" + numGPUs + ", "
                 + "numWorkers=" + numWorkers + ", "
+                + "numSamples=" + numSamples + ", "
                 + "numHiddenLayers=" + numHiddenLayers + ", "
                 + "numHiddenNodes=" + numHiddenNodes  + ", "
                 + "maxIterations=" + maxIterations + ", "
@@ -268,6 +327,8 @@ public class RLlibHelper {
                 + "entropySlopeTh=" + entropySlopeTh + ", "
                 + "vfLossRangeTh=" + vfLossRangeTh + ", "
                 + "userLog=" + userLog + ", "
+                + "debugMetrics=" + debugMetrics + ", "
+                + "discreteActions=" + discreteActions + ", "
                 + "customParameters=" + customParameters + "]";
     }
 
@@ -283,6 +344,8 @@ public class RLlibHelper {
         return hiddenLayers();
     }
 
+    //todo I'm not sure we use this method
+    //if we use this method, we need to change this method to pass tuple action size
     public PolicyHelper createPythonPolicyHelper() throws IOException {
         return new PythonPolicyHelper(rllibpaths, algorithm, checkpoint, environment);
     }
@@ -309,6 +372,10 @@ public class RLlibHelper {
 
         Template template = handlebars.compile("RLlibHelper.py");
 
+        if (autoregressive) {
+            setAutoregressiveModel(AutoregressiveModelHelper.generateAutoregressiveClass(actionTupleSize, discreteActions));
+        }
+
         String trainer = template.apply(this);
         return trainer;
     }
@@ -325,6 +392,7 @@ public class RLlibHelper {
                 System.out.println("    --algorithm");
                 System.out.println("    --checkpoint");
                 System.out.println("    --environment");
+                System.out.println("    --num-cpus");
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
                 System.out.println("    --num-hidden-layers");
@@ -343,6 +411,10 @@ public class RLlibHelper {
                 System.out.println("    --vf-loss-range");
                 System.out.println("    --value-pred");
                 System.out.println("    --user-log");
+                System.out.println("    --debug-metrics");
+                System.out.println("    --action-tuple-size");
+                System.out.println("    --autoregressive");
+                System.out.println("    --discrete-actions");
                 System.exit(0);
             } else if ("--rllibpaths".equals(args[i])) {
                 helper.rllibpaths(rllibpaths(args[++i].split(File.pathSeparator)));
@@ -382,6 +454,7 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+                helper.multiAgent(true);
             } else if ("--debug-metrics".equals(args[i])) {
                 helper.debugMetrics(true);
             } else if ("--episode-reward-range".equals(args[i])) {
@@ -394,6 +467,12 @@ public class RLlibHelper {
                 helper.valuePredTh(Double.parseDouble(args[++i]));
             } else if ("--user-log".equals(args[i])) {
                 helper.userLog(true);
+            } else if ("--autoregressive".equals(args[i])) {
+                helper.autoregressive(true);
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
+            } else if ("--discrete-actions".equals(args[i])) {
+                helper.discreteActions(Long.parseLong(args[++i]));
             } else {
                 output = new File(args[i]);
             }

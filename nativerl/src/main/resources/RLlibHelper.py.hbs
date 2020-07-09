@@ -1,21 +1,28 @@
-import glob, gym, nativerl, ray, sys, os, random
-import numpy as np
-from ray.rllib.env import MultiAgentEnv
+import glob, gym, nativerl, ray, sys, os, random, numpy
 from ray.rllib.agents.registry import get_agent_class
 from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
-
+from gym.spaces import Box, Discrete, Tuple
 from typing import Dict
 from ray.rllib.env import BaseEnv
 from ray.rllib.policy import Policy
 from ray.rllib.policy.sample_batch import SampleBatch
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
+{{~#if autoregressive}}
+from ray.rllib.models import ModelCatalog
+from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
+from ray.rllib.models.tf.tf_modelv2 import TFModelV2
+from ray.rllib.utils.tuple_actions import TupleActions
+from ray.rllib.models.tf.misc import normc_initializer
+from ray.rllib.utils import try_import_tf
 
+tf = try_import_tf()
+{{/if}}
 jardir = os.getcwd()
 
-class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym.Env{{/if}}):
+class {{classSimpleName environment}}(gym.Env):
     def __init__(self, env_config):
         # Put all JAR files found here in the class path
         jars = glob.glob(jardir + '/**/*.jar', recursive=True)
@@ -24,76 +31,65 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         self.nativeEnv = nativerl.createEnvironment('{{className environment}}')
         actionSpace = self.nativeEnv.getActionSpace()
         observationSpace = self.nativeEnv.getObservationSpace()
+        {{#if (eq actionTupleSize 1)~}}
         self.action_space = gym.spaces.Discrete(actionSpace.n)
-        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0],
-                                                np.array(observationSpace.shape), dtype=np.float32)
+        {{~else~}}
+        self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range({{actionTupleSize}})])
+        {{~/if}}
+        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
         self.id = '{{classSimpleName environment}}'
-        self.max_episode_steps = 200000
-        {{#unless multiAgent}}
+        self.max_episode_steps = 20000
         self.unwrapped.spec = self
-        {{/unless}}
 
     def reset(self):
         self.nativeEnv.reset()
-        {{#if multiAgent}}
-        obs = np.array(self.nativeEnv.getObservation())
-        obsdict = {}
-        for i in range(0, obs.shape[0]):
-            obsdict[str(i)] = obs[i]
-        return obsdict
-        {{else}}
-        return np.array(self.nativeEnv.getObservation())
-        {{/if}}
+        return numpy.array(self.nativeEnv.getObservation())
 
     def step(self, action):
-        {{#if multiAgent}}
-        actionarray = np.ndarray(shape=(len(action), 1), dtype=np.float32)
-        for i in range(0, actionarray.shape[0]):
-            actionarray[i, :] = action[str(i)].astype(np.float32)
-        reward = np.array(self.nativeEnv.step(nativerl.Array(actionarray)))
-        obs = np.array(self.nativeEnv.getObservation())
-        obsdict = {}
-        rewarddict = {}
-        for i in range(0, obs.shape[0]):
-            obsdict[str(i)] = obs[i]
-            rewarddict[str(i)] = reward[i]
-        return obsdict, rewarddict, {'__all__': self.nativeEnv.isDone()}, {}
-        {{else}}
-        reward = self.nativeEnv.step(action)
-        return np.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
-        {{/if}}
+        {{~#if (eq actionTupleSize 1)}}
+        actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)
+        {{~else}}
+        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)
+        {{~/if}}
+        for i in range(0, actionarray.shape[1]):
+            {{~#if (eq actionTupleSize 1)}}
+            actionarray[0,i] = action
+            {{~else}}
+            actionarray[0,i] = action[i].astype(numpy.float32)
+            {{~/if}}
+        reward = self.nativeEnv.step(nativerl.Array(actionarray))
+        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
 
     def getMetrics(self):
-        return np.array(self.nativeEnv.getMetrics())
+        return numpy.array(self.nativeEnv.getMetrics())
 
-      
 class Callbacks(DefaultCallbacks):
-   def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
+    def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
                         policies: Dict[str, Policy],
                         episode: MultiAgentEpisode, **kwargs):
-       episode.hist_data["metrics_raw"] = []
+        episode.hist_data["metrics_raw"] = []
 
-   def on_episode_end(self, worker: RolloutWorker, base_env: BaseEnv,
-                      policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
-       metrics = worker.env.getMetrics().tolist()
+    def on_episode_end(self, worker: RolloutWorker, base_env: BaseEnv,
+                        policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
+        metrics = worker.env.getMetrics().tolist()
 
-       {{#if debugMetrics}}
-       episode.hist_data["metrics_raw"] = metrics
-       {{/if}}
+        {{#if debugMetrics}}
+        episode.hist_data["metrics_raw"] = metrics
+        {{/if}}
 
-       for i, val in enumerate(metrics):
-           episode.custom_metrics["metrics_" + str(i)] = metrics[i]
+        for i, val in enumerate(metrics):
+            episode.custom_metrics["metrics_" + str(i)] = metrics[i]
 
-   def on_train_result(self, trainer, result: dict, **kwargs):
-       results = ray.get(
-           [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
+    def on_train_result(self, trainer, result: dict, **kwargs):
+        results = ray.get(
+            [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-       result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
+        result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
+
 
 class Stopper:
     def __init__(self):
         # Core criteria
-        self.should_stop = False # Stop criteria met
         self.too_many_iter = False # Max iterations
         self.too_much_time = False # Max training time
         self.too_many_episodes = False # Max total episodes
@@ -107,7 +103,7 @@ class Stopper:
         self.value_pred_converged = False # Explained variance changes very little
 
         # Episode reward behaviour
-        self.episode_reward_window = []
+        self.episode_reward_window = {}
         self.episode_reward_range = 0
         self.episode_reward_mean = 0
         self.episode_reward_mean_latest = 0
@@ -125,87 +121,72 @@ class Stopper:
         self.vf_pred_mean_latest = 0
 
         # Configs
-        self.episode_reward_range_threshold = {{episodeRewardRangeTh}}  # Remove with 0
-        self.entropy_slope_threshold = {{entropySlopeTh}}  # Remove with 1
-        self.vf_loss_range_threshold = {{vfLossRangeTh}}  # Remove with 0
-        self.value_pred_threshold = {{valuePredTh}}  # Remove with 0
+        self.episode_reward_range_threshold = {{episodeRewardRangeTh}} # Turn off with 0
+        self.entropy_slope_threshold = {{entropySlopeTh}} # Turn off with 1
+        self.vf_loss_range_threshold = {{vfLossRangeTh}} # Turn off with 0
+        self.value_pred_threshold = {{valuePredTh}} # Turn off with 0
 
     def stop(self, trial_id, result):
-        # Core Criteria
+        # Core stopping criteria
         self.too_many_iter = result['training_iteration'] >= {{maxIterations}}
-        {{#if (gt maxTimeInSec 0)}}
+        {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
-        {{/if}}
+        {{/if~}}
         self.too_many_episodes = result['episodes_total'] >= 30000
 
-        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_many_episodes):
-            self.should_stop = True
-            return self.should_stop
+        # Stop entire experiment if max training ceiling reached
+        if self.too_many_iter or self.too_much_time or self.too_many_episodes:
+            return True
 
-        # Collecting metrics for stopping criteria
+        # Collect metrics for stopping criteria
         if result['training_iteration'] == 1:
-            #self.entropy_start = result['info/learner/default_policy/entropy']
             self.entropy_start = result['info']['learner']['default_policy']['entropy']
 
         if result['training_iteration'] <= 50:
-            #self.vf_loss_window.append(result['info/learner/default_policy/vf_loss'])
             self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])
 
-        self.episode_reward_window.append(result['episode_reward_mean'])
-        #self.vf_pred_window.append(result['info/learner/default_policy/vf_explained_var'])
+        if (not trial_id in self.episode_reward_window):
+            self.episode_reward_window[trial_id] = []
+        self.episode_reward_window[trial_id].append(result['episode_reward_mean'])
         self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
 
-        # Experimental Criteria
-
-        # Early stopping filter
+        # Early learning check
         if result['training_iteration'] == 50:
-            #self.entropy_now = result['info/learner/default_policy/entropy']
             self.entropy_now = result['info']['learner']['default_policy']['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
-            self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))
-            if self.entropy_slope > np.abs(self.entropy_start * self.entropy_slope_threshold):
+            self.vf_loss_range = numpy.max(numpy.array(self.vf_loss_window)) - numpy.min(numpy.array(self.vf_loss_window))
+
+            if self.entropy_slope > numpy.abs(self.entropy_start * self.entropy_slope_threshold):
                 self.no_converge_risk = True
-            if np.abs(self.vf_loss_range) < np.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):
+            if numpy.abs(self.vf_loss_range) < numpy.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):
                 self.no_discovery_risk = True
 
-            # Early stopping decision
-            if not self.should_stop and (self.no_converge_risk or self.no_discovery_risk):
-                self.should_stop = True
-                return self.should_stop
+            # Stop entire experiment if no learning occurs
+            if self.no_converge_risk or self.no_discovery_risk:
+                return True
 
-        # Convergence Filter
-        if result['training_iteration'] >= 125:
+        # Convergence check
+        if result['training_iteration'] >= 150:
             # Episode reward range activity
-            self.episode_reward_range = \
-                np.max(np.array(self.episode_reward_window[-50:])) - np.min(np.array(self.episode_reward_window[-50:]))
+            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[trial_id][-50:])) - numpy.min(numpy.array(self.episode_reward_window[trial_id][-50:]))
             # Episode reward mean activity
-            self.episode_reward_mean = np.mean(np.array(self.episode_reward_window[-75:]))
-            self.episode_reward_mean_latest = np.mean(np.array(self.episode_reward_window[-15:]))
+            self.episode_reward_mean = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-75:]))
+            self.episode_reward_mean_latest = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-15:]))
             # Value function activity
-            self.vf_pred_mean = np.mean(np.array(self.vf_pred_window[-25:]))
-            self.vf_pred_mean_latest = np.mean(np.array(self.vf_pred_window[-5:]))
+            self.vf_pred_mean = numpy.mean(numpy.array(self.vf_pred_window[-25:]))
+            self.vf_pred_mean_latest = numpy.mean(numpy.array(self.vf_pred_window[-5:]))
 
             # Episode reward leveled off
-            if (np.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / np.abs(self.episode_reward_mean)
-                < self.episode_reward_range_threshold) and \
-                    (np.abs(self.episode_reward_range) <
-                     np.abs(np.mean(np.array(self.episode_reward_window[-50:])) * 2)):
+            if (numpy.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / numpy.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (numpy.abs(self.episode_reward_range) < numpy.abs(numpy.mean(numpy.array(self.episode_reward_window[trial_id][-50:])) * 2)):
                 self.episode_reward_converged = True
 
             # Explained variance leveled off
-            if (np.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / np.abs(self.vf_pred_mean)
-                    < self.value_pred_threshold):
+            if (numpy.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / numpy.abs(self.vf_pred_mean) < self.value_pred_threshold):
                 self.value_pred_converged = True
 
-            # Convergence stopping decision
-            if not self.should_stop and self.episode_reward_converged and self.value_pred_converged:
-                self.should_stop = True
-                return self.should_stop
-
-        # Returns False by default until stopping decision made
-        return self.should_stop
-
-stopper = Stopper()
+            # Stop individual trial when convergence criteria met
+            if self.episode_reward_converged and self.value_pred_converged:
+                return trial_id
 
 pbt_scheduler = PopulationBasedTraining(
     time_attr = 'training_iteration',
@@ -216,9 +197,9 @@ pbt_scheduler = PopulationBasedTraining(
     resample_probability = 0.25,
     log_config = True,
     hyperparam_mutations = {
-        'lambda': np.linspace(0.9, 1.0, 5).tolist(),
-        'clip_param': np.linspace(0.01, 0.5, 5).tolist(),
-        'entropy_coeff': np.linspace(0, 0.03, 5).tolist(),
+        'lambda': numpy.linspace(0.9, 1.0, 5).tolist(),
+        'clip_param': numpy.linspace(0.01, 0.5, 5).tolist(),
+        'entropy_coeff': numpy.linspace(0, 0.03, 5).tolist(),
         'lr': [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
         'num_sgd_iter': [5, 10, 15, 20, 30],
         'sgd_minibatch_size': [128, 256, 512, 1024, 2048],
@@ -232,25 +213,35 @@ with open('database/db.properties', 'r+') as f:
     if 'hsqldb.lock_file=false\n' not in lines:
         f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1')
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
+{{#if autoregressive~}}
+{{{autoregressiveModel}}}
+{{~else~}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
 model['fcnet_hiddens'] = {{hiddenLayers}}
+{{~/if}}
 
 trials = run(
     'PPO',
-    scheduler=pbt_scheduler,
-    num_samples={{numSamples}},
-    stop = stopper.stop,
+    scheduler = pbt_scheduler,
+    num_samples = {{numSamples}},
+    stop = Stopper().stop,
     config = {
         'env': {{classSimpleName environment}},
         'callbacks': Callbacks,
         'num_gpus': 0,
-        'num_workers': {{numWorkers}} ,
+        'num_workers': {{numWorkers}},
         'num_cpus_per_worker': {{numCPUs}},
-        'model': model,
+        {{#if autoregressive~}}
+        'model': {
+            'custom_model': 'autoregressive_model',
+            'custom_action_dist': 'nary_autoreg_output',
+        },
+        {{~else~}}
+        'model': model,{{/if}}
         'use_gae': True,
         'vf_loss_coeff': 1.0,
-        'vf_clip_param': np.inf,
+        'vf_clip_param': numpy.inf,
         # These params are tuned from a fixed starting value.
         'lambda': 0.95,
         'clip_param': 0.2,
@@ -268,14 +259,15 @@ trials = run(
         # Auto-normalize observations
         #'observation_filter': 'MeanStdFilter'
     },
-    {{#if outputDir}}local_dir='{{outputDir.absolutePath}}{{else}}""{{/if}}',
+    {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
-    checkpoint_freq = {{checkpointFrequency}} ,
+    checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
     max_failures = 1,
     export_formats = ['model'],
     return_trials = True
 )
+
 errored_trials = []
 for trial in trials:
     if trial.status != 'TERMINATED':
@@ -284,4 +276,4 @@ for trial in trials:
 if errored_trials:
     print(errored_trials)
 else:
-    print("Training has been completed");
+    print("Training has been completed")

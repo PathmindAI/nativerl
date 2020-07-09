@@ -6,6 +6,11 @@ import java.util.Map;
 import org.bytedeco.javacpp.*;
 import org.bytedeco.javacpp.annotation.*;
 
+/**
+ * The factory method to create instances of arbitrary subclasses of Environment.
+ * This gets exported to jniNativeRL.h as the C function createEnvironment().
+ * To release them we must call releaseEnvironment().
+ */
 @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class CreateEnvironment extends FunctionPointer {
 

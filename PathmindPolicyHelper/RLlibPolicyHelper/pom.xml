@@ -13,33 +13,15 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>8</java.version>
-    <tensorflow.version>1.14.0-1.5.1</tensorflow.version>
-    <mkldnn.version>0.20-1.5.1</mkldnn.version>
+    <tensorflow.version>1.15.0-1.5.2</tensorflow.version>
+    <mkldnn.version>0.21.2-1.5.2</mkldnn.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.bytedeco</groupId>
-      <artifactId>tensorflow</artifactId>
+      <artifactId>tensorflow-platform</artifactId>
       <version>${tensorflow.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.bytedeco</groupId>
-      <artifactId>tensorflow</artifactId>
-      <version>${tensorflow.version}</version>
-      <classifier>linux-x86_64</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.bytedeco</groupId>
-      <artifactId>tensorflow</artifactId>
-      <version>${tensorflow.version}</version>
-      <classifier>macosx-x86_64</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.bytedeco</groupId>
-      <artifactId>tensorflow</artifactId>
-      <version>${tensorflow.version}</version>
-      <classifier>windows-x86_64</classifier>
     </dependency>
     <dependency>
       <groupId>org.bytedeco</groupId>

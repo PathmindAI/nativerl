@@ -15,53 +15,77 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 
+/**
+ * This is a helper class to help users implement the reinforcement learning
+ * Environment interface based on a simulation model from AnyLogic. The output
+ * is the source code of a Java class that can be compiled and executed together
+ * with an exported simulation model that is using the Pathmind Helper.
+ */
 @Getter
 @Builder
 public class AnyLogicHelper {
 
+    /** The name of the class to generate. */
     @Builder.Default
     String environmentClassName = "AnyLogicEnvironment";
 
+    /** The class name of the main AnyLogic agent to use. */
     @Builder.Default
     String agentClassName = "MainAgent";
 
+    /** The number of actions in the case of a discrete action space. */
     @Builder.Default
     long discreteActions;
 
+    /** The number of array elements in the case of a continuous action space. */
     @Builder.Default
     long continuousActions;
+
+    /** The number of array elements in the case of a continuous action space. */
     @Builder.Default
     long continuousObservations;
 
+    /** Currently unused since the PathmindHelper is able to manage this. */
     @Builder.Default
     long stepTime = 1;
 
+    /** Currently unused since the PathmindHelper is able to manage this. */
     @Builder.Default
     long stopTime = 1000;
 
+    /** Arbitrary code to add to the generated class such as fields or methods. */
     @Builder.Default
     String classSnippet = "";
 
+    /** Arbitrary code to add to the reset() method of the generated class. */
     @Builder.Default
     String resetSnippet = "";
 
+    /** Arbitrary code to add to the step() method of the generated class to calculate the reward. */
     @Builder.Default
     String rewardSnippet = "";
 
+    /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
 
+    /** The name of the PolicyHelper, such as RLlibPolicyHelper, to run the metrics code as part of the main() method. */
     @Builder.Default
     String policyHelper = null;
 
+    /** The number of episodes to run the PolicyHelper and compute the metrics on as part of the main() method. */
     @Builder.Default
     int testIterations = 10;
 
+    /** Currently unused since the PathmindHelper is able to manage this. */
     @Builder.Default
     boolean stepless = false;
 
+    /** Indicates that we need multiagent support with the Environment class provided, but where all agents share the same policy. */
     @Builder.Default
     boolean multiAgent = false;
+
+    int actionTupleSize;
 
     @Builder.Default
     boolean setStepless = false;
@@ -69,6 +93,7 @@ public class AnyLogicHelper {
     @Setter
     String className, packageName;
 
+    /** Currently unused since the PathmindHelper is able to manage this. */
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         int n = agentClassName.lastIndexOf(".");
         String className = agentClassName.substring(n + 1);
@@ -79,7 +104,7 @@ public class AnyLogicHelper {
         if (multiAgent) {
             c.getDeclaredMethod("doAction", int[].class);
         } else {
-            c.getDeclaredMethod("doAction", int.class);
+            c.getDeclaredMethod("doAction", int[].class);
         }
         Method m = c.getDeclaredMethod("getObservation", boolean.class);
         if (multiAgent && m.getReturnType() != double[][].class) {
@@ -94,6 +119,7 @@ public class AnyLogicHelper {
         return this;
     }
 
+    /** Calls {@link #generateEnvironment()} and writes the result to a File. */
     public void generateEnvironment(File file) throws IOException {
         File directory = file.getParentFile();
         if (directory != null) {
@@ -102,6 +128,7 @@ public class AnyLogicHelper {
         Files.write(file.toPath(), generateEnvironment().getBytes());
     }
 
+    /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() throws IOException {
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
@@ -122,6 +149,7 @@ public class AnyLogicHelper {
         return env;
     }
 
+    /** The command line interface of this helper. */
     public static void main(String[] args) throws Exception {
         AnyLogicHelper.AnyLogicHelperBuilder helper = AnyLogicHelper.builder();
         File output = null;
@@ -144,6 +172,7 @@ public class AnyLogicHelper {
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --stepless");
+                System.out.println("    --action-tuple-size");
                 System.out.println("    --multi-agent");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
@@ -176,6 +205,8 @@ public class AnyLogicHelper {
                 helper.setStepless(true);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else {
                 output = new File(args[i]);
             }

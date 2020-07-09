@@ -77,6 +77,11 @@ if [[ "$DEBUGMETRICS" = true ]]; then
     MULTIAGENT_PARAM="--debug-metrics"
 fi
 
+AUTOREGRESSIVE_PARAM=""
+if [[ "$AUTOREGRESSIVE" = true ]]; then
+    AUTOREGRESSIVE_PARAM="--autoregressive"
+fi
+
 RESUME_PARAM=""
 if [[ "$RESUME" = true ]]; then
     RESUME_PARAM="--resume"
@@ -113,6 +118,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --agent-class-name "$AGENT_CLASS" \
     --discrete-actions $DISCRETE_ACTIONS \
+    --action-tuple-size $ACTION_TUPLE_SIZE \
     --continuous-observations $CONTINUOUS_OBSERVATIONS \
     --step-time $STEP_TIME \
     --stop-time $STOP_TIME \
@@ -140,8 +146,11 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
+    --discrete-actions $DISCRETE_ACTIONS \
+    --action-tuple-size $ACTION_TUPLE_SIZE \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
+    $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
     $DEBUGMETRICS_PARAM \
     $EPISODE_REWARD_RANGE_PARAM \
