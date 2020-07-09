@@ -19,11 +19,12 @@ Build Instructions
 ------------------
 
  1. Install the JDK and Maven on the system
- 2. Run `mvn clean package -f RLlibPolicyHelper`
+ 2. Run `mvn clean package -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64` (~231mb)
  3. Inside AnyLogic:
     1. Open the `PathmindPolicyHelper.alp` model
-    2. Click on "PathmindPolicyHelper" in the Projects view
-    3. Go to File -> Export -> Export Library... -> Finish
+    2. Add RLlibPolicyHelper-0.0.1-SNAPSHOT.jar (generated in step 2) as a dependency.
+    3. Click on "Pathmind" in the Projects view
+    4. Go to Exporting -> Export the Library -> Finish
 
 By default, this outputs a `PathmindPolicy.jar` file. We can further add to that JAR the files from `RLlibPolicyHelper-0.0.1-SNAPSHOT.jar` to simplify the end user experience, but this also requires modifying the `library.xml` file manually to remove the dependency on the JAR file.
 

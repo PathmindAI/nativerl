@@ -463,6 +463,12 @@ public class RLlibHelper {
                 helper.autoregressive(true);
             } else if ("--discrete-actions".equals(args[i])) {
                 helper.discreteActions(Long.parseLong(args[++i]));
+            } else if ("--action-tuple-size".equals(args[i])) {
+                helper.actionTupleSize(Integer.parseInt(args[++i]));
+            } else if ("--autoregressive".equals(args[i])) {
+                helper.autoregressive(true);
+            } else if ("--discrete-actions".equals(args[i])) {
+                helper.discreteActions(Long.parseLong(args[++i]));
             } else {
                 output = new File(args[i]);
             }
