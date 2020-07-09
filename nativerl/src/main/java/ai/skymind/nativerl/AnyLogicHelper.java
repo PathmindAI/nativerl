@@ -93,6 +93,7 @@ public class AnyLogicHelper {
     @Setter
     String className, packageName;
 
+    /** Currently unused since the PathmindHelper is able to manage this. */
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
         int n = agentClassName.lastIndexOf(".");
         String className = agentClassName.substring(n + 1);

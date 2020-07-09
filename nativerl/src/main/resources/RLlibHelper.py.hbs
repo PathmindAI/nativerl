@@ -57,7 +57,6 @@ class {{classSimpleName environment}}(gym.Env):
 class Stopper:
     def __init__(self):
         # Core criteria
-        self.should_stop = False # Stop criteria met
         self.too_many_iter = False # Max iterations
         self.too_much_time = False # Max training time
         self.too_many_episodes = False # Max total episodes
@@ -71,7 +70,7 @@ class Stopper:
         self.value_pred_converged = False # Explained variance changes very little
 
         # Episode reward behaviour
-        self.episode_reward_window = []
+        self.episode_reward_window = {}
         self.episode_reward_range = 0
         self.episode_reward_mean = 0
         self.episode_reward_mean_latest = 0
@@ -102,9 +101,9 @@ class Stopper:
         {{/if~}}
         self.too_many_episodes = result['episodes_total'] >= 30000
 
-        if not self.should_stop and (self.too_many_iter or self.too_much_time or self.too_many_episodes):
-            self.should_stop = True
-            return self.should_stop
+        # Stop entire experiment if max training ceiling reached
+        if self.too_many_iter or self.too_much_time or self.too_many_episodes:
+            return True
 
         # Collecting metrics for stopping criteria
         if result['training_iteration'] == 1:
@@ -113,7 +112,9 @@ class Stopper:
         if result['training_iteration'] <= 50:
             self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])
 
-        self.episode_reward_window.append(result['episode_reward_mean'])
+        if (not trial_id in self.episode_reward_window):
+            self.episode_reward_window[trial_id] = []
+        self.episode_reward_window[trial_id].append(result['episode_reward_mean'])
         self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
 
         # Early stopping filter
@@ -121,15 +122,15 @@ class Stopper:
             self.entropy_now = result['info']['learner']['default_policy']['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
             self.vf_loss_range = numpy.max(numpy.array(self.vf_loss_window)) - numpy.min(numpy.array(self.vf_loss_window))
+
             if self.entropy_slope > numpy.abs(self.entropy_start * self.entropy_slope_threshold):
                 self.no_converge_risk = True
             if numpy.abs(self.vf_loss_range) < numpy.abs(self.vf_loss_window[0] * self.vf_loss_range_threshold):
                 self.no_discovery_risk = True
 
-            # Early stopping decision
-            if not self.should_stop and (self.no_converge_risk or self.no_discovery_risk):
-                self.should_stop = True
-                return self.should_stop
+            # Stop entire experiment if no learning occurs
+            if self.no_converge_risk or self.no_discovery_risk:
+                return True
 
         # Convergence Filter
         if result['training_iteration'] >= 150:
@@ -143,20 +144,16 @@ class Stopper:
             self.vf_pred_mean_latest = numpy.mean(numpy.array(self.vf_pred_window[-5:]))
 
             # Episode reward leveled off
-            if (numpy.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / numpy.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (numpy.abs(self.episode_reward_range) < numpy.abs(numpy.mean(numpy.array(self.episode_reward_window[-50:])) * 2)):
+            if (numpy.abs(self.episode_reward_mean_latest - self.episode_reward_mean) / numpy.abs(self.episode_reward_mean) < self.episode_reward_range_threshold) and (numpy.abs(self.episode_reward_range) < numpy.abs(numpy.mean(numpy.array(self.episode_reward_window[trial_id][-50:])) * 2)):
                 self.episode_reward_converged = True
 
             # Explained variance leveled off
             if (numpy.abs(self.vf_pred_mean_latest - self.vf_pred_mean) / numpy.abs(self.vf_pred_mean) < self.value_pred_threshold):
                 self.value_pred_converged = True
 
-            # Convergence stopping decision
-            if not self.should_stop and self.episode_reward_converged and self.value_pred_converged:
-                self.should_stop = True
-                return self.should_stop
-
-        # Returns False by default until stopping decision made
-        return self.should_stop
+            # Stop individual trial when convergence criteria met
+            if self.episode_reward_converged and self.value_pred_converged:
+                return trial_id
 
 stopper = Stopper()
 
@@ -197,7 +194,7 @@ trials = run(
     'PPO',
     scheduler = pbt_scheduler,
     num_samples = {{numSamples}},
-    stop = stopper.stop,
+    stop = Stopper().stop,
     config = {
         'env': {{classSimpleName environment}},
         'num_gpus': 0,
