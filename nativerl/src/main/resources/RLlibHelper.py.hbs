@@ -88,13 +88,13 @@ class Stopper:
         self.vf_pred_mean_latest = 0
 
         # Configs
-        self.episode_reward_range_threshold = {{episodeRewardRangeTh}}  # Remove with 0
-        self.entropy_slope_threshold = {{entropySlopeTh}}  # Remove with 1
-        self.vf_loss_range_threshold = {{vfLossRangeTh}}  # Remove with 0
-        self.value_pred_threshold = {{valuePredTh}}  # Remove with 0
+        self.episode_reward_range_threshold = {{episodeRewardRangeTh}} # Turn off with 0
+        self.entropy_slope_threshold = {{entropySlopeTh}} # Turn off with 1
+        self.vf_loss_range_threshold = {{vfLossRangeTh}} # Turn off with 0
+        self.value_pred_threshold = {{valuePredTh}} # Turn off with 0
 
     def stop(self, trial_id, result):
-        # Core Criteria
+        # Core stopping criteria
         self.too_many_iter = result['training_iteration'] >= {{maxIterations}}
         {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
@@ -105,7 +105,7 @@ class Stopper:
         if self.too_many_iter or self.too_much_time or self.too_many_episodes:
             return True
 
-        # Collecting metrics for stopping criteria
+        # Collect metrics for stopping criteria
         if result['training_iteration'] == 1:
             self.entropy_start = result['info']['learner']['default_policy']['entropy']
 
@@ -117,7 +117,7 @@ class Stopper:
         self.episode_reward_window[trial_id].append(result['episode_reward_mean'])
         self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
 
-        # Early stopping filter
+        # Early learning check
         if result['training_iteration'] == 50:
             self.entropy_now = result['info']['learner']['default_policy']['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
@@ -132,13 +132,13 @@ class Stopper:
             if self.no_converge_risk or self.no_discovery_risk:
                 return True
 
-        # Convergence Filter
+        # Convergence check
         if result['training_iteration'] >= 150:
             # Episode reward range activity
-            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[-50:])) - numpy.min(numpy.array(self.episode_reward_window[-50:]))
+            self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[trial_id][-50:])) - numpy.min(numpy.array(self.episode_reward_window[trial_id][-50:]))
             # Episode reward mean activity
-            self.episode_reward_mean = numpy.mean(numpy.array(self.episode_reward_window[-75:]))
-            self.episode_reward_mean_latest = numpy.mean(numpy.array(self.episode_reward_window[-15:]))
+            self.episode_reward_mean = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-75:]))
+            self.episode_reward_mean_latest = numpy.mean(numpy.array(self.episode_reward_window[trial_id][-15:]))
             # Value function activity
             self.vf_pred_mean = numpy.mean(numpy.array(self.vf_pred_window[-25:]))
             self.vf_pred_mean_latest = numpy.mean(numpy.array(self.vf_pred_window[-5:]))
@@ -154,8 +154,6 @@ class Stopper:
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
                 return trial_id
-
-stopper = Stopper()
 
 pbt_scheduler = PopulationBasedTraining(
     time_attr = 'training_iteration',
@@ -198,7 +196,7 @@ trials = run(
     config = {
         'env': {{classSimpleName environment}},
         'num_gpus': 0,
-        'num_workers': {{numWorkers}} ,
+        'num_workers': {{numWorkers}},
         'num_cpus_per_worker': {{numCPUs}},
         {{#if autoregressive~}}
         'model': {
@@ -206,7 +204,7 @@ trials = run(
             'custom_action_dist': 'nary_autoreg_output',
         },
         {{~else~}}
-        'model': model, {{/if}}
+        'model': model,{{/if}}
         'use_gae': True,
         'vf_loss_coeff': 1.0,
         'vf_clip_param': numpy.inf,
@@ -229,7 +227,7 @@ trials = run(
     },
     {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
-    checkpoint_freq = {{checkpointFrequency}} ,
+    checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
     max_failures = 1,
     export_formats = ['model'],
@@ -244,4 +242,4 @@ for trial in trials:
 if errored_trials:
     print(errored_trials)
 else:
-    print("Training has been completed");
+    print("Training has been completed")
