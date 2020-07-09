@@ -1,3 +1,11 @@
+dependency-reduced-pom.xml
+**/target/**
+**/*.class
+**/*.jar
+**/*.so
+**/*.dylib
+database
+lib
 
 .DS_Store
 *.autosave
