@@ -21,13 +21,13 @@ RESET_SNIPPET='
 '
 
 REWARD_SNIPPET='
-    double[] s0 = before[0], s1 = after[0];
+    double[] s0 = before, s1 = after;
     // change in forward + intersection delay
     double delay0 = s0[0] + s0[2] + s0[4] + s0[6] + s0[8];
     double delay1 = s1[0] + s1[2] + s1[4] + s1[6] + s1[8];
-    reward[0] = delay0 - delay1;
+    reward = delay0 - delay1;
     if (delay0 > 0 || delay1 > 0) {
-        reward[0] /= Math.max(delay0, delay1);
+        reward /= Math.max(delay0, delay1);
     }
 '
 
@@ -84,13 +84,11 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --continuous-observations 10 \
     --step-time 10 \
     --stop-time 28800 \
-    --random-seed 1 \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
-    --policy-helper RLlibPolicyHelper \
-    --multi-agent
+    --policy-helper RLlibPolicyHelper
 
 javac $(find -iname '*.java')
 
@@ -101,10 +99,9 @@ java ai.skymind.nativerl.RLlibHelper \
     --num-workers 4 \
     --random-seed 42 \
     --max-reward-mean 100 \
-    --multi-agent \
     rllibtrain.py
 
 python3 rllibtrain.py
 
 # Execute the simulation with all models to get test metrics
-find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
+#find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;
