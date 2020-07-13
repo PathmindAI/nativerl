@@ -21,11 +21,6 @@ public class ModelAnalyzer {
 
         try {
             engine.start(agent);
-            // Workaround to trigger all events at time 0.0
-            while (engine.getNextEventTime() == 0.0) {
-                engine.runFast(Math.ulp(0.0));
-            }
-
         } catch (Throwable ex) {
             ex.printStackTrace(System.out);
             failedSteps.add("startEngine");
