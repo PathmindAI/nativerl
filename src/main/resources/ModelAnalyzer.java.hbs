@@ -1,0 +1,125 @@
+{{#if packageName}}package {{packageName}};{{/if}}
+import com.anylogic.engine.Engine;
+import org.benf.cfr.reader.api.CfrDriver;
+import org.benf.cfr.reader.api.OutputSinkFactory;
+import pathmind.policyhelper.PathmindHelper;
+
+import java.util.*;
+
+public class ModelAnalyzer {
+    public static void main(String[] args) throws Throwable {
+        List<String> failedSteps = new ArrayList<>();
+
+        Engine engine = new Training(null).createEngine();
+        Simulation sim = new Simulation();
+        sim.setupEngine(engine);
+        sim.initDefaultRandomNumberGenerator(engine);
+
+        // Create new agent object:
+        {{agentClassName}} agent = new {{agentClassName}}(engine, null, null);
+        agent.setParametersToDefaultValues();
+
+        try {
+            engine.start(agent);
+            // Workaround to trigger all events at time 0.0
+            while (engine.getNextEventTime() == 0.0) {
+                engine.runFast(Math.ulp(0.0));
+            }
+
+        } catch (Throwable ex) {
+            ex.printStackTrace(System.out);
+            failedSteps.add("startEngine");
+        }
+
+        PathmindHelper helper = agent.pathmindHelper;
+
+        try {
+            System.out.println("observations:" + helper.observationForTraining().length);
+        } catch (Throwable ex) {
+            System.out.println("Cannot get obs:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("observations");
+            System.out.println("observations:" + 0);
+        }
+        System.out.println("actions:" + helper.possibleActionCount);
+        System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
+        System.out.println("actionTupleSize:" + helper.actionTupleSize);
+
+        try {
+            if (!helper.isEnabled) {
+                failedSteps.add("pathmindHelperDisabled");
+            }
+        } catch (Throwable ex) {
+            System.out.println("Cannot get isEnabled:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("pathmindHelperDisabled");
+        }
+
+        boolean useEventTrigger = helper.useEventTrigger;
+        String decompileClassBody = decompileClassBody("{{agentClassName}}");
+        boolean useCustomTrigger = decompileClassBody.contains("pathmindHelper.triggerNextAction");
+        boolean eventCondition = decompileClassBody.contains("_pathmindHelper_eventCondition_xjal");
+        if (useEventTrigger == useCustomTrigger || useEventTrigger != eventCondition) {
+            failedSteps.add("triggerCheck");
+        }
+
+        if (eventCondition) {
+            try {
+                helper.eventCondition();
+            } catch (Throwable ex) {
+                failedSteps.add("eventCondition");
+            }
+        }
+
+        String rewardFunctionDefinition = "";
+        try {
+            String methodBody = decompileMethodBody("{{agentClassName}}", "_pathmindHelper_observationForReward_xjal");
+            rewardFunctionDefinition = extractRewardFunction(methodBody);
+        } catch (Throwable ex) {
+            System.out.println("Cannot get reward function:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("rewardFunction");
+        }
+        System.out.println("reward:" + rewardFunctionDefinition);
+        System.out.println("failedSteps:" + String.join(",", failedSteps));
+
+        System.exit(0);
+    }
+
+    private static String extractRewardFunction(String methodBody) {
+        String firstRow = methodBody.split("\n")[1];
+        return firstRow.substring(firstRow.indexOf('='), firstRow.indexOf(';')).replace("=", "").trim();
+    }
+
+    private static String decompileClassBody(String className) {
+        StringBuilder classBody = new StringBuilder();
+        CfrDriver driver = new CfrDriver.Builder().withOutputSink(createOutputSinkFactory(classBody)).build();
+
+        driver.analyse(Collections.singletonList(className));
+        return classBody.toString();
+    }
+
+    private static String decompileMethodBody(String className, String methodName) {
+        StringBuilder methodBody = new StringBuilder();
+
+        CfrDriver driver = new CfrDriver.Builder().withOptions(Map.of("methodname", methodName)).withOutputSink(createOutputSinkFactory(methodBody)).build();
+
+        driver.analyse(Collections.singletonList(className));
+        return methodBody.toString();
+    }
+
+    private static OutputSinkFactory createOutputSinkFactory(StringBuilder stringBuilder) {
+        return new OutputSinkFactory() {
+            @Override
+            public List<SinkClass> getSupportedSinks(SinkType sinkType, Collection<SinkClass> collection) {
+                return Collections.singletonList(SinkClass.STRING);
+            }
+
+            @Override
+            public <T> Sink<T> getSink(SinkType sinkType, SinkClass sinkClass) {
+                return sinkType == SinkType.JAVA ? stringBuilder::append : ignore -> {
+                };
+            }
+        };
+    }
+}
