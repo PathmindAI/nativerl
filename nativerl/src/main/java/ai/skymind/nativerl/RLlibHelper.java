@@ -454,7 +454,6 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
-                helper.multiAgent(true);
             } else if ("--debug-metrics".equals(args[i])) {
                 helper.debugMetrics(true);
             } else if ("--episode-reward-range".equals(args[i])) {

@@ -74,7 +74,7 @@ fi
 
 DEBUGMETRICS_PARAM=""
 if [[ "$DEBUGMETRICS" = true ]]; then
-    MULTIAGENT_PARAM="--debug-metrics"
+    DEBUGMETRICS_PARAM="--debug-metrics"
 fi
 
 AUTOREGRESSIVE_PARAM=""
