@@ -4,7 +4,7 @@ aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/conda/0_7_6/rll
 aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/nativerl/pr_test/nativerl-1.0.0-SNAPSHOT-bin.zip nativerl-1.0.0-SNAPSHOT-bin.zip > /dev/null ;
 aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/anylogic/8_5_2/baseEnv.zip baseEnv.zip > /dev/null ;
 aws s3 cp s3://${ENVIRONMENT}-training-static-files.pathmind.com/pathmindhelper/1_0_1/PathmindPolicy.jar PathmindPolicy.jar > /dev/null ;
-aws s3 cp s3://prod-training-dynamic-files.pathmind.com/model_file/1483 model.zip > /dev/null ;
+aws s3 cp s3://dev-training-dynamic-files.pathmind.com/model_file/18940 model.zip > /dev/null ;
 tar xf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz > /dev/null ;
 rm -rf OpenJDK8U-jdk_x64_linux_hotspot_8u222b10.tar.gz ;
 export JAVA_HOME=`pwd`/jdk8u222-b10 ;
