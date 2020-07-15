@@ -8,6 +8,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -20,22 +21,31 @@ import java.util.jar.JarFile;
  */
 public class Reflect {
 
-    public static Class findLocalClass(Class parentClass, String methodName) throws ClassNotFoundException, IOException {
+    public static Class findLocalClass(Class parentClass, String methodName) throws ClassNotFoundException {
         ArrayList<String> names = new ArrayList<String>();
         String packagePath = parentClass.getPackage().getName().replace('.', '/');
-        File file = new File(parentClass.getProtectionDomain().getCodeSource().getLocation().getPath());
+        File file;
+        try {
+            file = new File(parentClass.getProtectionDomain().getCodeSource().getLocation().toURI());
+        } catch (IllegalArgumentException | URISyntaxException ex) {
+            file = new File(parentClass.getProtectionDomain().getCodeSource().getLocation().getPath());
+        }
         if (file.isDirectory()) {
             File[] files  = new File(file, packagePath).listFiles();
             for (File f : files) {
                 names.add(packagePath + '/' + f.getName());
             }
         } else {
-            try (JarFile jarFile = new JarFile(file)) {
-                Enumeration<JarEntry> entries = jarFile.entries();
-                while (entries.hasMoreElements()) {
-                    JarEntry entry = entries.nextElement();
-                    names.add(entry.getName());
+            try {
+                try (JarFile jarFile = new JarFile(file)) {
+                    Enumeration<JarEntry> entries = jarFile.entries();
+                    while (entries.hasMoreElements()) {
+                        JarEntry entry = entries.nextElement();
+                        names.add(entry.getName());
+                    }
                 }
+            } catch (IOException ex) {
+                throw new ClassNotFoundException(ex.toString(), ex);
             }
         }
         for (String name : names) {
@@ -43,7 +53,7 @@ public class Reflect {
                 String className = name.replace('/', '.').substring(0, name.length() - 6);
                 Class c = Class.forName(className, false, parentClass.getClassLoader());
                 Method m = c.getEnclosingMethod();
-                if (m != null && m.getName().equals(methodName)) {
+                if (m != null && m.getName().contains(methodName)) {
                     return c;
                 }
             }
@@ -166,7 +176,7 @@ public class Reflect {
             Annotation a = getFieldAnnotation(f);
             int length;
             if (a instanceof Discrete) {
-                length = (int)((Discrete)a).tuple();
+                length = (int)((Discrete)a).size();
             } else {
                 length = (int)Arrays.stream(((Continuous)a).shape()).reduce((x, y) -> x * y).getAsLong();
             }

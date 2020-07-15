@@ -1,6 +1,5 @@
 package ai.skymind.nativerl;
 
-import java.io.IOException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -30,7 +29,7 @@ public class RewardProcessorTest {
         double[] var4 = data4;
     }
 
-    void getRewardVariables() {
+    void rewardVariables() {
         class DummyVariables extends TestVariables {
         }
     }
@@ -43,7 +42,7 @@ public class RewardProcessorTest {
             assertArrayEquals(new double[] {37, 42, 64, 1, 2, 3, 4, 5}, rp.getVariables(this), 0.0);
             TestVariables v = rp.getRewardObject(this);
             assertEquals(37 + 42 + 64 + 5, new TestFunction().reward(v, v), 0.0);
-        } catch (ReflectiveOperationException | IOException ex) {
+        } catch (ReflectiveOperationException  ex) {
             fail(ex.getMessage());
         }
     }

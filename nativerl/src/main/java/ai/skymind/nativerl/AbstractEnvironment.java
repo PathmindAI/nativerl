@@ -1,5 +1,7 @@
 package ai.skymind.nativerl;
 
+import java.lang.annotation.Annotation;
+
 /**
  * Provides a few utility methods on top of the Environment interface.
  */
@@ -31,13 +33,50 @@ public abstract class AbstractEnvironment extends Environment {
     protected Array reward;
     protected Array metrics;
 
-    /** Initializes all (protected) fields based on actionSpace and observationSpace. */
+    /** Initializes all (protected) fields based on discreteActions and continuousObservations. */
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
         actionSpace = getDiscreteSpace(discreteActions);
         observationSpace = getContinuousSpace(continuousObservations);
         observation = new Array(new SSizeTVector().put(continuousObservations));
         reward = null;
         metrics = null;
+    }
+
+    /** Initializes all (protected) fields based on discreteActions and continuousObservations, but where annotations from agentClass can override them. */
+    protected AbstractEnvironment(long discreteActions, long continuousObservations, Class agentClass) throws ReflectiveOperationException {
+        this(discreteActions, continuousObservations);
+
+        ActionProcessor ap = new ActionProcessor(agentClass);
+        Annotation[] actionSpaces = ap.getActionSpaces();
+        if (actionSpaces.length == 1) {
+            if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete) {
+                ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
+                actionSpace = new Discrete(d.n(), d.size());
+            } else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
+                ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
+                FloatVector low, high;
+                if (c.low().length == 0) {
+                    low = new FloatVector(Float.NEGATIVE_INFINITY);
+                } else {
+                    low = new FloatVector(c.low().length);
+                    for (int i = 0; i < c.low().length; i++) {
+                        low.put(i, (float)c.low()[i]);
+                    }
+                }
+                if (c.high().length == 0) {
+                    high = new FloatVector(Float.POSITIVE_INFINITY);
+                } else {
+                    high = new FloatVector(c.high().length);
+                    for (int i = 0; i < c.high().length; i++) {
+                        high.put(i, (float)c.high()[i]);
+                    }
+                }
+                actionSpace = new Continuous(low, high, new SSizeTVector(c.shape()));
+            }
+        } else if (actionSpaces.length > 1) {
+            throw new IllegalArgumentException("Only one action space is currently supported.");
+        }
+        // else assume 1 discrete action with n specified in constructor
     }
 
     /** Returns {@link #actionSpace}. */

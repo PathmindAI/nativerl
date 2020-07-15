@@ -2,7 +2,6 @@ package ai.skymind.nativerl;
 
 import ai.skymind.nativerl.annotation.Discrete;
 import ai.skymind.nativerl.annotation.Continuous;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class ActionProcessorTest {
 
     class TestActions {
         @Discrete(n = 50) int action1;
-        @Discrete(n = 50, tuple = 2) long[] action2;
+        @Discrete(n = 50, size = 2) long[] action2;
         @Continuous(shape = {2}) float[] action3;
         @Continuous(shape = {2, 2}) double[] action4;
 
@@ -33,7 +32,7 @@ public class ActionProcessorTest {
         }
     }
 
-    void doActions() {
+    void actions() {
         class DummyActions extends TestActions {
         }
     }
@@ -51,7 +50,7 @@ public class ActionProcessorTest {
             assertArrayEquals(new long[] {2, 2}, ((Continuous)spaces[3]).shape());
             ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6});
             assertTrue(didIt);
-        } catch (ReflectiveOperationException | IOException ex) {
+        } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }
     }

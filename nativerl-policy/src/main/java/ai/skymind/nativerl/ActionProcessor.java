@@ -1,7 +1,6 @@
 package ai.skymind.nativerl;
 
 import ai.skymind.nativerl.util.Reflect;
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -12,7 +11,7 @@ import java.lang.reflect.Method;
  * @author saudet
  */
 public class ActionProcessor {
-    public static final String METHOD_NAME = "doActions";
+    public static final String METHOD_NAME = "actions";
 
     Class agentClass;
     Class actionClass;
@@ -20,12 +19,13 @@ public class ActionProcessor {
     Method actionMethod;
     Constructor actionConstructor;
 
-    public ActionProcessor(Class agentClass) throws ReflectiveOperationException, IOException {
+    public ActionProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.actionClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
         this.actionFields = Reflect.getFields(actionClass);
         this.actionMethod = Reflect.getVoidMethod(actionClass);
         this.actionConstructor = actionClass.getDeclaredConstructor(agentClass);
+        this.actionConstructor.setAccessible(true);
     }
 
     public Class getActionClass() {

@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Discrete {
     long n();
-    long tuple() default 1;
+    long size() default 1;
 }

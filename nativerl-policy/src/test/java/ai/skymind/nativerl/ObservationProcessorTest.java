@@ -1,6 +1,5 @@
 package ai.skymind.nativerl;
 
-import java.io.IOException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -28,7 +27,7 @@ public class ObservationProcessorTest {
         double[] obs3 = data3;
     }
 
-    void getObservations() {
+    void observations() {
         class DummyObservations extends TestObservations {
         }
     }
@@ -40,7 +39,7 @@ public class ObservationProcessorTest {
             assertArrayEquals(new String[] {"obs1", "obs2", "obs3"}, op.getObservationNames());
             assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5}, op.getObservations(this, null), 0.0);
             assertArrayEquals(new double[] {1, 2, 3, 4, 5}, op.getObservations(this, new TestFilter()), 0.0);
-        } catch (ReflectiveOperationException | IOException ex) {
+        } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }
     }

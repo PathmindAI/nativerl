@@ -362,8 +362,7 @@ public class RLlibHelper {
         if (environment == null) {
             throw new IllegalStateException("Environment is null.");
         }
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setSuffix(".hbs");
+        TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
@@ -402,7 +401,7 @@ public class RLlibHelper {
                 System.out.println("    --redis-address");
                 System.out.println("    --custom-parameters");
                 System.out.println("    --multi-agent");
-                System.out.println("    --maxTimeInSec");
+                System.out.println("    --max-time-in-sec");
                 System.out.println("    --num-samples");
                 System.out.println("    --resume");
                 System.out.println("    --checkpoint-frequency");

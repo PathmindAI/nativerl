@@ -16,13 +16,13 @@ public class {{className}} extends AbstractEnvironment {
     protected PolicyHelper policyHelper;
     protected double[] lastMetrics;
     {{{classSnippet}}}
-    public {{className}}() {
-        super({{discreteActions}}, {{continuousObservations}});
+    public {{className}}() throws ReflectiveOperationException {
+        super({{discreteActions}}, {{continuousObservations}}, {{agentClassName}}.class);
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
     }
 
-    public {{className}}(PolicyHelper policyHelper) {
-        super({{discreteActions}}, {{continuousObservations}});
+    public {{className}}(PolicyHelper policyHelper) throws ReflectiveOperationException {
+        super({{discreteActions}}, {{continuousObservations}}, {{agentClassName}}.class);
         this.policyHelper = policyHelper;
     }
 
@@ -75,9 +75,9 @@ public class {{className}} extends AbstractEnvironment {
     public float step(Array action) {
         double reward = 0;
         double[] before = PathmindHelperRegistry.getHelper().observationForReward();
-        long[] array = new long[(int)action.length()];
+        double[] array = new double[(int)action.length()];
         for (int i = 0; i < array.length; i++) {
-            array[i] = (long)action.data().get(i);
+            array[i] = action.data().get(i);
         }
         PathmindHelperRegistry.getHelper().action = array;
         engine.runFast();

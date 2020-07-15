@@ -34,11 +34,13 @@ class {{classSimpleName environment}}(gym.Env):
         self.nativeEnv = nativerl.createEnvironment('{{className environment}}')
         actionSpace = self.nativeEnv.getActionSpace()
         observationSpace = self.nativeEnv.getObservationSpace()
-        {{#if (eq actionTupleSize 1)~}}
-        self.action_space = gym.spaces.Discrete(actionSpace.n)
-        {{~else~}}
-        self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range({{actionTupleSize}})])
-        {{~/if}}
+        if isinstance(actionSpace, nativerl.Discrete):
+            if actionSpace.size == 1:
+                self.action_space = gym.spaces.Discrete(actionSpace.n)
+            else:
+                self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range(actionSpace.size)])
+        else:
+            self.action_space = gym.spaces.Box(actionSpace.low[0], actionSpace.high[0], numpy.array(actionSpace.shape), dtype=numpy.float32)
         self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
         self.id = '{{classSimpleName environment}}'
         self.max_episode_steps = 20000
@@ -49,18 +51,7 @@ class {{classSimpleName environment}}(gym.Env):
         return numpy.array(self.nativeEnv.getObservation())
 
     def step(self, action):
-        {{~#if (eq actionTupleSize 1)}}
-        actionarray = numpy.ndarray(shape=(1, 1), dtype=numpy.float32)
-        {{~else}}
-        actionarray = numpy.ndarray(shape=(1, len(action)), dtype=numpy.float32)
-        {{~/if}}
-        for i in range(0, actionarray.shape[1]):
-            {{~#if (eq actionTupleSize 1)}}
-            actionarray[0,i] = action
-            {{~else}}
-            actionarray[0,i] = action[i].astype(numpy.float32)
-            {{~/if}}
-        reward = self.nativeEnv.step(nativerl.Array(actionarray))
+        reward = self.nativeEnv.step(nativerl.Array(action.astype(numpy.float32)))
         return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
 
     def getMetrics(self):
