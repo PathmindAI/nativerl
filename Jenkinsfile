@@ -14,7 +14,11 @@ def icon = ":heavy_check_mark:"
 def buildNativerl(image_name) {
     def tag = readCurrentTag()
     echo "Building the nativerl Docker Image for tag ${tag}"
-    sh "docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
+    sh """
+        set +x
+        docker image ls | grep nativerl | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+        docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl"
+    """
     sh "docker run --mount \"src=${WORKSPACE}/nativerl/,target=/app,type=bind\" nativerl mvn clean package -Djavacpp.platform=linux-x86_64"
     sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://test-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.0.0-SNAPSHOT-bin.zip"
     sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.0.0-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.0.0-SNAPSHOT-bin.zip"
