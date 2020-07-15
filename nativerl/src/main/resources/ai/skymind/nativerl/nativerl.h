@@ -75,9 +75,10 @@ public:
 class Discrete : public Space {
 public:
     ssize_t n;
+    ssize_t size;
 
-    Discrete(const Discrete& d) : n(d.n) { }
-    Discrete(ssize_t n) : n(n) { }
+    Discrete(const Discrete& d) : n(d.n), size(d.size) { }
+    Discrete(ssize_t n, ssize_t size = 1) : n(n), size(size) { }
 };
 
 /** Helper method to cast dynamically a Space object into Continuous. */
@@ -93,7 +94,7 @@ Discrete* Space::asDiscrete() { return dynamic_cast<Discrete*>(this); }
  * jniNativeRL.h header file.
  * <p>
  * However, we can just as well implement it in pure C++, which we would do in the case of,
- * for example, MATLAB Simulink.
+ * for example, ROS or MATLAB Simulink.
  * <p>
  * On the Python side, these functions are picked up by, for example, pybind11 and used
  * to implement Python interfaces of environments, such as gym.Env, for RLlib, etc.

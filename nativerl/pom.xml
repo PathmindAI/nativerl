@@ -2,62 +2,39 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ai.skymind</groupId>
+        <artifactId>nativerl-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>ai.skymind</groupId>
     <artifactId>nativerl</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+
+    <name>NativeRL</name>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javacpp.parser.skip>false</javacpp.parser.skip>     <!-- To skip header file parsing phase: -Djavacpp.parser.skip=true  -->
         <javacpp.compiler.skip>false</javacpp.compiler.skip> <!-- To skip native compilation phase: -Djavacpp.compiler.skip=true -->
         <javacpp.cppbuild.skip>false</javacpp.cppbuild.skip> <!-- To skip execution of cppbuild.sh: -Djavacpp.cppbuild.skip=true -->
     </properties>
 
-    <repositories>
-        <repository>
-            <id>snapshots-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>snapshots-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
         <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacpp</artifactId>
-            <version>1.5.2</version>
+            <groupId>ai.skymind</groupId>
+            <artifactId>nativerl-policy</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>cpython-platform</artifactId>
-            <version>3.7.5-1.5.2</version>
+            <version>${cpython.version}</version>
         </dependency>
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>numpy-platform</artifactId>
-            <version>1.17.3-1.5.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>tensorflow-platform</artifactId>
-            <version>1.15.0-1.5.2</version>
+            <version>${numpy.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.jknack</groupId>
@@ -96,8 +73,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
                 <executions>
                     <execution>
@@ -120,7 +97,14 @@
             <plugin>
                 <groupId>org.bytedeco</groupId>
                 <artifactId>javacpp</artifactId>
-                <version>1.5.2</version>
+                <version>${javacpp.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ai.skymind</groupId>
+                        <artifactId>nativerl-policy</artifactId>
+                        <version>${project.version}</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <properties>${javacpp.platform.properties}</properties>
                     <classPath>${project.build.outputDirectory}</classPath>
@@ -165,6 +149,7 @@
                                 <program>bash</program>
                                 <argument>${project.basedir}/cppbuild.sh</argument>
                             </buildCommand>
+                            <workingDirectory>${project.basedir}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>

@@ -137,8 +137,7 @@ public class AnyLogicHelper {
         this.setClassName(className);
         this.setPackageName(packageName);
 
-        TemplateLoader loader = new ClassPathTemplateLoader();
-        loader.setSuffix(".hbs");
+        TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);

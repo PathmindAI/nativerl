@@ -69,7 +69,8 @@ PYBIND11_MODULE(nativerl, m) {
 
     pybind11::class_<nativerl::Discrete, nativerl::Space>(m, "Discrete")
         .def(pybind11::init<ssize_t>())
-        .def_readwrite("n", &nativerl::Discrete::n);
+        .def_readwrite("n", &nativerl::Discrete::n)
+        .def_readwrite("size", &nativerl::Discrete::size);
 
     pybind11::class_<nativerl::Environment>(m, "Environment")
         .def("getActionSpace", &nativerl::Environment::getActionSpace)

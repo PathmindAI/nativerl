@@ -1,6 +1,5 @@
 package ai.skymind.nativerl;
 
-import java.io.IOException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -22,7 +21,7 @@ public class ActionMaskProcessorTest {
         boolean[] mask3 = data3;
     }
 
-    void getActionsMasks() {
+    void actionMasks() {
         class DummyActionMasks extends TestActionMasks {
         }
     }
@@ -33,7 +32,7 @@ public class ActionMaskProcessorTest {
             assertEquals("DummyActionMasks", ap.getActionMaskClass().getSimpleName());
             assertArrayEquals(new String[] {"mask1", "mask2", "mask3"}, ap.getActionMaskNames());
             assertArrayEquals(new boolean[] {true, false, false, true}, ap.getActionMasks(this));
-        } catch (ReflectiveOperationException | IOException ex) {
+        } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }
     }

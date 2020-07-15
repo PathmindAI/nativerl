@@ -1,7 +1,6 @@
 package ai.skymind.nativerl;
 
 import ai.skymind.nativerl.util.Reflect;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
@@ -10,18 +9,19 @@ import java.lang.reflect.Field;
  * @author saudet
  */
 public class RewardProcessor {
-    public static final String METHOD_NAME = "getRewardVariables";
+    public static final String METHOD_NAME = "rewardVariables";
 
     Class agentClass;
     Class rewardClass;
     Field[] rewardFields;
     Constructor rewardConstructor;
 
-    public RewardProcessor(Class agentClass) throws ReflectiveOperationException, IOException {
+    public RewardProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.rewardClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
         this.rewardFields = Reflect.getFields(rewardClass);
         this.rewardConstructor = rewardClass.getDeclaredConstructor(agentClass);
+        this.rewardConstructor.setAccessible(true);
     }
 
     public Class getRewardClass() {
