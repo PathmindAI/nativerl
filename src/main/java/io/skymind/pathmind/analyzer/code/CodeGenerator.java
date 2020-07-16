@@ -39,6 +39,7 @@ public class CodeGenerator {
 
     public String generateEnvironment(String fileName) throws IOException {
         TemplateLoader loader = new ClassPathTemplateLoader();
+        loader.setPrefix("/templates/");
         loader.setSuffix(".hbs");
         Handlebars handlebars = new Handlebars(loader);
 

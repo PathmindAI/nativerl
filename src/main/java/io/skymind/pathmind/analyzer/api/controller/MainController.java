@@ -44,6 +44,8 @@ public class MainController {
 
         log.info("Received a request for extracting hyperparameters");
         final List<String> hyperparameters = fileService.processFile(multipartFile);
-        return HyperparametersDTO.of(hyperparameters);
+        HyperparametersDTO response = HyperparametersDTO.of(hyperparameters);
+        log.info("Extracted Hyperparameters : " + response);
+        return response;
     }
 }

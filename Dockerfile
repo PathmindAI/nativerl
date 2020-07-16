@@ -19,7 +19,6 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /lib/policy
 
 RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy_single.jar ./
-RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy_multi.jar ./
 
 WORKDIR /lib/pathmind
 
@@ -43,8 +42,6 @@ RUN mvn clean package \
 ARG CHECK_MODEL_SCRIPT=src/main/resources/scripts/check_model.sh
 COPY ${CHECK_MODEL_SCRIPT} bin
 
-ARG SINGLE_OR_MULTI_SCRIPT=src/main/resources/scripts/check_single_or_multi.sh
-COPY ${SINGLE_OR_MULTI_SCRIPT} bin
-
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/pathmind-model-analyzer.jar"]
+
