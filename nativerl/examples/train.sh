@@ -72,6 +72,11 @@ if [[ "$MULTIAGENT" = true ]]; then
     MULTIAGENT_PARAM="--multi-agent"
 fi
 
+DEBUGMETRICS_PARAM=""
+if [[ "$DEBUGMETRICS" = true ]]; then
+    DEBUGMETRICS_PARAM="--debug-metrics"
+fi
+
 AUTOREGRESSIVE_PARAM=""
 if [[ "$AUTOREGRESSIVE" = true ]]; then
     AUTOREGRESSIVE_PARAM="--autoregressive"
@@ -147,6 +152,7 @@ java ai.skymind.nativerl.RLlibHelper \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
+    $DEBUGMETRICS_PARAM \
     $EPISODE_REWARD_RANGE_PARAM \
     $ENTROPY_SLOPE_PARAM \
     $VF_LOSS_RANGE_PARAM \

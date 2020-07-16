@@ -243,6 +243,10 @@ public class RLlibHelper {
     @Builder.Default
     boolean multiAgent = false;
 
+    /** Indicates that we save a raw metrics tata to metrics_raw column in progress.csv*/
+    @Builder.Default
+    boolean debugMetrics = false;
+
     /** Reduce size of output log file */
     @Builder.Default
     boolean userLog = false;
@@ -295,6 +299,7 @@ public class RLlibHelper {
         this.actionTupleSize = copy.actionTupleSize;
         this.autoregressive = copy.autoregressive;
         this.discreteActions = copy.discreteActions;
+        this.debugMetrics = copy.debugMetrics;
     }
 
     @Override public String toString() {
@@ -322,6 +327,7 @@ public class RLlibHelper {
                 + "entropySlopeTh=" + entropySlopeTh + ", "
                 + "vfLossRangeTh=" + vfLossRangeTh + ", "
                 + "userLog=" + userLog + ", "
+                + "debugMetrics=" + debugMetrics + ", "
                 + "discreteActions=" + discreteActions + ", "
                 + "customParameters=" + customParameters + "]";
     }
@@ -405,6 +411,7 @@ public class RLlibHelper {
                 System.out.println("    --vf-loss-range");
                 System.out.println("    --value-pred");
                 System.out.println("    --user-log");
+                System.out.println("    --debug-metrics");
                 System.out.println("    --action-tuple-size");
                 System.out.println("    --autoregressive");
                 System.out.println("    --discrete-actions");
@@ -447,6 +454,8 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+            } else if ("--debug-metrics".equals(args[i])) {
+                helper.debugMetrics(true);
             } else if ("--episode-reward-range".equals(args[i])) {
                 helper.episodeRewardRangeTh(Double.parseDouble(args[++i]));
             } else if ("--entropy-slope".equals(args[i])) {
@@ -457,16 +466,10 @@ public class RLlibHelper {
                 helper.valuePredTh(Double.parseDouble(args[++i]));
             } else if ("--user-log".equals(args[i])) {
                 helper.userLog(true);
-            } else if ("--action-tuple-size".equals(args[i])) {
-                helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else if ("--autoregressive".equals(args[i])) {
                 helper.autoregressive(true);
-            } else if ("--discrete-actions".equals(args[i])) {
-                helper.discreteActions(Long.parseLong(args[++i]));
             } else if ("--action-tuple-size".equals(args[i])) {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
-            } else if ("--autoregressive".equals(args[i])) {
-                helper.autoregressive(true);
             } else if ("--discrete-actions".equals(args[i])) {
                 helper.discreteActions(Long.parseLong(args[++i]));
             } else {

@@ -4,6 +4,12 @@ from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
 from gym.spaces import Box, Discrete, Tuple
+from typing import Dict
+from ray.rllib.env import BaseEnv
+from ray.rllib.policy import Policy
+from ray.rllib.policy.sample_batch import SampleBatch
+from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
+from ray.rllib.agents.callbacks import DefaultCallbacks
 from ray.tune.logger import CSVLogger
 from ray.tune.logger import DEFAULT_LOGGERS
 from ray.tune.result import EXPR_PROGRESS_FILE
@@ -56,6 +62,33 @@ class {{classSimpleName environment}}(gym.Env):
             {{~/if}}
         reward = self.nativeEnv.step(nativerl.Array(actionarray))
         return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
+
+    def getMetrics(self):
+        return numpy.array(self.nativeEnv.getMetrics())
+
+class Callbacks(DefaultCallbacks):
+    def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
+                        policies: Dict[str, Policy],
+                        episode: MultiAgentEpisode, **kwargs):
+        episode.hist_data["metrics_raw"] = []
+
+    def on_episode_end(self, worker: RolloutWorker, base_env: BaseEnv,
+                        policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
+        metrics = worker.env.getMetrics().tolist()
+
+        {{#if debugMetrics}}
+        episode.hist_data["metrics_raw"] = metrics
+        {{/if}}
+
+        for i, val in enumerate(metrics):
+            episode.custom_metrics["metrics_" + str(i)] = metrics[i]
+
+    def on_train_result(self, trainer, result: dict, **kwargs):
+        results = ray.get(
+            [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
+
+        result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
+
 
 class Stopper:
     def __init__(self):
@@ -211,6 +244,7 @@ trials = run(
     loggers = LOGGERS,
     config = {
         'env': {{classSimpleName environment}},
+        'callbacks': Callbacks,
         'num_gpus': 0,
         'num_workers': {{numWorkers}},
         'num_cpus_per_worker': {{numCPUs}},

@@ -117,6 +117,8 @@ public:
     virtual float step(const Array& action) = 0;
     /** Can be used to run the simulation for a continuous action space and/or with multiple agents. */
 //    virtual const Array& step(const Array& action) = 0;
+    /** Returns the last values of observationForReward() */
+    virtual const Array& getMetrics() = 0;
 };
 
 // typedef Environment* (*CreateEnvironment)(const char* name);

@@ -53,4 +53,6 @@ public class Environment extends Pointer {
     @Virtual(true) public native float step(@Const @ByRef Array action);
     /** Can be used to run the simulation for a continuous action space and/or with multiple agents. */
 //    virtual const Array& step(const Array& action) = 0;
+    /** Returns the last values of observationForReward() */
+    @Virtual(true) public native @Const @ByRef Array getMetrics();
 }

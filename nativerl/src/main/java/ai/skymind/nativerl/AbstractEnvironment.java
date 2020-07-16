@@ -29,6 +29,7 @@ public abstract class AbstractEnvironment extends Environment {
     protected Array observation;
     /** The Array returned by the step() method in the case of multiple agents. */
     protected Array reward;
+    protected Array metrics;
 
     /** Initializes all (protected) fields based on actionSpace and observationSpace. */
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
@@ -36,6 +37,7 @@ public abstract class AbstractEnvironment extends Environment {
         observationSpace = getContinuousSpace(continuousObservations);
         observation = new Array(new SSizeTVector().put(continuousObservations));
         reward = null;
+        metrics = null;
     }
 
     /** Returns {@link #actionSpace}. */
@@ -51,5 +53,9 @@ public abstract class AbstractEnvironment extends Environment {
     /** Returns {@link #observation}. */
     @Override public Array getObservation() {
         return observation;
+    }
+
+    @Override public Array getMetrics() {
+        return metrics;
     }
 }
