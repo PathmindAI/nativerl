@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface Continuous {
-    double[] low() default {};
-    double[] high() default {};
+    double[] low();
+    double[] high();
     long[] shape();
 }

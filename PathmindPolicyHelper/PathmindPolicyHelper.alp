@@ -29,7 +29,7 @@ import java.lang.annotation.Annotation;]]></Import>
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
-   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile, actionTupleSize);
+   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 }
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
@@ -182,7 +182,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[long[]]]></Type>        
+						<Type><![CDATA[double[]]]></Type>        
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -419,7 +419,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>SEPARATE_SECTION</DelimeterType>
-							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
+							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
@@ -445,7 +445,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
-							<StartSection><![CDATA[Reinforcement Learning Functions]]></StartSection>
+							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
@@ -662,17 +662,12 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 	double[] reward = observationForReward();
 	if (usePolicy && policyHelper != null) {
 		steps++;
-	    action = (long[])policyHelper.computeDiscreteAction(training);
+	    action = policyHelper.computeActions(training);
 	    doAction(action);
     } else {
     	if (!usePolicy) {
     		steps++;
-    		long[] randomActions = new long[actionTupleSize];
-    		for (int n=0; n < actionTupleSize; n++) {
-    			randomActions[n] = (long)getEngine().getDefaultRandomGenerator().nextInt(possibleActionCount);
-    		}
-    		action = randomActions;
-    		doAction(action);
+    		doActionRandom(getEngine().getDefaultRandomGenerator());
     	}
     }
 }
@@ -707,7 +702,7 @@ if (!isTraining && steps == 1) {
 	      +"    Number of Observations: "+training.length+"\n"	      
 	      +"  Reward Variables: \n"
 	      +"    Array: "+Arrays.toString(reward)+"\n"
-	      +"    Number of Rewards: "+reward.length+"\n"	               
+	      +"    Number of Reward Variables: "+reward.length+"\n"	               
 	      +"  Last Action: "+Arrays.toString(action)+"\n"
 	      +"  Done: "+isDone() + "\n");		           	      
 	return output;
@@ -985,7 +980,7 @@ public class PathmindHelperRegistry {
         return registeredHelpers;
     }
 
-    public static PolicyHelper loadPolicy(String policyFile, int actionTupleSize) {
+    public static PolicyHelper loadPolicy(String policyFile) {
         AnyLogicCloudHelper.installLibrary();
         if (policyCache.containsKey(policyFile)) {
             return policyCache.get(policyFile);
@@ -994,6 +989,10 @@ public class PathmindHelperRegistry {
                 throw new RuntimeException("Policy File doesn't Exist.");
             }
             try {
+                if (new File(policyFile).isDirectory()) {
+                    return new RLlibPolicyHelper(new File(policyFile));
+                }
+
                 Path target = null;
                 if (AnyLogicCloudHelper.isCloud()) {
                     File destDir = new File(System.getProperty("user.dir") + "/policy");
@@ -1017,7 +1016,7 @@ public class PathmindHelperRegistry {
 
                 policyPackage.close();
 
-                PolicyHelper helper = new RLlibPolicyHelper(target.toFile(), actionTupleSize);
+                PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
                 policyCache.put(policyFile, helper);
                 return helper;
             } catch (UnsatisfiedLinkError e) {
@@ -1329,12 +1328,18 @@ public class AbstractPathmindHelper extends Agent {
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
 			Annotation[] actionSpaces = actionProcessor.getActionSpaces();
-			if (actionSpaces.length != 1 || !(actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete)) {
-				throw new IllegalArgumentException("Only a discrete action space is currently supported.");
+			if (actionSpaces.length == 1) {
+				if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete) {
+					ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
+					possibleActionCount = (int)d.n();
+					actionTupleSize = (int)d.size();
+				} else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
+					ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
+					// nothing to do for now
+				}
+			} else if (actionSpaces.length > 1) {
+				throw new IllegalArgumentException("Only one action space is currently supported.");
 			}
-			ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
-			possibleActionCount = (int)d.n();
-			actionTupleSize = (int)d.size();
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not create NativeRL processors: " + e);
 		}
@@ -1356,6 +1361,17 @@ public class AbstractPathmindHelper extends Agent {
 			actionProcessor.doActions(getOwner(), actions);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not do actions: " + e);
+		}
+	}
+
+	public void doActionRandom(Random random) {
+		try {
+			if (actionProcessor == null) {
+				init();
+			}
+			actionProcessor.doActionsRandom(getOwner(), random);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not do actions random: " + e);
 		}
 	}
 

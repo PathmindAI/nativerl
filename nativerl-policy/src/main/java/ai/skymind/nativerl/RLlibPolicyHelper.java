@@ -1,7 +1,9 @@
 package ai.skymind.nativerl;
 
 import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.FloatPointer;
+import org.bytedeco.javacpp.IntPointer;
 import org.bytedeco.javacpp.LongPointer;
 import org.bytedeco.tensorflow.*;
 
@@ -19,62 +21,36 @@ import static org.bytedeco.tensorflow.global.tensorflow.*;
  */
 public class RLlibPolicyHelper implements PolicyHelper {
     final String[] inputNames = {"observations", "prev_action", "prev_reward", "is_training", "seq_lens"};
-    final String[] outputNames;
+    final String[] outputNames = {"actions", "action_prob", "action_dist_inputs", "vf_preds", "action_logp"};
 
     SavedModelBundle bundle = null;
     SessionOptions options = null;
     RunOptions runOptions = null;
     StringUnorderedSet tags = null;
+    int[] inputTensorTypes = null;
     TensorShape[] inputTensorShapes = null;
     String[] realInputNames = null;
     String[] realOutputNames = null;
     ThreadLocal<Tensor[]> inputTensors = new ThreadLocal<Tensor[]>() {
         @Override protected Tensor[] initialValue() {
-            return new Tensor[] {
-                new Tensor(DT_FLOAT, inputTensorShapes[0]),
-                Tensor.create(new long[1]),
-                Tensor.create(new float[1]),
-                Tensor.create(new boolean[1]),
-                Tensor.create(new int[1])
-            };
+            Tensor[] tensors = new Tensor[inputNames.length];
+            for (int i = 0; i < tensors.length; i++) {
+                tensors[i] = new Tensor(inputTensorTypes[i], inputTensorShapes[i]);
+            }
+            return tensors;
         }
     };
     ThreadLocal<TensorVector> outputTensors = new ThreadLocal<TensorVector>() {
         @Override protected TensorVector initialValue() {
-            return new TensorVector(outputNames.length);
+            return new TensorVector(realOutputNames.length);
         }
     };
     int actionTupleSize;
 
     public RLlibPolicyHelper(File savedModel) throws IOException {
-        this(savedModel, 1);
-    }
-
-    public RLlibPolicyHelper(File savedModel, int actionTupleSize) throws IOException {
-        // initialize output names along with action tuple size
-        this.actionTupleSize = actionTupleSize;
-
-        // we may need this logic for Ray 0.9.0
-        List<String> tempOutputNames = new ArrayList<>();
-//        if (actionTupleSize == 1) {
-//            tempOutputNames.add("actions");
-//        } else {
-//            for (int i = 0; i < actionTupleSize; i++) {
-//                tempOutputNames.add("actions_" + i);
-//            }
-//        }
-
-        for (int i = 0; i < actionTupleSize; i++) {
-            tempOutputNames.add("actions_" + i);
-        }
-
-        tempOutputNames.addAll(Arrays.asList(new String[]{"action_prob", "action_dist_inputs", "vf_preds", "action_logp"}));
-        outputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
-
         if (disablePolicyHelper) {
             return;
         }
-
         bundle = new SavedModelBundle();
         options = new SessionOptions();
         runOptions = new RunOptions();
@@ -97,10 +73,13 @@ public class RLlibPolicyHelper implements PolicyHelper {
 //        }
 
         realInputNames = new String[inputNames.length];
+        inputTensorTypes = new int[inputNames.length];
         inputTensorShapes = new TensorShape[inputNames.length];
         for (int i = 0; i < inputNames.length; i++) {
-            realInputNames[i] = signature.inputs().get(new BytePointer(inputNames[i])).name().getString();
-            TensorShapeProto tsp = signature.inputs().get(new BytePointer(inputNames[i])).mutable_tensor_shape();
+            TensorInfo info = signature.inputs().get(new BytePointer(inputNames[i]));
+            realInputNames[i] = info.name().getString();
+            inputTensorTypes[i] = info.dtype();
+            TensorShapeProto tsp = info.mutable_tensor_shape();
             if (tsp.dim_size() > 0) {
                 TensorShapeProto_Dim dim = tsp.mutable_dim(0);
                 if (dim.size() < 0) {
@@ -110,17 +89,88 @@ public class RLlibPolicyHelper implements PolicyHelper {
             }
             inputTensorShapes[i] = new TensorShape(tsp);
         }
-        realOutputNames = new String[outputNames.length];
-        for (int i = 0; i < outputNames.length; i++) {
-            realOutputNames[i] = signature.outputs().get(new BytePointer(outputNames[i])).name().getString();
+
+        // initialize output names along with action tuple size
+        List<String> tempOutputNames = new ArrayList<>();
+
+        // we may need this logic for Ray 0.9.0
+        TensorInfo info = signature.outputs().get(new BytePointer(outputNames[0]));
+        if (info != null && info.name() != null) {
+            actionTupleSize = 1;
+            tempOutputNames.add(info.name().getString());
+        } else {
+            actionTupleSize = 0;
+            while ((info = signature.outputs().get(new BytePointer(outputNames[0] + "_" + actionTupleSize))) != null
+                    && info.name() != null) {
+                actionTupleSize++;
+                tempOutputNames.add(info.name().getString());
+            }
         }
+        for (int i = 1; i < outputNames.length; i++) {
+            tempOutputNames.add(signature.outputs().get(new BytePointer(outputNames[i])).name().getString());
+        }
+        realOutputNames = tempOutputNames.toArray(new String[tempOutputNames.size()]);
     }
 
-    @Override public float[] computeContinuousAction(float[] state) {
+    @Override public float[] computeActions(float[] state) {
         if (disablePolicyHelper) {
             return null;
         }
-        throw new UnsupportedOperationException();
+        new FloatPointer(inputTensors.get()[0].tensor_data()).put(state);
+
+        Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors.get()),
+                new StringVector(realOutputNames), new StringVector(), outputTensors.get());
+        if (!s.ok()) {
+            throw new RuntimeException(s.error_message().getString());
+        }
+
+        long numActionElements = 0;
+        Tensor[] actions = new Tensor[actionTupleSize];
+        for (int i = 0; i < actionTupleSize; i++) {
+            Tensor t = outputTensors.get().get(i);
+            numActionElements += t.NumElements();
+            actions[i] = t;
+        }
+
+        int k = 0;
+        float[] actionArray = new float[(int)numActionElements];
+        for (int i = 0; i < actionTupleSize; i++) {
+            Tensor t = actions[i];
+            switch (t.dtype()) {
+                case DT_INT32:
+                case DT_UINT32:
+                    IntPointer ip = new IntPointer(t.tensor_data());
+                    for (int j = 0; j < t.NumElements(); j++) {
+                        actionArray[k++] = ip.get(j);
+                    }
+                    break;
+                case DT_INT64:
+                case DT_UINT64:
+                    LongPointer lp = new LongPointer(t.tensor_data());
+                    for (int j = 0; j < t.NumElements(); j++) {
+                        actionArray[k++] = lp.get(j);
+                    }
+                    break;
+                case DT_FLOAT:
+                    FloatPointer fp = new FloatPointer(t.tensor_data());
+                    for (int j = 0; j < t.NumElements(); j++) {
+                        actionArray[k++] = fp.get(j);
+                    }
+                    break;
+                case DT_DOUBLE:
+                    DoublePointer dp = new DoublePointer(t.tensor_data());
+                    for (int j = 0; j < t.NumElements(); j++) {
+                        actionArray[k++] = (float)dp.get(j);
+                    }
+                    break;
+                default:
+                    throw new UnsupportedOperationException("Tensor.dtype() == " + t.dtype());
+            }
+        }
+//        for (int i = 0; i < outputTensors.size(); i++) {
+//            System.out.println(outputTensors.get().get(i).createIndexer());
+//        }
+        return actionArray;
     }
 
     @Override public long[] computeDiscreteAction(float[] state) {

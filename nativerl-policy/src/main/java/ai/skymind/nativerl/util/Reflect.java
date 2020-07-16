@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.Random;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -170,15 +171,27 @@ public class Reflect {
         return booleans;
     }
 
-    public static void setFieldDoubles(Field[] fields, Object object, double[] values) throws ReflectiveOperationException {
+    public static void setFieldDoubles(Field[] fields, Object object, double[] values, Random random) throws ReflectiveOperationException {
         int i = 0;
         for (Field f : fields) {
             Annotation a = getFieldAnnotation(f);
-            int length;
+            int n = 0, length;
+            double[] low = null, high = null;
             if (a instanceof Discrete) {
+                n = (int)((Discrete)a).n();
                 length = (int)((Discrete)a).size();
             } else {
+                low = (double[])((Continuous)a).low();
+                high = (double[])((Continuous)a).high();
                 length = (int)Arrays.stream(((Continuous)a).shape()).reduce((x, y) -> x * y).getAsLong();
+                if (low.length == 1 && length > 1) {
+                    low = Arrays.copyOf(low, length);
+                    Arrays.fill(low, low[0]);
+                }
+                if (high.length == 1 && length > 1) {
+                    high = Arrays.copyOf(high, length);
+                    Arrays.fill(high, high[0]);
+                }
             }
             Class t = f.getType();
             if (t.isArray()) {
@@ -187,32 +200,32 @@ public class Reflect {
                 f.set(object, array);
                 if (c == int.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setInt(array, j, (int)values[i++]);
+                        Array.setInt(array, j, values != null ? (int)values[i++] : random.nextInt(n));
                     }
                 } else if (c == long.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setLong(array, j, (long)values[i++]);
+                        Array.setLong(array, j, values != null ? (long)values[i++] : (long)(n * random.nextDouble()));
                     }
                 } else if (c == float.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setFloat(array, j, (float)values[i++]);
+                        Array.setFloat(array, j, values != null ? (float)values[i++] : (float)((high[j] - low[j]) * random.nextDouble() + low[j]));
                     }
                 } else if (c == double.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setDouble(array, j, values[i++]);
+                        Array.setDouble(array, j, values != null ? values[i++] : (high[j] - low[j]) * random.nextDouble() + low[j]);
                     }
                 } else {
                     throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
                 }
             } else {
                 if (t == int.class) {
-                    f.setInt(object, (int)values[i++]);
+                    f.setInt(object, values != null ? (int)values[i++] : random.nextInt(n));
                 } else if (t == long.class) {
-                    f.setLong(object, (long)values[i++]);
+                    f.setLong(object, values != null ?  (long)values[i++] : (long)(n * random.nextDouble()));
                 } else if (t == float.class) {
-                    f.setFloat(object, (float)values[i++]);
+                    f.setFloat(object, values != null ? (float)values[i++] : (float)((high[0] - low[0]) * random.nextDouble() + low[0]));
                 } else if (t == double.class) {
-                    f.setDouble(object, values[i++]);
+                    f.setDouble(object, values != null ? values[i++] : (high[0] - low[0]) * random.nextDouble() + low[0]);
                 } else {
                     throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
                 }
