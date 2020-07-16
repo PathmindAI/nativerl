@@ -3,19 +3,17 @@ package io.skymind.pathmind.analyzer.api.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class HyperparametersDTO {
 
     private static List<String> knownOutputs = List.of(
