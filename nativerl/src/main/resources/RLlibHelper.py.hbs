@@ -4,6 +4,9 @@ from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
 from gym.spaces import Box, Discrete, Tuple
+from ray.tune.logger import CSVLogger
+from ray.tune.logger import DEFAULT_LOGGERS
+from ray.tune.result import EXPR_PROGRESS_FILE
 {{~#if autoregressive}}
 from ray.rllib.models import ModelCatalog
 from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
@@ -155,6 +158,18 @@ class Stopper:
             if self.episode_reward_converged and self.value_pred_converged:
                 return trial_id
 
+
+class PM_CSVLogger(CSVLogger):
+    def _init(self):
+        """CSV outputted with Headers as first set of results."""
+        progress_file = os.path.join(self.logdir, EXPR_PROGRESS_FILE)
+        self._continuing = os.path.exists(progress_file) and os.path.getsize(progress_file) > 0
+        self._file = open(progress_file, "a")
+        self._csv_out = None
+
+LOGGERS = list(DEFAULT_LOGGERS)
+LOGGERS[1] = PM_CSVLogger
+
 pbt_scheduler = PopulationBasedTraining(
     time_attr = 'training_iteration',
     metric = 'episode_reward_mean',
@@ -193,6 +208,7 @@ trials = run(
     scheduler = pbt_scheduler,
     num_samples = {{numSamples}},
     stop = Stopper().stop,
+    loggers = LOGGERS,
     config = {
         'env': {{classSimpleName environment}},
         'num_gpus': 0,
