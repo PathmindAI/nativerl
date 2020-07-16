@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Random;
 
 /**
  *
@@ -42,7 +43,13 @@ public class ActionProcessor {
 
     public void doActions(Object agent, double[] actions) throws ReflectiveOperationException {
         Object a = actionConstructor.newInstance(agent);
-        Reflect.setFieldDoubles(actionFields, a, actions);
+        Reflect.setFieldDoubles(actionFields, a, actions, null);
+        actionMethod.invoke(a);
+    }
+
+    public void doActionsRandom(Object agent, Random random) throws ReflectiveOperationException {
+        Object a = actionConstructor.newInstance(agent);
+        Reflect.setFieldDoubles(actionFields, a, null, random);
         actionMethod.invoke(a);
     }
 }

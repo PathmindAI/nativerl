@@ -97,6 +97,7 @@ public class RLlibHelper {
             float[] obsHigh = continuousObsSpace.high().get();
             long[] obsShape = continuousObsSpace.shape().get();
 
+            actionTupleSize = (int)discreteActionSpace.size();
             String actionSpaceStr = "gym.spaces.Discrete(" + discreteActionSpace.n() + ")";
             PyRun_StringFlags("import gym, inspect, numpy, ray, sys\n"
                     + "from ray.rllib.agents import registry\n"
@@ -135,8 +136,23 @@ public class RLlibHelper {
             PyDict_SetItemString(globals, "obs", obsArray);
         }
 
-        @Override public float[] computeContinuousAction(float[] state) {
-            throw new UnsupportedOperationException();
+        @Override public float[] computeActions(float[] state) {
+            obsData.put(state);
+            PyRun_StringFlags("action = trainer.compute_action(obs).astype(float)\n", Py_file_input, globals, globals, null);
+
+            if (PyErr_Occurred() != null) {
+                PyErr_Print();
+                PyErr_Clear();
+                PyRun_StringFlags("sys.stderr.flush()", Py_file_input, globals, globals, null);
+                throw new RuntimeException("Python error occurred");
+            }
+
+            float[] arrayOfActions = new float[actionTupleSize];
+            for (int i=0; i < actionTupleSize; i++) {
+                arrayOfActions[i] = (float)PyFloat_AsDouble(PyDict_GetItemString(globals, "action[i]"));
+            }
+            return arrayOfActions;
+            //return PyLong_AsLongLong(PyDict_GetItemString(globals, "action",));
         }
 
         @Override public long[] computeDiscreteAction(float[] state) {
@@ -344,8 +360,6 @@ public class RLlibHelper {
         return hiddenLayers();
     }
 
-    //todo I'm not sure we use this method
-    //if we use this method, we need to change this method to pass tuple action size
     public PolicyHelper createPythonPolicyHelper() throws IOException {
         return new PythonPolicyHelper(rllibpaths, algorithm, checkpoint, environment);
     }

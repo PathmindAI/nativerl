@@ -55,21 +55,13 @@ public abstract class AbstractEnvironment extends Environment {
             } else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
                 ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
                 FloatVector low, high;
-                if (c.low().length == 0) {
-                    low = new FloatVector(Float.NEGATIVE_INFINITY);
-                } else {
-                    low = new FloatVector(c.low().length);
-                    for (int i = 0; i < c.low().length; i++) {
-                        low.put(i, (float)c.low()[i]);
-                    }
+                low = new FloatVector(c.low().length);
+                for (int i = 0; i < c.low().length; i++) {
+                    low.put(i, (float)c.low()[i]);
                 }
-                if (c.high().length == 0) {
-                    high = new FloatVector(Float.POSITIVE_INFINITY);
-                } else {
-                    high = new FloatVector(c.high().length);
-                    for (int i = 0; i < c.high().length; i++) {
-                        high.put(i, (float)c.high()[i]);
-                    }
+                high = new FloatVector(c.high().length);
+                for (int i = 0; i < c.high().length; i++) {
+                    high.put(i, (float)c.high()[i]);
                 }
                 actionSpace = new Continuous(low, high, new SSizeTVector(c.shape()));
             }

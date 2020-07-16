@@ -117,7 +117,7 @@ public class {{className}} extends AbstractEnvironment {
     public static void main(String[] args) throws Exception {
         ArrayList<String> lines = new ArrayList<String>({{testIterations}});
         {{~#if policyHelper}}
-        {{className}} e = new {{className}}(new {{policyHelper}}(new File(args[0]), {{actionTupleSize}}));
+        {{className}} e = new {{className}}(new {{policyHelper}}(new File(args[0])));
         for (int i = 0; i < {{testIterations}}; i++) {
             lines.add(Arrays.toString(e.test()));
         }
