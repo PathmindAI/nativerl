@@ -104,10 +104,14 @@ public:
     virtual ~Environment() { };
     //    /** Passes a new random seed that should be used for reproducibility. */
     //    virtual void setSeed(long long seed) = 0;
-        /** Returns the action Space supported. */
+    /** Returns the action Space supported. */
     virtual const Space* getActionSpace() = 0;
+    /** Returns the action mask Space supported. */
+    virtual const Space* getActionMaskSpace() = 0;
     /** Returns the observation Space supported. */
     virtual const Space* getObservationSpace() = 0;
+    /** Returns the current state of the possible actions. */
+    virtual const Array& getActionMask() = 0;
     /** Returns the current state of the simulation. */
     virtual const Array& getObservation() = 0;
     /** Indicates when a simulation episode is over. */
