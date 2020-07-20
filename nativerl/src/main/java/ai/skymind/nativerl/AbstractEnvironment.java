@@ -1,6 +1,7 @@
 package ai.skymind.nativerl;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
 /**
  * Provides a few utility methods on top of the Environment interface.
@@ -25,8 +26,12 @@ public abstract class AbstractEnvironment extends Environment {
 
     /** The action Space. */
     protected Space actionSpace;
+    /** The action mask Space. */
+    protected Space actionMaskSpace;
     /** The state Space. */
     protected Space observationSpace;
+    /** The Array returned by the getActionMask() method. */
+    protected Array actionMask;
     /** The Array returned by the getObservation() method. */
     protected Array observation;
     /** The Array returned by the step() method in the case of multiple agents. */
@@ -36,7 +41,9 @@ public abstract class AbstractEnvironment extends Environment {
     /** Initializes all (protected) fields based on discreteActions and continuousObservations. */
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
         actionSpace = getDiscreteSpace(discreteActions);
+        actionMaskSpace = null;
         observationSpace = getContinuousSpace(continuousObservations);
+        actionMask = new Array(new SSizeTVector().put(discreteActions));
         observation = new Array(new SSizeTVector().put(continuousObservations));
         reward = null;
         metrics = null;
@@ -47,11 +54,19 @@ public abstract class AbstractEnvironment extends Environment {
         this(discreteActions, continuousObservations);
 
         ActionProcessor ap = new ActionProcessor(agentClass);
+        ActionMaskProcessor mp;
+        try {
+            mp = new ActionMaskProcessor(agentClass);
+        } catch (ClassNotFoundException e) {
+            mp = null;
+        }
         Annotation[] actionSpaces = ap.getActionSpaces();
         if (actionSpaces.length == 1) {
             if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete) {
                 ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
                 actionSpace = new Discrete(d.n(), d.size());
+                actionMaskSpace = mp != null ? getContinuousSpace(0, 1, d.n() * d.size()) : null;
+                actionMask = new Array(new SSizeTVector().put(d.n() * d.size()));
             } else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
                 ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
                 FloatVector low, high;
@@ -63,7 +78,10 @@ public abstract class AbstractEnvironment extends Environment {
                 for (int i = 0; i < c.high().length; i++) {
                     high.put(i, (float)c.high()[i]);
                 }
+                long length = (int)Arrays.stream(c.shape()).reduce((x, y) -> x * y).getAsLong();
                 actionSpace = new Continuous(low, high, new SSizeTVector(c.shape()));
+                actionMaskSpace = mp != null ? getContinuousSpace(0, 1, length) : null;
+                actionMask = new Array(new SSizeTVector().put(length));
             }
         } else if (actionSpaces.length > 1) {
             throw new IllegalArgumentException("Only one action space is currently supported.");
@@ -76,9 +94,18 @@ public abstract class AbstractEnvironment extends Environment {
         return actionSpace;
     }
 
+    @Override public Space getActionMaskSpace() {
+        return actionMaskSpace;
+    }
+
     /** Returns {@link #observationSpace}. */
     @Override public Space getObservationSpace() {
         return observationSpace;
+    }
+
+    /** Returns {@link #actionMask}. */
+    @Override public Array getActionMask() {
+        return actionMask;
     }
 
     /** Returns {@link #observation}. */

@@ -74,7 +74,9 @@ PYBIND11_MODULE(nativerl, m) {
 
     pybind11::class_<nativerl::Environment>(m, "Environment")
         .def("getActionSpace", &nativerl::Environment::getActionSpace)
+        .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace)
         .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
+        .def("getActionMask", &nativerl::Environment::getActionMask)
         .def("getObservation", &nativerl::Environment::getObservation)
         .def("isDone", &nativerl::Environment::isDone)
         .def("reset", &nativerl::Environment::reset)

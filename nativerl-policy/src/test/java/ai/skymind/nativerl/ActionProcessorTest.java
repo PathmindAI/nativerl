@@ -31,7 +31,7 @@ public class ActionProcessorTest {
                 assertTrue(action2[0] >= 0 && action2[0] < 50);
                 assertTrue(action2[1] >= 0 && action2[1] < 50);
                 assertTrue(action3[0] >= 10 && action3[0] < 30);
-                assertTrue(action3[1] >= 20 && action3[0] < 40);
+                assertTrue(action3[1] >= 20 && action3[1] < 40);
                 assertTrue(action4[0] >= 0.0 && action4[0] < 1.0);
                 assertTrue(action4[1] >= 0.0 && action4[1] < 1.0);
                 assertTrue(action4[2] >= 0.0 && action4[2] < 1.0);

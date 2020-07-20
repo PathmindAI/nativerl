@@ -33,6 +33,7 @@ class {{classSimpleName environment}}(gym.Env):
 
         self.nativeEnv = nativerl.createEnvironment('{{className environment}}')
         actionSpace = self.nativeEnv.getActionSpace()
+        actionMaskSpace = self.nativeEnv.getActionMaskSpace()
         observationSpace = self.nativeEnv.getObservationSpace()
         if isinstance(actionSpace, nativerl.Discrete):
             if actionSpace.size == 1:
@@ -40,19 +41,36 @@ class {{classSimpleName environment}}(gym.Env):
             else:
                 self.action_space = Tuple([gym.spaces.Discrete(actionSpace.n) for i in range(actionSpace.size)])
         else:
-            self.action_space = gym.spaces.Box(actionSpace.low[0], actionSpace.high[0], numpy.array(actionSpace.shape), dtype=numpy.float32)
-        self.observation_space = gym.spaces.Box(observationSpace.low[0], observationSpace.high[0], numpy.array(observationSpace.shape), dtype=numpy.float32)
+            low = actionSpace.low[0] if len(actionSpace.low) == 1 else numpy.array(actionSpace.low)
+            high = actionSpace.high[0] if len(actionSpace.high) == 1 else numpy.array(actionSpace.high)
+            self.action_space = gym.spaces.Box(low, high, numpy.array(actionSpace.shape), dtype=numpy.float32)
+        low = observationSpace.low[0] if len(observationSpace.low) == 1 else numpy.array(observationSpace.low)
+        high = observationSpace.high[0] if len(observationSpace.high) == 1 else numpy.array(observationSpace.high)
+        self.observation_space = gym.spaces.Box(low, high, numpy.array(observationSpace.shape), dtype=numpy.float32)
+        if actionMaskSpace is not None:
+            low = actionMaskSpace.low[0] if len(actionMaskSpace.low) == 1 else numpy.array(actionMaskSpace.low)
+            high = actionMaskSpace.high[0] if len(actionMaskSpace.high) == 1 else numpy.array(actionMaskSpace.high)
+            self.observation_space = gym.spaces.Dict({
+                "action_mask": gym.spaces.Box(low, high, numpy.array(actionMaskSpace.shape), dtype=numpy.float32),
+                "real_obs": self.observation_space
+            })
         self.id = '{{classSimpleName environment}}'
         self.max_episode_steps = 20000
         self.unwrapped.spec = self
 
     def reset(self):
         self.nativeEnv.reset()
-        return numpy.array(self.nativeEnv.getObservation())
+        obs = numpy.array(self.nativeEnv.getObservation())
+        if isinstance(self.observation_space, gym.spaces.Dict):
+            obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
+        return obs
 
     def step(self, action):
         reward = self.nativeEnv.step(nativerl.Array(action.astype(numpy.float32)))
-        return numpy.array(self.nativeEnv.getObservation()), reward, self.nativeEnv.isDone(), {}
+        obs = numpy.array(self.nativeEnv.getObservation())
+        if isinstance(self.observation_space, gym.spaces.Dict):
+            obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
+        return obs, reward, self.nativeEnv.isDone(), {}
 
     def getMetrics(self):
         return numpy.array(self.nativeEnv.getMetrics())

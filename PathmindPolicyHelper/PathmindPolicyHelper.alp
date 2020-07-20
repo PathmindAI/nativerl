@@ -228,7 +228,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1579541084520</Id>
 					<Name><![CDATA[debugMode]]></Name>
-					<X>20</X><Y>430</Y>
+					<X>20</X><Y>460</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -254,7 +254,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<Id>1590618532129</Id>
 					<Name><![CDATA[actionTupleSize]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>310</Y>
+					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -285,7 +285,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<Id>1566825577748</Id>
 					<Name><![CDATA[possibleActionCount]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>280</Y>
+					<X>20</X><Y>310</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -315,7 +315,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
-					<X>20</X><Y>250</Y>
+					<X>20</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -400,7 +400,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
 					<Name><![CDATA[observations]]></Name>
-					<X>20</X><Y>160</Y>
+					<X>20</X><Y>190</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -426,7 +426,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1566471864343</Id>
 					<Name><![CDATA[rewardVariables]]></Name>
-					<X>20</X><Y>190</Y>
+					<X>20</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -475,9 +475,34 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1595219001770</Id>
+					<Name><![CDATA[actionMasks]]></Name>
+					<X>20</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="ACTION">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1595219001768</Id>
+							<Label><![CDATA[Action Masks]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
-					<X>20</X><Y>220</Y>
+					<X>20</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -503,7 +528,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573849287879</Id>
 					<Name><![CDATA[useEventTrigger]]></Name>
-					<X>20</X><Y>400</Y>
+					<X>20</X><Y>430</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -529,7 +554,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
-					<X>20</X><Y>340</Y>
+					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -564,7 +589,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
 					<Name><![CDATA[eventCondition]]></Name>
-					<X>20</X><Y>370</Y>
+					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -895,6 +920,9 @@ if (!isTraining && steps == 1) {
 					<ParameterValue Class="CodeValue">
 						<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
 					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[actionMasks]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
@@ -1300,6 +1328,7 @@ public class AnyLogicCloudHelper {
 			<Id>1594627713365</Id>
 			<Name><![CDATA[AbstractPathmindHelper]]></Name>
 			<Text><![CDATA[import ai.skymind.nativerl.ActionProcessor;
+import ai.skymind.nativerl.ActionMaskProcessor;
 import ai.skymind.nativerl.ObservationProcessor;
 import ai.skymind.nativerl.RewardProcessor;
 import ai.skymind.nativerl.annotation.*;
@@ -1307,6 +1336,7 @@ import java.lang.annotation.Annotation;
 
 public class AbstractPathmindHelper extends Agent {
 	protected ActionProcessor actionProcessor;
+	protected ActionMaskProcessor actionMaskProcessor;
 	protected ObservationProcessor observationProcessor;
 	protected RewardProcessor rewardProcessor;
 
@@ -1324,6 +1354,11 @@ public class AbstractPathmindHelper extends Agent {
 	void init() {
 		try {
 			actionProcessor = new ActionProcessor(getOwner().getClass());
+			try {
+				actionMaskProcessor = new ActionMaskProcessor(getOwner().getClass());
+			} catch (ClassNotFoundException e) {
+				actionMaskProcessor = null;
+			}
 			observationProcessor = new ObservationProcessor(getOwner().getClass());
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
@@ -1372,6 +1407,17 @@ public class AbstractPathmindHelper extends Agent {
 			actionProcessor.doActionsRandom(getOwner(), random);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not do actions random: " + e);
+		}
+	}
+
+	public boolean[] actionMask() {
+		try {
+			if (observationProcessor == null) {
+				init();
+			}
+			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner()) : null;
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not get action masks: " + e);
 		}
 	}
 

@@ -45,6 +45,17 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
+    public Array getActionMask() {
+        boolean[] mask = PathmindHelperRegistry.getHelper().actionMask();
+        float[] array = new float[mask.length];
+        for (int i = 0; i < mask.length; i++) {
+            array[i] = mask[i] ? 1.0f : 0.0f;
+        }
+        actionMask.data().put(array);
+        return actionMask;
+    }
+
+    @Override
     public boolean isDone() {
         return PathmindHelperRegistry.getHelper().isDone();
     }
