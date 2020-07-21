@@ -105,7 +105,7 @@ public:
     //    /** Passes a new random seed that should be used for reproducibility. */
     //    virtual void setSeed(long long seed) = 0;
     /** Returns the action Space supported. */
-    virtual const Space* getActionSpace() = 0;
+    virtual const Space* getActionSpace(ssize_t i = 0) = 0;
     /** Returns the action mask Space supported. */
     virtual const Space* getActionMaskSpace() = 0;
     /** Returns the observation Space supported. */

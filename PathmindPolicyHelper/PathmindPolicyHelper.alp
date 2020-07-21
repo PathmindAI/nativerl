@@ -1362,18 +1362,18 @@ public class AbstractPathmindHelper extends Agent {
 			observationProcessor = new ObservationProcessor(getOwner().getClass());
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
+			possibleActionCount = 1;
+			actionTupleSize = 0;
 			Annotation[] actionSpaces = actionProcessor.getActionSpaces();
-			if (actionSpaces.length == 1) {
-				if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete) {
-					ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
-					possibleActionCount = (int)d.n();
-					actionTupleSize = (int)d.size();
-				} else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
-					ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
+			for (int i = 0; i < actionSpaces.length; i++) {
+				if (actionSpaces[i] instanceof ai.skymind.nativerl.annotation.Discrete) {
+					ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[i];
+					possibleActionCount *= (int)d.n();
+					actionTupleSize += (int)d.size();
+				} else if (actionSpaces[i] instanceof ai.skymind.nativerl.annotation.Continuous) {
+					ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[i];
 					// nothing to do for now
 				}
-			} else if (actionSpaces.length > 1) {
-				throw new IllegalArgumentException("Only one action space is currently supported.");
 			}
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not create NativeRL processors: " + e);
