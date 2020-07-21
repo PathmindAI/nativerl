@@ -36,8 +36,8 @@ public class {{className}} extends AbstractEnvironment {
     @Override
     public Array getObservation() {
         double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();
-        float[] array = new float[obs.length];
-        for (int i = 0; i < obs.length; i++) {
+        float[] array = new float[Math.min(obs.length, (int)observation.length())];
+        for (int i = 0; i < array.length; i++) {
             array[i] = (float)obs[i];
         }
         observation.data().put(array);
@@ -47,8 +47,8 @@ public class {{className}} extends AbstractEnvironment {
     @Override
     public Array getActionMask() {
         boolean[] mask = PathmindHelperRegistry.getHelper().actionMask();
-        float[] array = new float[mask.length];
-        for (int i = 0; i < mask.length; i++) {
+        float[] array = new float[Math.min(mask.length, (int)actionMask.length())];
+        for (int i = 0; i < array.length; i++) {
             array[i] = mask[i] ? 1.0f : 0.0f;
         }
         actionMask.data().put(array);

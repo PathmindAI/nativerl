@@ -68,7 +68,7 @@ public class RLlibHelper {
         int actionTupleSize;
 
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Environment env) throws IOException {
-            this(rllibpaths, algorithm, checkpoint, env.getClass().getSimpleName(), env.getActionSpace(), env.getObservationSpace());
+            this(rllibpaths, algorithm, checkpoint, env.getClass().getSimpleName(), env.getActionSpace(0), env.getObservationSpace());
         }
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String name, long discreteActions, long continuousObservations) throws IOException {
             this(rllibpaths, algorithm, checkpoint, name, AbstractEnvironment.getDiscreteSpace(discreteActions),

@@ -40,7 +40,7 @@ public class Environment extends Pointer {
     //    /** Passes a new random seed that should be used for reproducibility. */
     //    virtual void setSeed(long long seed) = 0;
     /** Returns the action Space supported. */
-    @Virtual(true) public native @Const Space getActionSpace();
+    @Virtual(true) public native @Const Space getActionSpace(@Cast("ssize_t") long i/*=0*/);
     /** Returns the action mask Space supported. */
     @Virtual(true) public native @Const Space getActionMaskSpace();
     /** Returns the observation Space supported. */

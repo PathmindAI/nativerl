@@ -25,7 +25,7 @@ public abstract class AbstractEnvironment extends Environment {
     }
 
     /** The action Space. */
-    protected Space actionSpace;
+    protected Space[] actionSpaces;
     /** The action mask Space. */
     protected Space actionMaskSpace;
     /** The state Space. */
@@ -40,8 +40,8 @@ public abstract class AbstractEnvironment extends Environment {
 
     /** Initializes all (protected) fields based on discreteActions and continuousObservations. */
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
-        actionSpace = getDiscreteSpace(discreteActions);
-        actionMaskSpace = null;
+        actionSpaces = new Space[] {getDiscreteSpace(discreteActions)};
+        actionMaskSpace = getContinuousSpace(0, 1, discreteActions);
         observationSpace = getContinuousSpace(continuousObservations);
         actionMask = new Array(new SSizeTVector().put(discreteActions));
         observation = new Array(new SSizeTVector().put(continuousObservations));
@@ -53,45 +53,45 @@ public abstract class AbstractEnvironment extends Environment {
     protected AbstractEnvironment(long discreteActions, long continuousObservations, Class agentClass) throws ReflectiveOperationException {
         this(discreteActions, continuousObservations);
 
+        long actionMaskSize = 0;
         ActionProcessor ap = new ActionProcessor(agentClass);
-        ActionMaskProcessor mp;
-        try {
-            mp = new ActionMaskProcessor(agentClass);
-        } catch (ClassNotFoundException e) {
-            mp = null;
-        }
-        Annotation[] actionSpaces = ap.getActionSpaces();
-        if (actionSpaces.length == 1) {
-            if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Discrete) {
-                ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[0];
-                actionSpace = new Discrete(d.n(), d.size());
-                actionMaskSpace = mp != null ? getContinuousSpace(0, 1, d.n() * d.size()) : null;
-                actionMask = new Array(new SSizeTVector().put(d.n() * d.size()));
-            } else if (actionSpaces[0] instanceof ai.skymind.nativerl.annotation.Continuous) {
-                ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[0];
+        Annotation[] as = ap.getActionSpaces();
+        actionSpaces = new Space[as.length];
+        for (int i = 0; i < actionSpaces.length; i++) {
+            if (as[i] instanceof ai.skymind.nativerl.annotation.Discrete) {
+                ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)as[i];
+                actionMaskSize += d.n() * d.size();
+                actionSpaces[i] = new Discrete(d.n(), d.size());
+            } else if (as[i] instanceof ai.skymind.nativerl.annotation.Continuous) {
+                ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)as[i];
                 FloatVector low, high;
                 low = new FloatVector(c.low().length);
-                for (int i = 0; i < c.low().length; i++) {
-                    low.put(i, (float)c.low()[i]);
+                for (int j = 0; j < c.low().length; j++) {
+                    low.put(j, (float)c.low()[j]);
                 }
                 high = new FloatVector(c.high().length);
-                for (int i = 0; i < c.high().length; i++) {
-                    high.put(i, (float)c.high()[i]);
+                for (int j = 0; j < c.high().length; j++) {
+                    high.put(j, (float)c.high()[j]);
                 }
-                long length = (int)Arrays.stream(c.shape()).reduce((x, y) -> x * y).getAsLong();
-                actionSpace = new Continuous(low, high, new SSizeTVector(c.shape()));
-                actionMaskSpace = mp != null ? getContinuousSpace(0, 1, length) : null;
-                actionMask = new Array(new SSizeTVector().put(length));
+                actionMaskSize += (int)Arrays.stream(c.shape()).reduce((x, y) -> x * y).getAsLong();
+                actionSpaces[i] = new Continuous(low, high, new SSizeTVector(c.shape()));
             }
-        } else if (actionSpaces.length > 1) {
-            throw new IllegalArgumentException("Only one action space is currently supported.");
+        }
+
+        try {
+            ActionMaskProcessor mp = new ActionMaskProcessor(agentClass);
+            actionMaskSpace = getContinuousSpace(0, 1, actionMaskSize);
+            actionMask = new Array(new SSizeTVector().put(actionMaskSize));
+        } catch (ClassNotFoundException e) {
+            actionMaskSpace = null;
+            actionMask = null;
         }
         // else assume 1 discrete action with n specified in constructor
     }
 
     /** Returns {@link #actionSpace}. */
-    @Override public Space getActionSpace() {
-        return actionSpace;
+    @Override public Space getActionSpace(long i) {
+        return i < actionSpaces.length ? actionSpaces[(int)i] : null;
     }
 
     @Override public Space getActionMaskSpace() {
