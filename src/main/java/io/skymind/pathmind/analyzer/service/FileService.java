@@ -75,8 +75,10 @@ public class FileService {
         log.info("Bash script finished");
 
         if (result.size() < 5) {
-            log.warn("Unexpected output for {} file ({} mode): {}", unzippedPath, String.join(" ", result));
+            List<String> err = readResult(proc.getErrorStream());
+            log.warn("Unexpected output for {} file, result: {}, err: {}", unzippedPath, String.join(" ", result), String.join(" ", err));
         }
+
         result.add("model-analyzer-mode: single");
         return result;
     }
