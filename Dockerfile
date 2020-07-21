@@ -30,8 +30,6 @@ RUN aws s3 cp s3://${S3BUCKET}/baseEnv.zip ./ \
  && unzip baseEnv.zip \
  && rm baseEnv.zip
 
-RUN curl -s https://www.benf.org/other/cfr/cfr-0.148.jar -o cfr-0.148.jar
- 
 WORKDIR /
  
 #Build pathmind-model-analyzer.jar
