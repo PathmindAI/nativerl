@@ -103,17 +103,21 @@ public abstract class AbstractEnvironment extends Environment {
         return observationSpace;
     }
 
+    @Override public long getNumberOfAgents() {
+        return 1;
+    }
+
     /** Returns {@link #actionMask}. */
-    @Override public Array getActionMask() {
+    @Override public Array getActionMask(long agentId) {
         return actionMask;
     }
 
     /** Returns {@link #observation}. */
-    @Override public Array getObservation() {
+    @Override public Array getObservation(long agentId) {
         return observation;
     }
 
-    @Override public Array getMetrics() {
+    @Override public Array getMetrics(long agentId) {
         return metrics;
     }
 }

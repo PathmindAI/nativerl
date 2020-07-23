@@ -79,7 +79,9 @@ class {{classSimpleName environment}}(gym.Env):
                 actionArray = numpy.concatenate([actionArray, action[i].astype(numpy.float32)], axis=None)
         else:
             actionArray = action.astype(numpy.float32)
-        reward = self.nativeEnv.step(nativerl.Array(actionArray))
+        self.nativeEnv.setNextAction(nativerl.Array(actionArray))
+        self.nativeEnv.step()
+        reward = self.nativeEnv.getReward()
         obs = numpy.array(self.nativeEnv.getObservation())
         if isinstance(self.observation_space, gym.spaces.Dict):
             obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
