@@ -73,16 +73,18 @@ PYBIND11_MODULE(nativerl, m) {
         .def_readwrite("size", &nativerl::Discrete::size);
 
     pybind11::class_<nativerl::Environment>(m, "Environment")
-        .def("getActionSpace", &nativerl::Environment::getActionSpace)
+        .def("getActionSpace", &nativerl::Environment::getActionSpace, pybind11::arg("i") = 0)
         .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace)
         .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
-        .def("getActionMask", &nativerl::Environment::getActionMask)
-        .def("getObservation", &nativerl::Environment::getObservation)
-        .def("isDone", &nativerl::Environment::isDone)
+        .def("getNumberOfAgents", &nativerl::Environment::getNumberOfAgents)
+        .def("getActionMask", &nativerl::Environment::getActionMask, pybind11::arg("agentId") = 0)
+        .def("getObservation", &nativerl::Environment::getObservation, pybind11::arg("agentId") = 0)
+        .def("isDone", &nativerl::Environment::isDone, pybind11::arg("agentId") = -1)
         .def("reset", &nativerl::Environment::reset)
-        .def("step", (float (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step)
-//        .def("step", (const nativerl::Array& (nativerl::Environment::*)(const nativerl::Array& action))&nativerl::Environment::step);
-        .def("getMetrics", &nativerl::Environment::getMetrics);
+        .def("setNextAction", &nativerl::Environment::setNextAction, pybind11::arg("action"), pybind11::arg("agentId") = 0)
+        .def("step", &nativerl::Environment::step)
+        .def("getReward", &nativerl::Environment::getReward, pybind11::arg("agentId") = 0)
+        .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0);
 
     m.def("createEnvironment", &createEnvironment);
     m.def("releaseEnvironment", &releaseEnvironment);

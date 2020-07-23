@@ -14,6 +14,7 @@ public class {{className}} extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}} agent;
     protected PolicyHelper policyHelper;
+    protected double[] before, after;
     protected double[] lastMetrics;
     {{{classSnippet}}}
     public {{className}}() throws ReflectiveOperationException {
@@ -34,7 +35,7 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public Array getObservation() {
+    public Array getObservation(long agentId) {
         double[] obs = PathmindHelperRegistry.getHelper().observationForTraining();
         float[] array = new float[Math.min(obs.length, (int)observation.length())];
         for (int i = 0; i < array.length; i++) {
@@ -45,7 +46,7 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public Array getActionMask() {
+    public Array getActionMask(long agentId) {
         boolean[] mask = PathmindHelperRegistry.getHelper().actionMask();
         float[] array = new float[Math.min(mask.length, (int)actionMask.length())];
         for (int i = 0; i < array.length; i++) {
@@ -56,7 +57,7 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public boolean isDone() {
+    public boolean isDone(long agentId) {
         return PathmindHelperRegistry.getHelper().isDone();
     }
 
@@ -83,27 +84,36 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public float step(Array action) {
-        double reward = 0;
-        double[] before = PathmindHelperRegistry.getHelper().observationForReward();
+    public void setNextAction(Array action, long agentId) {
+        before = PathmindHelperRegistry.getHelper().observationForReward();
         double[] array = new double[(int)action.length()];
         for (int i = 0; i < array.length; i++) {
             array[i] = action.data().get(i);
         }
         PathmindHelperRegistry.getHelper().action = array;
+    }
+
+    @Override
+    public void step() {
         engine.runFast();
         if (engine.getState() == Engine.State.ERROR) {
             throw new RuntimeException("Engine error");
         }
-        double[] after = PathmindHelperRegistry.getHelper().observationForReward();
-        lastMetrics = after;
+    }
+
+    @Override
+    public float getReward(long agentId) {
+        double reward = 0;
+        after = PathmindHelperRegistry.getHelper().observationForReward();
 
         {{{rewardSnippet}}}
 
         return (float)reward;
     }
 
-    public Array getMetrics() {
+    public Array getMetrics(long agentId) {
+        lastMetrics = after;
+
         if (this.metrics == null || this.metrics.length() != lastMetrics.length) {
             this.metrics = new Array(new SSizeTVector().put(lastMetrics.length));
         }
@@ -118,7 +128,7 @@ public class {{className}} extends AbstractEnvironment {
     public double[] test() {
         double[] metrics = null;
         reset();
-        while (!isDone()) {
+        while (!isDone(-1)) {
             engine.runFast();
         }
         {{{metricsSnippet}}}

@@ -39,24 +39,28 @@ public class Environment extends Pointer {
 
     //    /** Passes a new random seed that should be used for reproducibility. */
     //    virtual void setSeed(long long seed) = 0;
-    /** Returns the action Space supported. */
+    /** Returns the i-th action Space supported. */
     @Virtual(true) public native @Const Space getActionSpace(@Cast("ssize_t") long i/*=0*/);
     /** Returns the action mask Space supported. */
     @Virtual(true) public native @Const Space getActionMaskSpace();
     /** Returns the observation Space supported. */
     @Virtual(true) public native @Const Space getObservationSpace();
-    /** Returns the current state of the possible actions. */
-    @Virtual(true) public native @Const @ByRef Array getActionMask();
-    /** Returns the current state of the simulation. */
-    @Virtual(true) public native @Const @ByRef Array getObservation();
-    /** Indicates when a simulation episode is over. */
-    @Virtual(true) public native @Cast("bool") boolean isDone();
+    /** Returns the number of agents in this environment. */
+    @Virtual(true) public native @Cast("ssize_t") long getNumberOfAgents();
+    /** Returns the current state of the possible actions for the given agent. */
+    @Virtual(true) public native @Const @ByRef Array getActionMask(@Cast("ssize_t") long agentId/*=0*/);
+    /** Returns the current state of the simulation for the given agent. */
+    @Virtual(true) public native @Const @ByRef Array getObservation(@Cast("ssize_t") long agentId/*=0*/);
+    /** Indicates when a simulation episode is over for the given agent, or -1 for all. */
+    @Virtual(true) public native @Cast("bool") boolean isDone(@Cast("ssize_t") long agentId/*=-1*/);
     /** Used to reset the simulation, preferably starting a new random sequence. */
     @Virtual(true) public native void reset();
-    /** Can be used to run the simulation for a single agent with a discrete action space. */
-    @Virtual(true) public native float step(@Const @ByRef Array action);
-    /** Can be used to run the simulation for a continuous action space and/or with multiple agents. */
-//    virtual const Array& step(const Array& action) = 0;
+    /** Sets the next action for the given agent to be done during the next step. */
+    @Virtual(true) public native void setNextAction(@Const @ByRef Array action, @Cast("ssize_t") long agentId/*=0*/);
+    /** Used to advance the simulation by a single step. */
+    @Virtual(true) public native void step();
+    /** Returns the reward based on variables for the given agent before and after the last step. */
+    @Virtual(true) public native float getReward(@Cast("ssize_t") long agentId/*=0*/);
     /** Returns the last values of observationForReward() */
-    @Virtual(true) public native @Const @ByRef Array getMetrics();
+    @Virtual(true) public native @Const @ByRef Array getMetrics(@Cast("ssize_t") long agentId/*=0*/);
 }

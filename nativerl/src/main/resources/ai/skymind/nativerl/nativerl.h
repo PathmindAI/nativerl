@@ -104,26 +104,30 @@ public:
     virtual ~Environment() { };
     //    /** Passes a new random seed that should be used for reproducibility. */
     //    virtual void setSeed(long long seed) = 0;
-    /** Returns the action Space supported. */
+    /** Returns the i-th action Space supported. */
     virtual const Space* getActionSpace(ssize_t i = 0) = 0;
     /** Returns the action mask Space supported. */
     virtual const Space* getActionMaskSpace() = 0;
     /** Returns the observation Space supported. */
     virtual const Space* getObservationSpace() = 0;
-    /** Returns the current state of the possible actions. */
-    virtual const Array& getActionMask() = 0;
-    /** Returns the current state of the simulation. */
-    virtual const Array& getObservation() = 0;
-    /** Indicates when a simulation episode is over. */
-    virtual bool isDone() = 0;
+    /** Returns the number of agents in this environment. */
+    virtual ssize_t getNumberOfAgents() = 0;
+    /** Returns the current state of the possible actions for the given agent. */
+    virtual const Array& getActionMask(ssize_t agentId = 0) = 0;
+    /** Returns the current state of the simulation for the given agent. */
+    virtual const Array& getObservation(ssize_t agentId = 0) = 0;
+    /** Indicates when a simulation episode is over for the given agent, or -1 for all. */
+    virtual bool isDone(ssize_t agentId = -1) = 0;
     /** Used to reset the simulation, preferably starting a new random sequence. */
     virtual void reset() = 0;
-    /** Can be used to run the simulation for a single agent with a discrete action space. */
-    virtual float step(const Array& action) = 0;
-    /** Can be used to run the simulation for a continuous action space and/or with multiple agents. */
-//    virtual const Array& step(const Array& action) = 0;
+    /** Sets the next action for the given agent to be done during the next step. */
+    virtual void setNextAction(const Array& action, ssize_t agentId = 0) = 0;
+    /** Used to advance the simulation by a single step. */
+    virtual void step() = 0;
+    /** Returns the reward based on variables for the given agent before and after the last step. */
+    virtual float getReward(ssize_t agentId = 0) = 0;
     /** Returns the last values of observationForReward() */
-    virtual const Array& getMetrics() = 0;
+    virtual const Array& getMetrics(ssize_t agentId = 0) = 0;
 };
 
 // typedef Environment* (*CreateEnvironment)(const char* name);
