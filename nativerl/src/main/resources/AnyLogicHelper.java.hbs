@@ -79,7 +79,7 @@ public class {{className}} extends AbstractEnvironment {
         for (int i = 0; i < array.length; i++) {
             array[i] = (long)action.data().get(i);
         }
-        PathmindHelperRegistry.getHelper().nextTrainingAction = array;
+        PathmindHelperRegistry.getHelper().action = array;
         engine.runFast();
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
         lastMetrics = after;
