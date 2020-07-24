@@ -81,6 +81,9 @@ public class {{className}} extends AbstractEnvironment {
         }
         PathmindHelperRegistry.getHelper().action = array;
         engine.runFast();
+        if (engine.getState() == Engine.State.ERROR) {
+            throw new RuntimeException("Engine error");
+        }
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
         lastMetrics = after;
 
