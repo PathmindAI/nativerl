@@ -648,11 +648,17 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
+	if (action != null) {
+		doAction(action);
+	}
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 } else if (isEnabled) {
+	// be sure to call those here allowing users to fix errors before training
+	double[] training = observationForTraining();
+	double[] reward = observationForReward();
 	if (usePolicy && policyHelper != null) {
 		steps++;
-	    action = (long[])policyHelper.computeDiscreteAction(observationForTraining());
+	    action = (long[])policyHelper.computeDiscreteAction(training);
 	    doAction(action);
     } else {
     	if (!usePolicy) {
@@ -687,10 +693,9 @@ if (!isTraining && steps == 1) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[double[] training = observationForTraining();
-double[] reward = observationForReward();  
-
-if (isTraining == false) {
+					<Body><![CDATA[if (!isTraining) {
+	double[] training = observationForTraining();
+	double[] reward = observationForReward();
 	String output = new String("Pathmind:\n"
 	      +"  Step: "+steps + "\n"	      
 	      +"  Observations:\n"

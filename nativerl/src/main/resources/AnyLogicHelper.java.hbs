@@ -75,12 +75,15 @@ public class {{className}} extends AbstractEnvironment {
     public float step(Array action) {
         double reward = 0;
         double[] before = PathmindHelperRegistry.getHelper().observationForReward();
-        engine.runFast();
         long[] array = new long[(int)action.length()];
         for (int i = 0; i < array.length; i++) {
             array[i] = (long)action.data().get(i);
         }
-        PathmindHelperRegistry.getHelper().doAction(array);
+        PathmindHelperRegistry.getHelper().action = array;
+        engine.runFast();
+        if (engine.getState() == Engine.State.ERROR) {
+            throw new RuntimeException("Engine error");
+        }
         double[] after = PathmindHelperRegistry.getHelper().observationForReward();
         lastMetrics = after;
 
