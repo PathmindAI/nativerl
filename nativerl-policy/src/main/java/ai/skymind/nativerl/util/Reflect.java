@@ -72,7 +72,7 @@ public class Reflect {
         for (Class c : classes) {
             for (Field f : c.getDeclaredFields()) {
                 Class t = f.getType();
-                if (!t.isPrimitive() && !t.isArray()) {
+                if ((!t.isPrimitive() && !t.isArray()) || f.getName().startsWith("val$")) {
                     continue;
                 }
                 f.setAccessible(true);

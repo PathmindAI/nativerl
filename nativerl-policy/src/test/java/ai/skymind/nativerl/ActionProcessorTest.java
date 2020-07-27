@@ -46,8 +46,9 @@ public class ActionProcessorTest {
         }
     }
 
-    void actions() {
+    void actions(int agentId) {
         class DummyActions extends TestActions {
+            @Discrete(n = 25) long action5 = agentId;
         }
     }
 
@@ -55,17 +56,17 @@ public class ActionProcessorTest {
         try {
             ActionProcessor ap = new ActionProcessor(this.getClass());
             assertEquals("DummyActions", ap.getActionClass().getSimpleName());
-            assertArrayEquals(new String[] {"action1", "action2", "action3", "action4"}, ap.getActionNames());
+            assertArrayEquals(new String[] {"action1", "action2", "action3", "action4", "action5"}, ap.getActionNames());
             Annotation[] spaces = ap.getActionSpaces();
-            assertEquals(4, spaces.length);
+            assertEquals(5, spaces.length);
             assertEquals(50, ((Discrete)spaces[0]).n());
             assertEquals(50, ((Discrete)spaces[1]).n());
             assertArrayEquals(new long[] {2}, ((Continuous)spaces[2]).shape());
             assertArrayEquals(new long[] {2, 2}, ((Continuous)spaces[3]).shape());
-            ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6});
+            ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6, 24}, 24);
             assertTrue(didIt);
             for (int i = 0; i < 100; i++) {
-                ap.doActionsRandom(this, new Random(i));
+                ap.doActionsRandom(this, new Random(i), 24);
             }
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());

@@ -15,12 +15,24 @@ public class ObservationProcessor {
     Class observationClass;
     Field[] observationFields;
     Constructor observationConstructor;
+    boolean usesAgentId;
 
     public ObservationProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.observationClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
         this.observationFields = Reflect.getFields(observationClass);
-        this.observationConstructor = observationClass.getDeclaredConstructor(agentClass);
+        try {
+            this.observationConstructor = observationClass.getDeclaredConstructor(agentClass, long.class);
+            this.usesAgentId = true;
+        } catch (NoSuchMethodException e) {
+            try {
+                this.observationConstructor = observationClass.getDeclaredConstructor(agentClass, int.class);
+                this.usesAgentId = true;
+            } catch (NoSuchMethodException e2) {
+                this.observationConstructor = observationClass.getDeclaredConstructor(agentClass);
+                this.usesAgentId = false;
+            }
+        }
         this.observationConstructor.setAccessible(true);
     }
 
@@ -33,7 +45,10 @@ public class ObservationProcessor {
     }
 
     public double[] getObservations(Object agent, ObservationFilter filter) throws ReflectiveOperationException {
-        Object o = observationConstructor.newInstance(agent);
+        return getObservations(agent, filter, 0);
+    }
+    public double[] getObservations(Object agent, ObservationFilter filter, int agentId) throws ReflectiveOperationException {
+        Object o = usesAgentId ? observationConstructor.newInstance(agent, agentId) : observationConstructor.newInstance(agent);
         return filter != null ? filter.filter(o) : Reflect.getFieldDoubles(observationFields, o);
     }
 }
