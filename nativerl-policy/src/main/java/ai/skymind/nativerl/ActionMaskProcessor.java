@@ -15,12 +15,24 @@ public class ActionMaskProcessor {
     Class actionMaskClass;
     Field[] actionMaskFields;
     Constructor actionMaskConstructor;
+    boolean usesAgentId;
 
     public ActionMaskProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.actionMaskClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
         this.actionMaskFields = Reflect.getFields(actionMaskClass);
-        this.actionMaskConstructor = actionMaskClass.getDeclaredConstructor(agentClass);
+        try {
+            this.actionMaskConstructor = actionMaskClass.getDeclaredConstructor(agentClass, long.class);
+            this.usesAgentId = true;
+        } catch (NoSuchMethodException e) {
+            try {
+                this.actionMaskConstructor = actionMaskClass.getDeclaredConstructor(agentClass, int.class);
+                this.usesAgentId = true;
+            } catch (NoSuchMethodException e2) {
+                this.actionMaskConstructor = actionMaskClass.getDeclaredConstructor(agentClass);
+                this.usesAgentId = false;
+            }
+        }
         this.actionMaskConstructor.setAccessible(true);
     }
 
@@ -33,7 +45,10 @@ public class ActionMaskProcessor {
     }
 
     public boolean[] getActionMasks(Object agent) throws ReflectiveOperationException {
-        Object o = actionMaskConstructor.newInstance(agent);
+        return getActionMasks(agent, 0);
+    }
+    public boolean[] getActionMasks(Object agent, int agentId) throws ReflectiveOperationException {
+        Object o = usesAgentId ? actionMaskConstructor.newInstance(agent, agentId) : actionMaskConstructor.newInstance(agent);
         return Reflect.getFieldBooleans(actionMaskFields, o);
     }
 }

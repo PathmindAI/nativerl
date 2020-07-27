@@ -88,7 +88,8 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --reset-snippet "$RESET_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
-    --policy-helper RLlibPolicyHelper
+    --policy-helper RLlibPolicyHelper \
+    --multi-agent
 
 javac $(find -iname '*.java')
 
@@ -99,6 +100,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --num-workers 4 \
     --random-seed 42 \
     --max-reward-mean 100 \
+    --multi-agent \
     rllibtrain.py
 
 python3 rllibtrain.py

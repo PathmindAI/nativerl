@@ -1,4 +1,5 @@
 import glob, gym, nativerl, ray, sys, os, random, numpy
+from ray.rllib.env import MultiAgentEnv
 from ray.rllib.agents.registry import get_agent_class
 from ray.rllib.utils import seed
 from ray.tune import run, sample_from
@@ -25,7 +26,7 @@ tf = try_import_tf()
 {{/if}}
 jardir = os.getcwd()
 
-class {{classSimpleName environment}}(gym.Env):
+class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym.Env{{/if}}):
     def __init__(self, env_config):
         # Put all JAR files found here in the class path
         jars = glob.glob(jardir + '/**/*.jar', recursive=True)
@@ -38,7 +39,7 @@ class {{classSimpleName environment}}(gym.Env):
         actionSpaces = []
         while actionSpace is not None:
             if isinstance(actionSpace, nativerl.Discrete):
-                actionSpaces += [gym.spaces.Discrete(actionSpace.n) for i in range(actionSpace.size)]
+                actionSpaces += [gym.spaces.Discrete(actionSpace.n) for j in range(actionSpace.size)]
             else:
                 low = actionSpace.low[0] if len(actionSpace.low) == 1 else numpy.array(actionSpace.low)
                 high = actionSpace.high[0] if len(actionSpace.high) == 1 else numpy.array(actionSpace.high)
@@ -63,20 +64,59 @@ class {{classSimpleName environment}}(gym.Env):
 
         self.id = '{{classSimpleName environment}}'
         self.max_episode_steps = 20000
+{{#if multiAgent}}
+{{else}}
         self.unwrapped.spec = self
+{{/if}}
 
     def reset(self):
         self.nativeEnv.reset()
+{{#if multiAgent}}
+        obsdict = {}
+        for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            obs = numpy.array(self.nativeEnv.getObservation(i))
+            if isinstance(self.observation_space, gym.spaces.Dict):
+                obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
+            obsdict[str(i)] = obs
+        return obsdict
+{{else}}
         obs = numpy.array(self.nativeEnv.getObservation())
         if isinstance(self.observation_space, gym.spaces.Dict):
             obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
         return obs
+{{/if}}
 
     def step(self, action):
+{{#if multiAgent}}
+        for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            act = action[str(i)]
+            if isinstance(self.action_space, gym.spaces.Tuple):
+                actionArray = numpy.empty(shape=(0), dtype=numpy.float32)
+                for j in range(0, len(act)):
+                    actionArray = numpy.concatenate([actionArray, act[j].astype(numpy.float32)], axis=None)
+            else:
+                actionArray = act.astype(numpy.float32)
+            self.nativeEnv.setNextAction(nativerl.Array(actionArray), i)
+
+        self.nativeEnv.step()
+
+        obsdict = {}
+        rewarddict = {}
+        donedict = {}
+        for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            obs = numpy.array(self.nativeEnv.getObservation(i))
+            if isinstance(self.observation_space, gym.spaces.Dict):
+                obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
+            obsdict[str(i)] = obs
+            rewarddict[str(i)] = self.nativeEnv.getReward(i)
+            donedict[str(i)] = self.nativeEnv.isDone(i)
+        donedict['__all__'] = self.nativeEnv.isDone(-1)
+        return obsdict, rewarddict, donedict, {}
+{{else}}
         if isinstance(self.action_space, gym.spaces.Tuple):
             actionArray = numpy.empty(shape=(0), dtype=numpy.float32)
-            for i in range(0, len(action)):
-                actionArray = numpy.concatenate([actionArray, action[i].astype(numpy.float32)], axis=None)
+            for j in range(0, len(action)):
+                actionArray = numpy.concatenate([actionArray, action[j].astype(numpy.float32)], axis=None)
         else:
             actionArray = action.astype(numpy.float32)
         self.nativeEnv.setNextAction(nativerl.Array(actionArray))
@@ -86,6 +126,7 @@ class {{classSimpleName environment}}(gym.Env):
         if isinstance(self.observation_space, gym.spaces.Dict):
             obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
         return obs, reward, self.nativeEnv.isDone(), {}
+{{/if}}
 
     def getMetrics(self):
         return numpy.array(self.nativeEnv.getMetrics())

@@ -27,8 +27,9 @@ public class ObservationProcessorTest {
         double[] obs3 = data3;
     }
 
-    void observations() {
+    void observations(int agentId) {
         class DummyObservations extends TestObservations {
+            double obs4 = agentId;
         }
     }
 
@@ -36,9 +37,9 @@ public class ObservationProcessorTest {
         try {
             ObservationProcessor op = new ObservationProcessor(this.getClass());
             assertEquals("DummyObservations", op.getObservationClass().getSimpleName());
-            assertArrayEquals(new String[] {"obs1", "obs2", "obs3"}, op.getObservationNames());
-            assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5}, op.getObservations(this, null), 0.0);
-            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, op.getObservations(this, new TestFilter()), 0.0);
+            assertArrayEquals(new String[] {"obs1", "obs2", "obs3", "obs4"}, op.getObservationNames());
+            assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5, 64}, op.getObservations(this, null, 64), 0.0);
+            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, op.getObservations(this, new TestFilter(), 64), 0.0);
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }

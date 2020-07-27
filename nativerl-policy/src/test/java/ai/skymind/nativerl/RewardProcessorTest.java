@@ -29,8 +29,9 @@ public class RewardProcessorTest {
         double[] var4 = data4;
     }
 
-    void rewardVariables() {
+    void rewardVariables(int agentId) {
         class DummyVariables extends TestVariables {
+            float var5 = agentId;
         }
     }
 
@@ -38,9 +39,9 @@ public class RewardProcessorTest {
         try {
             RewardProcessor rp = new RewardProcessor(this.getClass());
             assertEquals("DummyVariables", rp.getRewardClass().getSimpleName());
-            assertArrayEquals(new String[] {"var1", "var2", "var3", "var4"}, rp.getVariableNames());
-            assertArrayEquals(new double[] {37, 42, 64, 1, 2, 3, 4, 5}, rp.getVariables(this), 0.0);
-            TestVariables v = rp.getRewardObject(this);
+            assertArrayEquals(new String[] {"var1", "var2", "var3", "var4", "var5"}, rp.getVariableNames());
+            assertArrayEquals(new double[] {37, 42, 64, 1, 2, 3, 4, 5, 24}, rp.getVariables(this, 24), 0.0);
+            TestVariables v = rp.getRewardObject(this, 24);
             assertEquals(37 + 42 + 64 + 5, new TestFunction().reward(v, v), 0.0);
         } catch (ReflectiveOperationException  ex) {
             fail(ex.getMessage());

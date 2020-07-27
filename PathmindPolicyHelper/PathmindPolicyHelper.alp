@@ -182,7 +182,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double[]]]></Type>        
+						<Type><![CDATA[double[][]]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new double[numberOfAgents][]]]></Code>
+						</InitialValue>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -398,6 +401,32 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1595822201340</Id>
+					<Name><![CDATA[numberOfAgents]]></Name>
+					<X>20</X><Y>490</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1595822201338</Id>
+							<Label><![CDATA[Number of Agents]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
 					<Name><![CDATA[observations]]></Name>
 					<X>20</X><Y>190</Y>
@@ -412,13 +441,17 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */]]></Code>
 						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563523991193</Id>
 							<Label><![CDATA[Observations]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
 							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
@@ -438,6 +471,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */]]></Code>
 						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
 						<ParameterEditor>
 							<Id>1566471864341</Id>
 							<Label><![CDATA[Reward Variables]]></Label>
@@ -464,6 +501,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
 						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
 						<ParameterEditor>
 							<Id>1563524030802</Id>
 							<Label><![CDATA[Actions]]></Label>
@@ -489,6 +530,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
 						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
 						<ParameterEditor>
 							<Id>1595219001768</Id>
 							<Label><![CDATA[Action Masks]]></Label>
@@ -515,6 +560,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<Code><![CDATA[getEngine().getStopTime() <= time()
 /* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
 						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
 						<ParameterEditor>
 							<Id>1566471148669</Id>
 							<Label><![CDATA[Done]]></Label>
@@ -677,24 +726,25 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
-	if (action != null) {
-		doAction(action);
+	for (int i = 0; i < numberOfAgents; i++) {
+		if (action[i] != null) {
+			doAction(action[i], i);
+		}
 	}
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 } else if (isEnabled) {
-	// be sure to call those here allowing users to fix errors before training
-	double[] training = observationForTraining();
-	double[] reward = observationForReward();
-	if (usePolicy && policyHelper != null) {
-		steps++;
-	    action = policyHelper.computeActions(training);
-	    doAction(action);
-    } else {
-    	if (!usePolicy) {
-    		steps++;
-    		doActionRandom(getEngine().getDefaultRandomGenerator());
-    	}
-    }
+	steps++;
+	for (int i = 0; i < numberOfAgents; i++) {
+		// be sure to call those here allowing users to fix errors before training
+		double[] training = observationForTraining(i);
+		double[] reward = observationForReward(i);
+		if (usePolicy && policyHelper != null) {
+			action[i] = policyHelper.computeActions(training);
+			doAction(action[i], i);
+		} else if (!usePolicy) {
+			doActionRandom(getEngine().getDefaultRandomGenerator(), i);
+		}
+	}
 }
 
 if (debugMode) {
@@ -718,20 +768,23 @@ if (!isTraining && steps == 1) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (!isTraining) {
-	double[] training = observationForTraining();
-	double[] reward = observationForReward();
-	String output = new String("Pathmind:\n"
-	      +"  Step: "+steps + "\n"	      
-	      +"  Observations:\n"
-	      +"    Array: "+Arrays.toString(training)+"\n"
-	      +"    Number of Observations: "+training.length+"\n"	      
-	      +"  Reward Variables: \n"
-	      +"    Array: "+Arrays.toString(reward)+"\n"
-	      +"    Number of Reward Variables: "+reward.length+"\n"	               
-	      +"  Last Action: "+Arrays.toString(action)+"\n"
-	      +"  Done: "+isDone() + "\n");		           	      
+	String output = "Pathmind:\n"
+			      + "  Step: " + steps + "\n";
+	for (int i = 0; i < numberOfAgents; i++) {
+		double[] training = observationForTraining(i);
+		double[] reward = observationForReward(i);
+		output += "  Agent ID: " + i + "\n"
+			    + "    Observations:\n"
+			    + "      Array: " + Arrays.toString(training) + "\n"
+			    + "      Number of Observations: " + training.length + "\n"
+			    + "    Reward Variables: \n"
+			    + "      Array: " + Arrays.toString(reward)+"\n"
+			    + "      Number of Reward Variables: " + reward.length + "\n"
+			    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+			    + "    Done: " + isDone(i) + "\n";
+	}
 	return output;
-} else if (isDone()) {
+} else if (isDone(-1)) {
 	return ""; // End debug string when done is true
 } else {
 	return ""; // Hide debug string when training in Pathmind
@@ -908,6 +961,9 @@ if (!isTraining && steps == 1) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[numberOfAgents]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[observations]]></ParameterName>
@@ -1381,63 +1437,81 @@ public class AbstractPathmindHelper extends Agent {
 	}
 
 	public void doAction(long... actions) {
+		doAction(actions, 0);
+	}
+	public void doAction(long[] actions, int agentId) {
 		double[] a = new double[actions.length];
 		for (int i = 0; i < actions.length; i++) {
 			a[i] = actions[i];
 		}
-		doAction(a);
+		doAction(a, agentId);
 	}
 
 	public void doAction(double... actions) {
+		doAction(actions, 0);
+	}
+	public void doAction(double[] actions, int agentId) {
 		try {
 			if (actionProcessor == null) {
 				init();
 			}
-			actionProcessor.doActions(getOwner(), actions);
+			actionProcessor.doActions(getOwner(), actions, agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not do actions: " + e);
 		}
 	}
 
 	public void doActionRandom(Random random) {
+		doActionRandom(random, 0);
+	}
+	public void doActionRandom(Random random, int agentId) {
 		try {
 			if (actionProcessor == null) {
 				init();
 			}
-			actionProcessor.doActionsRandom(getOwner(), random);
+			actionProcessor.doActionsRandom(getOwner(), random, agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not do actions random: " + e);
 		}
 	}
 
 	public boolean[] actionMask() {
+		return actionMask(0);
+	}
+	public boolean[] actionMask(int agentId) {
 		try {
 			if (observationProcessor == null) {
 				init();
 			}
-			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner()) : null;
+			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get action masks: " + e);
 		}
 	}
 
 	public double[] observationForTraining() {
+		return observationForTraining(0);
+	}
+	public double[] observationForTraining(int agentId) {
 		try {
 			if (observationProcessor == null) {
 				init();
 			}
-			return observationProcessor.getObservations(getOwner(), null);
+			return observationProcessor.getObservations(getOwner(), null, agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get observations: " + e);
 		}
 	}
 
 	public double[] observationForReward() {
+		return observationForReward(0);
+	}
+	public double[] observationForReward(int agentId) {
 		try {
 			if (rewardProcessor == null) {
 				init();
 			}
-			return rewardProcessor.getVariables(getOwner());
+			return rewardProcessor.getVariables(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get reward variables: " + e);
 		}

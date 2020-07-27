@@ -15,12 +15,24 @@ public class RewardProcessor {
     Class rewardClass;
     Field[] rewardFields;
     Constructor rewardConstructor;
+    boolean usesAgentId;
 
     public RewardProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.rewardClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
         this.rewardFields = Reflect.getFields(rewardClass);
-        this.rewardConstructor = rewardClass.getDeclaredConstructor(agentClass);
+        try {
+            this.rewardConstructor = rewardClass.getDeclaredConstructor(agentClass, long.class);
+            this.usesAgentId = true;
+        } catch (NoSuchMethodException e) {
+            try {
+                this.rewardConstructor = rewardClass.getDeclaredConstructor(agentClass, int.class);
+                this.usesAgentId = true;
+            } catch (NoSuchMethodException e2) {
+                this.rewardConstructor = rewardClass.getDeclaredConstructor(agentClass);
+                this.usesAgentId = false;
+            }
+        }
         this.rewardConstructor.setAccessible(true);
     }
 
@@ -33,11 +45,17 @@ public class RewardProcessor {
     }
 
     public double[] getVariables(Object agent) throws ReflectiveOperationException {
-        Object o = rewardConstructor.newInstance(agent);
+        return getVariables(agent, 0);
+    }
+    public double[] getVariables(Object agent, int agentId) throws ReflectiveOperationException {
+        Object o = getRewardObject(agent, agentId);
         return Reflect.getFieldDoubles(rewardFields, o);
     }
 
     public <V> V getRewardObject(Object agent) throws ReflectiveOperationException {
-        return (V)rewardConstructor.newInstance(agent);
+        return getRewardObject(agent, 0);
+    }
+    public <V> V getRewardObject(Object agent, int agentId) throws ReflectiveOperationException {
+        return usesAgentId ? (V)rewardConstructor.newInstance(agent, agentId) : (V)rewardConstructor.newInstance(agent);
     }
 }
