@@ -1,6 +1,5 @@
 package ai.skymind.nativerl;
 
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
 /**
@@ -55,26 +54,26 @@ public abstract class AbstractEnvironment extends Environment {
 
         long actionMaskSize = 0;
         ActionProcessor ap = new ActionProcessor(agentClass);
-        Annotation[] as = ap.getActionSpaces();
+        AnnotationProcessor[] as = ap.getActionSpaces();
         actionSpaces = new Space[as.length];
         for (int i = 0; i < actionSpaces.length; i++) {
-            if (as[i] instanceof ai.skymind.nativerl.annotation.Discrete) {
-                ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)as[i];
-                actionMaskSize += d.n() * d.size();
-                actionSpaces[i] = new Discrete(d.n(), d.size());
-            } else if (as[i] instanceof ai.skymind.nativerl.annotation.Continuous) {
-                ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)as[i];
+            if (as[i].discrete) {
+                AnnotationProcessor d = as[i];
+                actionMaskSize += d.n * d.size;
+                actionSpaces[i] = new Discrete(d.n, d.size);
+            } else if (as[i].continuous) {
+                AnnotationProcessor c = as[i];
                 FloatVector low, high;
-                low = new FloatVector(c.low().length);
-                for (int j = 0; j < c.low().length; j++) {
-                    low.put(j, (float)c.low()[j]);
+                low = new FloatVector(c.low.length);
+                for (int j = 0; j < c.low.length; j++) {
+                    low.put(j, (float)c.low[j]);
                 }
-                high = new FloatVector(c.high().length);
-                for (int j = 0; j < c.high().length; j++) {
-                    high.put(j, (float)c.high()[j]);
+                high = new FloatVector(c.high.length);
+                for (int j = 0; j < c.high.length; j++) {
+                    high.put(j, (float)c.high[j]);
                 }
-                actionMaskSize += (int)Arrays.stream(c.shape()).reduce((x, y) -> x * y).getAsLong();
-                actionSpaces[i] = new Continuous(low, high, new SSizeTVector(c.shape()));
+                actionMaskSize += (int)Arrays.stream(c.shape).reduce((x, y) -> x * y).getAsLong();
+                actionSpaces[i] = new Continuous(low, high, new SSizeTVector(c.shape));
             }
         }
 

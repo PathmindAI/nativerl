@@ -1,7 +1,6 @@
 package ai.skymind.nativerl.util;
 
-import ai.skymind.nativerl.annotation.Continuous;
-import ai.skymind.nativerl.annotation.Discrete;
+import ai.skymind.nativerl.AnnotationProcessor;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -106,9 +105,16 @@ public class Reflect {
         return m;
     }
 
-    public static Annotation getFieldAnnotation(Field field) {
-        Annotation discrete = field.getAnnotation(Discrete.class);
-        Annotation continuous = field.getAnnotation(Continuous.class);
+    public static AnnotationProcessor getFieldAnnotation(Field field) throws ReflectiveOperationException {
+        AnnotationProcessor discrete = null, continuous = null;
+        for (Annotation a : field.getAnnotations()) {
+            AnnotationProcessor ap = new AnnotationProcessor(a);
+            if (ap.discrete) {
+                discrete = ap;
+            } else if (ap.continuous) {
+                continuous = ap;
+            }
+        }
         if (discrete != null && continuous == null) {
             return discrete;
         } else if (discrete == null && continuous != null) {
@@ -120,12 +126,12 @@ public class Reflect {
         }
     }
 
-    public static Annotation[] getFieldAnnotations(Field[] fields) {
-        ArrayList<Annotation> annotations = new ArrayList<Annotation>();
+    public static AnnotationProcessor[] getFieldAnnotations(Field[] fields) throws ReflectiveOperationException {
+        ArrayList<AnnotationProcessor> annotations = new ArrayList<AnnotationProcessor>();
         for (Field f : fields) {
             annotations.add(getFieldAnnotation(f));
         }
-        return annotations.toArray(new Annotation[annotations.size()]);
+        return annotations.toArray(new AnnotationProcessor[annotations.size()]);
     }
 
     public static String[] getFieldNames(Field[] fields) {
@@ -174,33 +180,33 @@ public class Reflect {
     public static void setFieldDoubles(Field[] fields, Object object, double[] values, Random random) throws ReflectiveOperationException {
         int i = 0;
         for (Field f : fields) {
-            Annotation a = getFieldAnnotation(f);
-            int n = 0, length;
+            AnnotationProcessor a = getFieldAnnotation(f);
+            long n = 0, length;
             double[] low = null, high = null;
-            if (a instanceof Discrete) {
-                n = (int)((Discrete)a).n();
-                length = (int)((Discrete)a).size();
+            if (a.discrete) {
+                n = a.n;
+                length = a.size;
             } else {
-                low = (double[])((Continuous)a).low();
-                high = (double[])((Continuous)a).high();
-                length = (int)Arrays.stream(((Continuous)a).shape()).reduce((x, y) -> x * y).getAsLong();
+                low = a.low;
+                high = a.high;
+                length = Arrays.stream(a.shape).reduce((x, y) -> x * y).getAsLong();
                 if (low.length == 1 && length > 1) {
-                    low = Arrays.copyOf(low, length);
+                    low = Arrays.copyOf(low, (int)length);
                     Arrays.fill(low, low[0]);
                 }
                 if (high.length == 1 && length > 1) {
-                    high = Arrays.copyOf(high, length);
+                    high = Arrays.copyOf(high, (int)length);
                     Arrays.fill(high, high[0]);
                 }
             }
             Class t = f.getType();
             if (t.isArray()) {
                 Class c = t.getComponentType();
-                Object array = Array.newInstance(c, length);
+                Object array = Array.newInstance(c, (int)length);
                 f.set(object, array);
                 if (c == int.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setInt(array, j, values != null ? (int)values[i++] : random.nextInt(n));
+                        Array.setInt(array, j, values != null ? (int)values[i++] : random.nextInt((int)n));
                     }
                 } else if (c == long.class) {
                     for (int j = 0; j < length; j++) {
@@ -219,7 +225,7 @@ public class Reflect {
                 }
             } else {
                 if (t == int.class) {
-                    f.setInt(object, values != null ? (int)values[i++] : random.nextInt(n));
+                    f.setInt(object, values != null ? (int)values[i++] : random.nextInt((int)n));
                 } else if (t == long.class) {
                     f.setLong(object, values != null ?  (long)values[i++] : (long)(n * random.nextDouble()));
                 } else if (t == float.class) {

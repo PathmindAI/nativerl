@@ -2,7 +2,6 @@ package ai.skymind.nativerl;
 
 import ai.skymind.nativerl.annotation.Discrete;
 import ai.skymind.nativerl.annotation.Continuous;
-import java.lang.annotation.Annotation;
 import java.util.Random;
 import org.junit.Test;
 
@@ -57,12 +56,12 @@ public class ActionProcessorTest {
             ActionProcessor ap = new ActionProcessor(this.getClass());
             assertEquals("DummyActions", ap.getActionClass().getSimpleName());
             assertArrayEquals(new String[] {"action1", "action2", "action3", "action4", "action5"}, ap.getActionNames());
-            Annotation[] spaces = ap.getActionSpaces();
+            AnnotationProcessor[] spaces = ap.getActionSpaces();
             assertEquals(5, spaces.length);
-            assertEquals(50, ((Discrete)spaces[0]).n());
-            assertEquals(50, ((Discrete)spaces[1]).n());
-            assertArrayEquals(new long[] {2}, ((Continuous)spaces[2]).shape());
-            assertArrayEquals(new long[] {2, 2}, ((Continuous)spaces[3]).shape());
+            assertEquals(50, spaces[0].n);
+            assertEquals(50, spaces[1].n);
+            assertArrayEquals(new long[] {2}, spaces[2].shape);
+            assertArrayEquals(new long[] {2, 2}, spaces[3].shape);
             ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6, 24}, 24);
             assertTrue(didIt);
             for (int i = 0; i < 100; i++) {

@@ -1,7 +1,6 @@
 package ai.skymind.nativerl;
 
 import ai.skymind.nativerl.util.Reflect;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -49,7 +48,7 @@ public class ActionProcessor {
         return Reflect.getFieldNames(actionFields);
     }
 
-    public Annotation[] getActionSpaces() {
+    public AnnotationProcessor[] getActionSpaces() throws ReflectiveOperationException {
         return Reflect.getFieldAnnotations(actionFields);
     }
 
