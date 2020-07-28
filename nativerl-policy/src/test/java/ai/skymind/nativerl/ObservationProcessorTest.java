@@ -38,8 +38,9 @@ public class ObservationProcessorTest {
             ObservationProcessor op = new ObservationProcessor(this.getClass());
             assertEquals("DummyObservations", op.getObservationClass().getSimpleName());
             assertArrayEquals(new String[] {"obs1", "obs2", "obs3", "obs4"}, op.getObservationNames());
-            assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5, 64}, op.getObservations(this, null, 64), 0.0);
-            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, op.getObservations(this, new TestFilter(), 64), 0.0);
+            assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5, 64}, op.getObservations(this, 64), 0.0);
+            TestObservations o = op.getObservationObject(this, 64);
+            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, new TestFilter().filter(o), 0.0);
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }

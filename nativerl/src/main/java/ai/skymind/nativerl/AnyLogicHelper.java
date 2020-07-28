@@ -61,7 +61,11 @@ public class AnyLogicHelper {
     @Builder.Default
     String resetSnippet = "";
 
-    /** Arbitrary code to add to the step() method of the generated class to calculate the reward. */
+    /** Arbitrary code to add to the getObservation() method of the generated class to filter the observations. */
+    @Builder.Default
+    String observationSnippet = "";
+
+    /** Arbitrary code to add to the getReward() method of the generated class to calculate the reward. */
     @Builder.Default
     String rewardSnippet = "";
 
@@ -85,13 +89,17 @@ public class AnyLogicHelper {
     @Builder.Default
     boolean multiAgent = false;
 
+    /** Indicates that the reward snippet needs to use reward objects for "before" and "after", instead of arrays of doubles. */
+    @Builder.Default
+    boolean namedVariables = false;
+
     int actionTupleSize;
 
     @Builder.Default
     boolean setStepless = false;
 
     @Setter
-    String className, packageName;
+    String className, packageName, observationClassName, rewardClassName;
 
     /** Currently unused since the PathmindHelper is able to manage this. */
     AnyLogicHelper checkAgentClass() throws ClassNotFoundException, NoSuchMethodException, NoSuchFieldException {
@@ -120,7 +128,7 @@ public class AnyLogicHelper {
     }
 
     /** Calls {@link #generateEnvironment()} and writes the result to a File. */
-    public void generateEnvironment(File file) throws IOException {
+    public void generateEnvironment(File file) throws IOException, ReflectiveOperationException {
         File directory = file.getParentFile();
         if (directory != null) {
             directory.mkdirs();
@@ -129,13 +137,17 @@ public class AnyLogicHelper {
     }
 
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
-    public String generateEnvironment() throws IOException {
+    public String generateEnvironment() throws IOException, ReflectiveOperationException {
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
+        ObservationProcessor op = new ObservationProcessor(agentClassName);
+        RewardProcessor rp = new RewardProcessor(agentClassName);
 
         this.setClassName(className);
         this.setPackageName(packageName);
+        this.setObservationClassName(op.getObservationClass().getName().substring(packageName.length() + 1));
+        this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
@@ -166,6 +178,7 @@ public class AnyLogicHelper {
                 System.out.println("    --stop-time");
                 System.out.println("    --class-snippet");
                 System.out.println("    --reset-snippet");
+                System.out.println("    --observation-snippet");
                 System.out.println("    --reward-snippet");
                 System.out.println("    --metrics-snippet");
                 System.out.println("    --policy-helper");
@@ -173,6 +186,7 @@ public class AnyLogicHelper {
                 System.out.println("    --stepless");
                 System.out.println("    --action-tuple-size");
                 System.out.println("    --multi-agent");
+                System.out.println("    --named-variables");
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
                 helper.environmentClassName(args[++i]);
@@ -192,6 +206,8 @@ public class AnyLogicHelper {
                 helper.classSnippet(args[++i]);
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
+            } else if ("--observation-snippet".equals(args[i])) {
+                helper.observationSnippet(args[++i]);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
@@ -204,6 +220,8 @@ public class AnyLogicHelper {
                 helper.setStepless(true);
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+            } else if ("--named-variables".equals(args[i])) {
+                helper.namedVariables(true);
             } else if ("--action-tuple-size".equals(args[i])) {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else {

@@ -1490,13 +1490,23 @@ public class AbstractPathmindHelper extends Agent {
 		return observationForTraining(0);
 	}
 	public double[] observationForTraining(int agentId) {
+		return observationToDoubles(getObservationObject(agentId));
+	}
+	public <O> O getObservationObject(int agentId) {
 		try {
 			if (observationProcessor == null) {
 				init();
 			}
-			return observationProcessor.getObservations(getOwner(), null, agentId);
+			return observationProcessor.getObservationObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get observations: " + e);
+		}
+	}
+	public <O> double[] observationToDoubles(O observationObject) {
+		try {
+			return observationProcessor.toDoubles(observationObject);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not get observation doubles: " + e);
 		}
 	}
 
@@ -1504,13 +1514,23 @@ public class AbstractPathmindHelper extends Agent {
 		return observationForReward(0);
 	}
 	public double[] observationForReward(int agentId) {
+		return rewardToDoubles(getRewardObject(agentId));
+	}
+	public <V> V getRewardObject(int agentId) {
 		try {
 			if (rewardProcessor == null) {
 				init();
 			}
-			return rewardProcessor.getVariables(getOwner(), agentId);
+			return rewardProcessor.getRewardObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get reward variables: " + e);
+		}
+	}
+	public <V> double[] rewardToDoubles(V rewardObject) {
+		try {
+			return rewardProcessor.toDoubles(rewardObject);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not get reward doubles: " + e);
 		}
 	}
 }]]></Text>
