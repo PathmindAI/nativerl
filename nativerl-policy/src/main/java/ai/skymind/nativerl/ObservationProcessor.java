@@ -17,6 +17,9 @@ public class ObservationProcessor {
     Constructor observationConstructor;
     boolean usesAgentId;
 
+    public ObservationProcessor(String agentClassName) throws ReflectiveOperationException {
+        this(Class.forName(agentClassName, false, ObservationProcessor.class.getClassLoader()));
+    }
     public ObservationProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.observationClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
@@ -44,11 +47,21 @@ public class ObservationProcessor {
         return Reflect.getFieldNames(observationFields);
     }
 
-    public double[] getObservations(Object agent, ObservationFilter filter) throws ReflectiveOperationException {
-        return getObservations(agent, filter, 0);
+    public double[] getObservations(Object agent) throws ReflectiveOperationException {
+        return getObservations(agent, 0);
     }
-    public double[] getObservations(Object agent, ObservationFilter filter, int agentId) throws ReflectiveOperationException {
-        Object o = usesAgentId ? observationConstructor.newInstance(agent, agentId) : observationConstructor.newInstance(agent);
-        return filter != null ? filter.filter(o) : Reflect.getFieldDoubles(observationFields, o);
+    public double[] getObservations(Object agent, int agentId) throws ReflectiveOperationException {
+        return toDoubles(getObservationObject(agent, agentId));
+    }
+
+    public <O> O getObservationObject(Object agent) throws ReflectiveOperationException {
+        return getObservationObject(agent, 0);
+    }
+    public <O> O getObservationObject(Object agent, int agentId) throws ReflectiveOperationException {
+        return usesAgentId ? (O)observationConstructor.newInstance(agent, agentId) : (O)observationConstructor.newInstance(agent);
+    }
+
+    public <O> double[] toDoubles(O observationObject) throws ReflectiveOperationException {
+        return Reflect.getFieldDoubles(observationFields, observationObject);
     }
 }

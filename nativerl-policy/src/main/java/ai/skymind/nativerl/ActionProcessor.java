@@ -20,6 +20,9 @@ public class ActionProcessor {
     Constructor actionConstructor;
     boolean usesAgentId;
 
+    public ActionProcessor(String agentClassName) throws ReflectiveOperationException {
+        this(Class.forName(agentClassName, false, ActionProcessor.class.getClassLoader()));
+    }
     public ActionProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.actionClass = Reflect.findLocalClass(agentClass, METHOD_NAME);

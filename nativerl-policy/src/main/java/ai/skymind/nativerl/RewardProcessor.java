@@ -17,6 +17,9 @@ public class RewardProcessor {
     Constructor rewardConstructor;
     boolean usesAgentId;
 
+    public RewardProcessor(String agentClassName) throws ReflectiveOperationException {
+        this(Class.forName(agentClassName, false, RewardProcessor.class.getClassLoader()));
+    }
     public RewardProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.rewardClass = Reflect.findLocalClass(agentClass, METHOD_NAME);
@@ -49,7 +52,7 @@ public class RewardProcessor {
     }
     public double[] getVariables(Object agent, int agentId) throws ReflectiveOperationException {
         Object o = getRewardObject(agent, agentId);
-        return Reflect.getFieldDoubles(rewardFields, o);
+        return toDoubles(getRewardObject(agent, agentId));
     }
 
     public <V> V getRewardObject(Object agent) throws ReflectiveOperationException {
@@ -57,5 +60,9 @@ public class RewardProcessor {
     }
     public <V> V getRewardObject(Object agent, int agentId) throws ReflectiveOperationException {
         return usesAgentId ? (V)rewardConstructor.newInstance(agent, agentId) : (V)rewardConstructor.newInstance(agent);
+    }
+
+    public <V> double[] toDoubles(V rewardObject) throws ReflectiveOperationException {
+        return Reflect.getFieldDoubles(rewardFields, rewardObject);
     }
 }

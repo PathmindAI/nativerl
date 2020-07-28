@@ -17,6 +17,9 @@ public class ActionMaskProcessor {
     Constructor actionMaskConstructor;
     boolean usesAgentId;
 
+    public ActionMaskProcessor(String agentClassName) throws ReflectiveOperationException {
+        this(Class.forName(agentClassName, false, ActionMaskProcessor.class.getClassLoader()));
+    }
     public ActionMaskProcessor(Class agentClass) throws ReflectiveOperationException {
         this.agentClass = agentClass;
         this.actionMaskClass = Reflect.findLocalClass(agentClass, METHOD_NAME);

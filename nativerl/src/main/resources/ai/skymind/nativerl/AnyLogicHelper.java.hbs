@@ -14,7 +14,7 @@ public class {{className}} extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}} agent;
     protected PolicyHelper policyHelper;
-    protected double[][] rewardBefore, rewardAfter;
+    protected Object[] rewardBefore, rewardAfter;
     {{{classSnippet}}}
     public {{className}}() throws ReflectiveOperationException {
         super({{discreteActions}}, {{continuousObservations}}, {{agentClassName}}.class);
@@ -35,10 +35,17 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public Array getObservation(long agentId) {
-        double[] obs = PathmindHelperRegistry.getHelper().observationForTraining((int)agentId);
+        {{observationClassName}} in = PathmindHelperRegistry.getHelper().getObservationObject((int)agentId);
+        double[] out = null;
+
+        {{{observationSnippet}}}
+
+        if (out == null) {
+            out = PathmindHelperRegistry.getHelper().observationToDoubles(in);
+        }
         float[] array = new float[(int)observation.length()];
         for (int i = 0; i < array.length; i++) {
-            array[i] = i < obs.length ? (float)obs[i] : 0;
+            array[i] = i < out.length ? (float)out[i] : 0;
         }
         observation.data().put(array);
         return observation;
@@ -79,10 +86,10 @@ public class {{className}} extends AbstractEnvironment {
 
         int n = (int)getNumberOfAgents();
         if (rewardBefore == null || rewardBefore.length != n) {
-            rewardBefore = new double[n][];
+            rewardBefore = new Object[n];
         }
         if (rewardAfter == null || rewardAfter.length != n) {
-            rewardAfter = new double[n][];
+            rewardAfter = new Object[n];
         }
 
         // Workaround to trigger all events at time 0.0
@@ -98,7 +105,7 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public void setNextAction(Array action, long agentId) {
-        rewardBefore[(int)agentId] = PathmindHelperRegistry.getHelper().observationForReward((int)agentId);
+        rewardBefore[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
         double[] array = new double[(int)action.length()];
         for (int i = 0; i < array.length; i++) {
             array[i] = action.data().get(i);
@@ -114,21 +121,31 @@ public class {{className}} extends AbstractEnvironment {
         }
     }
 
+    // for some reason, the compiler fails if we try to use the name of inner classes more than once
+    // so here we cast our objects using generics to work around this bug
+    <V> V workAroundJavaBug(Object o) {
+        return (V)o;
+    }
+
     @Override
     public float getReward(long agentId) {
         double reward = 0;
-        rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().observationForReward((int)agentId);
-
-        double[] before = rewardBefore[(int)agentId];
-        double[] after = rewardAfter[(int)agentId];
-
+        rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
+{{#if namedVariables}}
+        {{rewardClassName}} before = workAroundJavaBug(rewardBefore[(int)agentId]), after = workAroundJavaBug(rewardAfter[(int)agentId]);
+{{else}}
+        double[] before = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]);
+        double[] after = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
+{{/if}}
         {{{rewardSnippet}}}
 
         return (float)reward;
     }
 
+    @Override
     public Array getMetrics(long agentId) {
-        double[] lastMetrics = rewardAfter[(int)agentId];
+        // TODO: This should be updated to use the metricsSnippet to allow customization by users
+        double[] lastMetrics = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
 
         if (this.metrics == null || this.metrics.length() != lastMetrics.length) {
             this.metrics = new Array(new SSizeTVector().put(lastMetrics.length));

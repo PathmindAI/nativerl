@@ -128,6 +128,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return obs, reward, self.nativeEnv.isDone(), {}
 {{/if}}
 
+    # TODO: This needs to be updated somehow to return metrics for all agents
     def getMetrics(self):
         return numpy.array(self.nativeEnv.getMetrics())
 
