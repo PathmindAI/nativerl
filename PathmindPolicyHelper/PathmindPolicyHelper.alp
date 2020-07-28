@@ -17,9 +17,7 @@
 			<Id>1563523926930</Id>
 			<Name><![CDATA[PathmindHelper]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
-			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;
-import ai.skymind.nativerl.annotation.*;
-import java.lang.annotation.Annotation;]]></Import>
+			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;]]></Import>
 			<ExtendsReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[AbstractPathmindHelper]]></ClassName>
@@ -1385,10 +1383,9 @@ public class AnyLogicCloudHelper {
 			<Name><![CDATA[AbstractPathmindHelper]]></Name>
 			<Text><![CDATA[import ai.skymind.nativerl.ActionProcessor;
 import ai.skymind.nativerl.ActionMaskProcessor;
+import ai.skymind.nativerl.AnnotationProcessor;
 import ai.skymind.nativerl.ObservationProcessor;
 import ai.skymind.nativerl.RewardProcessor;
-import ai.skymind.nativerl.annotation.*;
-import java.lang.annotation.Annotation;
 
 public class AbstractPathmindHelper extends Agent {
 	protected ActionProcessor actionProcessor;
@@ -1420,14 +1417,14 @@ public class AbstractPathmindHelper extends Agent {
 
 			possibleActionCount = 1;
 			actionTupleSize = 0;
-			Annotation[] actionSpaces = actionProcessor.getActionSpaces();
+			AnnotationProcessor[] actionSpaces = actionProcessor.getActionSpaces();
 			for (int i = 0; i < actionSpaces.length; i++) {
-				if (actionSpaces[i] instanceof ai.skymind.nativerl.annotation.Discrete) {
-					ai.skymind.nativerl.annotation.Discrete d = (ai.skymind.nativerl.annotation.Discrete)actionSpaces[i];
-					possibleActionCount *= (int)d.n();
-					actionTupleSize += (int)d.size();
-				} else if (actionSpaces[i] instanceof ai.skymind.nativerl.annotation.Continuous) {
-					ai.skymind.nativerl.annotation.Continuous c = (ai.skymind.nativerl.annotation.Continuous)actionSpaces[i];
+				if (actionSpaces[i].discrete) {
+					AnnotationProcessor d = actionSpaces[i];
+					possibleActionCount *= (int)d.n;
+					actionTupleSize += (int)d.size;
+				} else if (actionSpaces[i].continuous) {
+					AnnotationProcessor c = actionSpaces[i];
 					// nothing to do for now
 				}
 			}
@@ -1516,6 +1513,43 @@ public class AbstractPathmindHelper extends Agent {
 			throw new RuntimeException("Could not get reward variables: " + e);
 		}
 	}
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1595898342752</Id>
+			<Name><![CDATA[Discrete]]></Name>
+			<Text><![CDATA[import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+public @interface Discrete {
+    long n();
+    long size() default 1;
+}]]></Text>
+		</JavaClass>
+		<!--   =========   Java Class   ========  -->
+		<JavaClass>
+			<Id>1595906228984</Id>
+			<Name><![CDATA[Continuous]]></Name>
+			<Text><![CDATA[import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+public @interface Continuous {
+    double[] low();
+    double[] high();
+    long[] shape();
 }]]></Text>
 		</JavaClass>
 	</JavaClasses>
