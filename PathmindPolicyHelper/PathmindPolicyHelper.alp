@@ -28,6 +28,7 @@ isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
+   observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 }
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
@@ -1025,15 +1026,22 @@ import java.util.zip.ZipFile;
 
 import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;
+import ai.skymind.nativerl.ObservationFilter;
 
 public class PathmindHelperRegistry {
     private static List<PathmindHelper> registeredHelpers = new ArrayList<PathmindHelper>();
     private static Map<String, PolicyHelper> policyCache = new HashMap<>();
+    private static Map<String, ObservationFilter> filterCache = new HashMap<>();
 
     private static PolicyHelper forceLoadPolicy = null;
+    private static String observationFilterClassName = null;
 
     public static void setForceLoadPolicy(PolicyHelper h) {
         forceLoadPolicy = h;
+    }
+
+    public static void setObservationFilterClassName(String s) {
+        observationFilterClassName = s;
     }
 
     public static void register(PathmindHelper helper) {
@@ -1072,7 +1080,11 @@ public class PathmindHelperRegistry {
             }
             try {
                 if (new File(policyFile).isDirectory()) {
-                    return new RLlibPolicyHelper(new File(policyFile));
+                    PolicyHelper helper = new RLlibPolicyHelper(new File(policyFile));
+                    ObservationFilter filter = ObservationFilter.load(new File(policyFile), observationFilterClassName);
+                    policyCache.put(policyFile, helper);
+                    filterCache.put(policyFile, filter);
+                    return helper;
                 }
 
                 Path target = null;
@@ -1099,17 +1111,26 @@ public class PathmindHelperRegistry {
                 policyPackage.close();
 
                 PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+                ObservationFilter filter = ObservationFilter.load(target.toFile(), observationFilterClassName);
                 policyCache.put(policyFile, helper);
+                filterCache.put(policyFile, filter);
                 return helper;
             } catch (UnsatisfiedLinkError e) {
                 traceln(e);
                 throw new RuntimeException("Cannot find the appropriate libraries.");
-            } catch (IOException e) {
+            } catch (IOException | ReflectiveOperationException e) {
                 traceln(e);
                 return null;
             }
         }
 
+    }
+
+    public static ObservationFilter loadFilter(String policyFile) {
+        if (!filterCache.containsKey(policyFile)) {
+            loadPolicy(policyFile);
+        }
+        return filterCache.get(policyFile);
     }
 }]]></Text>
 		</JavaClass>
@@ -1384,12 +1405,14 @@ public class AnyLogicCloudHelper {
 			<Text><![CDATA[import ai.skymind.nativerl.ActionProcessor;
 import ai.skymind.nativerl.ActionMaskProcessor;
 import ai.skymind.nativerl.AnnotationProcessor;
+import ai.skymind.nativerl.ObservationFilter;
 import ai.skymind.nativerl.ObservationProcessor;
 import ai.skymind.nativerl.RewardProcessor;
 
 public class AbstractPathmindHelper extends Agent {
 	protected ActionProcessor actionProcessor;
 	protected ActionMaskProcessor actionMaskProcessor;
+	protected ObservationFilter observationFilter;
 	protected ObservationProcessor observationProcessor;
 	protected RewardProcessor rewardProcessor;
 
@@ -1406,6 +1429,8 @@ public class AbstractPathmindHelper extends Agent {
 
 	void init() {
 		try {
+			PathmindHelperRegistry.setObservationFilterClassName(getOwner().getClass().getPackage().getName() + "." + ObservationFilter.POLICY_CLASS_NAME);
+
 			actionProcessor = new ActionProcessor(getOwner().getClass());
 			try {
 				actionMaskProcessor = new ActionMaskProcessor(getOwner().getClass());
@@ -1504,7 +1529,7 @@ public class AbstractPathmindHelper extends Agent {
 	}
 	public <O> double[] observationToDoubles(O observationObject) {
 		try {
-			return observationProcessor.toDoubles(observationObject);
+			return observationFilter != null ? observationFilter.filter(observationObject) : observationProcessor.toDoubles(observationObject);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get observation doubles: " + e);
 		}

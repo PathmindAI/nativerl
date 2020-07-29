@@ -20,8 +20,12 @@ RESET_SNIPPET='
     agent.schedNameEW = combinations[simCount % combinations.length][1];
 '
 
+OBSERVATION_SNIPPET='
+    out = in.obs;
+'
+
 REWARD_SNIPPET='
-    double[] s0 = before, s1 = after;
+    double[] s0 = before.vars, s1 = after.vars;
     // change in forward + intersection delay
     double delay0 = s0[0] + s0[2] + s0[4] + s0[6] + s0[8];
     double delay1 = s1[0] + s1[2] + s1[4] + s1[6] + s1[8];
@@ -86,10 +90,12 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --stop-time 28800 \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
+    --observation-snippet "$OBSERVATION_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
     --policy-helper RLlibPolicyHelper \
-    --multi-agent
+    --multi-agent \
+    --named-variables
 
 javac $(find -iname '*.java')
 
