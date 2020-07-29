@@ -93,6 +93,7 @@ public abstract class AbstractEnvironment extends Environment {
         return i < actionSpaces.length ? actionSpaces[(int)i] : null;
     }
 
+    /** Returns {@link #actionMaskSpace}. */
     @Override public Space getActionMaskSpace() {
         return actionMaskSpace;
     }
@@ -102,8 +103,14 @@ public abstract class AbstractEnvironment extends Environment {
         return observationSpace;
     }
 
+    /** Returns 1. */
     @Override public long getNumberOfAgents() {
         return 1;
+    }
+
+    /** Returns {@code getActionMask(0)}. */
+    public Array getActionMask() {
+        return getActionMask(0);
     }
 
     /** Returns {@link #actionMask}. */
@@ -111,12 +118,27 @@ public abstract class AbstractEnvironment extends Environment {
         return actionMask;
     }
 
+    /** Returns {@code getObservation(0)}. */
+    public Array getObservation() {
+        return getObservation(0);
+    }
+
     /** Returns {@link #observation}. */
     @Override public Array getObservation(long agentId) {
         return observation;
     }
 
+    /** Returns {@code getMetrics(0)}. */
+    public Array getMetrics() {
+        return getMetrics(0);
+    }
+
     @Override public Array getMetrics(long agentId) {
         return metrics;
+    }
+
+    /** Returns {@code isDone(-1)}, that is for all agents. */
+    public boolean isDone() {
+        return isDone(-1);
     }
 }
