@@ -65,7 +65,8 @@ public class ActionProcessorTest {
             ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6, 24}, 24);
             assertTrue(didIt);
             for (int i = 0; i < 100; i++) {
-                ap.doActionsRandom(this, new Random(i), 24);
+                double[] a = ap.getActions(this, new Random(i), 24);
+                ap.doActions(this, a, 24);
             }
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());

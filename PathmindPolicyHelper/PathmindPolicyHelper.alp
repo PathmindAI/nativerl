@@ -741,7 +741,8 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 			action[i] = policyHelper.computeActions(training);
 			doAction(action[i], i);
 		} else if (!usePolicy) {
-			doActionRandom(getEngine().getDefaultRandomGenerator(), i);
+			action[i] = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
+			doAction(action[i], i);
 		}
 	}
 }
@@ -1483,17 +1484,17 @@ public class AbstractPathmindHelper extends Agent {
 		}
 	}
 
-	public void doActionRandom(Random random) {
-		doActionRandom(random, 0);
+	public double[] getActionRandom(Random random) {
+		return getActionRandom(random, 0);
 	}
-	public void doActionRandom(Random random, int agentId) {
+	public double[] getActionRandom(Random random, int agentId) {
 		try {
 			if (actionProcessor == null) {
 				init();
 			}
-			actionProcessor.doActionsRandom(getOwner(), random, agentId);
+			return actionProcessor.getActions(getOwner(), random, agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not do actions random: " + e);
+			throw new RuntimeException("Could get random actions: " + e);
 		}
 	}
 
