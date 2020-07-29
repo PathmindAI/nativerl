@@ -55,26 +55,21 @@ public class ActionProcessor {
         return Reflect.getFieldAnnotations(actionFields);
     }
 
+    public double[] getActions(Object agent, Random random) throws ReflectiveOperationException {
+        return getActions(agent, random, 0);
+    }
+    public double[] getActions(Object agent, Random random, int agentId) throws ReflectiveOperationException {
+        Object a = usesAgentId ? actionConstructor.newInstance(agent, agentId) : actionConstructor.newInstance(agent);
+        Reflect.setFieldDoubles(actionFields, a, null, random);
+        return Reflect.getFieldDoubles(actionFields, a);
+    }
+
     public void doActions(Object agent, double[] actions) throws ReflectiveOperationException {
         doActions(agent, actions, 0);
     }
     public void doActions(Object agent, double[] actions, int agentId) throws ReflectiveOperationException {
-        doActions(agent, actions, null, agentId);
-    }
-
-    public void doActionsRandom(Object agent, Random random) throws ReflectiveOperationException {
-        doActionsRandom(agent, random, 0);
-    }
-    public void doActionsRandom(Object agent, Random random, int agentId) throws ReflectiveOperationException {
-        doActions(agent, null, random, agentId);
-    }
-
-    public void doActions(Object agent, double[] actions, Random random) throws ReflectiveOperationException {
-        doActions(agent, actions, random, 0);
-    }
-    public void doActions(Object agent, double[] actions, Random random, int agentId) throws ReflectiveOperationException {
         Object a = usesAgentId ? actionConstructor.newInstance(agent, agentId) : actionConstructor.newInstance(agent);
-        Reflect.setFieldDoubles(actionFields, a, actions, random);
+        Reflect.setFieldDoubles(actionFields, a, actions, null);
         actionMethod.invoke(a);
     }
 }
