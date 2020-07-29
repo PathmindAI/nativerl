@@ -1,29 +1,22 @@
 package io.skymind.pathmind.analyzer.service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import io.skymind.pathmind.analyzer.exception.InvalidZipFileException;
+import io.skymind.pathmind.analyzer.exception.ZipExtractionException;
+import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import org.apache.commons.io.IOUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.FileCopyUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import io.skymind.pathmind.analyzer.exception.InvalidZipFileException;
-import io.skymind.pathmind.analyzer.exception.ZipExtractionException;
-import lombok.extern.slf4j.Slf4j;
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 
 @Service
 @Slf4j
@@ -33,28 +26,11 @@ public class FileService {
     private static final String ZIP_EXTRACTION_EXCEPTION_MESSAGE = "There was an error while ZIP extracting";
     private static final String INVALID_ZIP_EXCEPTION_MESSAGE = "%s file is an invalid ZIP";
     private static final String CHECK_MODEL_SCRIPT = "/bin/check_model.sh";
-    private static final String SINGLE_OR_MULTI_SCRIPT = "/bin/check_single_or_multi.sh";
 
     public List<String> processFile(final MultipartFile multipartFile) throws IOException {
         log.debug("Processing file {} started", multipartFile.getName());
         final Path unzippedPath = unzipFile(multipartFile);
-        final ExtractorMode mode = verifyMode(unzippedPath);
-        return extractParameters(unzippedPath, mode);
-    }
-
-    private ExtractorMode verifyMode(Path unzippedPath) throws IOException {
-        File scriptFile = Paths.get(SINGLE_OR_MULTI_SCRIPT).toFile();
-        final File newFile = new File(unzippedPath.normalize().toString(), scriptFile.getName());
-        FileCopyUtils.copy(scriptFile, newFile);
-
-        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath()};
-        final Process proc = Runtime.getRuntime().exec(cmd);
-        List<String> result = readResult(proc.getInputStream());
-
-        String modeResult = !CollectionUtils.isEmpty(result) ? result.get(0) : "1";
-        ExtractorMode extractorMode = ExtractorMode.getByhyperparametersDimension(modeResult);
-        log.info("Mode for path {} is: {}", unzippedPath, extractorMode);
-        return extractorMode;
+        return extractParameters(unzippedPath);
     }
 
     private Path unzipFile(final MultipartFile multipartFile) throws IOException {
@@ -84,38 +60,27 @@ public class FileService {
         }
     }
 
-    private List<String> extractParameters(final Path unzippedPath, ExtractorMode mode) throws IOException {
+    private List<String> extractParameters(final Path unzippedPath) throws IOException {
         final File scriptFile = Paths.get(CHECK_MODEL_SCRIPT).toFile();
         final File newFile = new File(unzippedPath.normalize().toString(), scriptFile.getName());
         FileCopyUtils.copy(scriptFile, newFile);
 
-        return runExtractorScript(unzippedPath, newFile, mode);
+        return runExtractorScript(unzippedPath, newFile);
     }
 
-    private List<String> runExtractorScript(final Path unzippedPath, File newFile, ExtractorMode mode) throws IOException {
-        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), mode.toString()};
+    private List<String> runExtractorScript(final Path unzippedPath, File newFile) throws IOException {
+        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath()};
         final Process proc = Runtime.getRuntime().exec(cmd);
         List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
         if (result.size() < 5) {
-            log.warn("Unexpected output for {} file ({} mode): {}", unzippedPath, mode, String.join(" ", result));
-
-            // boolean runMultiAgent = shouldRunMultiAgentMode(result);
-            //
-            // if(mode == SINGLE_AGENT && runMultiAgent) {
-            // return runExtractorScript(unzippedPath, newFile, MULTI_AGENT);
-            // }
+            List<String> err = readResult(proc.getErrorStream());
+            log.warn("Unexpected output for {} file, result: {}, err: {}", unzippedPath, String.join(" ", result), String.join(" ", err));
         }
-        result.add("model-analyzer-mode:" + mode.toString());
-        return result;
-    }
 
-    /**
-     * NPE may be thrown because model was multi-agent
-     */
-    private boolean shouldRunMultiAgentMode(List<String> result) {
-        return result.stream().anyMatch(msg -> msg.contains("java.lang.NullPointerException"));
+        result.add("model-analyzer-mode: single");
+        return result;
     }
 
     private List<String> readResult(final InputStream inputStream) {
