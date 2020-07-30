@@ -28,7 +28,7 @@ Build Instructions
  1. Install the JDK, Maven, and Python on the system
  2. Install pybind11 with a command like `pip3 install --user pybind11`
  3. Run `mvn clean package` where the `pom.xml` file resides
- 4. Find all output files inside the `target/nativerl-1.0.0-SNAPSHOT-bin.zip` archive
+ 4. Find all output files inside the `target/nativerl-1.2.0-SNAPSHOT-bin.zip` archive
 
 ### Building with Docker
 
@@ -79,7 +79,7 @@ source bin/activate
 conda-unpack
 
 cd /path/to/anylogic_model/
-unzip -j nativerl-1.0.0-SNAPSHOT-bin.zip
+unzip -j nativerl-1.2.0-SNAPSHOT-bin.zip
 ```
 
 
@@ -95,7 +95,7 @@ Example Using RLlib for Traffic Light Phases
     ```
 
  2. Inside AnyLogic:
-    1. Add `nativerl-1.0.0-SNAPSHOT.jar` to the class path of the project
+    1. Add `nativerl-1.2.0-SNAPSHOT.jar` to the class path of the project
     2. Create a new "Custom Experiment" named "Training" and erase all of its code
     3. Export the "Training" experiment to a "Standalone Java application" into some directory
     * To ensure we can execute multiple simulations in parallel, append this line to `database/db.properties`:
@@ -103,7 +103,7 @@ Example Using RLlib for Traffic Light Phases
         hsqldb.lock_file=false
     ```
 
- 3. Extract the native libraries from `nativerl-1.0.0-SNAPSHOT-bin.zip` inside that directory
+ 3. Extract the native libraries from `nativerl-1.2.0-SNAPSHOT-bin.zip` inside that directory
  4. Copy as well [`examples/traintraffic.sh`](examples/traintraffic.sh) into that directory
  5. Execute `bash traintraffic.sh` inside the directory and wait for training to complete
     * For a manually managed cluster, the sequence of operation is:
