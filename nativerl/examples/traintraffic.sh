@@ -84,10 +84,6 @@ export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --agent-class-name "$AGENT_CLASS" \
-    --discrete-actions 2 \
-    --continuous-observations 10 \
-    --step-time 10 \
-    --stop-time 28800 \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
     --observation-snippet "$OBSERVATION_SNIPPET" \

@@ -28,6 +28,9 @@ jardir = os.getcwd()
 
 class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym.Env{{/if}}):
     def __init__(self, env_config):
+        # AnyLogic needs this to find its database
+        os.chdir(jardir);
+
         # Put all JAR files found here in the class path
         jars = glob.glob(jardir + '/**/*.jar', recursive=True)
         nativerl.init(['-Djava.class.path=' + os.pathsep.join(jars + [jardir])]);

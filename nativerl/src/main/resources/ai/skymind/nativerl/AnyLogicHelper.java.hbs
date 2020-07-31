@@ -17,13 +17,13 @@ public class {{className}} extends AbstractEnvironment {
     protected Object[] rewardBefore, rewardAfter;
     {{{classSnippet}}}
     public {{className}}() throws ReflectiveOperationException {
-        super({{discreteActions}}, {{continuousObservations}}, {{agentClassName}}.class);
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
+        init({{agentClassName}}.class);
     }
 
     public {{className}}(PolicyHelper policyHelper) throws ReflectiveOperationException {
-        super({{discreteActions}}, {{continuousObservations}}, {{agentClassName}}.class);
         this.policyHelper = policyHelper;
+        init({{agentClassName}}.class);
     }
 
     @Override
@@ -42,6 +42,9 @@ public class {{className}} extends AbstractEnvironment {
 
         if (out == null) {
             out = PathmindHelperRegistry.getHelper().observationToDoubles(in);
+        }
+        if (this.observation == null || this.observation.length() != out.length) {
+            this.observation = new Array(new SSizeTVector().put(out.length));
         }
         float[] array = new float[(int)observation.length()];
         for (int i = 0; i < array.length; i++) {
