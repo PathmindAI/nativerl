@@ -66,9 +66,10 @@ public class RLlibHelper {
         PyArrayObject obsArray = null;
         FloatPointer obsData = null;
         int actionTupleSize;
+        Environment env;
 
-        public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Environment env) throws IOException {
-            this(rllibpaths, algorithm, checkpoint, env.getClass().getSimpleName(), env.getActionSpace(0), env.getObservationSpace());
+        public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Class<? extends Environment> envClass) throws IOException, ReflectiveOperationException {
+            this(rllibpaths, algorithm, checkpoint, envClass.getSimpleName(), envClass.newInstance().getActionSpace(0), envClass.newInstance().getObservationSpace());
         }
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String name, long discreteActions, long continuousObservations) throws IOException {
             this(rllibpaths, algorithm, checkpoint, name, AbstractEnvironment.getDiscreteSpace(discreteActions),
@@ -191,9 +192,9 @@ public class RLlibHelper {
     @Builder.Default
     File checkpoint = null;
 
-    /** A concrete instance of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
+    /** A subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     @Builder.Default
-    Environment environment = null;
+    Class<? extends Environment> environment = null;
 
     /** The number of CPU cores to let RLlib use during training. */
     @Builder.Default
@@ -360,7 +361,7 @@ public class RLlibHelper {
         return hiddenLayers();
     }
 
-    public PolicyHelper createPythonPolicyHelper() throws IOException {
+    public PolicyHelper createPythonPolicyHelper() throws IOException, ReflectiveOperationException {
         return new PythonPolicyHelper(rllibpaths, algorithm, checkpoint, environment);
     }
 
@@ -380,8 +381,8 @@ public class RLlibHelper {
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
-        handlebars.registerHelper("className", (context, options) -> context.getClass().getName());
-        handlebars.registerHelper("classSimpleName", (context, options) -> context.getClass().getSimpleName());
+        handlebars.registerHelper("className", (context, options) -> ((Class)context).getName());
+        handlebars.registerHelper("classSimpleName", (context, options) -> ((Class)context).getSimpleName());
 
         Template template = handlebars.compile("RLlibHelper.py");
 
@@ -438,7 +439,7 @@ public class RLlibHelper {
             } else if ("--checkpoint".equals(args[i])) {
                 helper.checkpoint(new File(args[++i]));
             } else if ("--environment".equals(args[i])) {
-                helper.environment(Class.forName(args[++i]).asSubclass(Environment.class).newInstance());
+                helper.environment(Class.forName(args[++i]).asSubclass(Environment.class));
             } else if ("--num-cpus".equals(args[i])) {
                 helper.numCPUs(Integer.parseInt(args[++i]));
             } else if ("--num-gpus".equals(args[i])) {
@@ -485,7 +486,7 @@ public class RLlibHelper {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else if ("--discrete-actions".equals(args[i])) {
                 helper.discreteActions(Long.parseLong(args[++i]));
-            } else {
+            } else if (args[i].endsWith(".py")) {
                 output = new File(args[i]);
             }
         }

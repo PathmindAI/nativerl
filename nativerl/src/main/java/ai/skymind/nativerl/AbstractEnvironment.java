@@ -48,10 +48,12 @@ public abstract class AbstractEnvironment extends Environment {
         metrics = null;
     }
 
-    /** Initializes all (protected) fields based on discreteActions and continuousObservations, but where annotations from agentClass can override them. */
-    protected AbstractEnvironment(long discreteActions, long continuousObservations, Class agentClass) throws ReflectiveOperationException {
-        this(discreteActions, continuousObservations);
+    /** Initializes all (protected) fields to null. */
+    protected AbstractEnvironment() {
+    }
 
+    /** Initializes all (protected) fields based on annotations from inner classes of agentClass. */
+    protected void init(Class agentClass) throws ReflectiveOperationException {
         long actionMaskSize = 0;
         ActionProcessor ap = new ActionProcessor(agentClass);
         AnnotationProcessor[] as = ap.getActionSpaces();
@@ -85,7 +87,10 @@ public abstract class AbstractEnvironment extends Environment {
             actionMaskSpace = null;
             actionMask = null;
         }
-        // else assume 1 discrete action with n specified in constructor
+
+        reset(); // to be able to call getObservation()
+        observation = getObservation();
+        observationSpace = getContinuousSpace(observation.length());
     }
 
     /** Returns {@link #actionSpace}. */
