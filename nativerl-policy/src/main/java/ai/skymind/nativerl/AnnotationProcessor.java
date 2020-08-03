@@ -1,8 +1,12 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.annotation.Continuous;
+import ai.skymind.nativerl.annotation.Discrete;
 import java.lang.annotation.Annotation;
 
 /**
+ * Reads values off {@link Discrete} and {@link Continuous} annotations.
+ * Values that do not apply are either false, -1 or null, depending on their types.
  *
  * @author saudet
  */
