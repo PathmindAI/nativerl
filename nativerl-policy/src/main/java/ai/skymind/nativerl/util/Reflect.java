@@ -16,11 +16,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * Utility methods using Java reflection.
  *
  * @author saudet
  */
 public class Reflect {
 
+    /** Returns the local inner class found within the given class and method. */
     public static Class findLocalClass(Class parentClass, String methodName) throws ClassNotFoundException {
         ArrayList<String> names = new ArrayList<String>();
         String packagePath = parentClass.getPackage().getName().replace('.', '/');
@@ -61,6 +63,7 @@ public class Reflect {
         throw new ClassNotFoundException("Could not find local class in " + parentClass + "." + methodName);
     }
 
+    /** Returns the fields of the given class in the order listed in the class. */
     public static Field[] getFields(Class cls) {
         ArrayList<Field> fields = new ArrayList<Field>();
         ArrayList<Class> classes = new ArrayList<Class>();
@@ -81,6 +84,8 @@ public class Reflect {
         return fields.toArray(new Field[fields.size()]);
     }
 
+    /** Returns the method with no parameters found in the given class.
+     * Throws IllegalArgumentException if not found or multiple ones found. */
     public static Method getVoidMethod(Class cls) {
         ArrayList<Method> methods = new ArrayList<Method>();
         ArrayList<Class> classes = new ArrayList<Class>();
@@ -105,6 +110,7 @@ public class Reflect {
         return m;
     }
 
+    /** Returns the annotation (Discrete or Continuous) found on the given field. */
     public static AnnotationProcessor getFieldAnnotation(Field field) throws ReflectiveOperationException {
         AnnotationProcessor discrete = null, continuous = null;
         for (Annotation a : field.getAnnotations()) {
@@ -126,6 +132,7 @@ public class Reflect {
         }
     }
 
+    /** Returns the annotations (Discrete or Continuous) found on the given fields. */
     public static AnnotationProcessor[] getFieldAnnotations(Field[] fields) throws ReflectiveOperationException {
         ArrayList<AnnotationProcessor> annotations = new ArrayList<AnnotationProcessor>();
         for (Field f : fields) {
@@ -134,6 +141,7 @@ public class Reflect {
         return annotations.toArray(new AnnotationProcessor[annotations.size()]);
     }
 
+    /** Returns the names of the fields in the order listed in the class. */
     public static String[] getFieldNames(Field[] fields) {
         ArrayList<String> names = new ArrayList<String>();
         for (Field f : fields) {
@@ -142,6 +150,7 @@ public class Reflect {
         return names.toArray(new String[names.size()]);
     }
 
+    /** Returns the values that was assigned to the fields, with arrays flattened to generic objects. */
     public static Object[] getFieldObjects(Field[] fields, Object object) throws ReflectiveOperationException {
         ArrayList<Object> objects = new ArrayList<Object>();
         for (Field f : fields) {
@@ -159,6 +168,7 @@ public class Reflect {
         return objects.toArray(new Object[objects.size()]);
     }
 
+    /** Returns the values that was assigned to the fields, with arrays flattened to doubles. */
     public static double[] getFieldDoubles(Field[] fields, Object object) throws ReflectiveOperationException {
         Object[] objects = getFieldObjects(fields, object);
         double[] doubles = new double[objects.length];
@@ -168,6 +178,7 @@ public class Reflect {
         return doubles;
     }
 
+    /** Returns the values that was assigned to the fields, with arrays flattened to booleans. */
     public static boolean[] getFieldBooleans(Field[] fields, Object object) throws ReflectiveOperationException {
         Object[] objects = getFieldObjects(fields, object);
         boolean[] booleans = new boolean[objects.length];
@@ -177,6 +188,9 @@ public class Reflect {
         return booleans;
     }
 
+    /** Sets the values of the fields in the order listed in the class.
+     * If values is null, it uses random to fill up the fields with random values
+     * with limits based on the (Discrete and Continuous) annotations of the fields. */
     public static void setFieldDoubles(Field[] fields, Object object, double[] values, Random random) throws ReflectiveOperationException {
         int i = 0;
         for (Field f : fields) {

@@ -7,17 +7,21 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
+ * An interface that users can implement to filter observations somehow.
+ * The loading mechanism currently needs java arguments "--add-opens java.base/jdk.internal.loader=ALL-UNNAMED" for Java 9+.
  *
  * @author saudet
  */
 public interface ObservationFilter<O> {
     public static final String POLICY_CLASS_NAME = "PolicyObservationFilter";
 
-    public static ObservationFilter load(File file) throws IOException, ReflectiveOperationException {
-        return load(file, POLICY_CLASS_NAME);
+    /** Returns {@code load(directory, POLICY_CLASS_NAME)}. */
+    public static ObservationFilter load(File directory) throws IOException, ReflectiveOperationException {
+        return load(directory, POLICY_CLASS_NAME);
     }
-    public static ObservationFilter load(File file, String className) throws IOException, ReflectiveOperationException {
-        if (!new File(file, className.replace('.', '/') + ".class").exists()) {
+    /** Returns an instance of an implementation of ObservationFilter found in the given directory with the given class name. */
+    public static ObservationFilter load(File directory, String className) throws IOException, ReflectiveOperationException {
+        if (!new File(directory, className.replace('.', '/') + ".class").exists()) {
             return null;
         }
         ClassLoader classLoader = ObservationFilter.class.getClassLoader();
@@ -25,13 +29,13 @@ public interface ObservationFilter<O> {
             // Java 8-
             Method method = classLoader.getClass().getDeclaredMethod("addURL", new Class[]{URL.class});
             method.setAccessible(true);
-            method.invoke(classLoader, new Object[]{file.toURI().toURL()});
+            method.invoke(classLoader, new Object[]{directory.toURI().toURL()});
         } catch (NoSuchMethodException e) {
             // Java 9+, but requires java arguments "--add-opens java.base/jdk.internal.loader=ALL-UNNAMED"
             try {
                 Method method = classLoader.getClass().getDeclaredMethod("appendToClassPathForInstrumentation", String.class);
                 method.setAccessible(true);
-                method.invoke(classLoader, file.getPath());
+                method.invoke(classLoader, directory.getPath());
             } catch (RuntimeException e2) {
                 throw new RuntimeException("Java arguments missing: \"--add-opens java.base/jdk.internal.loader=ALL-UNNAMED\"", e2);
             }

@@ -57,10 +57,24 @@ import static org.bytedeco.numpy.global.numpy.*;
 @AllArgsConstructor
 public class RLlibHelper {
 
-  /**
-   * A PolicyHelper for RLlib, which can load its checkpoint files.
-   * Requires CPython and comes with all its limitations, such as the GIL.
-   */
+    /**
+     * A PolicyHelper for RLlib, which can load its checkpoint files.
+     * Requires CPython and comes with all its limitations, such as the GIL.
+     * For example:
+     <pre>{@code
+         // Directories where to find all modules required by RLlib
+         File[] path = {
+             new File("/usr/lib64/python3.7/lib-dynload/"),
+             new File("/usr/lib64/python3.7/site-packages/"),
+             new File("/usr/lib/python3.7/site-packages/"),
+             new File(System.getProperty("user.home") + "/.local/lib/python3.7/site-packages/")
+         };
+         File checkpoint = new File("/path/to/checkpoint_100/checkpoint-100");
+         PolicyHelper policyHelper = new RLlibHelper.PythonPolicyHelper(path, "PPO", checkpoint, "Traffic", 2, 10);
+         int action = (int)policyHelper.computeDiscreteAction(getObservation(false));
+     }</pre>
+     *
+     */
     public static class PythonPolicyHelper implements PolicyHelper {
         PyObject globals = null;
         PyArrayObject obsArray = null;

@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Defines a tuple of {@link #size()} discrete action spaces with {@link #n()} actions each.
  *
  * @author saudet
  */
