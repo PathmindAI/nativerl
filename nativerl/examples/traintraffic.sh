@@ -41,44 +41,6 @@ METRICS_SNIPPET='
 
 mkdir -p $MODEL_PACKAGE
 
-cat <<EOF > $MODEL_PACKAGE/Training.java
-package $MODEL_PACKAGE;
-import com.anylogic.engine.AgentConstants;
-import com.anylogic.engine.AnyLogicInternalCodegenAPI;
-import com.anylogic.engine.Engine;
-import com.anylogic.engine.ExperimentCustom;
-import com.anylogic.engine.Utilities;
-
-public class Training extends ExperimentCustom {
-    @AnyLogicInternalCodegenAPI
-    public static String[] COMMAND_LINE_ARGUMENTS_xjal = new String[0];
-
-    public Training(Object parentExperiment) {
-        super(parentExperiment);
-        this.setCommandLineArguments_xjal(COMMAND_LINE_ARGUMENTS_xjal);
-    }
-
-    public void run() {
-    }
-
-    @AnyLogicInternalCodegenAPI
-    public void setupEngine_xjal(Engine engine) {
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
-    }
-
-    @AnyLogicInternalCodegenAPI
-    public static void main(String[] args) {
-        COMMAND_LINE_ARGUMENTS_xjal = args;
-        Utilities.prepareBeforeExperimentStart_xjal(Training.class);
-        Training ex = new Training((Object)null);
-        ex.setCommandLineArguments_xjal(args);
-        ex.run();
-    }
-}
-EOF
-
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
