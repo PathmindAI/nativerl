@@ -1,0 +1,56 @@
+{{#if packageName}}package {{packageName}};{{/if}}
+import com.anylogic.engine.Engine;
+import pathmind.policyhelper.PathmindHelper;
+
+import java.util.*;
+
+public class ModelAnalyzer {
+    public static void main(String[] args) throws Throwable {
+        List<String> failedSteps = new ArrayList<>();
+
+        Engine engine = new Training(null).createEngine();
+        Simulation sim = new Simulation();
+        sim.setupEngine(engine);
+        sim.initDefaultRandomNumberGenerator(engine);
+
+        // Create new agent object:
+        {{agentClassName}} agent = new {{agentClassName}}(engine, null, null);
+        agent.setParametersToDefaultValues();
+
+        try {
+            engine.start(agent);
+        } catch (Throwable ex) {
+            ex.printStackTrace(System.out);
+            failedSteps.add("startEngine");
+        }
+
+        PathmindHelper helper = agent.pathmindHelper;
+
+        try {
+            System.out.println("observations:" + helper.observationForTraining().length);
+        } catch (Throwable ex) {
+            System.out.println("Cannot get obs:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("observations");
+            System.out.println("observations:" + 0);
+        }
+        System.out.println("actions:" + helper.possibleActionCount);
+        System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
+        System.out.println("actionTupleSize:" + helper.actionTupleSize);
+
+        try {
+            if (!helper.isEnabled) {
+                failedSteps.add("pathmindHelperDisabled");
+            }
+        } catch (Throwable ex) {
+            System.out.println("Cannot get isEnabled:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("pathmindHelperDisabled");
+        }
+
+        System.out.println("reward: not defined");
+        System.out.println("failedSteps:" + String.join(",", failedSteps));
+
+        System.exit(0);
+    }
+}
