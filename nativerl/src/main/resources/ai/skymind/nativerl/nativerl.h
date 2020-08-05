@@ -24,12 +24,21 @@ public:
             : allocated(nullptr), data(a.data), shape(a.shape) { }
     Array(float *data, const std::vector<ssize_t>& shape)
             : allocated(nullptr), data(data), shape(shape) { }
+    Array(const std::vector<float>& values)
+            : allocated(nullptr), data(nullptr), shape({(ssize_t)values.size()}) {
+        allocated = data = new float[length()];
+        memcpy(data, values.data(), length() * sizeof(*data));
+    }
     Array(const std::vector<ssize_t>& shape)
             : allocated(nullptr), data(nullptr), shape(shape) {
         allocated = data = new float[length()];
     }
     ~Array() {
         delete[] allocated;
+    }
+
+    std::vector<float> values() {
+        return std::vector<float>(data, data + length());
     }
 
     ssize_t length() {
@@ -90,7 +99,7 @@ Discrete* Space::asDiscrete() { return dynamic_cast<Discrete*>(this); }
  * The pure virtual (abstract) interface of a "native" environment. This gets mapped,
  * for example, with JavaCPP and implemented by a Java class. The implementation needs
  * to export functions to create and release Environment objects. In the case of JavaCPP,
- * the createEnvironment() and releaseEnvironment() are available in the generated
+ * the createJavaEnvironment() and releaseJavaEnvironment() are available in the generated
  * jniNativeRL.h header file.
  * <p>
  * However, we can just as well implement it in pure C++, which we would do in the case of,
@@ -130,8 +139,7 @@ public:
     virtual const Array& getMetrics(ssize_t agentId = 0) = 0;
 };
 
-// typedef Environment* (*CreateEnvironment)(const char* name);
-// typedef void (*ReleaseEnvironment)(Environment* environment);
+std::shared_ptr<Environment> createEnvironment(const char* name);
 
 }
 

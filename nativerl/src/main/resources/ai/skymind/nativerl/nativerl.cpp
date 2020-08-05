@@ -12,6 +12,8 @@ PYBIND11_MAKE_OPAQUE(std::vector<ssize_t>);
 #include "nativerl.h"
 #include "jniNativeRL.h"
 
+namespace nativerl {
+
 /** Loads the JVM using JavaCPP and the given arguments. */
 int init(const std::vector<std::string>& jvmargs) {
     const char *argv[256];
@@ -26,6 +28,70 @@ int uninit() {
     return JavaCPP_uninit();
 }
 
+class PythonEnvironment : public Environment {
+public:
+    /* Inherit the constructors */
+    using Environment::Environment;
+
+    const Space* getActionSpace(ssize_t i = 0) override {
+        PYBIND11_OVERLOAD_PURE(const Space*, Environment, getActionSpace, i);
+    }
+    const Space* getActionMaskSpace() override {
+        PYBIND11_OVERLOAD_PURE(const Space*, Environment, getActionMaskSpace);
+    }
+    const Space* getObservationSpace() override {
+        PYBIND11_OVERLOAD_PURE(const Space*, Environment, getObservationSpace);
+    }
+    ssize_t getNumberOfAgents() override {
+        PYBIND11_OVERLOAD_PURE(ssize_t, Environment, getNumberOfAgents);
+    }
+    const Array& getActionMask(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(const Array&, Environment, getActionMask, agentId);
+    }
+    const Array& getObservation(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(const Array&, Environment, getObservation, agentId);
+    }
+    bool isDone(ssize_t agentId = -1) override {
+        PYBIND11_OVERLOAD_PURE(bool, Environment, isDone, agentId);
+    }
+    void reset() override {
+        PYBIND11_OVERLOAD_PURE(void, Environment, reset);
+    }
+    void setNextAction(const Array& action, ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(void, Environment, setNextAction, action, agentId);
+    }
+    void step() override {
+        PYBIND11_OVERLOAD_PURE(void, Environment, step);
+    }
+    float getReward(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(float, Environment, getReward, agentId);
+    }
+    const Array& getMetrics(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(const Array&, Environment, getMetrics, agentId);
+    }
+};
+
+std::shared_ptr<Environment> createEnvironment(const char* name) {
+    try {
+        return std::shared_ptr<Environment>(createJavaEnvironment(name),
+                            [](Environment *e) { releaseJavaEnvironment(e); });
+    } catch (const std::exception &e) {
+        // probably not a Java environment...
+        std::cerr << "Warning: " << e.what() << std::endl;
+
+        std::string s(name);
+        size_t n = s.rfind('.');
+        pybind11::object mod = pybind11::module::import(s.substr(0, n).c_str());
+        pybind11::object cls = mod.attr(s.substr(n + 1).c_str());
+        pybind11::object obj = cls();
+        PythonEnvironment* ptr = obj.cast<PythonEnvironment*>();
+        std::shared_ptr<pybind11::object> ref = std::make_shared<pybind11::object>(obj);
+        return std::shared_ptr<Environment>(ref, ptr);
+    }
+}
+
+}
+
 PYBIND11_MODULE(nativerl, m) {
 // Do not initialize here, let users pass arguments to the JVM via init()
 //    JavaCPP_init(0, nullptr);
@@ -34,6 +100,10 @@ PYBIND11_MODULE(nativerl, m) {
     pybind11::bind_vector<std::vector<ssize_t>>(m, "SSizeTVector", pybind11::buffer_protocol());
 
     pybind11::class_<nativerl::Array>(m, "Array", pybind11::buffer_protocol())
+        .def(pybind11::init<const nativerl::Array &>())
+        .def(pybind11::init<const std::vector<float>&>())
+        .def(pybind11::init<const std::vector<ssize_t>&>())
+        .def("values", &nativerl::Array::values)
         .def(pybind11::init([](pybind11::buffer b) {
             pybind11::buffer_info info = b.request();
 
@@ -72,7 +142,8 @@ PYBIND11_MODULE(nativerl, m) {
         .def_readwrite("n", &nativerl::Discrete::n)
         .def_readwrite("size", &nativerl::Discrete::size);
 
-    pybind11::class_<nativerl::Environment>(m, "Environment")
+    pybind11::class_<nativerl::Environment, nativerl::PythonEnvironment, std::shared_ptr<nativerl::Environment>>(m, "Environment")
+        .def(pybind11::init<>())
         .def("getActionSpace", &nativerl::Environment::getActionSpace, pybind11::arg("i") = 0)
         .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace)
         .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
@@ -86,9 +157,8 @@ PYBIND11_MODULE(nativerl, m) {
         .def("getReward", &nativerl::Environment::getReward, pybind11::arg("agentId") = 0)
         .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0);
 
-    m.def("createEnvironment", &createEnvironment);
-    m.def("releaseEnvironment", &releaseEnvironment);
+    m.def("createEnvironment", &nativerl::createEnvironment);
 
-    m.def("init", &init);
-    m.def("uninit", &uninit);
+    m.def("init", &nativerl::init);
+    m.def("uninit", &nativerl::uninit);
 }

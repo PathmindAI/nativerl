@@ -133,7 +133,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
 
     # TODO: This needs to be updated somehow to return metrics for all agents
     def getMetrics(self):
-        return numpy.array(self.nativeEnv.getMetrics())
+        return numpy.array(self.nativeEnv.getMetrics(0))
 
 class Callbacks(DefaultCallbacks):
     def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
@@ -292,10 +292,11 @@ pbt_scheduler = PopulationBasedTraining(
 )
 
 # Make sure multiple processes can read the database from AnyLogic
-with open('database/db.properties', 'r+') as f:
-    lines = f.readlines()
-    if 'hsqldb.lock_file=false\n' not in lines:
-        f.write('hsqldb.lock_file=false\n')
+if os.path.isfile('database/db.properties'):
+    with open('database/db.properties', 'r+') as f:
+        lines = f.readlines()
+        if 'hsqldb.lock_file=false\n' not in lines:
+            f.write('hsqldb.lock_file=false\n')
 
 ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
 {{#if autoregressive~}}
