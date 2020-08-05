@@ -39,8 +39,12 @@ public class Array extends Pointer {
     private native void allocate(FloatBuffer data, @Const @ByRef SSizeTVector shape);
     public Array(float[] data, @Const @ByRef SSizeTVector shape) { super((Pointer)null); allocate(data, shape); }
     private native void allocate(float[] data, @Const @ByRef SSizeTVector shape);
+    public Array(@Const @ByRef FloatVector values) { super((Pointer)null); allocate(values); }
+    private native void allocate(@Const @ByRef FloatVector values);
     public Array(@Const @ByRef SSizeTVector shape) { super((Pointer)null); allocate(shape); }
     private native void allocate(@Const @ByRef SSizeTVector shape);
+
+    public native @ByVal FloatVector values();
 
     public native @Cast("ssize_t") long length();
 }

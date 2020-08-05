@@ -47,8 +47,8 @@ public class NativeRL extends ai.skymind.nativerl.NativeRLPresets {
 
 
 
-// typedef Environment* (*CreateEnvironment)(const char* name);
-// typedef void (*ReleaseEnvironment)(Environment* environment);
+@Namespace("nativerl") public static native @SharedPtr Environment createEnvironment(@Cast("const char*") BytePointer name);
+@Namespace("nativerl") public static native @SharedPtr Environment createEnvironment(String name);
 
 
 

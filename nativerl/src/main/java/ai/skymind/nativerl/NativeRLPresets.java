@@ -10,6 +10,7 @@ import org.bytedeco.javacpp.tools.*;
 @Properties(
     value = @Platform(
         compiler = "cpp11",
+        define = "SHARED_PTR_NAMESPACE std",
         include = "nativerl.h"
     ),
     target = "ai.skymind.nativerl",
