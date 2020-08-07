@@ -22,9 +22,9 @@ RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy_single.jar ./
 
 WORKDIR /lib/pathmind
 
-RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.0.0-SNAPSHOT-bin.zip ./ \
- && unzip nativerl-1.0.0-SNAPSHOT-bin.zip \
- && rm nativerl-1.0.0-SNAPSHOT-bin.zip
+RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.2.0-SNAPSHOT-bin.zip ./ \
+ && unzip nativerl-1.2.0-SNAPSHOT-bin.zip \
+ && rm nativerl-1.2.0-SNAPSHOT-bin.zip
 
 RUN aws s3 cp s3://${S3BUCKET}/baseEnv.zip ./ \
  && unzip baseEnv.zip \
