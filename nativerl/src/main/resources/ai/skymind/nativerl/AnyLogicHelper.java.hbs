@@ -14,15 +14,18 @@ public class {{className}} extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}} agent;
     protected PolicyHelper policyHelper;
+    protected ObservationFilter observationFilter;
     protected Object[] rewardBefore, rewardAfter;
     {{{classSnippet}}}
     public {{className}}() throws ReflectiveOperationException {
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
+        this.observationFilter = new PolicyObservationFilter();
         init({{agentClassName}}.class);
     }
 
     public {{className}}(PolicyHelper policyHelper) throws ReflectiveOperationException {
         this.policyHelper = policyHelper;
+        this.observationFilter = new PolicyObservationFilter();
         init({{agentClassName}}.class);
     }
 
@@ -35,10 +38,8 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public Array getObservation(long agentId) {
-        {{observationClassName}} in = PathmindHelperRegistry.getHelper().getObservationObject((int)agentId);
-        double[] out = null;
-
-        {{{observationSnippet}}}
+        Object in = PathmindHelperRegistry.getHelper().getObservationObject((int)agentId);
+        double[] out = observationFilter.filter(in);
 
         if (out == null) {
             out = PathmindHelperRegistry.getHelper().observationToDoubles(in);
@@ -136,18 +137,13 @@ public class {{className}} extends AbstractEnvironment {
         }
     }
 
-    // for some reason, the compiler fails if we try to use the name of inner classes more than once
-    // so here we cast our objects using generics to work around this bug
-    <V> V workAroundJavaBug(Object o) {
-        return (V)o;
-    }
-
     @Override
     public float getReward(long agentId) {
         double reward = 0;
         rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
 {{#if namedVariables}}
-        {{rewardClassName}} before = workAroundJavaBug(rewardBefore[(int)agentId]), after = workAroundJavaBug(rewardAfter[(int)agentId]);
+        {{rewardClassName}} before = PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]),
+                             after = PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]);
 {{else}}
         double[] before = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]);
         double[] after = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
@@ -221,5 +217,23 @@ class Training extends ExperimentCustom {
         Training ex = new Training((Object)null);
         ex.setCommandLineArguments_xjal(args);
         ex.run();
+    }
+}
+
+class PolicyObservationFilter implements ObservationFilter {
+
+    // for some reason, the compiler fails if we try to use the name of inner classes more than once
+    // so here we cast our objects using generics to work around this bug
+    public static <V> V workAroundJavaBug(Object o) {
+        return (V)o;
+    }
+
+    public double[] filter(Object object) {
+        {{observationClassName}} in = workAroundJavaBug(object);
+        double[] out = null;
+
+        {{{observationSnippet}}}
+
+        return out;
     }
 }

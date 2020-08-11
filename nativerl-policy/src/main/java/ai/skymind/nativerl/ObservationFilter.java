@@ -2,6 +2,7 @@ package ai.skymind.nativerl;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -42,7 +43,9 @@ public interface ObservationFilter<O> {
         }
         try {
             Class<? extends ObservationFilter> cls = Class.forName(className, true, classLoader).asSubclass(ObservationFilter.class);
-            return cls.getDeclaredConstructor().newInstance();
+            Constructor<? extends ObservationFilter> c = cls.getDeclaredConstructor();
+            c.setAccessible(true);
+            return c.newInstance();
         } catch (ClassNotFoundException e) {
             return null;
         }
