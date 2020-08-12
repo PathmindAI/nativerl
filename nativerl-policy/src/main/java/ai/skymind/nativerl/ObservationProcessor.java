@@ -49,9 +49,13 @@ public class ObservationProcessor {
         return observationClass;
     }
 
-    /** Returns the names of the fields in the order listed within the class found. */
-    public String[] getObservationNames() {
-        return Reflect.getFieldNames(observationFields);
+    /** Returns {@code getObservationNames(agent, 0)}. */
+    public String[] getObservationNames(Object agent) throws ReflectiveOperationException {
+        return getObservationNames(agent, 0);
+    }
+    /** Returns {@code toNames(getObservationObject(agent, agentId))}. */
+    public String[] getObservationNames(Object agent, int agentId) throws ReflectiveOperationException {
+        return toNames(getObservationObject(agent, agentId));
     }
 
     /** Returns {@code getObservations(agent, 0)}. */
@@ -75,5 +79,9 @@ public class ObservationProcessor {
     /** Returns the values that was assigned to the fields, with arrays flattened to doubles. */
     public <O> double[] toDoubles(O observationObject) throws ReflectiveOperationException {
         return Reflect.getFieldDoubles(observationFields, observationObject);
+    }
+    /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
+    public <O> String[] toNames(O observationObject) throws ReflectiveOperationException {
+        return Reflect.getFieldNames(observationFields, observationObject);
     }
 }
