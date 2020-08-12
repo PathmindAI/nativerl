@@ -52,10 +52,10 @@ public abstract class AbstractEnvironment extends Environment {
     protected AbstractEnvironment() {
     }
 
-    /** Initializes all (protected) fields based on annotations from inner classes of agentClass. */
-    protected void init(Class agentClass) throws ReflectiveOperationException {
+    /** Initializes all (protected) fields based on annotations from inner classes of agent and its own class. */
+    protected void init(Object agent) throws ReflectiveOperationException {
         long actionMaskSize = 0;
-        ActionProcessor ap = new ActionProcessor(agentClass);
+        ActionProcessor ap = new ActionProcessor(agent.getClass());
         AnnotationProcessor[] as = ap.getActionSpaces();
         actionSpaces = new Space[as.length];
         for (int i = 0; i < actionSpaces.length; i++) {
@@ -80,7 +80,7 @@ public abstract class AbstractEnvironment extends Environment {
         }
 
         try {
-            ActionMaskProcessor mp = new ActionMaskProcessor(agentClass);
+            ActionMaskProcessor mp = new ActionMaskProcessor(agent.getClass());
             actionMaskSpace = getContinuousSpace(0, 1, actionMaskSize);
             actionMask = new Array(new SSizeTVector().put(actionMaskSize));
         } catch (ClassNotFoundException e) {
@@ -88,7 +88,6 @@ public abstract class AbstractEnvironment extends Environment {
             actionMask = null;
         }
 
-        reset(); // to be able to call getObservation()
         observation = getObservation();
         observationSpace = getContinuousSpace(observation.length());
     }

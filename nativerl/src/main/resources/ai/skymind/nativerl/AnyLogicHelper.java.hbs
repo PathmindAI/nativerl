@@ -17,16 +17,16 @@ public class {{className}} extends AbstractEnvironment {
     protected ObservationFilter observationFilter;
     protected Object[] rewardBefore, rewardAfter;
     {{{classSnippet}}}
-    public {{className}}() throws ReflectiveOperationException {
+    public {{className}}() {
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
         this.observationFilter = new PolicyObservationFilter();
-        init({{agentClassName}}.class);
+        reset();
     }
 
-    public {{className}}(PolicyHelper policyHelper) throws ReflectiveOperationException {
+    public {{className}}(PolicyHelper policyHelper) {
         this.policyHelper = policyHelper;
         this.observationFilter = new PolicyObservationFilter();
-        init({{agentClassName}}.class);
+        reset();
     }
 
     @Override
@@ -102,6 +102,13 @@ public class {{className}} extends AbstractEnvironment {
             if (engine.getState() == Engine.State.ERROR) {
                 throw new RuntimeException("Engine error at time " + engine.time());
             }
+        }
+
+        try {
+            // Initialize variables from parent class
+            init(agent);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Could not initialize environment: " + e);
         }
     }
 

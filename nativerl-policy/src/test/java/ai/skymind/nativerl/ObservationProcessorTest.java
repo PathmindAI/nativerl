@@ -37,7 +37,7 @@ public class ObservationProcessorTest {
         try {
             ObservationProcessor op = new ObservationProcessor(this.getClass());
             assertEquals("DummyObservations", op.getObservationClass().getSimpleName());
-            assertArrayEquals(new String[] {"obs1", "obs2", "obs3", "obs4"}, op.getObservationNames());
+            assertArrayEquals(new String[] {"obs1", "obs2", "obs3[0]", "obs3[1]", "obs3[2]", "obs3[3]", "obs3[4]", "obs4"}, op.getObservationNames(this));
             assertArrayEquals(new double[] {37, 42, 1, 2, 3, 4, 5, 64}, op.getObservations(this, 64), 0.0);
             TestObservations o = op.getObservationObject(this, 64);
             assertArrayEquals(new double[] {1, 2, 3, 4, 5}, new TestFilter().filter(o), 0.0);
