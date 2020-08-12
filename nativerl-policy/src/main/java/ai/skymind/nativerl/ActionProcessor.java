@@ -53,6 +53,11 @@ public class ActionProcessor {
         return actionClass;
     }
 
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getActionFields() {
+        return actionFields;
+    }
+
     /** Returns {@code getActionNames(agent, 0)}. */
     public String[] getActionNames(Object agent) throws ReflectiveOperationException {
         return getActionNames(agent, 0);

@@ -49,6 +49,11 @@ public class ObservationProcessor {
         return observationClass;
     }
 
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getObservationFields() {
+        return observationFields;
+    }
+
     /** Returns {@code getObservationNames(agent, 0)}. */
     public String[] getObservationNames(Object agent) throws ReflectiveOperationException {
         return getObservationNames(agent, 0);
