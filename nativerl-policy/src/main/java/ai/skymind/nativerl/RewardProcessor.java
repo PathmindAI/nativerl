@@ -49,6 +49,11 @@ public class RewardProcessor {
         return rewardClass;
     }
 
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getRewardFields() {
+        return rewardFields;
+    }
+
     /** Returns {@code getVariableNames(agent, 0)}. */
     public String[] getVariableNames(Object agent) throws ReflectiveOperationException {
         return getVariableNames(agent, 0);

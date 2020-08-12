@@ -49,6 +49,11 @@ public class ActionMaskProcessor {
         return actionMaskClass;
     }
 
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getActionMaskFields() {
+        return actionMaskFields;
+    }
+
     /** Returns {@code getActionMaskNames(agent, 0)}. */
     public String[] getActionMaskNames(Object agent) throws ReflectiveOperationException {
         return getActionMaskNames(agent, 0);
