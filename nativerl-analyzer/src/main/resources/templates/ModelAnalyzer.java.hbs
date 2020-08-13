@@ -3,8 +3,12 @@ import com.anylogic.engine.Engine;
 import pathmind.policyhelper.PathmindHelper;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class ModelAnalyzer {
+    private static String display(String[] theStrings) {
+        return Stream.of(theStrings).collect(Collectors.joining("|"));
+    }
     public static void main(String[] args) throws Throwable {
         List<String> failedSteps = new ArrayList<>();
 
@@ -34,9 +38,9 @@ public class ModelAnalyzer {
             failedSteps.add("observations");
             System.out.println("observations:" + 0);
         }
-        System.out.println("actions:" + helper.possibleActionCount);
+        System.out.println("actions:" + helper.action.length);
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
-        System.out.println("actionTupleSize:" + helper.actionTupleSize);
+        System.out.println("rewardVariables:" + display(helper.getRewardVariablesNames()));
 
         try {
             if (!helper.isEnabled) {
