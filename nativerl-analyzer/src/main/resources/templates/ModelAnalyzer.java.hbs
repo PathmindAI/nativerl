@@ -38,7 +38,7 @@ public class ModelAnalyzer {
             failedSteps.add("observations");
             System.out.println("observations:" + 0);
         }
-        System.out.println("actions:" + helper.action.length);
+        System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
         System.out.println("rewardVariables:" + display(helper.getRewardVariablesNames()));
 
