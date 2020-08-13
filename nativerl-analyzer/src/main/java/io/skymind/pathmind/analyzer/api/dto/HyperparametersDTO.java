@@ -8,7 +8,12 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -16,14 +21,14 @@ import java.util.stream.Collectors;
 @Data
 public class HyperparametersDTO {
 
-    private static List<String> knownOutputs = List.of(
-            "observations:",
-            "actions:",
-            "rewardVariablesCount:",
-            "actionTupleSize:",
-            "reward:",
-            "failedSteps:",
-            "model-analyzer-mode:");
+    private final static Set<String> KNOWN_OUTPUT = Set.of(
+            "observations",
+            "actions",
+            "rewardVariablesCount",
+            "rewardVariables",
+            "reward",
+            "failedSteps",
+            "model-analyzer-mode");
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -37,11 +42,12 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Length of reward variables array extracted from model", example = "7", required = true)
     @NotBlank(message = "Reward variables count cannot be blank")
     private String rewardVariablesCount;
-    
-    @ApiModelProperty(value = "Action tuple size extracted from model", example = "2", required = true)
-    @NotBlank(message = "Tuple size cannot be blank")
-    private String actionTupleSize;
 
+    @ApiModelProperty(value = "Reward variables names extracted from model", example = "[\"var1\", \"var2\"]", required = true)
+    @NotNull(message = "Reward variables is required")
+    @NotEmpty(message = "Reward variables cannot be empty")
+    private List<String> rewardVariables;
+    
     @ApiModelProperty(value = "Reward function definition", required =
             true)
     @NotBlank(message = "Reward function definition cannot be blank")
@@ -56,26 +62,23 @@ public class HyperparametersDTO {
     private String mode;
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
-        hyperparametersList = hyperparametersList.stream()
-                .filter(HyperparametersDTO::isHyperparameters)
-                .map(HyperparametersDTO::extractHyperparameters)
-                .collect(Collectors.toList());
+        Map<String, String> parametersMap = hyperparametersList.stream()
+                .map(String::strip)
+                .map(l -> l.split(":", 2))
+                .filter(p -> HyperparametersDTO.isHyperparameters(p[0]))
+                .collect(Collectors.toMap(p -> p[0], p -> p[1].strip()));
 
         return new HyperparametersDTO(
-                hyperparametersList.get(0),
-                hyperparametersList.get(1),
-                hyperparametersList.get(2),
-                hyperparametersList.get(3),
-                hyperparametersList.get(4),
-                hyperparametersList.get(5),
-                hyperparametersList.get(6));
+                parametersMap.get("observations"),
+                parametersMap.get("actions"),
+                parametersMap.get("rewardVariablesCount"),
+                Arrays.asList(parametersMap.get("rewardVariables").split("\\|")),
+                parametersMap.get("reward"),
+                parametersMap.get("failedSteps"),
+                parametersMap.get("model-analyzer-mode"));
     }
 
-    private static boolean isHyperparameters(String output) {
-        return knownOutputs.stream().anyMatch(output::contains);
-    }
-
-    private static String extractHyperparameters(String output) {
-        return output.substring(output.indexOf(":") + 1);
+    private static boolean isHyperparameters(String parameterCandidate) {
+        return KNOWN_OUTPUT.contains(parameterCandidate);
     }
 }
