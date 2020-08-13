@@ -1542,6 +1542,13 @@ public class AbstractPathmindHelper extends Agent {
 	public double[] observationForReward(int agentId) {
 		return rewardToDoubles(getRewardObject(agentId));
 	}
+	public String[] getRewardVariablesNames() {
+		try {
+			return rewardProcessor.toNames(getRewardObject(0));
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not get reward variables names: " + e);
+		}
+	}
 	public <V> V getRewardObject(int agentId) {
 		try {
 			if (rewardProcessor == null) {
