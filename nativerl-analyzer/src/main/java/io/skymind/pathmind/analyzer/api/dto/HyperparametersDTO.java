@@ -28,7 +28,11 @@ public class HyperparametersDTO {
             "rewardVariables",
             "reward",
             "failedSteps",
-            "model-analyzer-mode");
+            "model-analyzer-mode",
+            "oldVersionFound"
+            );
+    @ApiModelProperty(value = "Flag for when old model versions are found", example = "true")
+    private  boolean oldVersionFound = false;
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -47,7 +51,7 @@ public class HyperparametersDTO {
     @NotNull(message = "Reward variables is required")
     @NotEmpty(message = "Reward variables cannot be empty")
     private List<String> rewardVariables;
-    
+
     @ApiModelProperty(value = "Reward function definition", required =
             true)
     @NotBlank(message = "Reward function definition cannot be blank")
@@ -68,14 +72,22 @@ public class HyperparametersDTO {
                 .filter(p -> HyperparametersDTO.isHyperparameters(p[0]))
                 .collect(Collectors.toMap(p -> p[0], p -> p[1].strip()));
 
-        return new HyperparametersDTO(
-                parametersMap.get("observations"),
-                parametersMap.get("actions"),
-                parametersMap.get("rewardVariablesCount"),
-                Arrays.asList(parametersMap.get("rewardVariables").split("\\|")),
-                parametersMap.get("reward"),
-                parametersMap.get("failedSteps"),
-                parametersMap.get("model-analyzer-mode"));
+        if (parametersMap.getOrDefault("oldVersionFound", "false").equals("true")) {
+            HyperparametersDTO hyperparametersDTO = new HyperparametersDTO();
+            hyperparametersDTO.setOldVersionFound(true);
+            return hyperparametersDTO;
+        }
+        else {
+            return new HyperparametersDTO(
+                    false,
+                    parametersMap.get("observations"),
+                    parametersMap.get("actions"),
+                    parametersMap.get("rewardVariablesCount"),
+                    Arrays.asList(parametersMap.get("rewardVariables").split("\\|")),
+                    parametersMap.get("reward"),
+                    parametersMap.get("failedSteps"),
+                    parametersMap.get("model-analyzer-mode"));
+        }
     }
 
     private static boolean isHyperparameters(String parameterCandidate) {

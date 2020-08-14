@@ -18,7 +18,24 @@ public class ModelAnalyzer {
         sim.initDefaultRandomNumberGenerator(engine);
 
         // Create new agent object:
-        {{agentClassName}} agent = new {{agentClassName}}(engine, null, null);
+        {{agentClassName}} agent;
+        try {
+          agent = new {{agentClassName}}(engine, null, null);
+        }
+        catch(RuntimeException e) {
+            String message = e.getMessage();
+            if (e != null) {
+                if (message.contains("Could not find local class in class")) {
+                    System.out.println("oldVersionFound:true");
+                    System.exit(0);
+                    return;
+                }
+            }
+            e.printStackTrace(System.out);
+            System.exit(1);
+            return;
+        }
+
         agent.setParametersToDefaultValues();
 
         try {
