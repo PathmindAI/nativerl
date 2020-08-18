@@ -1025,7 +1025,6 @@ import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;
 import ai.skymind.nativerl.ObservationFilter;
 
@@ -1081,7 +1080,7 @@ public class PathmindHelperRegistry {
             }
             try {
                 if (new File(policyFile).isDirectory()) {
-                    PolicyHelper helper = new RLlibPolicyHelper(new File(policyFile));
+                    PolicyHelper helper = PolicyHelper.load(new File(policyFile));
                     ObservationFilter filter = ObservationFilter.load(new File(policyFile), observationFilterClassName);
                     policyCache.put(policyFile, helper);
                     filterCache.put(policyFile, filter);
@@ -1111,7 +1110,7 @@ public class PathmindHelperRegistry {
 
                 policyPackage.close();
 
-                PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+                PolicyHelper helper = PolicyHelper.load(target.toFile());
                 ObservationFilter filter = ObservationFilter.load(target.toFile(), observationFilterClassName);
                 policyCache.put(policyFile, helper);
                 filterCache.put(policyFile, filter);
@@ -1212,7 +1211,7 @@ public class PathmindSerializer implements Serializable {
 		private String pathmindHelperVersion;
 
 		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
-		private static final String PATHMIND_JAR = "RLlibPolicyHelper";
+		private static final String PATHMIND_JAR = "nativerl-policy";
 
 		public PathmindMeta(PathmindHelper pathmindHelper) {
 			this.possibleActionCount = pathmindHelper.possibleActionCount;
