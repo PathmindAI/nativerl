@@ -31,7 +31,7 @@ public class ActionMaskProcessorTest {
         try {
             ActionMaskProcessor ap = new ActionMaskProcessor(this.getClass());
             assertEquals("DummyActionMasks", ap.getActionMaskClass().getSimpleName());
-            assertArrayEquals(new String[] {"mask1", "mask2", "mask3", "mask4"}, ap.getActionMaskNames());
+            assertArrayEquals(new String[] {"mask1", "mask2", "mask3[0]", "mask3[1]", "mask4"}, ap.getActionMaskNames(this));
             assertArrayEquals(new boolean[] {true, false, false, true, true}, ap.getActionMasks(this, 64));
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());

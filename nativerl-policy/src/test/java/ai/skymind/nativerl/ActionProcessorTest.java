@@ -55,7 +55,8 @@ public class ActionProcessorTest {
         try {
             ActionProcessor ap = new ActionProcessor(this.getClass());
             assertEquals("DummyActions", ap.getActionClass().getSimpleName());
-            assertArrayEquals(new String[] {"action1", "action2", "action3", "action4", "action5"}, ap.getActionNames());
+            assertArrayEquals(new String[] {"action1", "action2[0]", "action2[1]", "action3[0]", "action3[1]",
+                                            "action4[0]", "action4[1]", "action4[2]", "action4[3]", "action5"}, ap.getActionNames(this));
             AnnotationProcessor[] spaces = ap.getActionSpaces();
             assertEquals(5, spaces.length);
             assertEquals(50, spaces[0].n);

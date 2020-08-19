@@ -210,6 +210,10 @@ public class RLlibHelper {
     @Builder.Default
     Class<? extends Environment> environment = null;
 
+    /** The maximum amount of memory in MB to use for Java environments (passed via the "-Xmx" argument). */
+    @Builder.Default
+    int maxMemoryInMB = 4096;
+
     /** The number of CPU cores to let RLlib use during training. */
     @Builder.Default
     int numCPUs = 1;
@@ -309,6 +313,7 @@ public class RLlibHelper {
         this.outputDir = copy.outputDir;
         this.checkpoint = copy.checkpoint;
         this.environment = copy.environment;
+        this.maxMemoryInMB = copy.maxMemoryInMB;
         this.numCPUs = copy.numCPUs;
         this.numGPUs = copy.numGPUs;
         this.numWorkers = copy.numWorkers;
@@ -340,6 +345,7 @@ public class RLlibHelper {
                 + "actionTupleSize=" + actionTupleSize + ", "
                 + "autoregressive=" + autoregressive + ", "
                 + "checkpoint=" + checkpoint + ", "
+                + "maxMemoryInMB=" + maxMemoryInMB + ", "
                 + "environment=" + environment + ", "
                 + "numCPUs=" + numCPUs + ", "
                 + "numGPUs=" + numGPUs + ", "
@@ -420,6 +426,7 @@ public class RLlibHelper {
                 System.out.println("    --algorithm");
                 System.out.println("    --checkpoint");
                 System.out.println("    --environment");
+                System.out.println("    --max-memory-in-mb");
                 System.out.println("    --num-cpus");
                 System.out.println("    --num-gpus");
                 System.out.println("    --num-workers");
@@ -454,6 +461,8 @@ public class RLlibHelper {
                 helper.checkpoint(new File(args[++i]));
             } else if ("--environment".equals(args[i])) {
                 helper.environment(Class.forName(args[++i]).asSubclass(Environment.class));
+            } else if ("--max-memory-in-mb".equals(args[i])) {
+                helper.maxMemoryInMB(Integer.parseInt(args[++i]));
             } else if ("--num-cpus".equals(args[i])) {
                 helper.numCPUs(Integer.parseInt(args[++i]));
             } else if ("--num-gpus".equals(args[i])) {

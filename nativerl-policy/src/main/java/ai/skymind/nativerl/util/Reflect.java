@@ -141,11 +141,34 @@ public class Reflect {
         return annotations.toArray(new AnnotationProcessor[annotations.size()]);
     }
 
-    /** Returns the names of the fields in the order listed in the class. */
-    public static String[] getFieldNames(Field[] fields) {
+    /** Returns the names of the fields in the order listed in the class, with arrays flattened and suffixed with [0], [1], etc. */
+    public static String[] getFieldNames(Field[] fields, Object object) throws ReflectiveOperationException {
         ArrayList<String> names = new ArrayList<String>();
         for (Field f : fields) {
-            names.add(f.getName());
+            String name = f.getName();
+            Class t = f.getType();
+            if (t.isArray()) {
+                int length = 0;
+                try {
+                    AnnotationProcessor a = getFieldAnnotation(f);
+                    if (a.discrete) {
+                        length = (int)a.size;
+                    } else if (a.continuous) {
+                        length = (int)Arrays.stream(a.shape).reduce((x, y) -> x * y).getAsLong();
+                    }
+                } catch (IllegalArgumentException e) {
+                    // no annotation, use array length of value
+                    if (object != null) {
+                        Object array = f.get(object);
+                        length = Array.getLength(array);
+                    }
+                }
+                for (int i = 0; i < length; i++) {
+                    names.add(name + "[" + i + "]");
+                }
+            } else {
+                names.add(name);
+            }
         }
         return names.toArray(new String[names.size()]);
     }

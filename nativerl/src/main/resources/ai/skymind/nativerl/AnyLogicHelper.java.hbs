@@ -14,16 +14,19 @@ public class {{className}} extends AbstractEnvironment {
     protected Engine engine;
     protected {{agentClassName}} agent;
     protected PolicyHelper policyHelper;
+    protected ObservationFilter observationFilter;
     protected Object[] rewardBefore, rewardAfter;
     {{{classSnippet}}}
-    public {{className}}() throws ReflectiveOperationException {
+    public {{className}}() {
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
-        init({{agentClassName}}.class);
+        this.observationFilter = new PolicyObservationFilter();
+        reset();
     }
 
-    public {{className}}(PolicyHelper policyHelper) throws ReflectiveOperationException {
+    public {{className}}(PolicyHelper policyHelper) {
         this.policyHelper = policyHelper;
-        init({{agentClassName}}.class);
+        this.observationFilter = new PolicyObservationFilter();
+        reset();
     }
 
     @Override
@@ -35,10 +38,8 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public Array getObservation(long agentId) {
-        {{observationClassName}} in = PathmindHelperRegistry.getHelper().getObservationObject((int)agentId);
-        double[] out = null;
-
-        {{{observationSnippet}}}
+        Object in = PathmindHelperRegistry.getHelper().getObservationObject((int)agentId);
+        double[] out = observationFilter.filter(in);
 
         if (out == null) {
             out = PathmindHelperRegistry.getHelper().observationToDoubles(in);
@@ -98,6 +99,16 @@ public class {{className}} extends AbstractEnvironment {
         // Workaround to trigger all events at time 0.0
         while (engine.getNextEventTime() == 0.0) {
             engine.runFast(Math.ulp(0.0));
+            if (engine.getState() == Engine.State.ERROR) {
+                throw new RuntimeException("Engine error at time " + engine.time());
+            }
+        }
+
+        try {
+            // Initialize variables from parent class
+            init(agent);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Could not initialize environment: " + e);
         }
     }
 
@@ -120,14 +131,17 @@ public class {{className}} extends AbstractEnvironment {
     public void step() {
         engine.runFast();
         if (engine.getState() == Engine.State.ERROR) {
-            throw new RuntimeException("Engine error");
+            throw new RuntimeException("Engine error at time " + engine.time());
         }
-    }
 
-    // for some reason, the compiler fails if we try to use the name of inner classes more than once
-    // so here we cast our objects using generics to work around this bug
-    <V> V workAroundJavaBug(Object o) {
-        return (V)o;
+        // Workaround to trigger all events at current time
+        double time = engine.time();
+        while (engine.getNextEventTime() == time) {
+            engine.runFast(time + Math.ulp(time));
+            if (engine.getState() == Engine.State.ERROR) {
+                throw new RuntimeException("Engine error at time " + engine.time());
+            }
+        }
     }
 
     @Override
@@ -135,7 +149,8 @@ public class {{className}} extends AbstractEnvironment {
         double reward = 0;
         rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
 {{#if namedVariables}}
-        {{rewardClassName}} before = workAroundJavaBug(rewardBefore[(int)agentId]), after = workAroundJavaBug(rewardAfter[(int)agentId]);
+        {{rewardClassName}} before = PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]),
+                             after = PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]);
 {{else}}
         double[] before = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]);
         double[] after = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
@@ -209,5 +224,23 @@ class Training extends ExperimentCustom {
         Training ex = new Training((Object)null);
         ex.setCommandLineArguments_xjal(args);
         ex.run();
+    }
+}
+
+class PolicyObservationFilter implements ObservationFilter {
+
+    // for some reason, the compiler fails if we try to use the name of inner classes more than once
+    // so here we cast our objects using generics to work around this bug
+    public static <V> V workAroundJavaBug(Object o) {
+        return (V)o;
+    }
+
+    public double[] filter(Object object) {
+        {{observationClassName}} in = workAroundJavaBug(object);
+        double[] out = null;
+
+        {{{observationSnippet}}}
+
+        return out;
     }
 }
