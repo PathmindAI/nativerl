@@ -26,6 +26,8 @@ RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.2.0-SNAPSHOT-bin.zip ./ \
  && unzip nativerl-1.2.0-SNAPSHOT-bin.zip \
  && rm nativerl-1.2.0-SNAPSHOT-bin.zip
 
+RUN aws s3 cp s3://${S3BUCKET}/nativerl-policy-1.2.0-SNAPSHOT.jar ./
+
 RUN aws s3 cp s3://${S3BUCKET}/baseEnv-8.6.0.zip ./ \
  && unzip baseEnv-8.6.0.zip \
  && rm baseEnv-8.6.0.zip
