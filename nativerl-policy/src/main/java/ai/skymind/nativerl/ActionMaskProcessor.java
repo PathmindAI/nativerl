@@ -49,18 +49,44 @@ public class ActionMaskProcessor {
         return actionMaskClass;
     }
 
-    /** Returns the names of the fields in the order listed within the class found. */
-    public String[] getActionMaskNames() {
-        return Reflect.getFieldNames(actionMaskFields);
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getActionMaskFields() {
+        return actionMaskFields;
+    }
+
+    /** Returns {@code getActionMaskNames(agent, 0)}. */
+    public String[] getActionMaskNames(Object agent) throws ReflectiveOperationException {
+        return getActionMaskNames(agent, 0);
+    }
+    /** Returns {@code toNames(getActionMaskObject(agent, agentId))}. */
+    public String[] getActionMaskNames(Object agent, int agentId) throws ReflectiveOperationException {
+        return toNames(getActionMaskObject(agent, agentId));
     }
 
     /** Returns {@code getActionMasks(agent, 0)}. */
     public boolean[] getActionMasks(Object agent) throws ReflectiveOperationException {
         return getActionMasks(agent, 0);
     }
-    /** Returns the values of the fields in the order listed within the class found for the given agentId, with arrays flattened to booleans. */
+    /** Returns {@code toBooleans(getActionMaskObject(agent, agentId))}. */
     public boolean[] getActionMasks(Object agent, int agentId) throws ReflectiveOperationException {
-        Object o = usesAgentId ? actionMaskConstructor.newInstance(agent, agentId) : actionMaskConstructor.newInstance(agent);
-        return Reflect.getFieldBooleans(actionMaskFields, o);
+        return toBooleans(getActionMaskObject(agent, agentId));
+    }
+
+    /** Returns {@code getActionMaskObject(agent, 0)}. */
+    public <M> M getActionMaskObject(Object agent) throws ReflectiveOperationException {
+        return getActionMaskObject(agent, 0);
+    }
+    /** Returns a new instance of the action mask class, passing the given agentId to the constructor. */
+    public <M> M getActionMaskObject(Object agent, int agentId) throws ReflectiveOperationException {
+        return usesAgentId ? (M)actionMaskConstructor.newInstance(agent, agentId) : (M)actionMaskConstructor.newInstance(agent);
+    }
+
+    /** Returns the values that was assigned to the fields, with arrays flattened to booleans. */
+    public <M> boolean[] toBooleans(M actionMaskObject) throws ReflectiveOperationException {
+        return Reflect.getFieldBooleans(actionMaskFields, actionMaskObject);
+    }
+    /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
+    public <M> String[] toNames(M actionMaskObject) throws ReflectiveOperationException {
+        return Reflect.getFieldNames(actionMaskFields, actionMaskObject);
     }
 }

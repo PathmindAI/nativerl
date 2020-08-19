@@ -92,7 +92,7 @@ This is an overall end user workflow as reference about how the user experience 
 
  5. Perform training, etc (the web app doesn't need to do anything more than it's already doing for RLlib)
  6. Export and download policies back to AnyLogic
-    * The web app here needs to take the `OBSERVATION_SNIPPET`, generate and compile a class implementing `ObservationFilter` from it, and bundle it compiled as a `PolicyObservationFilter.class` file in the zip file along with the TensorFlow SavedModel. Right now, because AnyLogic doesn't support *public* inner classes, we need to make do with *private* inner classes, and that involves a couple of ugly hacks, but it's workable for now. **(Again, this is something they need to fix!)**
+    * The web app here needs to take the `PolicyObservationFilter.class` file generated and compiled by NativeRL, which contains the `OBSERVATION_SNIPPET` and implements `ObservationFilter`, and bundle it in the zip file along with the TensorFlow SavedModel. Right now, because AnyLogic doesn't support *public* inner classes, we need to make do with *private* inner classes, and that involves a couple of ugly hacks, but it's workable for now. **(Again, this is something they need to fix!)**
  7. Run the Simulation as usual and everything just works!
 
 

@@ -49,9 +49,18 @@ public class RewardProcessor {
         return rewardClass;
     }
 
-    /** Returns the names of the fields in the order listed within the class found. */
-    public String[] getVariableNames() {
-        return Reflect.getFieldNames(rewardFields);
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getRewardFields() {
+        return rewardFields;
+    }
+
+    /** Returns {@code getVariableNames(agent, 0)}. */
+    public String[] getVariableNames(Object agent) throws ReflectiveOperationException {
+        return getVariableNames(agent, 0);
+    }
+    /** Returns {@code toNames(getVariableNames(agent, agentId))}. */
+    public String[] getVariableNames(Object agent, int agentId) throws ReflectiveOperationException {
+        return toNames(getRewardObject(agent, agentId));
     }
 
     /** Returns {@code getVariables(agent, 0)}. */
@@ -76,5 +85,9 @@ public class RewardProcessor {
     /** Returns the values that was assigned to the fields, with arrays flattened to doubles. */
     public <V> double[] toDoubles(V rewardObject) throws ReflectiveOperationException {
         return Reflect.getFieldDoubles(rewardFields, rewardObject);
+    }
+    /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
+    public <V> String[] toNames(V rewardObject) throws ReflectiveOperationException {
+        return Reflect.getFieldNames(rewardFields, rewardObject);
     }
 }

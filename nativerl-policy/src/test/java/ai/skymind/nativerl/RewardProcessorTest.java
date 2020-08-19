@@ -39,7 +39,7 @@ public class RewardProcessorTest {
         try {
             RewardProcessor rp = new RewardProcessor(this.getClass());
             assertEquals("DummyVariables", rp.getRewardClass().getSimpleName());
-            assertArrayEquals(new String[] {"var1", "var2", "var3", "var4", "var5"}, rp.getVariableNames());
+            assertArrayEquals(new String[] {"var1", "var2", "var3", "var4[0]", "var4[1]", "var4[2]", "var4[3]", "var4[4]", "var5"}, rp.getVariableNames(this));
             assertArrayEquals(new double[] {37, 42, 64, 1, 2, 3, 4, 5, 24}, rp.getVariables(this, 24), 0.0);
             TestVariables v = rp.getRewardObject(this, 24);
             assertEquals(37 + 42 + 64 + 5, new TestFunction().reward(v, v), 0.0);

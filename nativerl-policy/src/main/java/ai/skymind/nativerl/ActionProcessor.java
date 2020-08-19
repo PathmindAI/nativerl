@@ -53,9 +53,19 @@ public class ActionProcessor {
         return actionClass;
     }
 
-    /** Returns the names of the fields in the order listed within the class found. */
-    public String[] getActionNames() {
-        return Reflect.getFieldNames(actionFields);
+    /** Returns the fields of the class we found within the {@link #METHOD_NAME} method of the agent class. */
+    public Field[] getActionFields() {
+        return actionFields;
+    }
+
+    /** Returns {@code getActionNames(agent, 0)}. */
+    public String[] getActionNames(Object agent) throws ReflectiveOperationException {
+        return getActionNames(agent, 0);
+    }
+    /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
+    public String[] getActionNames(Object agent, int agentId) throws ReflectiveOperationException {
+        Object a = usesAgentId ? actionConstructor.newInstance(agent, agentId) : actionConstructor.newInstance(agent);
+        return Reflect.getFieldNames(actionFields, a);
     }
 
     /** Returns the annotations (Discrete or Continuous) found on the fields in the order listed within the class found. */
