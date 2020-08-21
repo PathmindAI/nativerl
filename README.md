@@ -112,6 +112,15 @@ Example Using RLlib and PathmindHelper for Traffic Light Phases
  6. Once we get a checkpoint file, we can use it as a policy inside AnyLogic by loading it with PathmindHelper.
 
 
+Example Using RLlib and Cartpole in Python
+------------------------------------------
+
+ 1. Extract the native libraries from `nativerl-1.2.0-SNAPSHOT-bin.zip` somewhere
+ 2. Copy as well [`nativerl/examples/traincartpole.sh`](nativerl/examples/traincartpole.sh) into that directory
+ 3. Execute `bash traincartpole.sh` inside the directory and wait for training to complete
+    * The script outputs the `cartpole.py` file that should actually be generated via some helper...
+
+
 Support for Multiagent Environments
 -----------------------------------
 
