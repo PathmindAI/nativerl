@@ -55,8 +55,8 @@ public class ModelAnalyzer {
             failedSteps.add("observations");
             System.out.println("observations:" + 0);
         }
-        // 10 is there just to keep backward compatibility. When we remove support from webapp, we will remove it here
-        System.out.println("actions:" + 10);
+        // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
+        System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
         System.out.println("rewardVariables:" + display(helper.getRewardVariablesNames()));
 
