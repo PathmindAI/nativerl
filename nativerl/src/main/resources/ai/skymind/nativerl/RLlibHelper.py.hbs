@@ -74,6 +74,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
 {{#if multiAgent}}
         obsdict = {}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             obs = numpy.array(self.nativeEnv.getObservation(i))
             if isinstance(self.observation_space, gym.spaces.Dict):
                 obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
@@ -91,6 +93,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
     def step(self, action):
 {{#if multiAgent}}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             act = action[str(i)]
             if isinstance(self.action_space, gym.spaces.Tuple):
                 actionArray = numpy.empty(shape=(0), dtype=numpy.float32)
@@ -106,6 +110,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         rewarddict = {}
         donedict = {}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             obs = numpy.array(self.nativeEnv.getObservation(i))
             if isinstance(self.observation_space, gym.spaces.Dict):
                 obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
@@ -132,9 +138,17 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return obs, reward, self.nativeEnv.isDone(), {}
 {{/if}}
 
-    # TODO: This needs to be updated somehow to return metrics for all agents
     def getMetrics(self):
+{{#if multiAgent}}
+        metrics = numpy.empty(shape=(0), dtype=numpy.float32)
+        for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
+            metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
+        return metrics
+{{else}}
         return numpy.array(self.nativeEnv.getMetrics(0))
+{{/if}}
 
 class Callbacks(DefaultCallbacks):
     def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,

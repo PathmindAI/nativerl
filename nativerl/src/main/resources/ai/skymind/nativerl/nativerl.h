@@ -125,6 +125,8 @@ public:
     virtual const Array& getActionMask(ssize_t agentId = 0) = 0;
     /** Returns the current state of the simulation for the given agent. */
     virtual const Array& getObservation(ssize_t agentId = 0) = 0;
+    /** Indicates when the given agent is not available to have its state queried, do actions, etc. */
+    virtual bool isSkip(ssize_t agentId = -1) = 0;
     /** Indicates when a simulation episode is over for the given agent, or -1 for all. */
     virtual bool isDone(ssize_t agentId = -1) = 0;
     /** Used to reset the simulation, preferably starting a new random sequence. */

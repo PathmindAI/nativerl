@@ -67,6 +67,11 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
+    public boolean isSkip(long agentId) {
+        return PathmindHelperRegistry.getHelper().isSkip((int)agentId);
+    }
+
+    @Override
     public boolean isDone(long agentId) {
         return PathmindHelperRegistry.getHelper().isDone((int)agentId);
     }
