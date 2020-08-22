@@ -559,6 +559,36 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1598081984891</Id>
+					<Name><![CDATA[isSkip]]></Name>
+					<X>20</X><Y>520</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false
+/* https://help.pathmind.com/en/articles/3644763-5-define-skip-condition */]]></Code>
+						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
+						<ParameterEditor>
+							<Id>1598081984889</Id>
+							<Label><![CDATA[Skip]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
 					<X>20</X><Y>250</Y>
@@ -741,6 +771,9 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
 	for (int i = 0; i < numberOfAgents; i++) {
+		if (isSkip(i)) {
+			continue;
+		}
 		if (action[i] != null) {
 			// the learning framework should give us continuous values in the range [0, 1] here
 			scaledAction[i] = doAction(action[i], true, i);
@@ -750,6 +783,9 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 } else if (isEnabled) {
 	steps++;
 	for (int i = 0; i < numberOfAgents; i++) {
+		if (isSkip(i)) {
+			continue;
+		}
 		// be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
 		double[] reward = observationForReward(i);
@@ -797,6 +833,7 @@ if (!isTraining && steps == 1) {
 			    + "      Array: " + Arrays.toString(reward)+"\n"
 			    + "      Number of Reward Variables: " + reward.length + "\n"
 			    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
+			    + "    Skip: " + isSkip(i) + "\n"
 			    + "    Done: " + isDone(i) + "\n";
 	}
 	return output;
@@ -995,6 +1032,9 @@ if (!isTraining && steps == 1) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[actionMasks]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[isSkip]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>

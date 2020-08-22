@@ -70,6 +70,9 @@ class $ENVIRONMENT_CLASS(nativerl.Environment):
         self.state = [x, x_dot, theta, theta_dot]
         self.steps += 1
 
+    def isSkip(self, agentId):
+        return False
+
     def isDone(self, agentId):
         x, x_dot, theta, theta_dot = self.state
         return bool(
