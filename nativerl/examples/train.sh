@@ -85,6 +85,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
+    --named-variables \
     $MULTIAGENT_PARAM \
 
 javac $(find -iname '*.java')
