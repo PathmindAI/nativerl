@@ -213,8 +213,9 @@ public class Reflect {
 
     /** Sets the values of the fields in the order listed in the class.
      * If values is null, it uses random to fill up the fields with random values
-     * with limits based on the (Discrete and Continuous) annotations of the fields. */
-    public static void setFieldDoubles(Field[] fields, Object object, double[] values, Random random) throws ReflectiveOperationException {
+     * with limits based on the (Discrete and Continuous) annotations of the fields.
+     * If scale is true, also rescales non-random continuous values from [0, 1] to those limits. */
+    public static void setFieldDoubles(Field[] fields, Object object, double[] values, Random random, boolean scale) throws ReflectiveOperationException {
         int i = 0;
         for (Field f : fields) {
             AnnotationProcessor a = getFieldAnnotation(f);
@@ -251,11 +252,13 @@ public class Reflect {
                     }
                 } else if (c == float.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setFloat(array, j, values != null ? (float)values[i++] : (float)((high[j] - low[j]) * random.nextDouble() + low[j]));
+                        Array.setFloat(array, j, values != null ? (float)(values[i++] * (scale ? high[j] - low[j] : 1.0f) + (scale ? low[j] : 0.0f))
+                                                                : (float)((high[j] - low[j]) * random.nextDouble() + low[j]));
                     }
                 } else if (c == double.class) {
                     for (int j = 0; j < length; j++) {
-                        Array.setDouble(array, j, values != null ? values[i++] : (high[j] - low[j]) * random.nextDouble() + low[j]);
+                        Array.setDouble(array, j, values != null ? values[i++] * (scale ? high[j] - low[j] : 1.0f) + (scale ? low[j] : 0.0f)
+                                                                 : (high[j] - low[j]) * random.nextDouble() + low[j]);
                     }
                 } else {
                     throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
@@ -266,9 +269,11 @@ public class Reflect {
                 } else if (t == long.class) {
                     f.setLong(object, values != null ?  (long)values[i++] : (long)(n * random.nextDouble()));
                 } else if (t == float.class) {
-                    f.setFloat(object, values != null ? (float)values[i++] : (float)((high[0] - low[0]) * random.nextDouble() + low[0]));
+                    f.setFloat(object, values != null ? (float)(values[i++] * (scale ? high[0] - low[0] : 1.0f) + (scale ? low[0] : 0.0f))
+                                                      : (float)((high[0] - low[0]) * random.nextDouble() + low[0]));
                 } else if (t == double.class) {
-                    f.setDouble(object, values != null ? values[i++] : (high[0] - low[0]) * random.nextDouble() + low[0]);
+                    f.setDouble(object, values != null ? values[i++] * (scale ? high[0] - low[0] : 1.0f) + (scale ? low[0] : 0.0f)
+                                                       : (high[0] - low[0]) * random.nextDouble() + low[0]);
                 } else {
                     throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
                 }

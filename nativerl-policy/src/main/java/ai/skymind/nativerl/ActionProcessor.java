@@ -80,18 +80,21 @@ public class ActionProcessor {
     /** Assigns random values to the fields and returns with arrays flattened to doubles. */
     public double[] getActions(Object agent, Random random, int agentId) throws ReflectiveOperationException {
         Object a = usesAgentId ? actionConstructor.newInstance(agent, agentId) : actionConstructor.newInstance(agent);
-        Reflect.setFieldDoubles(actionFields, a, null, random);
+        Reflect.setFieldDoubles(actionFields, a, null, random, true);
         return Reflect.getFieldDoubles(actionFields, a);
     }
 
-    /** Calls {@code doActions(agent, actions, 0)}. */
-    public void doActions(Object agent, double[] actions) throws ReflectiveOperationException {
-        doActions(agent, actions, 0);
+    /** Calls {@code doActions(agent, actions, scale, 0)}. */
+    public double[] doActions(Object agent, double[] actions, boolean scale) throws ReflectiveOperationException {
+        return doActions(agent, actions, scale, 0);
     }
-    /** Assigns the values of the fields in the order listed in the class and calls the method with no parameters found in that action class. */
-    public void doActions(Object agent, double[] actions, int agentId) throws ReflectiveOperationException {
+    /** Assigns the values of the fields in the order listed in the class and calls the method with no parameters found in that action class.
+     * If scale is true, continuous values are assumed to be within [0, 1], so it also scales them to their [low, high] ranges.
+     * Returns a scaled version of the action values. */
+    public double[] doActions(Object agent, double[] actions, boolean scale, int agentId) throws ReflectiveOperationException {
         Object a = usesAgentId ? actionConstructor.newInstance(agent, agentId) : actionConstructor.newInstance(agent);
-        Reflect.setFieldDoubles(actionFields, a, actions, null);
+        Reflect.setFieldDoubles(actionFields, a, actions, null, scale);
         actionMethod.invoke(a);
+        return Reflect.getFieldDoubles(actionFields, a);
     }
 }

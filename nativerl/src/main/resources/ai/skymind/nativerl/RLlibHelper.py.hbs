@@ -43,9 +43,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
             if isinstance(actionSpace, nativerl.Discrete):
                 actionSpaces += [gym.spaces.Discrete(actionSpace.n) for j in range(actionSpace.size)]
             else:
-                low = actionSpace.low[0] if len(actionSpace.low) == 1 else numpy.array(actionSpace.low)
-                high = actionSpace.high[0] if len(actionSpace.high) == 1 else numpy.array(actionSpace.high)
-                actionSpaces += [gym.spaces.Box(low, high, numpy.array(actionSpace.shape), dtype=numpy.float32)]
+                actionSpaces += [gym.spaces.Box(0, 1, numpy.array(actionSpace.shape), dtype=numpy.float32)]
             i += 1
             actionSpace = self.nativeEnv.getActionSpace(i)
         self.action_space = actionSpaces[0] if len(actionSpaces) == 1 else gym.spaces.Tuple(actionSpaces)

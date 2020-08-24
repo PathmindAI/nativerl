@@ -141,13 +141,13 @@ public class RLlibV2PolicyHelper implements PolicyHelper {
             if (t.dataType().equals(TFloat64.DTYPE)) {
                 DoubleDataBuffer doubles = outputs.get(0).rawData().asDoubles();
                 for (int j = 0; j < doubles.size(); j++) {
-                    actionArray[k++] = (float)doubles.getDouble(j);
+                    actionArray[k++] = Math.max(0.0f, Math.min(1.0f, (float)doubles.getDouble(j)));
                 }
                 break;
             } if (t.dataType().equals(TFloat32.DTYPE)) {
                 FloatDataBuffer floats = outputs.get(0).rawData().asFloats();
                 for (int j = 0; j < floats.size(); j++) {
-                    actionArray[k++] = floats.getFloat(j);
+                    actionArray[k++] = Math.max(0.0f, Math.min(1.0f, floats.getFloat(j)));
                 }
                 break;
             } if (t.dataType().equals(TInt32.DTYPE)) {
