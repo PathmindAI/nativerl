@@ -74,6 +74,11 @@ if [[ ! -z "$VALUE_PRED" ]]; then
     VALUE_PRED_PARAM="--value-pred ${VALUE_PRED}"
 fi
 
+NAMED_VARIABLE_PARAM=""
+if [[ "$NAMED_VARIABLE" = true ]]; then
+    NAMED_VARIABLE_PARAM="--named-variables"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -85,7 +90,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
-    --named-variables \
+    $NAMED_VARIABLE_PARAM \
     $MULTIAGENT_PARAM \
 
 javac $(find -iname '*.java')
