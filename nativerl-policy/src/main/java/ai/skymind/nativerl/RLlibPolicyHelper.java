@@ -154,13 +154,13 @@ public class RLlibPolicyHelper implements PolicyHelper {
                 case DT_FLOAT:
                     FloatPointer fp = new FloatPointer(t.tensor_data());
                     for (int j = 0; j < t.NumElements(); j++) {
-                        actionArray[k++] = fp.get(j);
+                        actionArray[k++] = Math.max(0.0f, Math.min(1.0f, fp.get(j)));
                     }
                     break;
                 case DT_DOUBLE:
                     DoublePointer dp = new DoublePointer(t.tensor_data());
                     for (int j = 0; j < t.NumElements(); j++) {
-                        actionArray[k++] = (float)dp.get(j);
+                        actionArray[k++] = Math.max(0.0f, Math.min(1.0f, (float)dp.get(j)));
                     }
                     break;
                 default:

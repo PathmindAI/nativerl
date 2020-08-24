@@ -54,7 +54,8 @@ public interface PolicyHelper {
         return computeDiscreteAction(s);
     }
 
-    /** Returns the continuous or discrete actions that should be performed in the given state. (Single Policy, Continuous or Discrete Actions) */
+    /** Returns the continuous or discrete actions that should be performed in the given state. (Single Policy, Continuous or Discrete Actions)
+     * Continuous values should be clipped to always fall in the range [0, 1]. */
     float[] computeActions(float[] state);
 
     /** Returns the discrete actions that should be performed in the given state. (Single Policy, Tuple Decisions) */
