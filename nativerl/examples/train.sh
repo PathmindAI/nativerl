@@ -109,7 +109,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
-    --discrete-actions $DISCRETE_ACTIONS \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
@@ -125,9 +124,4 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-#set -e
-#if [[ "$RESUME" = true ]]; then
-#    mv examples/pm_resume.py .
-#    python3 pm_resume.py
-#fi
 python3 rllibtrain.py
