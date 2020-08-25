@@ -1510,7 +1510,8 @@ public class AbstractPathmindHelper extends Agent {
 				}
 			}
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not create NativeRL processors: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not create NativeRL processors.", e);
 		}
 	}
 
@@ -1535,7 +1536,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return actionProcessor.doActions(getOwner(), actions, scale, agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not do actions: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not do actions.", e);
 		}
 	}
 
@@ -1549,7 +1551,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return actionProcessor.getActions(getOwner(), random, agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could get random actions: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get random actions.", e);
 		}
 	}
 
@@ -1563,7 +1566,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get action masks: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get action masks.", e);
 		}
 	}
 
@@ -1580,14 +1584,16 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return observationProcessor.getObservationObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get observations: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get observations.", e);
 		}
 	}
 	public <O> double[] observationToDoubles(O observationObject) {
 		try {
 			return observationFilter != null ? observationFilter.filter(observationObject) : observationProcessor.toDoubles(observationObject);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get observation doubles: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get observation doubles.", e);
 		}
 	}
 
@@ -1601,7 +1607,8 @@ public class AbstractPathmindHelper extends Agent {
 		try {
 			return rewardProcessor.toNames(getRewardObject(0));
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward variables names: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward variables names.", e);
 		}
 	}
 	public <V> V getRewardObject(int agentId) {
@@ -1611,14 +1618,16 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return rewardProcessor.getRewardObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward variables: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward variables.", e);
 		}
 	}
 	public <V> double[] rewardToDoubles(V rewardObject) {
 		try {
 			return rewardProcessor.toDoubles(rewardObject);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward doubles: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward doubles.", e);
 		}
 	}
 }]]></Text>
