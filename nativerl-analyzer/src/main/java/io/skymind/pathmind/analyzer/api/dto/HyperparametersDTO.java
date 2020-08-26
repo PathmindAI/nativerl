@@ -23,6 +23,7 @@ public class HyperparametersDTO {
 
     private final static Set<String> KNOWN_OUTPUT = Set.of(
             "observations",
+            "observationsNames",
             "actions",
             "rewardVariablesCount",
             "rewardVariables",
@@ -38,6 +39,11 @@ public class HyperparametersDTO {
             true)
     @NotBlank(message = "Number of observations cannot be blank")
     private String observations;
+
+    @ApiModelProperty(value = "Observations names extracted from model", example = "[\"orderQueueSize\", \"collectQueueSize\"]", required =
+            true)
+    @NotBlank(message = "Observations names cannot be empty")
+    private List<String> observationsNames;
 
     @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
     @NotBlank(message = "Number of actions cannot be blank")
@@ -81,6 +87,7 @@ public class HyperparametersDTO {
             return new HyperparametersDTO(
                     false,
                     parametersMap.get("observations"),
+                    Arrays.asList(parametersMap.get("observationsNames").split("\\|")),
                     parametersMap.get("actions"),
                     parametersMap.get("rewardVariablesCount"),
                     Arrays.asList(parametersMap.get("rewardVariables").split("\\|")),
