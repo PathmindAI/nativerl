@@ -8,15 +8,15 @@ import org.bytedeco.javacpp.annotation.*;
 
 /**
  * The factory method to create instances of arbitrary subclasses of Environment.
- * This gets exported to jniNativeRL.h as the C function createEnvironment().
- * To release them we must call releaseEnvironment().
+ * This gets exported to jniNativeRL.h as the C function createJavaEnvironment().
+ * To release them we must call releaseJavaEnvironment().
  */
 @Properties(inherit = ai.skymind.nativerl.NativeRLPresets.class)
 public class CreateEnvironment extends FunctionPointer {
 
     static Map<Environment, Environment> instances = Collections.synchronizedMap(new HashMap<Environment, Environment>());
 
-    public @Name("createEnvironment") Environment call(String name) throws Exception {
+    public @Name("createJavaEnvironment") Environment call(String name) throws Exception {
         Environment e = Class.forName(name).asSubclass(Environment.class).newInstance();
         instances.put(e, e);
         return e;

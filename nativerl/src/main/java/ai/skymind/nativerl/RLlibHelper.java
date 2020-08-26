@@ -80,10 +80,9 @@ public class RLlibHelper {
         PyArrayObject obsArray = null;
         FloatPointer obsData = null;
         int actionTupleSize;
-        Environment env;
 
-        public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, Class<? extends Environment> envClass) throws IOException, ReflectiveOperationException {
-            this(rllibpaths, algorithm, checkpoint, envClass.getSimpleName(), envClass.newInstance().getActionSpace(0), envClass.newInstance().getObservationSpace());
+        public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String environment) throws IOException, ReflectiveOperationException {
+            this(rllibpaths, algorithm, checkpoint, environment, NativeRL.createEnvironment(environment).getActionSpace(0), NativeRL.createEnvironment(environment).getObservationSpace());
         }
         public PythonPolicyHelper(File[] rllibpaths, String algorithm, File checkpoint, String name, long discreteActions, long continuousObservations) throws IOException {
             this(rllibpaths, algorithm, checkpoint, name, AbstractEnvironment.getDiscreteSpace(discreteActions),
@@ -206,9 +205,9 @@ public class RLlibHelper {
     @Builder.Default
     File checkpoint = null;
 
-    /** A subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
+    /** The name of a subclass of Environment to use as environment for training and/or with PythonPolicyHelper. */
     @Builder.Default
-    Class<? extends Environment> environment = null;
+    String environment = null;
 
     /** The maximum amount of memory in MB to use for Java environments (passed via the "-Xmx" argument). */
     @Builder.Default
@@ -401,8 +400,8 @@ public class RLlibHelper {
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
-        handlebars.registerHelper("className", (context, options) -> ((Class)context).getName());
-        handlebars.registerHelper("classSimpleName", (context, options) -> ((Class)context).getSimpleName());
+        handlebars.registerHelper("className", (context, options) -> context);
+        handlebars.registerHelper("classSimpleName", (context, options) -> ((String)context).substring(((String)context).lastIndexOf('.') + 1));
 
         Template template = handlebars.compile("RLlibHelper.py");
 
@@ -460,7 +459,7 @@ public class RLlibHelper {
             } else if ("--checkpoint".equals(args[i])) {
                 helper.checkpoint(new File(args[++i]));
             } else if ("--environment".equals(args[i])) {
-                helper.environment(Class.forName(args[++i]).asSubclass(Environment.class));
+                helper.environment(args[++i]);
             } else if ("--max-memory-in-mb".equals(args[i])) {
                 helper.maxMemoryInMB(Integer.parseInt(args[++i]));
             } else if ("--num-cpus".equals(args[i])) {

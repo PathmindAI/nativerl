@@ -39,8 +39,8 @@ public class ActionProcessorTest {
             }
             assertEquals(37, action1);
             assertArrayEquals(new long[] {42, 64}, action2);
-            assertArrayEquals(new float[] {1, 2}, action3, 0);
-            assertArrayEquals(new double[] {3, 4, 5, 6}, action4, 0);
+            assertArrayEquals(new float[] {20, 30}, action3, 0);
+            assertArrayEquals(new double[] {0.1, 0.2, 0.3, 0.4}, action4, 0);
             didIt = true;
         }
     }
@@ -63,11 +63,14 @@ public class ActionProcessorTest {
             assertEquals(50, spaces[1].n);
             assertArrayEquals(new long[] {2}, spaces[2].shape);
             assertArrayEquals(new long[] {2, 2}, spaces[3].shape);
-            ap.doActions(this, new double[] {37, 42, 64, 1, 2, 3, 4, 5, 6, 24}, 24);
+            ap.doActions(this, new double[] {37, 42, 64, 20, 30, 0.1, 0.2, 0.3, 0.4, 24}, false, 24);
+            assertTrue(didIt);
+            didIt = false;
+            ap.doActions(this, new double[] {37, 42, 64, 0.5, 0.5, 0.1, 0.2, 0.3, 0.4, 24}, true, 24);
             assertTrue(didIt);
             for (int i = 0; i < 100; i++) {
                 double[] a = ap.getActions(this, new Random(i), 24);
-                ap.doActions(this, a, 24);
+                ap.doActions(this, a, false, 24);
             }
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());

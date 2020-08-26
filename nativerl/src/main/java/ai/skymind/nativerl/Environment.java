@@ -13,7 +13,7 @@ import static ai.skymind.nativerl.NativeRL.*;
  * The pure virtual (abstract) interface of a "native" environment. This gets mapped,
  * for example, with JavaCPP and implemented by a Java class. The implementation needs
  * to export functions to create and release Environment objects. In the case of JavaCPP,
- * the createEnvironment() and releaseEnvironment() are available in the generated
+ * the createJavaEnvironment() and releaseJavaEnvironment() are available in the generated
  * jniNativeRL.h header file.
  * <p>
  * However, we can just as well implement it in pure C++, which we would do in the case of,
@@ -51,6 +51,8 @@ public class Environment extends Pointer {
     @Virtual(true) public native @Const @ByRef Array getActionMask(@Cast("ssize_t") long agentId/*=0*/);
     /** Returns the current state of the simulation for the given agent. */
     @Virtual(true) public native @Const @ByRef Array getObservation(@Cast("ssize_t") long agentId/*=0*/);
+    /** Indicates when the given agent is not available to have its state queried, do actions, etc. */
+    @Virtual(true) public native @Cast("bool") boolean isSkip(@Cast("ssize_t") long agentId/*=-1*/);
     /** Indicates when a simulation episode is over for the given agent, or -1 for all. */
     @Virtual(true) public native @Cast("bool") boolean isDone(@Cast("ssize_t") long agentId/*=-1*/);
     /** Used to reset the simulation, preferably starting a new random sequence. */

@@ -28,6 +28,7 @@ Build Instructions
  1. Install the JDK, Maven, and Python on the system
  2. Install pybind11 with a command like `pip3 install --user pybind11`
  3. Run `mvn clean package -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
+    * To build for TensorFlow 2.x, append `-Dtfv2` to that command.
  4. Find all output files inside the `nativerl/target/nativerl-1.2.0-SNAPSHOT-bin.zip` archive
     * This also produces `nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar` (~231mb) for the PathmindHelper
 
@@ -110,6 +111,15 @@ Example Using RLlib and PathmindHelper for Traffic Light Phases
     4. Execute `bash traintraffic.sh` on any node
 
  6. Once we get a checkpoint file, we can use it as a policy inside AnyLogic by loading it with PathmindHelper.
+
+
+Example Using RLlib and Cartpole in Python
+------------------------------------------
+
+ 1. Extract the native libraries from `nativerl-1.2.0-SNAPSHOT-bin.zip` somewhere
+ 2. Copy as well [`nativerl/examples/traincartpole.sh`](nativerl/examples/traincartpole.sh) into that directory
+ 3. Execute `bash traincartpole.sh` inside the directory and wait for training to complete
+    * The script outputs the `cartpole.py` file that should actually be generated via some helper...
 
 
 Support for Multiagent Environments
