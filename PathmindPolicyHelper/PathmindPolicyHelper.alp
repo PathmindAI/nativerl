@@ -1600,6 +1600,13 @@ public class AbstractPathmindHelper extends Agent {
 	public double[] observationForReward() {
 		return observationForReward(0);
 	}
+	public String[] getObservationsNames() {
+		try {
+			return observationProcessor.toNames(getObservationObject(0));
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Could not get observations names: " + e);
+		}
+	}
 	public double[] observationForReward(int agentId) {
 		return rewardToDoubles(getRewardObject(agentId));
 	}

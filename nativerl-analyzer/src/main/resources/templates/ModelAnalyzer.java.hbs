@@ -47,14 +47,8 @@ public class ModelAnalyzer {
 
         PathmindHelper helper = agent.pathmindHelper;
 
-        try {
-            System.out.println("observations:" + helper.observationForTraining().length);
-        } catch (Throwable ex) {
-            System.out.println("Cannot get obs:");
-            ex.printStackTrace(System.out);
-            failedSteps.add("observations");
-            System.out.println("observations:" + 0);
-        }
+        System.out.println("observations:" + helper.observationForTraining().length);
+        System.out.println("observationsNames:" + display(helper.getObservationsNames()));
         // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
         System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);

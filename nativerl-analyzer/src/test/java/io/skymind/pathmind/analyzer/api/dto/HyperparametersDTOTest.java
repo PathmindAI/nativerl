@@ -10,6 +10,7 @@ public class HyperparametersDTOTest {
     public void testOf_allOk() {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "observations:5",
+                "observationsNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
                 "actions:4",
                 "rewardVariablesCount:4",
                 "reward: not defined",
@@ -21,6 +22,7 @@ public class HyperparametersDTOTest {
         HyperparametersDTO expected = new HyperparametersDTO(
                 false,
                 "5",
+                Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
                 "4",
                 "4",
                 Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
@@ -35,6 +37,7 @@ public class HyperparametersDTOTest {
     public void testOf_allOk_butThereIsTheVarOldVersionFoundWithValueFalse() {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "observations:5",
+                "observationsNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
                 "actions:4",
                 "rewardVariablesCount:4",
                 "reward: not defined",
@@ -46,6 +49,7 @@ public class HyperparametersDTOTest {
         HyperparametersDTO expected = new HyperparametersDTO(
                 false,
                 "5",
+                Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
                 "4",
                 "4",
                 Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
