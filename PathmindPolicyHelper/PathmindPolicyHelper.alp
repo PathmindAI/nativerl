@@ -1603,6 +1603,9 @@ public class AbstractPathmindHelper extends Agent {
 	public double[] observationForReward(int agentId) {
 		return rewardToDoubles(getRewardObject(agentId));
 	}
+	public int getPossibleActionCount() {
+		return possibleActionCount;
+	}
 	public String[] getRewardVariablesNames() {
 		try {
 			return rewardProcessor.toNames(getRewardObject(0));

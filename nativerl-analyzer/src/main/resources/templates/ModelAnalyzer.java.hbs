@@ -3,8 +3,12 @@ import com.anylogic.engine.Engine;
 import pathmind.policyhelper.PathmindHelper;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class ModelAnalyzer {
+    private static String display(String[] theStrings) {
+        return Stream.of(theStrings).collect(Collectors.joining("|"));
+    }
     public static void main(String[] args) throws Throwable {
         List<String> failedSteps = new ArrayList<>();
 
@@ -14,7 +18,24 @@ public class ModelAnalyzer {
         sim.initDefaultRandomNumberGenerator(engine);
 
         // Create new agent object:
-        {{agentClassName}} agent = new {{agentClassName}}(engine, null, null);
+        {{agentClassName}} agent;
+        try {
+          agent = new {{agentClassName}}(engine, null, null);
+        }
+        catch(RuntimeException e) {
+            String message = e.getMessage();
+            if (e != null) {
+                if (message.contains("Could not find local class in class")) {
+                    System.out.println("oldVersionFound:true");
+                    System.exit(0);
+                    return;
+                }
+            }
+            e.printStackTrace(System.out);
+            System.exit(1);
+            return;
+        }
+
         agent.setParametersToDefaultValues();
 
         try {
@@ -34,9 +55,10 @@ public class ModelAnalyzer {
             failedSteps.add("observations");
             System.out.println("observations:" + 0);
         }
-        System.out.println("actions:" + helper.possibleActionCount);
+        // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
+        System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
-        System.out.println("actionTupleSize:" + helper.actionTupleSize);
+        System.out.println("rewardVariables:" + display(helper.getRewardVariablesNames()));
 
         try {
             if (!helper.isEnabled) {
