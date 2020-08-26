@@ -63,6 +63,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --environment "$ENVIRONMENT_CLASS" \
     --num-workers 4 \
     --random-seed 42 \
+    --max-iterations 10 \
     --max-reward-mean 100 \
     --multi-agent \
     rllibtrain.py
