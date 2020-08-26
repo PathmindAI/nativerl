@@ -202,6 +202,21 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						</InitialValue>
 					</Properties>
 				</Variable>
+				<Variable Class="PlainVariable">
+					<Id>1598258147365</Id>
+					<Name><![CDATA[scaledAction]]></Name>
+					<X>170</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
+						<Type><![CDATA[double[][]]]></Type>        
+						<InitialValue Class="CodeValue">
+							<Code><![CDATA[new double[numberOfAgents][]]]></Code>
+						</InitialValue>
+					</Properties>
+				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563523942388</Id>
 					<Name><![CDATA[isEnabled]]></Name>
@@ -544,6 +559,36 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1598081984891</Id>
+					<Name><![CDATA[isSkip]]></Name>
+					<X>20</X><Y>520</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false
+/* https://help.pathmind.com/en/articles/3644763-5-define-skip-condition */]]></Code>
+						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
+						<ParameterEditor>
+							<Id>1598081984889</Id>
+							<Label><![CDATA[Skip]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
 					<X>20</X><Y>250</Y>
@@ -726,23 +771,30 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
 	for (int i = 0; i < numberOfAgents; i++) {
+		if (isSkip(i)) {
+			continue;
+		}
 		if (action[i] != null) {
-			doAction(action[i], i);
+			// the learning framework should give us continuous values in the range [0, 1] here
+			scaledAction[i] = doAction(action[i], true, i);
 		}
 	}
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 } else if (isEnabled) {
 	steps++;
 	for (int i = 0; i < numberOfAgents; i++) {
+		if (isSkip(i)) {
+			continue;
+		}
 		// be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
 		double[] reward = observationForReward(i);
 		if (usePolicy && policyHelper != null) {
 			action[i] = policyHelper.computeActions(training);
-			doAction(action[i], i);
+			scaledAction[i] = doAction(action[i], true, i);
 		} else if (!usePolicy) {
 			action[i] = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
-			doAction(action[i], i);
+			scaledAction[i] = doAction(action[i], false, i);
 		}
 	}
 }
@@ -780,7 +832,8 @@ if (!isTraining && steps == 1) {
 			    + "    Reward Variables: \n"
 			    + "      Array: " + Arrays.toString(reward)+"\n"
 			    + "      Number of Reward Variables: " + reward.length + "\n"
-			    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+			    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
+			    + "    Skip: " + isSkip(i) + "\n"
 			    + "    Done: " + isDone(i) + "\n";
 	}
 	return output;
@@ -981,6 +1034,9 @@ if (!isTraining && steps == 1) {
 					<ParameterName><![CDATA[actionMasks]]></ParameterName>
 				</Parameter>
 				<Parameter>
+					<ParameterName><![CDATA[isSkip]]></ParameterName>
+				</Parameter>
+				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -1025,7 +1081,6 @@ import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import ai.skymind.nativerl.RLlibPolicyHelper;
 import ai.skymind.nativerl.PolicyHelper;
 import ai.skymind.nativerl.ObservationFilter;
 
@@ -1081,7 +1136,7 @@ public class PathmindHelperRegistry {
             }
             try {
                 if (new File(policyFile).isDirectory()) {
-                    PolicyHelper helper = new RLlibPolicyHelper(new File(policyFile));
+                    PolicyHelper helper = PolicyHelper.load(new File(policyFile));
                     ObservationFilter filter = ObservationFilter.load(new File(policyFile), observationFilterClassName);
                     policyCache.put(policyFile, helper);
                     filterCache.put(policyFile, filter);
@@ -1111,7 +1166,7 @@ public class PathmindHelperRegistry {
 
                 policyPackage.close();
 
-                PolicyHelper helper = new RLlibPolicyHelper(target.toFile());
+                PolicyHelper helper = PolicyHelper.load(target.toFile());
                 ObservationFilter filter = ObservationFilter.load(target.toFile(), observationFilterClassName);
                 policyCache.put(policyFile, helper);
                 filterCache.put(policyFile, filter);
@@ -1212,7 +1267,7 @@ public class PathmindSerializer implements Serializable {
 		private String pathmindHelperVersion;
 
 		private static final String ENGINE_JAR = "com.anylogic.engine.jar";
-		private static final String PATHMIND_JAR = "RLlibPolicyHelper";
+		private static final String PATHMIND_JAR = "nativerl-policy";
 
 		public PathmindMeta(PathmindHelper pathmindHelper) {
 			this.possibleActionCount = pathmindHelper.possibleActionCount;
@@ -1455,7 +1510,8 @@ public class AbstractPathmindHelper extends Agent {
 				}
 			}
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not create NativeRL processors: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not create NativeRL processors.", e);
 		}
 	}
 
@@ -1467,20 +1523,21 @@ public class AbstractPathmindHelper extends Agent {
 		for (int i = 0; i < actions.length; i++) {
 			a[i] = actions[i];
 		}
-		doAction(a, agentId);
+		doAction(a, false, agentId);
 	}
 
-	public void doAction(double... actions) {
-		doAction(actions, 0);
+	public double[] doAction(double... actions) {
+		return doAction(actions, false, 0);
 	}
-	public void doAction(double[] actions, int agentId) {
+	public double[] doAction(double[] actions, boolean scale, int agentId) {
 		try {
 			if (actionProcessor == null) {
 				init();
 			}
-			actionProcessor.doActions(getOwner(), actions, agentId);
+			return actionProcessor.doActions(getOwner(), actions, scale, agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not do actions: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not do actions.", e);
 		}
 	}
 
@@ -1494,7 +1551,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return actionProcessor.getActions(getOwner(), random, agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could get random actions: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get random actions.", e);
 		}
 	}
 
@@ -1508,7 +1566,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get action masks: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get action masks.", e);
 		}
 	}
 
@@ -1525,14 +1584,16 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return observationProcessor.getObservationObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get observations: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get observations.", e);
 		}
 	}
 	public <O> double[] observationToDoubles(O observationObject) {
 		try {
 			return observationFilter != null ? observationFilter.filter(observationObject) : observationProcessor.toDoubles(observationObject);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get observation doubles: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get observation doubles.", e);
 		}
 	}
 
@@ -1549,7 +1610,8 @@ public class AbstractPathmindHelper extends Agent {
 		try {
 			return rewardProcessor.toNames(getRewardObject(0));
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward variables names: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward variables names.", e);
 		}
 	}
 	public <V> V getRewardObject(int agentId) {
@@ -1559,14 +1621,16 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			return rewardProcessor.getRewardObject(getOwner(), agentId);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward variables: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward variables.", e);
 		}
 	}
 	public <V> double[] rewardToDoubles(V rewardObject) {
 		try {
 			return rewardProcessor.toDoubles(rewardObject);
 		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException("Could not get reward doubles: " + e);
+			e.printStackTrace();
+			throw new RuntimeException("Could not get reward doubles.", e);
 		}
 	}
 }]]></Text>

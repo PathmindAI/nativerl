@@ -1,7 +1,6 @@
 import glob, gym, nativerl, ray, sys, os, random, numpy
 from ray.rllib.env import MultiAgentEnv
 from ray.rllib.agents.registry import get_agent_class
-from ray.rllib.utils import seed
 from ray.tune import run, sample_from
 from ray.tune.schedulers import PopulationBasedTraining
 from gym.spaces import Box, Discrete, Tuple
@@ -44,9 +43,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
             if isinstance(actionSpace, nativerl.Discrete):
                 actionSpaces += [gym.spaces.Discrete(actionSpace.n) for j in range(actionSpace.size)]
             else:
-                low = actionSpace.low[0] if len(actionSpace.low) == 1 else numpy.array(actionSpace.low)
-                high = actionSpace.high[0] if len(actionSpace.high) == 1 else numpy.array(actionSpace.high)
-                actionSpaces += [gym.spaces.Box(low, high, numpy.array(actionSpace.shape), dtype=numpy.float32)]
+                actionSpaces += [gym.spaces.Box(0, 1, numpy.array(actionSpace.shape), dtype=numpy.float32)]
             i += 1
             actionSpace = self.nativeEnv.getActionSpace(i)
         self.action_space = actionSpaces[0] if len(actionSpaces) == 1 else gym.spaces.Tuple(actionSpaces)
@@ -77,12 +74,16 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
 {{#if multiAgent}}
         obsdict = {}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             obs = numpy.array(self.nativeEnv.getObservation(i))
             if isinstance(self.observation_space, gym.spaces.Dict):
                 obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
             obsdict[str(i)] = obs
         return obsdict
 {{else}}
+        if self.nativeEnv.getNumberOfAgents() != 1:
+            raise ValueError("Not in multi-agent mode: Number of agents needs to be 1")
         obs = numpy.array(self.nativeEnv.getObservation())
         if isinstance(self.observation_space, gym.spaces.Dict):
             obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask()), "real_obs": obs}
@@ -92,6 +93,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
     def step(self, action):
 {{#if multiAgent}}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             act = action[str(i)]
             if isinstance(self.action_space, gym.spaces.Tuple):
                 actionArray = numpy.empty(shape=(0), dtype=numpy.float32)
@@ -107,6 +110,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         rewarddict = {}
         donedict = {}
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
             obs = numpy.array(self.nativeEnv.getObservation(i))
             if isinstance(self.observation_space, gym.spaces.Dict):
                 obs = {"action_mask": numpy.array(self.nativeEnv.getActionMask(i)), "real_obs": obs}
@@ -116,6 +121,8 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         donedict['__all__'] = self.nativeEnv.isDone(-1)
         return obsdict, rewarddict, donedict, {}
 {{else}}
+        if self.nativeEnv.getNumberOfAgents() != 1:
+            raise ValueError("Not in multi-agent mode: Number of agents needs to be 1")
         if isinstance(self.action_space, gym.spaces.Tuple):
             actionArray = numpy.empty(shape=(0), dtype=numpy.float32)
             for j in range(0, len(action)):
@@ -131,9 +138,17 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         return obs, reward, self.nativeEnv.isDone(), {}
 {{/if}}
 
-    # TODO: This needs to be updated somehow to return metrics for all agents
     def getMetrics(self):
+{{#if multiAgent}}
+        metrics = numpy.empty(shape=(0), dtype=numpy.float32)
+        for i in range(0, self.nativeEnv.getNumberOfAgents()):
+            if self.nativeEnv.isSkip(i):
+                continue
+            metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
+        return metrics
+{{else}}
         return numpy.array(self.nativeEnv.getMetrics(0))
+{{/if}}
 
 class Callbacks(DefaultCallbacks):
     def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,

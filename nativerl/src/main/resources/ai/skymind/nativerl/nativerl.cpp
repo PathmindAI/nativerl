@@ -51,6 +51,9 @@ public:
     const Array& getObservation(ssize_t agentId = 0) override {
         PYBIND11_OVERLOAD_PURE(const Array&, Environment, getObservation, agentId);
     }
+    bool isSkip(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(bool, Environment, isSkip, agentId);
+    }
     bool isDone(ssize_t agentId = -1) override {
         PYBIND11_OVERLOAD_PURE(bool, Environment, isDone, agentId);
     }
@@ -150,6 +153,7 @@ PYBIND11_MODULE(nativerl, m) {
         .def("getNumberOfAgents", &nativerl::Environment::getNumberOfAgents)
         .def("getActionMask", &nativerl::Environment::getActionMask, pybind11::arg("agentId") = 0)
         .def("getObservation", &nativerl::Environment::getObservation, pybind11::arg("agentId") = 0)
+        .def("isSkip", &nativerl::Environment::isSkip, pybind11::arg("agentId") = 0)
         .def("isDone", &nativerl::Environment::isDone, pybind11::arg("agentId") = -1)
         .def("reset", &nativerl::Environment::reset)
         .def("setNextAction", &nativerl::Environment::setNextAction, pybind11::arg("action"), pybind11::arg("agentId") = 0)

@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     python-pip \
  && pip install awscli \
  && rm -rf /var/lib/apt/lists/*
- 
+
 WORKDIR /lib/pathmind
 
 RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy-1.2.0-SNAPSHOT.jar ./
