@@ -74,6 +74,11 @@ if [[ ! -z "$VALUE_PRED" ]]; then
     VALUE_PRED_PARAM="--value-pred ${VALUE_PRED}"
 fi
 
+NAMED_VARIABLE_PARAM=""
+if [[ "$NAMED_VARIABLE" = true ]]; then
+    NAMED_VARIABLE_PARAM="--named-variables"
+fi
+
 export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -85,6 +90,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
+    $NAMED_VARIABLE_PARAM \
     $MULTIAGENT_PARAM \
 
 javac $(find -iname '*.java')
@@ -103,8 +109,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
-    --discrete-actions $DISCRETE_ACTIONS \
-    --action-tuple-size $ACTION_TUPLE_SIZE \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
@@ -120,9 +124,4 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-#set -e
-#if [[ "$RESUME" = true ]]; then
-#    mv examples/pm_resume.py .
-#    python3 pm_resume.py
-#fi
 python3 rllibtrain.py
