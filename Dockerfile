@@ -22,4 +22,4 @@ RUN mkdir -p app
 WORKDIR app
 
 # Set entry point
-CMD ["mvn", "clean", "package"]
+CMD ["mvn", "clean", "install"]

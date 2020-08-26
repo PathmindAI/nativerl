@@ -27,7 +27,7 @@ Build Instructions
 
  1. Install the JDK, Maven, and Python on the system
  2. Install pybind11 with a command like `pip3 install --user pybind11`
- 3. Run `mvn clean package -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
+ 3. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
     * To build for TensorFlow 2.x, append `-Dtfv2` to that command.
  4. Find all output files inside the `nativerl/target/nativerl-1.2.0-SNAPSHOT-bin.zip` archive
     * This also produces `nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar` (~231mb) for the PathmindHelper
@@ -62,7 +62,7 @@ conda install pybind11 tensorflow
 pip install ray[rllib]
 
 scl enable devtoolset-7 rh-maven35 bash
-mvn clean package -Djavacpp.platform=linux-x86_64
+mvn clean install -Djavacpp.platform=linux-x86_64
 ```
 
 We can also package the Anaconda environment this way:
@@ -83,6 +83,14 @@ conda-unpack
 cd /path/to/anylogic_model/
 unzip -j nativerl-1.2.0-SNAPSHOT-bin.zip
 ```
+
+
+### Running the Tests
+
+ 1. Follow the build instructions above
+ 2. Include in the `PATH` the directory containing the `anylogic` executable
+    * The version of AnyLogic installed there needs to have PathmindHelper available in its Palette
+ 3. Inside the `nativerl-tests` subdirectory, run `mvn clean test`
 
 
 Example Using RLlib and PathmindHelper for Traffic Light Phases
