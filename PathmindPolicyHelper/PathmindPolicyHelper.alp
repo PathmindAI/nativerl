@@ -1602,7 +1602,10 @@ public class AbstractPathmindHelper extends Agent {
 	}
 	public String[] getObservationNames() {
 		try {
-			return observationProcessor.toNames(getObservationObject(0));
+			if (observationProcessor == null) {
+				init();
+			}
+			return observationProcessor.getObservationNames(getOwner(), 0);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Could not get observations names: " + e);
 		}
@@ -1615,7 +1618,10 @@ public class AbstractPathmindHelper extends Agent {
 	}
 	public String[] getRewardVariableNames() {
 		try {
-			return rewardProcessor.toNames(getRewardObject(0));
+			if (rewardProcessor == null) {
+				init();
+			}
+			return rewardProcessor.getVariableNames(getOwner(), 0);
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get reward variables names.", e);
