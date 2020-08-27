@@ -106,6 +106,7 @@ java ai.skymind.nativerl.RLlibHelper \
     --output-dir "$OUTPUT_DIR" \
     --environment "$MODEL_MODULE.$ENVIRONMENT_CLASS" \
     --num-workers 4 \
+    --max-iterations 10 \
     --multi-agent \
     rllibtrain.py
 
