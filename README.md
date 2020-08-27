@@ -91,6 +91,7 @@ unzip -j nativerl-1.2.0-SNAPSHOT-bin.zip
  2. Include in the `PATH` the directory containing the `anylogic` executable
     * The version of AnyLogic installed there needs to have PathmindHelper available in its Palette
  3. Inside the `nativerl-tests` subdirectory, run `mvn clean test`
+    * We can also run the tests from the parent directory by appending `-Ptests`
 
 
 Example Using RLlib and PathmindHelper for Traffic Light Phases

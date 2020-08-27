@@ -99,7 +99,7 @@ class $ENVIRONMENT_CLASS(nativerl.Environment):
         return nativerl.Array(nativerl.FloatVector([] if self.steps_beyond_done is None else [self.steps_beyond_done]));
 EOF
 
-export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
+export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.RLlibHelper \
     --algorithm "PPO" \

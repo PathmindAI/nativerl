@@ -79,7 +79,7 @@ if [[ "$NAMED_VARIABLE" = true ]]; then
     NAMED_VARIABLE_PARAM="--named-variables"
 fi
 
-export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
+export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \

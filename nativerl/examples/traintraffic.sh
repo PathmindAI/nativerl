@@ -41,7 +41,7 @@ METRICS_SNIPPET='
 
 mkdir -p $MODEL_PACKAGE
 
-export CLASSPATH=$(find -iname '*.jar' -printf '%p:')
+export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \

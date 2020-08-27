@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201526" AlpVersion="8.5.7">
 <Model>
 	<Id>1550346985136</Id>
 	<Name><![CDATA[TrafficPhases]]></Name>
@@ -1442,6 +1442,7 @@ return values;]]></Body>
 						<Parameter>
 							<Name><![CDATA[newCar]]></Name>
 							<Value Class="EntityCodeValue">
+								<IsAgentEntity>true</IsAgentEntity>
 								<EntityEmbeddedObject>
 									<ActiveObjectClass>
 										<PackageName><![CDATA[traffic_light_opt]]></PackageName>
@@ -1671,6 +1672,7 @@ return values;]]></Body>
 						<Parameter>
 							<Name><![CDATA[newCar]]></Name>
 							<Value Class="EntityCodeValue">
+								<IsAgentEntity>true</IsAgentEntity>
 								<EntityEmbeddedObject>
 									<ActiveObjectClass>
 										<PackageName><![CDATA[traffic_light_opt]]></PackageName>
@@ -1900,6 +1902,7 @@ return values;]]></Body>
 						<Parameter>
 							<Name><![CDATA[newCar]]></Name>
 							<Value Class="EntityCodeValue">
+								<IsAgentEntity>true</IsAgentEntity>
 								<EntityEmbeddedObject>
 									<ActiveObjectClass>
 										<PackageName><![CDATA[traffic_light_opt]]></PackageName>
@@ -2129,6 +2132,7 @@ return values;]]></Body>
 						<Parameter>
 							<Name><![CDATA[newCar]]></Name>
 							<Value Class="EntityCodeValue">
+								<IsAgentEntity>true</IsAgentEntity>
 								<EntityEmbeddedObject>
 									<ActiveObjectClass>
 										<PackageName><![CDATA[traffic_light_opt]]></PackageName>
@@ -2870,6 +2874,9 @@ tisDS.add(elapsed);]]></Code>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[usePolicy]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[true]]></Code>
+							</Value>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[possibleActionCount]]></Name>
@@ -2879,6 +2886,9 @@ tisDS.add(elapsed);]]></Code>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[policyFile]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[System.getenv("NATIVERL_POLICY")]]></Code>
+							</Value>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[isDone]]></Name>
@@ -2908,6 +2918,11 @@ tisDS.add(elapsed);]]></Code>
 							<Name><![CDATA[observations]]></Name>
 							<Value Class="CodeValue">
 								<Code><![CDATA[class Observations {
+{
+	if (pathmindHelper.policyHelper != null && pathmindHelper.isDone(-1)) {
+		System.exit(0);
+	}
+}
 double obs[] = getObservation(false);
 }]]></Code>
 							</Value>
@@ -5701,7 +5716,7 @@ Anything higher will (more or less) output the same amount of cars
 			<CustomGeneratorCode>new Random()</CustomGeneratorCode>
 			<SeedValue>1</SeedValue>
 			<SelectionModeForSimultaneousEvents>LIFO</SelectionModeForSimultaneousEvents>
-			<VmArgs><![CDATA[--add-opens java.base/jdk.internal.loader=ALL-UNNAMED]]></VmArgs>
+			<VmArgs><![CDATA[]]></VmArgs>
 			<LoadRootFromSnapshot>false</LoadRootFromSnapshot>
 			<Variables>
 				<Variable Class="PlainVariable">
@@ -6330,6 +6345,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 				<FinalDate><![CDATA[1571245200000]]></FinalDate>	
 				<FinalTime><![CDATA[28800.0]]></FinalTime>	
 			</ModelTimeProperties>
+			<BypassInitialScreen>true</BypassInitialScreen>
 		</SimulationExperiment>
 		<!--   =========  Optimization Experiment   ========  -->
 		<OptimizationExperiment ActiveObjectClassId="1550346985141">
@@ -7344,6 +7360,12 @@ for (double[] key : collection.keySet()) {
 		<LibraryName><![CDATA[pathmind.policyhelper]]></LibraryName>
 		<VersionMajor>1</VersionMajor>
 		<VersionMinor>2</VersionMinor>
+		<VersionBuild>0</VersionBuild>
+    </RequiredLibraryReference>
+    <RequiredLibraryReference>
+		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
+		<VersionMajor>1</VersionMajor>
+		<VersionMinor>0</VersionMinor>
 		<VersionBuild>0</VersionBuild>
     </RequiredLibraryReference>
 </Model>
