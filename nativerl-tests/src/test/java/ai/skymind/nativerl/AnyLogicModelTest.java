@@ -2,6 +2,9 @@ package ai.skymind.nativerl;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import org.bytedeco.javacpp.Loader;
 import org.junit.Test;
 
 import static org.hamcrest.core.AnyOf.anyOf;
@@ -32,11 +35,25 @@ public class AnyLogicModelTest extends ModelTest {
         File[] savedModels = find(simulationDir, "saved_model.pb");
         assertTrue(savedModels.length > 0);
         for (File f : savedModels) {
-            PolicyHelper h = PolicyHelper.load(f.getParentFile());
+            File d = f.getParentFile();
+            PolicyHelper h = PolicyHelper.load(d);
             double[] o = h.computeActions(new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
             System.out.println(Arrays.toString(o));
             assertEquals(o.length, 1);
             assertThat(o[0], anyOf(is(0.0), is(1.0)));
+
+            Map<String, String> e = new HashMap<String, String>();
+            e.put("NATIVERL_POLICY", d.getAbsolutePath());
+            String p = Loader.getPlatform();
+            if (p.startsWith("linux")) {
+                execute(simulationDir, e, "bash", "TrafficPhases_linux.sh");
+            } else if (p.startsWith("macosx")) {
+                execute(simulationDir, e, "bash", "TrafficPhases_mac");
+            } else if (p.startsWith("windows")) {
+                execute(simulationDir, e, "cmd.exe", "/c", "TrafficPhases_windows.bat");
+            } else {
+                fail("Unsupported platform: " + p);
+            }
         }
     }
 }

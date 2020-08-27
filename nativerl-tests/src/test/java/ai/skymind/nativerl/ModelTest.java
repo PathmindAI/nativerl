@@ -3,8 +3,10 @@ package ai.skymind.nativerl;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
@@ -20,15 +22,22 @@ public class ModelTest {
     public static void copy(File src, File dst) throws Exception {
         if (src.isDirectory()) {
             for (File f : src.listFiles()) {
-                Files.copy(f.toPath(), dst.toPath().resolve(f.getName()));
+                Files.copy(f.toPath(), dst.toPath().resolve(f.getName()), StandardCopyOption.REPLACE_EXISTING);
             }
         } else {
-            Files.copy(src.toPath(), dst.toPath().resolve(src.getName()));
+            Files.copy(src.toPath(), dst.toPath().resolve(src.getName()), StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
     public static void execute(File directory, String... command) throws Exception {
-        assertEquals(0, new ProcessBuilder(command).directory(directory).inheritIO().start().waitFor());
+        execute(directory, null, command);
+    }
+    public static void execute(File directory, Map<String, String> environment, String... command) throws Exception {
+        ProcessBuilder pb = new ProcessBuilder(command).directory(directory).inheritIO();
+        if (environment != null) {
+            pb.environment().putAll(environment);
+        }
+        assertEquals(0, pb.start().waitFor());
     }
 
     public static File[] find(File root, String filename) {

@@ -34,7 +34,7 @@ WORKDIR /
  
 #Build pathmind-model-analyzer.jar
 COPY . .
-RUN mvn clean package \
+RUN mvn clean install \
   && cp target/pathmind-model-analyzer.jar ./
 
 ARG CHECK_MODEL_SCRIPT=src/main/resources/scripts/check_model.sh
