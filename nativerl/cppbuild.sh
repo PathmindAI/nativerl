@@ -2,6 +2,13 @@
 # Script to build the Python wrappers from nativerl.cpp with pybind11
 set -eu
 
+CXX='g++'
+LINKFLAGS='-Wl,-rpath,$ORIGIN/'
+if [[ $(uname -s) == "Darwin" ]]; then
+    CXX="clang++ -undefined dynamic_lookup"
+    LINKFLAGS="-Wl,-rpath,@loader_path/."
+fi
+
 # Indicate where to find the JNI library produced by JavaCPP, as required by the Python wrapper
 TARGETDIR="target"
 PLATFORMDIR="$TARGETDIR/classes/ai/skymind/nativerl/$PLATFORM"
@@ -21,4 +28,4 @@ IFS="$PREVIFS"
 
 # Compile the Python wrappers against the JNI library
 cp $PLATFORMDIR/* $TARGETDIR/
-g++ $CXXFLAGS `python3 -m pybind11 --includes` $CXXSOURCES -o $TARGETDIR/nativerl`python3-config --extension-suffix` '-Wl,-rpath,$ORIGIN/'
+$CXX $CXXFLAGS `python3-config --includes` `python3 -m pybind11 --includes` $CXXSOURCES -o $TARGETDIR/nativerl`python3-config --extension-suffix` $LINKFLAGS
