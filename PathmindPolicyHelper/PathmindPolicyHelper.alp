@@ -1600,7 +1600,7 @@ public class AbstractPathmindHelper extends Agent {
 	public double[] observationForReward() {
 		return observationForReward(0);
 	}
-	public String[] getObservationsNames() {
+	public String[] getObservationNames() {
 		try {
 			return observationProcessor.toNames(getObservationObject(0));
 		} catch (ReflectiveOperationException e) {
@@ -1613,7 +1613,7 @@ public class AbstractPathmindHelper extends Agent {
 	public int getPossibleActionCount() {
 		return possibleActionCount;
 	}
-	public String[] getRewardVariablesNames() {
+	public String[] getRewardVariableNames() {
 		try {
 			return rewardProcessor.toNames(getRewardObject(0));
 		} catch (ReflectiveOperationException e) {
