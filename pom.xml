@@ -132,4 +132,19 @@
         </pluginManagement>
     </build>
 
+    <profiles>
+        <profile>
+            <id>tests</id>
+            <activation>
+                <property>
+                    <name>tests</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>nativerl-tests</module>
+            </modules>
+        </profile>
+    </profiles>
+
 </project>
