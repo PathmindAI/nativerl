@@ -48,11 +48,11 @@ public class ModelAnalyzer {
         PathmindHelper helper = agent.pathmindHelper;
 
         System.out.println("observations:" + helper.observationForTraining().length);
-        System.out.println("observationsNames:" + display(helper.getObservationsNames()));
+        System.out.println("observationsNames:" + display(helper.getObservationNames()));
         // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
         System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
-        System.out.println("rewardVariables:" + display(helper.getRewardVariablesNames()));
+        System.out.println("rewardVariables:" + display(helper.getRewardVariableNames()));
 
         try {
             if (!helper.isEnabled) {
