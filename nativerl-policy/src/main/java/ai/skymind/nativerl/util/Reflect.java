@@ -196,7 +196,11 @@ public class Reflect {
         Object[] objects = getFieldObjects(fields, object);
         double[] doubles = new double[objects.length];
         for (int i = 0; i < doubles.length; i++) {
-            doubles[i] = ((Number)objects[i]).doubleValue();
+            if (objects[i] instanceof Boolean) {
+                doubles[i] = ((Boolean)objects[i]) ? 1.0 : 0.0;
+            } else {
+                doubles[i] = ((Number)objects[i]).doubleValue();
+            }
         }
         return doubles;
     }
@@ -260,8 +264,12 @@ public class Reflect {
                         Array.setDouble(array, j, values != null ? values[i++] * (scale ? high[j] - low[j] : 1.0f) + (scale ? low[j] : 0.0f)
                                                                  : (high[j] - low[j]) * random.nextDouble() + low[j]);
                     }
+                } else if (c == boolean.class) {
+                    for (int j = 0; j < length; j++) {
+                        Array.setBoolean(array, j, values != null ? values[i++] != 0.0 : random.nextBoolean());
+                    }
                 } else {
-                    throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
+                    throw new IllegalArgumentException("Field " + f + " must be int, long, float, double, or boolean.");
                 }
             } else {
                 if (t == int.class) {
@@ -274,8 +282,10 @@ public class Reflect {
                 } else if (t == double.class) {
                     f.setDouble(object, values != null ? values[i++] * (scale ? high[0] - low[0] : 1.0f) + (scale ? low[0] : 0.0f)
                                                        : (high[0] - low[0]) * random.nextDouble() + low[0]);
+                } else if (t == boolean.class) {
+                    f.setBoolean(object, values != null ? values[i++] != 0.0 : random.nextBoolean());
                 } else {
-                    throw new IllegalArgumentException("Field " + f + " must be int, long, float, or double.");
+                    throw new IllegalArgumentException("Field " + f + " must be int, long, float, double, or boolean.");
                 }
             }
         }
