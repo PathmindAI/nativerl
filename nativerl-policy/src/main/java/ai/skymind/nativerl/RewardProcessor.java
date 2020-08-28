@@ -69,7 +69,6 @@ public class RewardProcessor {
     }
     /** Returns {@code toDoubles(getRewardObject(agent, agentId))}. */
     public double[] getVariables(Object agent, int agentId) throws ReflectiveOperationException {
-        Object o = getRewardObject(agent, agentId);
         return toDoubles(getRewardObject(agent, agentId));
     }
 
