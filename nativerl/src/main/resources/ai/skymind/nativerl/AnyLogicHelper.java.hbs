@@ -167,28 +167,40 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public Array getMetrics(long agentId) {
-        // TODO: This should be updated to use the metricsSnippet to allow customization by users
-        double[] lastMetrics = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
-
-        if (this.metrics == null || this.metrics.length() != lastMetrics.length) {
-            this.metrics = new Array(new SSizeTVector().put(lastMetrics.length));
+        double[] metrics = null;
+        {{{metricsSnippet}}}
+        if (metrics == null) {
+            metrics = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
         }
-        float[] array2 = new float[lastMetrics.length];
-        for (int i = 0; i < lastMetrics.length; i++) {
-            array2[i] = (float)lastMetrics[i];
+
+        if (this.metrics == null || this.metrics.length() != metrics.length) {
+            this.metrics = new Array(new SSizeTVector().put(metrics.length));
+        }
+        float[] array2 = new float[metrics.length];
+        for (int i = 0; i < metrics.length; i++) {
+            array2[i] = (float)metrics[i];
         }
         this.metrics.data().put(array2);
         return this.metrics;
     }
 
-    public double[] test() {
-        double[] metrics = null;
+    public double[][] test() {
+        int n = (int)getNumberOfAgents();
+        double[][] allMetrics = new double[n][];
         reset();
         while (!isDone(-1)) {
             engine.runFast();
         }
-        {{{metricsSnippet}}}
-        return metrics;
+        for (int i = 0; i < n; i++) {
+            double[] metrics = null;
+            {{{metricsSnippet}}}
+            if (metrics == null) {
+                rewardAfter[i] = PathmindHelperRegistry.getHelper().getRewardObject(i);
+                metrics = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[i]);
+            }
+            allMetrics[i] = metrics;
+        }
+        return allMetrics;
     }
 
     public static void main(String[] args) throws Exception {
@@ -196,7 +208,7 @@ public class {{className}} extends AbstractEnvironment {
         {{~#if policyHelper}}
         {{className}} e = new {{className}}(PolicyHelper.load(new File(args[0])));
         for (int i = 0; i < {{testIterations}}; i++) {
-            lines.add(Arrays.toString(e.test()));
+            lines.add(Arrays.deepToString(e.test()));
         }
         {{~/if}}
         Files.write(Paths.get(args[0], "metrics.txt"), lines, Charset.defaultCharset());

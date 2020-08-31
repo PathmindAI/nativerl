@@ -33,8 +33,7 @@ public abstract class AbstractEnvironment extends Environment {
     protected Array actionMask;
     /** The Array returned by the getObservation() method. */
     protected Array observation;
-    /** The Array returned by the step() method in the case of multiple agents. */
-    protected Array reward;
+    /** The Array returned by the getMetrics() method. */
     protected Array metrics;
 
     /** Initializes all (protected) fields based on discreteActions and continuousObservations. */
@@ -44,7 +43,6 @@ public abstract class AbstractEnvironment extends Environment {
         observationSpace = getContinuousSpace(continuousObservations);
         actionMask = new Array(new SSizeTVector().put(discreteActions));
         observation = new Array(new SSizeTVector().put(continuousObservations));
-        reward = null;
         metrics = null;
     }
 
