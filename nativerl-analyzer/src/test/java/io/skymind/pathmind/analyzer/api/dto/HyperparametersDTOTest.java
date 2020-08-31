@@ -1,6 +1,7 @@
 package io.skymind.pathmind.analyzer.api.dto;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -71,4 +72,33 @@ public class HyperparametersDTOTest {
         expected.setOldVersionFound(true);
         Assertions.assertEquals(expected, result);
     }
+
+    @Test
+    public void testOf_withFailedSteps() {
+        HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
+                "observations:0",
+                "observationsNames:",
+                "actions:4",
+                "rewardVariablesCount:4",
+                "reward: not defined",
+                "failedSteps:observations,observationsNames",
+                "model-analyzer-mode: single",
+                "rewardVariables:vars[0]|vars[1]|vars[2]|vars[3]"
+        ));
+
+        HyperparametersDTO expected = new HyperparametersDTO(
+                false,
+                "0",
+                Collections.emptyList(),
+                "4",
+                "4",
+                Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
+                "not defined",
+                "observations,observationsNames",
+                "single"
+        );
+        Assertions.assertEquals(expected, result);
+    }
+
+
 }
