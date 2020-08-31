@@ -113,7 +113,8 @@ public class {{className}} extends AbstractEnvironment {
             // Initialize variables from parent class
             init(agent);
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException("Could not initialize environment: " + e);
+            e.printStackTrace();
+            throw new RuntimeException("Could not initialize environment.");
         }
     }
 
@@ -129,7 +130,10 @@ public class {{className}} extends AbstractEnvironment {
         for (int i = 0; i < array.length; i++) {
             array[i] = action.data().get(i);
         }
-        PathmindHelperRegistry.getHelper().action[(int)agentId] = array;
+        if (!PathmindHelperRegistry.getHelper().isSkip((int)agentId)) {
+            // the learning framework should give us continuous values in the range [0, 1] here
+            PathmindHelperRegistry.getHelper().action[(int)agentId] = PathmindHelperRegistry.getHelper().doAction(array, true, (int)agentId);
+        }
     }
 
     @Override
