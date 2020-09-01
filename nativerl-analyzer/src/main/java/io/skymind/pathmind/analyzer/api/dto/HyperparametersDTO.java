@@ -87,14 +87,18 @@ public class HyperparametersDTO {
             return new HyperparametersDTO(
                     false,
                     parametersMap.get("observations"),
-                    Arrays.asList(parametersMap.get("observationsNames").split("\\|")),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("observationsNames").split("\\|"))),
                     parametersMap.get("actions"),
                     parametersMap.get("rewardVariablesCount"),
-                    Arrays.asList(parametersMap.get("rewardVariables").split("\\|")),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariables").split("\\|"))),
                     parametersMap.get("reward"),
                     parametersMap.get("failedSteps"),
                     parametersMap.get("model-analyzer-mode"));
         }
+    }
+
+    private static List<String> filterOutEmpty(List<String> source) {
+        return source.stream().filter(s -> !s.isEmpty()).collect(Collectors.toList());
     }
 
     private static boolean isHyperparameters(String parameterCandidate) {
