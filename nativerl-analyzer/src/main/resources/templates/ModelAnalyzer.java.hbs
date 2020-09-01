@@ -2,6 +2,7 @@
 import com.anylogic.engine.Engine;
 import pathmind.policyhelper.PathmindHelper;
 
+import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -23,17 +24,19 @@ public class ModelAnalyzer {
           agent = new {{agentClassName}}(engine, null, null);
         }
         catch(RuntimeException e) {
-            String message = e.getMessage();
-            if (e != null) {
-                if (message.contains("Could not find local class in class")) {
-                    System.out.println("oldVersionFound:true");
-                    System.exit(0);
-                    return;
-                }
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String traceback = sw.toString();
+            if (traceback.contains("Could not find local class in class")) {
+                System.out.println("oldVersionFound:true");
+                System.exit(0);
+                return;
             }
-            e.printStackTrace(System.out);
-            System.exit(1);
-            return;
+            else {
+                e.printStackTrace(System.out);
+                System.exit(1);
+                return;
+            }
         }
 
         agent.setParametersToDefaultValues();
