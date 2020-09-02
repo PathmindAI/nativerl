@@ -87,6 +87,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
     --reward-snippet "$REWARD_SNIPPET" \
+    --observation-snippet "$OBSERVATION_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
