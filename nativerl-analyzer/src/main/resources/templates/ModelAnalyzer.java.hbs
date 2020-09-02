@@ -2,7 +2,6 @@
 import com.anylogic.engine.Engine;
 import pathmind.policyhelper.PathmindHelper;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -24,10 +23,7 @@ public class ModelAnalyzer {
           agent = new {{agentClassName}}(engine, null, null);
         }
         catch(RuntimeException e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String traceback = sw.toString();
-            if (traceback.contains("Could not find local class in class")) {
+            if (e.getCause() instanceof ClassNotFoundException) {
                 System.out.println("oldVersionFound:true");
                 System.exit(0);
                 return;
