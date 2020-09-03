@@ -160,6 +160,14 @@ class Callbacks(DefaultCallbacks):
 
 
 class Stopper:
+
+    def __terminate_with_reason(self, reason):
+        f = open("PPO/warning_message.txt", "a")
+        f.write(reason)
+        f.write("\n")
+        f.close()
+        return True
+
     def __init__(self):
         # Core criteria
         self.too_many_iter = False # Max iterations
@@ -208,7 +216,7 @@ class Stopper:
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter or self.too_much_time or self.too_many_episodes:
-            return True
+            return self.__terminate_with_reason("max training ceiling reached")
 
         # Collect metrics for stopping criteria
         if result['training_iteration'] == 1:
@@ -235,7 +243,7 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
-                return True
+                return self.__terminate_with_reason("no learning occurred")
 
         # Convergence check
         if result['training_iteration'] >= 150:
