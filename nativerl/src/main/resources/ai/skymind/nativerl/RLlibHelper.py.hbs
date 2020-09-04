@@ -176,12 +176,19 @@ class Callbacks(DefaultCallbacks):
 
 class Stopper:
 
-    def __terminate_with_reason(self, reason):
-        f = open("PPO/warning_message.txt", "a")
-        f.write(reason)
-        f.write("\n")
-        f.close()
-        return True
+    def __log_success(self, reason):
+        self.__log_reason(reason, True)
+
+    def __log_warning(self, reason):
+        self.__log_reason(reason, False)
+
+    @staticmethod
+    def __log_reason(reason, is_success):
+        file_name = "success_message.txt" if is_success else "warning_message.txt"
+        file = open(f"{{outputDir}}/{{algorithm}}/{file_name}", "a")
+        file.write(reason)
+        file.write("\n")
+        file.close()
 
     def __init__(self):
         # Core criteria
@@ -231,7 +238,13 @@ class Stopper:
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter or self.too_much_time or self.too_many_episodes:
-            return self.__terminate_with_reason("max training ceiling reached")
+            if self.too_many_episodes:
+                self.__log_warning("stopped due to too many episodes")
+            elif self.too_many_iter:
+                self.__log_success("stopped due to too many iterations")
+            elif self.too_much_time:
+                self.__log_success("stopped due to too much time")
+            return True
 
         # Collect metrics for stopping criteria
         if result['training_iteration'] == 1:
@@ -258,7 +271,8 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
-                return self.__terminate_with_reason("no learning occurred")
+                self.__log_warning("no learning occurred")
+                return True
 
         # Convergence check
         if result['training_iteration'] >= 150:
@@ -281,6 +295,7 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
+                self.__log_success("converged")
                 return trial_id
 
 
@@ -330,7 +345,7 @@ model['fcnet_hiddens'] = {{hiddenLayers}}
 {{~/if}}
 
 trials = run(
-    'PPO',
+    '{{algorithm}}',
     scheduler = pbt_scheduler,
     num_samples = {{numSamples}},
     stop = Stopper().stop,
