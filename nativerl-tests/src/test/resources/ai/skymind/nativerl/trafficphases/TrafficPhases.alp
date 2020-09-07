@@ -16,7 +16,11 @@
 		<ActiveObjectClass>
 			<Id>1550346985141</Id>
 			<Name><![CDATA[Main]]></Name>
-			<AdditionalClassCode><![CDATA[PolicyHelper policyHelper = null;]]></AdditionalClassCode>
+			<AdditionalClassCode><![CDATA[@Override public void onEngineFinished() {
+    if (pathmindHelper.policyHelper != null) {
+        System.exit(0);
+    }
+}]]></AdditionalClassCode>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
 			<Import><![CDATA[import java.io.File;
 import java.io.IOException;
@@ -2918,11 +2922,6 @@ tisDS.add(elapsed);]]></Code>
 							<Name><![CDATA[observations]]></Name>
 							<Value Class="CodeValue">
 								<Code><![CDATA[class Observations {
-{
-	if (pathmindHelper.policyHelper != null && pathmindHelper.isDone(-1)) {
-		System.exit(0);
-	}
-}
 double obs[] = getObservation(false);
 }]]></Code>
 							</Value>
