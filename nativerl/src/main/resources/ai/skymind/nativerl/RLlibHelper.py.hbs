@@ -185,10 +185,8 @@ class Stopper:
     @staticmethod
     def __log_reason(reason, is_success):
         file_name = "success_message.txt" if is_success else "warning_message.txt"
-        file = open(f"{{outputDir}}/{{algorithm}}/{file_name}", "a")
-        file.write(reason)
-        file.write("\n")
-        file.close()
+        with open(f"{{outputDir}}/{{algorithm}}/{file_name}", "a") as out:
+            out.write(f"{reason}\n")
 
     def __init__(self):
         # Core criteria
