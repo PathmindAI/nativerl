@@ -7,6 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,7 +64,7 @@ public class Reflect {
         throw new ClassNotFoundException("Could not find local class in " + parentClass + "." + methodName);
     }
 
-    /** Returns the fields of the given class in the order listed in the class. */
+    /** Returns the non-private primitive or primitive array fields of the given class in the order listed in the class. */
     public static Field[] getFields(Class cls) {
         ArrayList<Field> fields = new ArrayList<Field>();
         ArrayList<Class> classes = new ArrayList<Class>();
@@ -74,7 +75,7 @@ public class Reflect {
         for (Class c : classes) {
             for (Field f : c.getDeclaredFields()) {
                 Class t = f.getType();
-                if ((!t.isPrimitive() && !t.isArray()) || f.getName().startsWith("val$")) {
+                if ((!t.isPrimitive() && !t.isArray()) || f.getName().startsWith("val$") || Modifier.isPrivate(f.getModifiers())) {
                     continue;
                 }
                 f.setAccessible(true);

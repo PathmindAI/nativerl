@@ -601,7 +601,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[getEngine().getStopTime() <= time()
+							<Code><![CDATA[engine.getState() == Engine.State.FINISHED
 /* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
