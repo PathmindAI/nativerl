@@ -237,11 +237,11 @@ class Stopper:
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter or self.too_much_time or self.too_many_episodes:
             if self.too_many_episodes:
-                self.__log_warning("stopped due to too many episodes")
+                self.__log_warning(f"trial{trial_id} stopped due to too many episodes")
             elif self.too_many_iter:
-                self.__log_success("stopped due to too many iterations")
+                self.__log_success(f"trial{trial_id} stopped due to too many iterations")
             elif self.too_much_time:
-                self.__log_success("stopped due to too much time")
+                self.__log_success(f"trial{trial_id} stopped due to too much time")
             return True
 
         # Collect metrics for stopping criteria
@@ -269,7 +269,7 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
-                self.__log_warning("no learning occurred")
+                self.__log_warning(f"trial{trial_id}: no learning occurred")
                 return True
 
         # Convergence check
@@ -293,7 +293,7 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
-                self.__log_success("converged")
+                self.__log_success(f"trial{trial_id} converged")
                 return trial_id
 
 
