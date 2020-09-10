@@ -615,7 +615,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[engine.getState() == Engine.State.FINISHED
+							<Code><![CDATA[getEngine().getState() == Engine.State.FINISHED
 /* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
@@ -834,23 +834,39 @@ if (!isTraining && steps == 1) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (!isTraining) {
-	String output = "Pathmind:\n"
-			      + "  Step: " + steps + "\n";
-	for (int i = 0; i < numberOfAgents; i++) {
-		double[] training = observationForTraining(i);
-		double[] reward = observationForReward(i);
-		output += "  Agent ID: " + i + "\n"
-			    + "    Observations:\n"
-			    + "      Array: " + Arrays.toString(training) + "\n"
-			    + "      Number of Observations: " + training.length + "\n"
-			    + "    Reward Variables: \n"
-			    + "      Array: " + Arrays.toString(reward)+"\n"
-			    + "      Number of Reward Variables: " + reward.length + "\n"
-			    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
-			    + "    Skip: " + isSkip(i) + "\n"
-			    + "    Done: " + isDone(i) + "\n";
+	if (!useMultiAgent) {
+		String output = "Pathmind:\n"
+				      + "  Step: " + steps + "\n";
+		double[] training = observationForTraining(0);
+		double[] reward = observationForReward(0);
+		output += "  Observations:\n"
+			    + "    Array: " + Arrays.toString(training) + "\n"
+			    + "    Number of Observations: " + training.length + "\n"
+			    + "  Reward Variables: \n"
+			    + "    Array: " + Arrays.toString(reward)+"\n"
+			    + "    Number of Reward Variables: " + reward.length + "\n"
+			    + "  Last Action: " + Arrays.toString(scaledAction[0]) + "\n"
+			    + "  Done: " + isDone(0) + "\n";
+		return output;
+	} else {
+		String output = "Pathmind:\n"
+				      + "  Step: " + steps + "\n";
+		for (int i = 0; i < numberOfAgents; i++) {
+			double[] training = observationForTraining(i);
+			double[] reward = observationForReward(i);
+			output += "  Agent ID: " + i + "\n"
+				    + "    Observations:\n"
+				    + "      Array: " + Arrays.toString(training) + "\n"
+				    + "      Number of Observations: " + training.length + "\n"
+				    + "    Reward Variables: \n"
+				    + "      Array: " + Arrays.toString(reward)+"\n"
+				    + "      Number of Reward Variables: " + reward.length + "\n"
+				    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
+				    + "    Skip: " + isSkip(i) + "\n"
+				    + "    Done: " + isDone(i) + "\n";
+		}
+		return output;	
 	}
-	return output;
 } else if (isDone(-1)) {
 	return ""; // End debug string when done is true
 } else {
@@ -1725,8 +1741,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>0</VersionMinor>
-			<VersionBuild>3</VersionBuild>
+			<VersionMinor>2</VersionMinor>
+			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
