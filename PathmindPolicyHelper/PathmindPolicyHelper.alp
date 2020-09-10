@@ -315,6 +315,39 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1595822201340</Id>
+					<Name><![CDATA[numberOfAgents]]></Name>
+					<X>140</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[int]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[1]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1595822201338</Id>
+							<Label><![CDATA[Number of Agents]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1599763043280</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
 					<X>20</X><Y>160</Y>
@@ -400,40 +433,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1595822201340</Id>
-					<Name><![CDATA[numberOfAgents]]></Name>
-					<X>140</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[1]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1595822201338</Id>
-							<Label><![CDATA[Number of Agents]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1599763043280</ParameterId>
-								<Operation>NOT_EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>SEPARATE_SECTION</DelimeterType>
-							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
 					<Name><![CDATA[observations]]></Name>
 					<X>20</X><Y>190</Y>
@@ -462,7 +461,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
 							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
@@ -1022,6 +1021,9 @@ if (!isTraining && steps == 1) {
 					<ParameterName><![CDATA[useMultiAgent]]></ParameterName>
 				</Parameter>
 				<Parameter>
+					<ParameterName><![CDATA[numberOfAgents]]></ParameterName>
+				</Parameter>
+				<Parameter>
 					<ParameterName><![CDATA[usePolicy]]></ParameterName>
 					<ParameterValue Class="CodeValue">
 						<Code><![CDATA[true]]></Code>
@@ -1029,9 +1031,6 @@ if (!isTraining && steps == 1) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[numberOfAgents]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[observations]]></ParameterName>
@@ -1726,8 +1725,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>3</VersionMinor>
-			<VersionBuild>0</VersionBuild>
+			<VersionMinor>0</VersionMinor>
+			<VersionBuild>3</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
