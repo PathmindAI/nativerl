@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008122154" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201526" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -445,11 +445,13 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */
-/* class Observations {
-	double obs[] = yourObservation();
+							<Code><![CDATA[class Observations {
+    /* Docs: https://help.pathmind.com/en/articles/3631436-2-build-observation-space */
+
+    // Example:
+    // double myObs = yourObservation();
 }
-*/]]></Code>
+]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -479,11 +481,12 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */
-/* class Reward {
-	double vars[] = yourRewardVariables();
-}
-*/]]></Code>
+							<Code><![CDATA[class Reward {
+    /* Docs: https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */
+
+    // Example:
+    // double myRewardVar = yourRewardVariable();
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -513,12 +516,14 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */
-/* class Actions {
-	@Discrete(n = 1, size = 1) int[] action;
-	void doIt() { doAction(action); }
+							<Code><![CDATA[class Actions {
+    /* Docs: https://help.pathmind.com/en/articles/3640124-3-build-action-space */
+
+    // Examples:
+    // @Discrete(n = 1, size = 1) int[] action;
+    // void doIt() { doAction(action); }
 }
-*/]]></Code>
+]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
