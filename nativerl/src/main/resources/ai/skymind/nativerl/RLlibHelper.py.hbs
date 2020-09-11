@@ -359,6 +359,10 @@ trials = run(
         'batch_mode': 'complete_episodes',
         # Auto-normalize observations
         #'observation_filter': 'MeanStdFilter'
+        {{#if multiAgent}}
+        # Disable "deallocation" of agents for simplicity
+        'no_done_at_end': True
+        {{/if}}
     },
     {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
