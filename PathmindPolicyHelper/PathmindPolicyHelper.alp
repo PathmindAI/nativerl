@@ -268,56 +268,9 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1599763043280</Id>
-					<Name><![CDATA[useMultiAgent]]></Name>
-					<X>140</X><Y>70</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false]]></Code>
-						</DefaultValue>
-						<ParameterEditor>
-							<Id>1599763043278</Id>
-							<Label><![CDATA[Number of RL Agents]]></Label>
-							<EditorContolType>RADIO_BUTTONS</EditorContolType>
-							<HideCondition>
-								<Id>1599763043275</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<PredefParamValue>
-								<Id>1599763043276</Id>
-								<Name><![CDATA[Single Agent]]></Name>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</PredefParamValue>
-							<PredefParamValue>
-								<Id>1599763043277</Id>
-								<Name><![CDATA[Multiple Agents]]></Name>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</PredefParamValue>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
-					<X>140</X><Y>100</Y>
+					<X>140</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -333,14 +286,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<Id>1595822201338</Id>
 							<Label><![CDATA[Number of Agents]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1599763043280</ParameterId>
-								<Operation>NOT_EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
-								</Value>
-							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -567,7 +512,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
 					<Name><![CDATA[isSkip]]></Name>
-					<X>140</X><Y>130</Y>
+					<X>140</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -590,10 +535,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<HideCondition>
 								<Id>0</Id>
-								<ParameterId>1599763043280</ParameterId>
-								<Operation>NOT_EQUALS</Operation>
+								<ParameterId>1595822201340</ParameterId>
+								<Operation>EQUALS</Operation>
 								<Value Class="CodeValue">
-									<Code><![CDATA[true]]></Code>
+									<Code><![CDATA[1]]></Code>
 								</Value>
 							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
@@ -834,7 +779,7 @@ if (!isTraining && steps == 1) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (!isTraining) {
-	if (!useMultiAgent) {
+	if (numberOfAgents == 1) {
 		String output = "Pathmind:\n"
 				      + "  Step: " + steps + "\n";
 		double[] training = observationForTraining(0);
@@ -1032,9 +977,6 @@ if (!isTraining && steps == 1) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[debugMode]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[useMultiAgent]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[numberOfAgents]]></ParameterName>
