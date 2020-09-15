@@ -48,6 +48,7 @@ public class ActionProcessorTest {
     void actions(int agentId) {
         class DummyActions extends TestActions {
             @Discrete(n = 25) long action5 = agentId;
+            private boolean ignoreMe = true;
         }
     }
 

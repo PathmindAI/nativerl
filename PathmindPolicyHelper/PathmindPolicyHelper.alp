@@ -550,6 +550,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>20</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1619,6 +1620,10 @@ public class AbstractPathmindHelper extends Agent {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get reward doubles.", e);
 		}
+	}
+
+	public boolean isDone(int agentId) {
+		return getEngine().getState() == Engine.State.FINISHED;
 	}
 }]]></Text>
 		</JavaClass>
