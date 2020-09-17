@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.5.2.202001241923" AlpVersion="8.5.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008122154" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -130,7 +130,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1563529489111</Id>
 					<Name><![CDATA[policyHelper]]></Name>
-					<X>320</X><Y>70</Y>
+					<X>440</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -145,7 +145,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1566466833512</Id>
 					<Name><![CDATA[isTraining]]></Name>
-					<X>320</X><Y>100</Y>
+					<X>440</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -160,7 +160,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1566467201295</Id>
 					<Name><![CDATA[engine]]></Name>
-					<X>320</X><Y>130</Y>
+					<X>440</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -175,7 +175,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1566468010477</Id>
 					<Name><![CDATA[action]]></Name>
-					<X>170</X><Y>70</Y>
+					<X>290</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -190,7 +190,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1578425082743</Id>
 					<Name><![CDATA[steps]]></Name>
-					<X>170</X><Y>100</Y>
+					<X>290</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -205,7 +205,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="PlainVariable">
 					<Id>1598258147365</Id>
 					<Name><![CDATA[scaledAction]]></Name>
-					<X>170</X><Y>160</Y>
+					<X>290</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -245,7 +245,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1579541084520</Id>
 					<Name><![CDATA[debugMode]]></Name>
-					<X>20</X><Y>460</Y>
+					<X>20</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -268,71 +268,9 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1590618532129</Id>
-					<Name><![CDATA[actionTupleSize]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>340</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1590618532127</Id>
-							<Label><![CDATA[Action Outputs]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1566825577748</Id>
-					<Name><![CDATA[possibleActionCount]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>310</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
-						<Type><![CDATA[int]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<ParameterEditor>
-							<Id>1566825577746</Id>
-							<Label><![CDATA[Number of Actions]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1563523942388</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[false]]></Code>
-								</Value>
-							</HideCondition>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
-					<X>20</X><Y>280</Y>
+					<X>20</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -379,7 +317,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1563524634306</Id>
 					<Name><![CDATA[policyFile]]></Name>
-					<X>20</X><Y>100</Y>
+					<X>20</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -417,7 +355,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
-					<X>20</X><Y>490</Y>
+					<X>140</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -453,7 +391,11 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */]]></Code>
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */
+/* class Observations {
+	double obs[] = yourObservation();
+}
+*/]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -466,7 +408,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
-							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
@@ -483,7 +424,11 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */]]></Code>
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */
+/* class Reward {
+	double vars[] = yourRewardVariables();
+}
+*/]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -503,7 +448,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1563524030804</Id>
 					<Name><![CDATA[actions]]></Name>
-					<X>20</X><Y>130</Y>
+					<X>20</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -513,7 +458,12 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */
+/* class Actions {
+	@Discrete(n = 1, size = 1) int[] action;
+	void doIt() { doAction(action); }
+}
+*/]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -532,7 +482,8 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
-					<X>20</X><Y>160</Y>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -542,7 +493,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
+							<Code><![CDATA[/* TBD */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -561,7 +512,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
 					<Name><![CDATA[isSkip]]></Name>
-					<X>20</X><Y>520</Y>
+					<X>140</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -572,7 +523,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[false
-/* https://help.pathmind.com/en/articles/3644763-5-define-skip-condition */]]></Code>
+/* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -582,6 +533,14 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 							<Id>1598081984889</Id>
 							<Label><![CDATA[Skip]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1595822201340</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[1]]></Code>
+								</Value>
+							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -592,7 +551,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>250</Y>
+					<X>20</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -602,7 +561,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[engine.getState() == Engine.State.FINISHED
+							<Code><![CDATA[getEngine().getState() == Engine.State.FINISHED
 /* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
 						</DefaultValue>
 						<MethodArgument>
@@ -622,7 +581,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573849287879</Id>
 					<Name><![CDATA[useEventTrigger]]></Name>
-					<X>20</X><Y>430</Y>
+					<X>20</X><Y>310</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -648,7 +607,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
-					<X>20</X><Y>370</Y>
+					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -683,7 +642,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
 					<Name><![CDATA[eventCondition]]></Name>
-					<X>20</X><Y>400</Y>
+					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -723,7 +682,7 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 				<Event>
 					<Id>1573748399465</Id>
 					<Name><![CDATA[triggerAction]]></Name>
-					<X>450</X><Y>100</Y>
+					<X>570</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -765,7 +724,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1566466772537</Id>
 					<Name><![CDATA[triggerNextAction]]></Name>
-					<X>450</X><Y>70</Y>
+					<X>570</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -815,29 +774,45 @@ if (!isTraining && steps == 1) {
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1566470575833</Id>
 					<Name><![CDATA[toString]]></Name>
-					<X>170</X><Y>130</Y>
+					<X>290</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (!isTraining) {
-	String output = "Pathmind:\n"
-			      + "  Step: " + steps + "\n";
-	for (int i = 0; i < numberOfAgents; i++) {
-		double[] training = observationForTraining(i);
-		double[] reward = observationForReward(i);
-		output += "  Agent ID: " + i + "\n"
-			    + "    Observations:\n"
-			    + "      Array: " + Arrays.toString(training) + "\n"
-			    + "      Number of Observations: " + training.length + "\n"
-			    + "    Reward Variables: \n"
-			    + "      Array: " + Arrays.toString(reward)+"\n"
-			    + "      Number of Reward Variables: " + reward.length + "\n"
-			    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
-			    + "    Skip: " + isSkip(i) + "\n"
-			    + "    Done: " + isDone(i) + "\n";
+	if (numberOfAgents == 1) {
+		String output = "Pathmind:\n"
+				      + "  Step: " + steps + "\n";
+		double[] training = observationForTraining(0);
+		double[] reward = observationForReward(0);
+		output += "  Observations:\n"
+			    + "    Array: " + Arrays.toString(training) + "\n"
+			    + "    Number of Observations: " + training.length + "\n"
+			    + "  Reward Variables: \n"
+			    + "    Array: " + Arrays.toString(reward)+"\n"
+			    + "    Number of Reward Variables: " + reward.length + "\n"
+			    + "  Last Action: " + Arrays.toString(scaledAction[0]) + "\n"
+			    + "  Done: " + isDone(0) + "\n";
+		return output;
+	} else {
+		String output = "Pathmind:\n"
+				      + "  Step: " + steps + "\n";
+		for (int i = 0; i < numberOfAgents; i++) {
+			double[] training = observationForTraining(i);
+			double[] reward = observationForReward(i);
+			output += "  Agent ID: " + i + "\n"
+				    + "    Observations:\n"
+				    + "      Array: " + Arrays.toString(training) + "\n"
+				    + "      Number of Observations: " + training.length + "\n"
+				    + "    Reward Variables: \n"
+				    + "      Array: " + Arrays.toString(reward)+"\n"
+				    + "      Number of Reward Variables: " + reward.length + "\n"
+				    + "    Last Action: " + Arrays.toString(scaledAction[i]) + "\n"
+				    + "    Skip: " + isSkip(i) + "\n"
+				    + "    Done: " + isDone(i) + "\n";
+		}
+		return output;	
 	}
-	return output;
 } else if (isDone(-1)) {
 	return ""; // End debug string when done is true
 } else {
@@ -1005,13 +980,10 @@ if (!isTraining && steps == 1) {
 					<ParameterName><![CDATA[debugMode]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[actionTupleSize]]></ParameterName>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[possibleActionCount]]></ParameterName>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[usePolicy]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[true]]></Code>
+					</ParameterValue>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
@@ -1027,15 +999,16 @@ if (!isTraining && steps == 1) {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[actions]]></ParameterName>
-					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */]]></Code>
-					</ParameterValue>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[actionMasks]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isSkip]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[false
+/* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
+					</ParameterValue>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
@@ -1065,6 +1038,7 @@ if (!isTraining && steps == 1) {
 				<FinalDate><![CDATA[1566172800000]]></FinalDate>	
 				<FinalTime><![CDATA[100.0]]></FinalTime>	
 			</ModelTimeProperties>
+			<BypassInitialScreen>false</BypassInitialScreen>
 		</SimulationExperiment>	
 	</Experiments>
 	<JavaClasses>
@@ -1737,12 +1711,18 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
+    <RequiredLibraryReference>
+		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
+		<VersionMajor>1</VersionMajor>
+		<VersionMinor>0</VersionMinor>
+		<VersionBuild>0</VersionBuild>
+    </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>false</Imported>
+		<Imported>true</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
