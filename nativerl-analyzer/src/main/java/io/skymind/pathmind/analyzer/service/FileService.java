@@ -74,12 +74,11 @@ public class FileService {
         List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
 
-        if (result.size() < 5) {
+        if (result.size() < 14) {
             List<String> err = readResult(proc.getErrorStream());
             log.warn("Unexpected output for {} file, result: {}, err: {}", unzippedPath, String.join(" ", result), String.join(" ", err));
         }
 
-        result.add("model-analyzer-mode: single");
         return result;
     }
 

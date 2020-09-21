@@ -62,6 +62,9 @@ public class ModelAnalyzer {
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
         System.out.println("rewardVariables:" + display(helper.getRewardVariableNames()));
 
+        // check number of agent
+        System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "multi" : "single"));
+
         try {
             if (!helper.isEnabled) {
                 failedSteps.add("pathmindHelperDisabled");
