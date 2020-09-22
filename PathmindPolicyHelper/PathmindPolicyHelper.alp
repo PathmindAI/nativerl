@@ -357,7 +357,7 @@ triggerNextAction();
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1595822201338</Id>
-							<Label><![CDATA[Number of Agents]]></Label>
+							<Label><![CDATA[Number of RL Agents]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -1668,7 +1668,7 @@ public @interface Continuous {
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>2</VersionMinor>
-			<VersionBuild>0</VersionBuild>
+			<VersionBuild>1</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
