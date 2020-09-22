@@ -67,13 +67,13 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             steps {
 		script {
         		DOCKER_TAG = 'test'
-		        if(env.BRANCH_NAME == 'master'){
+		        if(env.BRANCH_NAME == 'prod'){
 		                DOCKER_TAG = "prod"
 		        }
 		        if(env.BRANCH_NAME == 'dev'){
@@ -107,7 +107,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
 		parallel {
@@ -125,7 +125,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
 		parallel {
@@ -160,7 +160,7 @@ pipeline {
         stage('Go for Production?') {
             when {
                 allOf {
-                    environment name: 'GIT_BRANCH', value: 'master'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                     environment name: 'DEPLOY_TO_PROD', value: 'false'
                 }
             }
