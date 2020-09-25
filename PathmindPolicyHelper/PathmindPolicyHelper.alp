@@ -233,6 +233,11 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1579541084520</Id>
 					<Name><![CDATA[debugMode]]></Name>
+					<Description><![CDATA[<h3>Debug Mode</h3>
+<p>Debug mode prints information that Pathmind receives to the AnyLogic console.  This is helpful for auditing data passed to the Pathmind Helper.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode" target="_blank">https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode</a>]]></Description>
 					<X>20</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -258,6 +263,10 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
+					<Description><![CDATA[<h3>Mode</h3>
+<p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy to predict the next best action.</p>
+<p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly.</p>
+]]></Description>
 					<X>20</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -343,6 +352,11 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
+					<Description><![CDATA[<h3>Number of Controlled Agents</h3>
+<p>Train multiple agents using a single shared policy. Pathmind can control 0 to 100 agents.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents" target="_blank">https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents</a>]]></Description>
 					<X>140</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -357,7 +371,7 @@ triggerNextAction();
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1595822201338</Id>
-							<Label><![CDATA[Number of RL Agents]]></Label>
+							<Label><![CDATA[Number of Controlled Agents]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -369,6 +383,27 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
 					<Name><![CDATA[observations]]></Name>
+					<Description><![CDATA[<h3>Observations</h3>
+<p>Observations are information about the current state of the environment. The policy uses observations to make decisions about what actions to take.</p>
+
+<b>Supported Types</b><br>
+<li>Doubles</li>
+<li>Arrays</li>
+<li>Booleans</li>
+<br>
+
+<b>Example Code</b><br>
+<code>
+class Observations {<br>
+&nbsp;&nbsp;double customers = customerCount;<br>
+&nbsp;&nbsp;double[] stockLevels = getStockLevels();<br>
+&nbsp;&nbsp;boolean surgePrices = surgeActive == 1;<br>
+}
+</code><br><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3631436-2-build-observation-space" target="_blank">https://help.pathmind.com/en/articles/3631436-2-build-observation-space</a>
+<a href="https://help.pathmind.com/en/articles/4436330-observation-selection" target="_blank">https://help.pathmind.com/en/articles/4436330-observation-selection</a>]]></Description>
 					<X>20</X><Y>190</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -379,9 +414,13 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */
-/* class Observations {
-	double obs[] = yourObservation();
+							<Code><![CDATA[class Observations { }
+
+/* 
+class Observations {
+     double customers = customerCount;
+     double stockLevels[] = getStockLevels();
+     boolean surgePrices = surgeActive == 1;
 }
 */]]></Code>
 						</DefaultValue>
@@ -402,6 +441,26 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1566471864343</Id>
 					<Name><![CDATA[rewardVariables]]></Name>
+					<Description><![CDATA[<h3>Reward Variables</h3>
+<p>Reward variables are the building blocks for the reward function. Reward variables can embody important simulation metrics such as revenue and cost. These metrics are likely what you directly seek to optimize.</p>
+
+<b>Supported Types</b><br>
+<li>Doubles</li>
+<li>Arrays</li>
+<li>Booleans</li>
+<br>
+
+<b>Example Code</b><br>
+<code>
+class Reward {<br>
+&nbsp;&nbsp;double revenue = revenueVariable;<br>
+&nbsp;&nbsp;boolean cost = costVariable;<br>
+}
+</code><br><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables" target="_blank">https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables</a><br>
+<a href=https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names" target="_blank">https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names</a>]]></Description>
 					<X>20</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -412,9 +471,12 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */
-/* class Reward {
-	double vars[] = yourRewardVariables();
+							<Code><![CDATA[class Reward { }
+
+/* 
+class Reward {
+  double revenue = revenueVariable;
+  boolean cost = costVariable;
 }
 */]]></Code>
 						</DefaultValue>
@@ -436,6 +498,47 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1563524030804</Id>
 					<Name><![CDATA[actions]]></Name>
+					<Description><![CDATA[<h3>Actions</h3>
+<p>Actions define all actions that an agent can perform. This can be in the form of discrete choices, a continuous range, or a mix of both.</p>
+
+<b>Supported Action Spaces</b><br>
+<li>Discrete</li>
+<li>Continuous</li>
+<li>Tuple</li>
+<br>
+<b>Annotations</b><br>
+<li>@Discrete</li>
+<li>@Continuous</li>
+<br>
+
+<b>Example Code</b><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Discrete(n = 2, size = 2) int[] action;<br>
+&nbsp;&nbsp;void doIt() { doAction(action); }<br>
+}
+</code><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Continuous(low = 0, high = 1, shape = 1) double action;<br>
+&nbsp;&nbsp;void doIt() { doAction(action); }<br>
+}
+</code><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Discrete(n = 2, size = 2) int[] action;<br>
+&nbsp;&nbsp;@Continuous(low = 0, high = 1, shape = 1) double action2;<br>
+&nbsp;&nbsp;void doIt() { doAction(action, action2); }<br>
+}
+</code><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3640124-3-build-action-space" target="_blank">https://help.pathmind.com/en/articles/3640124-3-build-action-space</a><br>
+<a href="https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces</a><br>
+<a href="https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces</a><br>]]></Description>
 					<X>20</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -446,9 +549,11 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */
+							<Code><![CDATA[class Actions { }
+
 /* class Actions {
-	@Discrete(n = 1, size = 1) int[] action;
+	@Discrete(n = 1, size = 2) int[] action;
+	@Continuous(low = 0, high = 1, shape = 1) float action;
 	void doIt() { doAction(action); }
 }
 */]]></Code>
@@ -500,6 +605,11 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
 					<Name><![CDATA[isSkip]]></Name>
+					<Description><![CDATA[<h3>Skip</h3>
+<p>The skip condition allows you to skip certain agents if they do not meet certain criteria. This field must return <code>true</code> or <code>false</code> for each agent.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436002-16-define-skip-condition" target="_blank">https://help.pathmind.com/en/articles/4436002-16-define-skip-condition</a>]]></Description>
 					<X>140</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -595,6 +705,8 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
+					<Description><![CDATA[<h3>Recurrence</h3>
+<p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
 					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -630,6 +742,11 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
 					<Name><![CDATA[eventCondition]]></Name>
+					<Description><![CDATA[<h3>Event Condition</h3>
+<p>The event trigger tells Pathmind when to trigger the next action. This field must return <code>true</code> or <code>false</code></p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3634254-4-triggering-actions" target="_blank">https://help.pathmind.com/en/articles/3634254-4-triggering-actions</a>]]></Description>
 					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1689,6 +1806,10 @@ public @interface Continuous {
 			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
+		<Resource>
+			<Path><![CDATA[nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
 	</ModelResources>
     <RequiredLibraryReference>
 		<LibraryName><![CDATA[com.anylogic.libraries.modules.markup_descriptors]]></LibraryName>
@@ -1701,7 +1822,7 @@ public @interface Continuous {
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>true</Imported>
+		<Imported>false</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
