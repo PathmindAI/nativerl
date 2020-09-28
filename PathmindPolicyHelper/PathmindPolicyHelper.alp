@@ -353,7 +353,11 @@ triggerNextAction();
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
 					<Description><![CDATA[<h3>Number of Controlled Agents</h3>
-<p>Train multiple agents using a single shared policy. Pathmind can control 1 to 100 agents.</p>
+<p>Train multiple agents using a single shared policy.</p>
+
+<b>Limitations</b>
+<li>While there are no limits, keep the number of agents under 100 if possible. Otherwise, you may exceed maximum memory allowed during Pathmind training.</li>
+<li>The number of agents must be static. You cannot dynamically change the number of agents during the simuulation.</li><br>
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents" target="_blank">https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents</a>]]></Description>
