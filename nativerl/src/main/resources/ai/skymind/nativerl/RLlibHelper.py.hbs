@@ -313,7 +313,7 @@ if os.path.isfile('database/db.properties'):
         if 'hsqldb.lock_file=false\n' not in lines:
             f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, dashboard_host='127.0.0.1', lru_evict=True)
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
 {{#if autoregressive~}}
 {{{autoregressiveModel}}}
 {{~else~}}
