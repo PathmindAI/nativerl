@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008122154" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202009241624" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -353,7 +353,7 @@ triggerNextAction();
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
 					<Description><![CDATA[<h3>Number of Controlled Agents</h3>
-<p>Train multiple agents using a single shared policy. Pathmind can control 0 to 100 agents.</p>
+<p>Train multiple agents using a single shared policy. Pathmind can control 1 to 100 agents.</p>
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents" target="_blank">https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents</a>]]></Description>
@@ -414,15 +414,11 @@ class Observations {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Observations { }
-
-/* 
-class Observations {
-     double customers = customerCount;
-     double stockLevels[] = getStockLevels();
-     boolean surgePrices = surgeActive == 1;
-}
-*/]]></Code>
+							<Code><![CDATA[class Observations { 
+    //double customers = customerCount;
+    //double stockLevels[] = getStockLevels();
+    //boolean surgePrices = surgeActive == 1;
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -471,14 +467,10 @@ class Reward {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Reward { }
-
-/* 
-class Reward {
-  double revenue = revenueVariable;
-  boolean cost = costVariable;
-}
-*/]]></Code>
+							<Code><![CDATA[class Reward { 
+    //double revenue = revenueVariable;
+    //boolean cost = costVariable;
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -549,14 +541,11 @@ class Actions {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Actions { }
-
-/* class Actions {
-	@Discrete(n = 1, size = 2) int[] action;
-	@Continuous(low = 0, high = 1, shape = 1) float action;
-	void doIt() { doAction(action); }
-}
-*/]]></Code>
+							<Code><![CDATA[class Actions {
+    //@Discrete(n = 1, size = 2) int[] action;
+    //@Continuous(low = 0, high = 1, shape = 1) float action;
+    void doIt() { /* doAction(action); */ };
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -1804,10 +1793,6 @@ public @interface Continuous {
 		</Resource>
 		<Resource>
 			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
-			<Path><![CDATA[nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
