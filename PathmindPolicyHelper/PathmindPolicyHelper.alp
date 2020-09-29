@@ -151,7 +151,7 @@ triggerNextAction();
 					<X>440</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
@@ -181,7 +181,7 @@ triggerNextAction();
 					<X>290</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double[][]]]></Type>        
@@ -264,13 +264,13 @@ triggerNextAction();
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
 					<Description><![CDATA[<h3>Mode</h3>
-<p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy to predict the next best action.</p>
-<p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly.</p>
+<p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy specified in <b>Policy File</b> to predict the next best action.</p>
+<p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly and to confirm that there are no logical issues in your AnyLogic simulation.</p>
 ]]></Description>
 					<X>20</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -364,7 +364,7 @@ triggerNextAction();
 					<X>140</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[int]]></Type>
@@ -606,7 +606,7 @@ class Actions {<br>
 					<X>140</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -703,7 +703,7 @@ class Actions {<br>
 					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[]]></Type>
@@ -743,7 +743,7 @@ class Actions {<br>
 					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -779,11 +779,11 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 			<Events>
 				<Event>
 					<Id>1573748399465</Id>
-					<Name><![CDATA[triggerAction]]></Name>
+					<Name><![CDATA[internalEventTrigger]]></Name>
 					<X>570</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties TriggerType="timeout" Mode="cyclic">
 						<Timeout Class="CodeUnitValue">
@@ -822,6 +822,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1566466772537</Id>
 					<Name><![CDATA[triggerNextAction]]></Name>
+					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
 					<X>570</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -829,6 +830,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
+	steps++;
 } else if (isEnabled) {
 	steps++;
 	for (int i = 0; i < numberOfAgents; i++) {
@@ -848,7 +850,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 	}
 }
 
-if (debugMode) {
+if (isEnabled && debugMode) {
 	trace(toString());
 }
 
@@ -866,7 +868,7 @@ if (!isTraining && steps == 1) {
 					<X>290</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (!isTraining) {
 	if (numberOfAgents == 1) {
@@ -900,7 +902,7 @@ if (!isTraining && steps == 1) {
 				    + "    Skip: " + isSkip(i) + "\n"
 				    + "    Done: " + isDone(i) + "\n";
 		}
-		return output;	
+		return output;
 	}
 } else if (isDone(-1)) {
 	return ""; // End debug string when done is true
