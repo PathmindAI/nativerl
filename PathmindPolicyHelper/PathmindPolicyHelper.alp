@@ -870,44 +870,57 @@ if (!isTraining && steps == 1) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if (!isTraining) {
-	if (numberOfAgents == 1) {
-		String output = "Pathmind:\n"
-				      + "  Step: " + steps + "\n";
-		double[] training = observationForTraining(0);
-		double[] reward = observationForReward(0);
-		output += "  Observations:\n"
-			    + "    Array: " + Arrays.toString(training) + "\n"
-			    + "    Number of Observations: " + training.length + "\n"
-			    + "  Reward Variables: \n"
-			    + "    Array: " + Arrays.toString(reward)+"\n"
-			    + "    Number of Reward Variables: " + reward.length + "\n"
-			    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-			    + "  Done: " + isDone(0) + "\n";
-		return output;
-	} else {
-		String output = "Pathmind:\n"
-				      + "  Step: " + steps + "\n";
-		for (int i = 0; i < numberOfAgents; i++) {
-			double[] training = observationForTraining(i);
-			double[] reward = observationForReward(i);
-			output += "  Agent ID: " + i + "\n"
-				    + "    Observations:\n"
-				    + "      Array: " + Arrays.toString(training) + "\n"
-				    + "      Number of Observations: " + training.length + "\n"
-				    + "    Reward Variables: \n"
-				    + "      Array: " + Arrays.toString(reward)+"\n"
-				    + "      Number of Reward Variables: " + reward.length + "\n"
-				    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-				    + "    Skip: " + isSkip(i) + "\n"
-				    + "    Done: " + isDone(i) + "\n";
+					<Body><![CDATA[try {
+	if (!isTraining) {
+		if (numberOfAgents == 1) {
+			String output = "Pathmind:\n"
+					      + "  Step: " + steps + "\n";
+			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);     
+			double[] observationArray = observationForTraining(0);
+			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0); 
+			double[] rewardArray = observationForReward(0);			
+			output += "  Observations:\n"
+				    + "    Names: " + Arrays.toString(observationNames) + "\n"				
+				    + "    Values: " + Arrays.toString(observationArray) + "\n"
+				    + "    Number of Observations: " + observationArray.length + "\n"
+				    + "  Reward Variables: \n"
+				    + "    Names: " + Arrays.toString(rewardNames)+"\n"				    
+				    + "    Values: " + Arrays.toString(rewardArray)+"\n"
+				    + "    Number of Reward Variables: " + rewardArray.length + "\n"				    
+				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
+				    + "  Done: " + isDone(0) + "\n";
+			return output;
+		} else {
+			String output = "Pathmind:\n"
+					      + "  Step: " + steps + "\n";
+			for (int i = 0; i < numberOfAgents; i++) {
+				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
+				double[] observationArray = observationForTraining(i);
+				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
+				double[] rewardArray = observationForReward(i);
+				output += "  Agent ID: " + i + "\n"
+					    + "    Observations:\n"
+					    + "      Names: " + Arrays.toString(observationNames) + "\n"					    					    
+					    + "      Values: " + Arrays.toString(observationArray) + "\n"
+					    + "      Number of Observations: " + observationArray.length + "\n"
+					    + "    Reward Variables: \n"
+					    + "      Names: " + Arrays.toString(rewardNames)+"\n"					    
+					    + "      Values: " + Arrays.toString(rewardArray)+"\n"
+					    + "      Number of Reward Variables: " + rewardArray.length + "\n"
+					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+					    + "    Skip: " + isSkip(i) + "\n"
+					    + "    Done: " + isDone(i) + "\n";
+			}
+			return output;
 		}
-		return output;
+	} else if (isDone(-1)) {
+		return ""; // End debug string when done is true
+	} else {
+		return ""; // Hide debug string when training in Pathmind
 	}
-} else if (isDone(-1)) {
-	return ""; // End debug string when done is true
-} else {
-	return ""; // Hide debug string when training in Pathmind
+} catch (ReflectiveOperationException e) {
+	e.printStackTrace();
+	throw new RuntimeException("Could not generate debug string.", e);
 }]]></Body>
 				</Function>
 			</Functions>
