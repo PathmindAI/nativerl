@@ -876,16 +876,24 @@ if (!isTraining && steps == 1) {
 			String output = "Pathmind:\n"
 					      + "  Step: " + steps + "\n";
 			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);     
-			double[] observationArray = observationForTraining(0);
+			double[] observationArray = observationForTraining(0);			
+			Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < observationArray.length; i++) {
+  				observationDict.put(observationNames[i], observationArray[i]);
+			}
+			 
 			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0); 
-			double[] rewardArray = observationForReward(0);			
+			double[] rewardArray = observationForReward(0);	
+			Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < rewardArray.length; i++) {
+  				rewardDict.put(rewardNames[i], rewardArray[i]);
+			}
+			
 			output += "  Observations:\n"
-				    + "    Names: " + Arrays.toString(observationNames) + "\n"				
-				    + "    Values: " + Arrays.toString(observationArray) + "\n"
+				    + "    Array: " + observationDict + "\n"
 				    + "    Number of Observations: " + observationArray.length + "\n"
 				    + "  Reward Variables: \n"
-				    + "    Names: " + Arrays.toString(rewardNames)+"\n"				    
-				    + "    Values: " + Arrays.toString(rewardArray)+"\n"
+				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Reward Variables: " + rewardArray.length + "\n"				    
 				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
 				    + "  Done: " + isDone(0) + "\n";
@@ -896,16 +904,24 @@ if (!isTraining && steps == 1) {
 			for (int i = 0; i < numberOfAgents; i++) {
 				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
 				double[] observationArray = observationForTraining(i);
+				Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < observationArray.length; j++) {
+  					observationDict.put(observationNames[j], observationArray[j]);
+				}
+				
 				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
 				double[] rewardArray = observationForReward(i);
+				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < rewardArray.length; j++) {
+  					rewardDict.put(rewardNames[j], rewardArray[j]);
+				}
+				
 				output += "  Agent ID: " + i + "\n"
 					    + "    Observations:\n"
-					    + "      Names: " + Arrays.toString(observationNames) + "\n"					    					    
-					    + "      Values: " + Arrays.toString(observationArray) + "\n"
+				    	+ "      Array: " + observationDict + "\n"
 					    + "      Number of Observations: " + observationArray.length + "\n"
 					    + "    Reward Variables: \n"
-					    + "      Names: " + Arrays.toString(rewardNames)+"\n"					    
-					    + "      Values: " + Arrays.toString(rewardArray)+"\n"
+				    	+ "      Array: " + rewardDict + "\n"
 					    + "      Number of Reward Variables: " + rewardArray.length + "\n"
 					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
 					    + "    Skip: " + isSkip(i) + "\n"
