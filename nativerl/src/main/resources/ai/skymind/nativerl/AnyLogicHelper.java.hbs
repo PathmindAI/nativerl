@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import pathmind.policyhelper.PathmindHelperRegistry;
+{{#if simulationClassName}}import {{simulationClassName}};{{/if}}
 
 public class {{className}} extends AbstractEnvironment {
     final static Training experiment = new Training(null);

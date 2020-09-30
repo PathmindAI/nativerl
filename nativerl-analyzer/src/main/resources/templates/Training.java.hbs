@@ -4,6 +4,7 @@ import com.anylogic.engine.AnyLogicInternalCodegenAPI;
 import com.anylogic.engine.Engine;
 import com.anylogic.engine.ExperimentCustom;
 import com.anylogic.engine.Utilities;
+{{#if simulationClassName}}import {{simulationClassName}};{{/if}}
 
 public class Training extends ExperimentCustom {
     @AnyLogicInternalCodegenAPI

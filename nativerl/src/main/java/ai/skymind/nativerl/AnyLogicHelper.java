@@ -29,6 +29,10 @@ public class AnyLogicHelper {
     @Builder.Default
     String environmentClassName = "AnyLogicEnvironment";
 
+    /** The class name of the simulation class to import. */
+    @Builder.Default
+    String simulationClassName = "Simulation";
+
     /** The class name of the main AnyLogic agent to use. */
     @Builder.Default
     String agentClassName = "MainAgent";
@@ -115,6 +119,7 @@ public class AnyLogicHelper {
                 System.out.println();
                 System.out.println("options:");
                 System.out.println("    --environment-class-name");
+                System.out.println("    --simulation-class-name");
                 System.out.println("    --agent-class-name");
                 System.out.println("    --class-snippet");
                 System.out.println("    --reset-snippet");
@@ -128,6 +133,8 @@ public class AnyLogicHelper {
                 System.exit(0);
             } else if ("--environment-class-name".equals(args[i])) {
                 helper.environmentClassName(args[++i]);
+            } else if("--simulation-class-name".equals(args[i])) {
+                helper.simulationClassName(args[++i]);
             } else if ("--agent-class-name".equals(args[i])) {
                 helper.agentClassName(args[++i]);
             } else if ("--class-snippet".equals(args[i])) {
