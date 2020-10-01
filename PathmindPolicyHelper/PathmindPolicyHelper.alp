@@ -417,7 +417,7 @@ class Observations {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Observations { 
+							<Code><![CDATA[class Observations {
     //double customers = customerCount;
     //double stockLevels[] = getStockLevels();
     //boolean surgePrices = surgeActive == 1;
@@ -469,7 +469,7 @@ class Reward {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Reward { 
+							<Code><![CDATA[class Reward {
     //double revenue = revenueVariable;
     //boolean cost = costVariable;
 }]]></Code>
@@ -750,9 +750,9 @@ class Actions {<br>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[true
-/* 
+/*
 ** Important **
-https://help.pathmind.com/en/articles/3634254-4-triggering-actions 
+https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 */]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
@@ -873,26 +873,26 @@ if (!isTraining && steps == 1) {
 		if (numberOfAgents == 1) {
 			String output = "Pathmind:\n"
 					      + "  Step: " + steps + "\n";
-			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);     
-			double[] observationArray = observationForTraining(0);			
+			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);
+			double[] observationArray = observationForTraining(0);
 			Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
 			for (int i = 0; i < observationArray.length; i++) {
   				observationDict.put(observationNames[i], observationArray[i]);
 			}
-			 
-			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0); 
-			double[] rewardArray = observationForReward(0);	
+
+			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0);
+			double[] rewardArray = observationForReward(0);
 			Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
 			for (int i = 0; i < rewardArray.length; i++) {
   				rewardDict.put(rewardNames[i], rewardArray[i]);
 			}
-			
+
 			output += "  Observations:\n"
 				    + "    Array: " + observationDict + "\n"
 				    + "    Number of Observations: " + observationArray.length + "\n"
 				    + "  Reward Variables: \n"
 				    + "    Array: " + rewardDict + "\n"
-				    + "    Number of Reward Variables: " + rewardArray.length + "\n"				    
+				    + "    Number of Reward Variables: " + rewardArray.length + "\n"
 				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
 				    + "  Done: " + isDone(0) + "\n";
 			return output;
@@ -906,14 +906,14 @@ if (!isTraining && steps == 1) {
 				for (int j = 0; j < observationArray.length; j++) {
   					observationDict.put(observationNames[j], observationArray[j]);
 				}
-				
+
 				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
 				double[] rewardArray = observationForReward(i);
 				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
 				for (int j = 0; j < rewardArray.length; j++) {
   					rewardDict.put(rewardNames[j], rewardArray[j]);
 				}
-				
+
 				output += "  Agent ID: " + i + "\n"
 					    + "    Observations:\n"
 				    	+ "      Array: " + observationDict + "\n"
@@ -1464,7 +1464,7 @@ public class AnyLogicCloudHelper {
             return;
         }
     }
-    
+
     private static final String LIB_STDCPP_URL = "https://s3.amazonaws.com/public-pathmind.com/libstdc%2B%2B6-6.4.0-r9.apk";
     private static final String LIB_STDCPP = "libstdc++6-6.4.0-r9.apk";
 	private static Boolean isCloud = null;
@@ -1477,7 +1477,7 @@ public class AnyLogicCloudHelper {
             System.setSecurityManager(sm);
         }
     }
-	
+
 	public static boolean isCloud() {
 		return isCloud;
 	}
@@ -1501,7 +1501,7 @@ public class AnyLogicCloudHelper {
         if (!isCloud) {
             return;
         }
-        
+
         // make sure to have libstdc++
         File stdcppFile = new File(LIB_STDCPP);
         if (!stdcppFile.exists()) {
@@ -1527,11 +1527,11 @@ public class AnyLogicCloudHelper {
         // set necessary property
         System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
         System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-      
+
         // extract the proper jar file name
         Class klass = PolicyHelper.class;
         File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
-        
+
         File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
         dest.mkdirs();
 
@@ -1825,7 +1825,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1838,7 +1838,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>
