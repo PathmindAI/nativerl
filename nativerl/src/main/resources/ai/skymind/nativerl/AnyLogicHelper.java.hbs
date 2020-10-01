@@ -103,9 +103,12 @@ public class {{className}} extends AbstractEnvironment {
         }
 
         // Workaround to trigger all events at time 0.0
-        if (!engine.runFast(Math.ulp(0.0))) {
-            if (engine.getState() == Engine.State.ERROR) {
-                throw new RuntimeException("Engine error at time " + engine.time());
+        while (engine.getNextEventTime() == 0.0) {
+            if (!engine.runFast(Math.ulp(0.0))) {
+                if (engine.getState() == Engine.State.ERROR) {
+                    throw new RuntimeException("Engine error at time " + engine.time());
+                }
+                break;
             }
         }
 
@@ -145,9 +148,12 @@ public class {{className}} extends AbstractEnvironment {
 
         // Workaround to trigger all events at current time
         double time = engine.time();
-        if (!engine.runFast(time + Math.ulp(time))) {
-            if (engine.getState() == Engine.State.ERROR) {
-                throw new RuntimeException("Engine error at time " + engine.time());
+        while (engine.getNextEventTime() == time) {
+            if (!engine.runFast(time + Math.ulp(time))) {
+                if (engine.getState() == Engine.State.ERROR) {
+                    throw new RuntimeException("Engine error at time " + engine.time());
+                }
+                break;
             }
         }
     }
