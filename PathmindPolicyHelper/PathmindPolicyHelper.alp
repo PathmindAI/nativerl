@@ -391,9 +391,8 @@ triggerNextAction();
 <p>Observations are information about the current state of the environment. The policy uses observations to make decisions about what actions to take.</p>
 
 <b>Supported Types</b><br>
-<li>Doubles</li>
-<li>Arrays</li>
-<li>Booleans</li>
+<li>Primitive types (int, long, float, double, boolean)</li>
+<li>Arrays of primitive types (int[], long[], float[], double[], boolean[])</li>
 <br>
 
 <b>Example Code</b><br>
@@ -445,16 +444,15 @@ class Observations {<br>
 <p>Reward variables are the building blocks for the reward function. Reward variables can embody important simulation metrics such as revenue and cost. These metrics are likely what you directly seek to optimize.</p>
 
 <b>Supported Types</b><br>
-<li>Doubles</li>
-<li>Arrays</li>
-<li>Booleans</li>
+<li>Primitive types (int, long, float, double, boolean)</li>
+<li>Arrays of primitive types (int[], long[], float[], double[], boolean[])</li>
 <br>
 
 <b>Example Code</b><br>
 <code>
 class Reward {<br>
 &nbsp;&nbsp;double revenue = revenueVariable;<br>
-&nbsp;&nbsp;boolean cost = costVariable;<br>
+&nbsp;&nbsp;boolean targetMet = targetMet == 1;<br>
 }
 </code><br><br>
 
@@ -1808,8 +1806,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>2</VersionMinor>
-			<VersionBuild>1</VersionBuild>
+			<VersionMinor>3</VersionMinor>
+			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
