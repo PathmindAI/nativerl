@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008122154" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202009241624" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -151,7 +151,7 @@ triggerNextAction();
 					<X>440</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[boolean]]></Type>        
@@ -181,7 +181,7 @@ triggerNextAction();
 					<X>290</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
 						<Type><![CDATA[double[][]]]></Type>        
@@ -233,6 +233,11 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1579541084520</Id>
 					<Name><![CDATA[debugMode]]></Name>
+					<Description><![CDATA[<h3>Debug Mode</h3>
+<p>Debug mode prints information that Pathmind receives to the AnyLogic console.  This is helpful for auditing data passed to the Pathmind Helper.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode" target="_blank">https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode</a>]]></Description>
 					<X>20</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -258,10 +263,14 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
 					<Name><![CDATA[usePolicy]]></Name>
+					<Description><![CDATA[<h3>Mode</h3>
+<p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy specified in <b>Policy File</b> to predict the next best action.</p>
+<p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly and to confirm that there are no logical issues in your AnyLogic simulation.</p>
+]]></Description>
 					<X>20</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -343,10 +352,19 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1595822201340</Id>
 					<Name><![CDATA[numberOfAgents]]></Name>
+					<Description><![CDATA[<h3>Number of Controlled Agents</h3>
+<p>Train multiple agents using a single shared policy.</p>
+
+<b>Limitations</b>
+<li>While there are no limitations, keep the number of agents under 100 if possible. Otherwise, you may exceed maximum memory allowed during Pathmind training.</li>
+<li>The number of agents must be static. You cannot dynamically change the number of agents during the simulation.</li><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents" target="_blank">https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents</a>]]></Description>
 					<X>140</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[int]]></Type>
@@ -357,7 +375,7 @@ triggerNextAction();
 						</DefaultValue>
 						<ParameterEditor>
 							<Id>1595822201338</Id>
-							<Label><![CDATA[Number of RL Agents]]></Label>
+							<Label><![CDATA[Number of Controlled Agents]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -369,6 +387,26 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
 					<Name><![CDATA[observations]]></Name>
+					<Description><![CDATA[<h3>Observations</h3>
+<p>Observations are information about the current state of the environment. The policy uses observations to make decisions about what actions to take.</p>
+
+<b>Supported Types</b><br>
+<li>Primitive types (int, long, float, double, boolean)</li>
+<li>Arrays of primitive types (int[], long[], float[], double[], boolean[])</li>
+<br>
+
+<b>Example Code</b><br>
+<code>
+class Observations {<br>
+&nbsp;&nbsp;double customers = customerCount;<br>
+&nbsp;&nbsp;double[] stockLevels = getStockLevels();<br>
+&nbsp;&nbsp;boolean surgePrices = surgeActive == 1;<br>
+}
+</code><br><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3631436-2-build-observation-space" target="_blank">https://help.pathmind.com/en/articles/3631436-2-build-observation-space</a>
+<a href="https://help.pathmind.com/en/articles/4436330-observation-selection" target="_blank">https://help.pathmind.com/en/articles/4436330-observation-selection</a>]]></Description>
 					<X>20</X><Y>190</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -379,11 +417,11 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3631436-2-build-observation-space */
-/* class Observations {
-	double obs[] = yourObservation();
-}
-*/]]></Code>
+							<Code><![CDATA[class Observations {
+    //double customers = customerCount;
+    //double stockLevels[] = getStockLevels();
+    //boolean surgePrices = surgeActive == 1;
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -402,6 +440,25 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1566471864343</Id>
 					<Name><![CDATA[rewardVariables]]></Name>
+					<Description><![CDATA[<h3>Reward Variables</h3>
+<p>Reward variables are the building blocks for the reward function. Reward variables can embody important simulation metrics such as revenue and cost. These metrics are likely what you directly seek to optimize.</p>
+
+<b>Supported Types</b><br>
+<li>Primitive types (int, long, float, double, boolean)</li>
+<li>Arrays of primitive types (int[], long[], float[], double[], boolean[])</li>
+<br>
+
+<b>Example Code</b><br>
+<code>
+class Reward {<br>
+&nbsp;&nbsp;double revenue = revenueVariable;<br>
+&nbsp;&nbsp;boolean targetMet = targetMet == 1;<br>
+}
+</code><br><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables" target="_blank">https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables</a><br>
+<a href=https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names" target="_blank">https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names</a>]]></Description>
 					<X>20</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -412,11 +469,10 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables */
-/* class Reward {
-	double vars[] = yourRewardVariables();
-}
-*/]]></Code>
+							<Code><![CDATA[class Reward {
+    //double revenue = revenueVariable;
+    //boolean cost = costVariable;
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -436,6 +492,47 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1563524030804</Id>
 					<Name><![CDATA[actions]]></Name>
+					<Description><![CDATA[<h3>Actions</h3>
+<p>Actions define all actions that an agent can perform. This can be in the form of discrete choices, a continuous range, or a mix of both.</p>
+
+<b>Supported Action Spaces</b><br>
+<li>Discrete</li>
+<li>Continuous</li>
+<li>Tuple</li>
+<br>
+<b>Annotations</b><br>
+<li>@Discrete</li>
+<li>@Continuous</li>
+<br>
+
+<b>Example Code</b><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Discrete(n = 2, size = 2) int[] action;<br>
+&nbsp;&nbsp;void doIt() { doAction(action); }<br>
+}
+</code><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Continuous(low = 0, high = 1, shape = 1) double action;<br>
+&nbsp;&nbsp;void doIt() { doAction(action); }<br>
+}
+</code><br>
+
+<code>
+class Actions {<br>
+&nbsp;&nbsp;@Discrete(n = 2, size = 2) int[] action;<br>
+&nbsp;&nbsp;@Continuous(low = 0, high = 1, shape = 1) double action2;<br>
+&nbsp;&nbsp;void doIt() { doAction(action, action2); }<br>
+}
+</code><br>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3640124-3-build-action-space" target="_blank">https://help.pathmind.com/en/articles/3640124-3-build-action-space</a><br>
+<a href="https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces</a><br>
+<a href="https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces</a><br>]]></Description>
 					<X>20</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -446,12 +543,11 @@ triggerNextAction();
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* https://help.pathmind.com/en/articles/3640124-3-build-action-space */
-/* class Actions {
-	@Discrete(n = 1, size = 1) int[] action;
-	void doIt() { doAction(action); }
-}
-*/]]></Code>
+							<Code><![CDATA[class Actions {
+    //@Discrete(n = 1, size = 2) int[] action;
+    //@Continuous(low = 0, high = 1, shape = 1) float action;
+    void doIt() { /* doAction(action); */ };
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -500,10 +596,15 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
 					<Name><![CDATA[isSkip]]></Name>
+					<Description><![CDATA[<h3>Skip</h3>
+<p>The skip condition allows you to skip certain agents if they do not meet certain criteria. This field must return <code>true</code> or <code>false</code> for each agent.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436002-16-define-skip-condition" target="_blank">https://help.pathmind.com/en/articles/4436002-16-define-skip-condition</a>]]></Description>
 					<X>140</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -595,10 +696,12 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
+					<Description><![CDATA[<h3>Recurrence</h3>
+<p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
 					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
 						<Type><![CDATA[]]></Type>
@@ -630,10 +733,15 @@ triggerNextAction();
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
 					<Name><![CDATA[eventCondition]]></Name>
+					<Description><![CDATA[<h3>Event Condition</h3>
+<p>The event trigger tells Pathmind when to trigger the next action. This field must return <code>true</code> or <code>false</code></p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/3634254-4-triggering-actions" target="_blank">https://help.pathmind.com/en/articles/3634254-4-triggering-actions</a>]]></Description>
 					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
 						<Type><![CDATA[boolean]]></Type>
@@ -642,9 +750,9 @@ triggerNextAction();
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
 							<Code><![CDATA[true
-/* 
+/*
 ** Important **
-https://help.pathmind.com/en/articles/3634254-4-triggering-actions 
+https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 */]]></Code>
 						</DefaultValue>
 						<ParameterEditor>
@@ -669,11 +777,11 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 			<Events>
 				<Event>
 					<Id>1573748399465</Id>
-					<Name><![CDATA[triggerAction]]></Name>
+					<Name><![CDATA[internalEventTrigger]]></Name>
 					<X>570</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties TriggerType="timeout" Mode="cyclic">
 						<Timeout Class="CodeUnitValue">
@@ -712,6 +820,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1566466772537</Id>
 					<Name><![CDATA[triggerNextAction]]></Name>
+					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
 					<X>570</X><Y>70</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -719,6 +828,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[if (isTraining) {
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
+	steps++;
 } else if (isEnabled) {
 	steps++;
 	for (int i = 0; i < numberOfAgents; i++) {
@@ -738,7 +848,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 	}
 }
 
-if (debugMode) {
+if (isEnabled && debugMode) {
 	trace(toString());
 }
 
@@ -756,46 +866,75 @@ if (!isTraining && steps == 1) {
 					<X>290</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
+					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if (!isTraining) {
-	if (numberOfAgents == 1) {
-		String output = "Pathmind:\n"
-				      + "  Step: " + steps + "\n";
-		double[] training = observationForTraining(0);
-		double[] reward = observationForReward(0);
-		output += "  Observations:\n"
-			    + "    Array: " + Arrays.toString(training) + "\n"
-			    + "    Number of Observations: " + training.length + "\n"
-			    + "  Reward Variables: \n"
-			    + "    Array: " + Arrays.toString(reward)+"\n"
-			    + "    Number of Reward Variables: " + reward.length + "\n"
-			    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-			    + "  Done: " + isDone(0) + "\n";
-		return output;
-	} else {
-		String output = "Pathmind:\n"
-				      + "  Step: " + steps + "\n";
-		for (int i = 0; i < numberOfAgents; i++) {
-			double[] training = observationForTraining(i);
-			double[] reward = observationForReward(i);
-			output += "  Agent ID: " + i + "\n"
-				    + "    Observations:\n"
-				    + "      Array: " + Arrays.toString(training) + "\n"
-				    + "      Number of Observations: " + training.length + "\n"
-				    + "    Reward Variables: \n"
-				    + "      Array: " + Arrays.toString(reward)+"\n"
-				    + "      Number of Reward Variables: " + reward.length + "\n"
-				    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-				    + "    Skip: " + isSkip(i) + "\n"
-				    + "    Done: " + isDone(i) + "\n";
+					<Body><![CDATA[try {
+	if (!isTraining) {
+		if (numberOfAgents == 1) {
+			String output = "Pathmind:\n"
+					      + "  Step: " + steps + "\n";
+			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);
+			double[] observationArray = observationForTraining(0);
+			Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < observationArray.length; i++) {
+  				observationDict.put(observationNames[i], observationArray[i]);
+			}
+
+			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0);
+			double[] rewardArray = observationForReward(0);
+			Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < rewardArray.length; i++) {
+  				rewardDict.put(rewardNames[i], rewardArray[i]);
+			}
+
+			output += "  Observations:\n"
+				    + "    Array: " + observationDict + "\n"
+				    + "    Number of Observations: " + observationArray.length + "\n"
+				    + "  Reward Variables: \n"
+				    + "    Array: " + rewardDict + "\n"
+				    + "    Number of Reward Variables: " + rewardArray.length + "\n"
+				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
+				    + "  Done: " + isDone(0) + "\n";
+			return output;
+		} else {
+			String output = "Pathmind:\n"
+					      + "  Step: " + steps + "\n";
+			for (int i = 0; i < numberOfAgents; i++) {
+				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
+				double[] observationArray = observationForTraining(i);
+				Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < observationArray.length; j++) {
+  					observationDict.put(observationNames[j], observationArray[j]);
+				}
+
+				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
+				double[] rewardArray = observationForReward(i);
+				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < rewardArray.length; j++) {
+  					rewardDict.put(rewardNames[j], rewardArray[j]);
+				}
+
+				output += "  Agent ID: " + i + "\n"
+					    + "    Observations:\n"
+				    	+ "      Array: " + observationDict + "\n"
+					    + "      Number of Observations: " + observationArray.length + "\n"
+					    + "    Reward Variables: \n"
+				    	+ "      Array: " + rewardDict + "\n"
+					    + "      Number of Reward Variables: " + rewardArray.length + "\n"
+					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+					    + "    Skip: " + isSkip(i) + "\n"
+					    + "    Done: " + isDone(i) + "\n";
+			}
+			return output;
 		}
-		return output;	
+	} else if (isDone(-1)) {
+		return ""; // End debug string when done is true
+	} else {
+		return ""; // Hide debug string when training in Pathmind
 	}
-} else if (isDone(-1)) {
-	return ""; // End debug string when done is true
-} else {
-	return ""; // Hide debug string when training in Pathmind
+} catch (ReflectiveOperationException e) {
+	e.printStackTrace();
+	throw new RuntimeException("Could not generate debug string.", e);
 }]]></Body>
 				</Function>
 			</Functions>
@@ -1325,7 +1464,7 @@ public class AnyLogicCloudHelper {
             return;
         }
     }
-    
+
     private static final String LIB_STDCPP_URL = "https://s3.amazonaws.com/public-pathmind.com/libstdc%2B%2B6-6.4.0-r9.apk";
     private static final String LIB_STDCPP = "libstdc++6-6.4.0-r9.apk";
 	private static Boolean isCloud = null;
@@ -1338,7 +1477,7 @@ public class AnyLogicCloudHelper {
             System.setSecurityManager(sm);
         }
     }
-	
+
 	public static boolean isCloud() {
 		return isCloud;
 	}
@@ -1362,7 +1501,7 @@ public class AnyLogicCloudHelper {
         if (!isCloud) {
             return;
         }
-        
+
         // make sure to have libstdc++
         File stdcppFile = new File(LIB_STDCPP);
         if (!stdcppFile.exists()) {
@@ -1388,11 +1527,11 @@ public class AnyLogicCloudHelper {
         // set necessary property
         System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
         System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-      
+
         // extract the proper jar file name
         Class klass = PolicyHelper.class;
         File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
-        
+
         File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
         dest.mkdirs();
 
@@ -1667,8 +1806,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>2</VersionMinor>
-			<VersionBuild>1</VersionBuild>
+			<VersionMinor>3</VersionMinor>
+			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
@@ -1686,7 +1825,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1699,9 +1838,9 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.2.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>true</Imported>
+		<Imported>false</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>

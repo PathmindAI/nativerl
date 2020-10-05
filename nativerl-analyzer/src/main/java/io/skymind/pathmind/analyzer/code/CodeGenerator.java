@@ -21,6 +21,8 @@ public class CodeGenerator {
     String agentClassName;
     @Setter
     String packageName;
+    @Setter
+    String simulationClassName;
 
     private final static String MODEL_ANALYZER_NAME = "ModelAnalyzer.java";
     private final static String TRAINING_NAME = "Training.java";
@@ -58,6 +60,8 @@ public class CodeGenerator {
                 builder.agentClassName(args[++i]);
             } else if ("--package-name".equals(args[i])) {
                 builder.packageName(args[++i]);
+            } else if ("--simulation-class-name".equals(args[i])) {
+                builder.simulationClassName(args[++i]);
             }
         }
 

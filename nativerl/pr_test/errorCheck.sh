@@ -7,4 +7,6 @@ grep -m 1 "RuntimeError: java.lang.NoSuchMethodError" process_output.log >> erro
 grep -m 1 "unzip: cannot find or open model.jar, model.jar.zip or model.jar.ZIP" process_output.log >> errors.log ;
 grep -m 1 "ray.memory_monitor.RayOutOfMemoryError" process_output.log >> errors.log ;
 grep -m 1 "FileNotFoundError: [Errno 2] No such file or directory: 'database/db.properties'" process_output.log >> errors.log ;
-grep -m 1 "killed training" process_output.log >> errors.log
+grep -m 1 "killed training" process_output.log >> errors.log ;
+grep -m 1 "Job running for more than 24 hours, job is killed" process_output.log >> errors.log ;
+grep -m 1 "Job crashed more than 3 times, job is killed" process_output.log >> errors.log
