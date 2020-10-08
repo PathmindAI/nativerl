@@ -13,6 +13,7 @@ from ray.rllib.agents.callbacks import DefaultCallbacks
 from ray.tune.logger import CSVLogger
 from ray.tune.logger import DEFAULT_LOGGERS
 from ray.tune.result import EXPR_PROGRESS_FILE
+from ray.tune import ProgressReporter
 {{~#if autoregressive}}
 from ray.rllib.models import ModelCatalog
 from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
@@ -222,7 +223,19 @@ class Stopper:
         self.too_many_episodes = result['episodes_total'] >= 30000
 
         # Stop entire experiment if max training ceiling reached
-        if self.too_many_iter or self.too_much_time or self.too_many_episodes:
+        if self.too_many_iter:
+            f = open("ExperimentCompletionReport.txt", "w")
+            f.write("Early Stop Reason: 500 Max Iterations Limit\n")
+            return True
+
+        if self.too_much_time:
+            f = open("ExperimentCompletionReport.txt", "w")
+            f.write("Early Stop Reason: 12 Hour Train Time Limit\n")
+            return True
+
+        if self.too_many_episodes:
+            f = open("ExperimentCompletionReport.txt", "w")
+            f.write("Early Stop Reason: 30000 Max Episode Limit\n")
             return True
 
         # Collect metrics for stopping criteria
@@ -250,10 +263,12 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
+                f = open("ExperimentCompletionReport.txt", "w")
+                f.write("Early Stop Reason: No Learning Detected\n")
                 return True
 
         # Convergence check
-        if result['training_iteration'] >= 150:
+        if result['training_iteration'] >= 250:
             # Episode reward range activity
             self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[trial_id][-50:])) - numpy.min(numpy.array(self.episode_reward_window[trial_id][-50:]))
             # Episode reward mean activity
@@ -273,6 +288,9 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
+                f = open("ExperimentCompletionReport.txt", "w")
+                training_converged = "Early Stop Reason: Training has converged\n"
+                f.write(training_converged)
                 return trial_id
 
 
@@ -283,6 +301,23 @@ class PM_CSVLogger(CSVLogger):
         self._continuing = os.path.exists(progress_file) and os.path.getsize(progress_file) > 0
         self._file = open(progress_file, "a")
         self._csv_out = None
+
+class ExperimentTerminationReporter(ProgressReporter):
+    def should_report(self, trials, done=False):
+        # Report only when experiment is done
+        return done
+
+    def report(self, trials, *sys_info):
+        f = open("ExperimentCompletionReport.txt", "a")
+        errored_trials = []
+        for trial in trials:
+            if trial.status != 'TERMINATED':
+                errored_trials += [trial]
+        if errored_trials:
+            errored_trials_list = "Errored Trials: " +  str(errored_trials)
+            f.write(errored_trials_list)
+        else:
+            f.write("Success: Training completed successfully without error\n")
 
 LOGGERS = list(DEFAULT_LOGGERS)
 LOGGERS[1] = PM_CSVLogger
@@ -313,7 +348,7 @@ if os.path.isfile('database/db.properties'):
         if 'hsqldb.lock_file=false\n' not in lines:
             f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, dashboard_host='127.0.0.1')
 {{#if autoregressive~}}
 {{{autoregressiveModel}}}
 {{~else~}}
@@ -327,6 +362,7 @@ trials = run(
     num_samples = {{numSamples}},
     stop = Stopper().stop,
     loggers = LOGGERS,
+    progress_reporter = ExperimentTerminationReporter(),
     config = {
         'env': {{classSimpleName environment}},
         'callbacks': Callbacks,
@@ -357,8 +393,6 @@ trials = run(
                 lambda spec: random.choice([4000, 8000, 12000])),
         # Set rollout samples to episode length
         'batch_mode': 'complete_episodes',
-        # Auto-normalize observations
-        #'observation_filter': 'MeanStdFilter'
         {{#if multiAgent}}
         # Disable "deallocation" of agents for simplicity
         'no_done_at_end': True
@@ -370,15 +404,16 @@ trials = run(
     checkpoint_at_end = True,
     max_failures = 1,
     export_formats = ['model'],
-    return_trials = True
+    queue_trials = True
 )
 
-errored_trials = []
-for trial in trials:
-    if trial.status != 'TERMINATED':
-        errored_trials += [trial]
+# Write to file for Pathmind webapp
+best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max")) + "\n"
+best_policy = "Best Policy: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max")) + "/model\n"
+best_trial_dir = trials.get_best_logdir(metric="episode_reward_mean", mode="max")
+best_checkpoint = "Best Checkpoint: " + str(trials.get_best_checkpoint(trial = best_trial_dir, metric="episode_reward_mean", mode="max")) + "\n"
 
-if errored_trials:
-    print(errored_trials)
-else:
-    print("Training has been completed")
+f = open("ExperimentCompletionReport.txt", "a")
+f.write(best_trial)
+f.write(best_policy)
+f.write(best_checkpoint)
