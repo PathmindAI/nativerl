@@ -225,17 +225,17 @@ class Stopper:
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
             f = open("ExperimentCompletionReport.txt", "w")
-            f.write("Early Stop Reason: 500 Max Iterations Limit\n")
+            f.write("Early Stop Reason: Max Iterations Limit\n")
             return True
 
         if self.too_much_time:
             f = open("ExperimentCompletionReport.txt", "w")
-            f.write("Early Stop Reason: 12 Hour Train Time Limit\n")
+            f.write("Early Stop Reason: Max Train Time Limit\n")
             return True
 
         if self.too_many_episodes:
             f = open("ExperimentCompletionReport.txt", "w")
-            f.write("Early Stop Reason: 30000 Max Episode Limit\n")
+            f.write("Early Stop Reason: Max Episode Limit\n")
             return True
 
         # Collect metrics for stopping criteria
@@ -317,7 +317,7 @@ class ExperimentTerminationReporter(ProgressReporter):
             errored_trials_list = "Errored Trials: " +  str(errored_trials)
             f.write(errored_trials_list)
         else:
-            f.write("Success: Training completed successfully without error\n")
+            f.write("Success: Training completed successfully\n")
 
 LOGGERS = list(DEFAULT_LOGGERS)
 LOGGERS[1] = PM_CSVLogger
@@ -326,7 +326,7 @@ pbt_scheduler = PopulationBasedTraining(
     time_attr = 'training_iteration',
     metric = 'episode_reward_mean',
     mode = 'max',
-    perturbation_interval = 10,
+    perturbation_interval = 20,
     quantile_fraction = 0.25,
     resample_probability = 0.25,
     log_config = True,
@@ -409,11 +409,12 @@ trials = run(
 
 # Write to file for Pathmind webapp
 best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max")) + "\n"
+best_trial_dir = "Best Trial Directory: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max")) + "\n"
 best_policy = "Best Policy: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max")) + "/model\n"
-best_trial_dir = trials.get_best_logdir(metric="episode_reward_mean", mode="max")
-best_checkpoint = "Best Checkpoint: " + str(trials.get_best_checkpoint(trial = best_trial_dir, metric="episode_reward_mean", mode="max")) + "\n"
+best_checkpoint = "Best Checkpoint: " + str(trials.get_best_checkpoint(trial = trials.get_best_logdir(metric="episode_reward_mean", mode="max"), metric="episode_reward_mean", mode="max"))
 
 f = open("ExperimentCompletionReport.txt", "a")
 f.write(best_trial)
+f.write(best_trial_dir)
 f.write(best_policy)
 f.write(best_checkpoint)
