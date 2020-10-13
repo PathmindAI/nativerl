@@ -139,14 +139,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
 {{/if}}
 
     def getMetrics(self):
-{{#if multiAgent}}
-        metrics = numpy.empty(shape=(0), dtype=numpy.float32)
-        for i in range(0, self.nativeEnv.getNumberOfAgents()):
-            metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
-        return metrics
-{{else}}
         return numpy.array(self.nativeEnv.getMetrics(0))
-{{/if}}
 
 class Callbacks(DefaultCallbacks):
     def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
