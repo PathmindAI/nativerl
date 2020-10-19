@@ -121,6 +121,8 @@ public:
     virtual const Space* getObservationSpace() = 0;
     /** Returns the number of agents in this environment. */
     virtual ssize_t getNumberOfAgents() = 0;
+    /** Returns the number of reward variables in this environment. */
+    virtual ssize_t getRewardVariableCount() = 0;
     /** Returns the current state of the possible actions for the given agent. */
     virtual const Array& getActionMask(ssize_t agentId = 0) = 0;
     /** Returns the current state of the simulation for the given agent. */

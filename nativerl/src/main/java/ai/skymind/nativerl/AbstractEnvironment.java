@@ -110,6 +110,11 @@ public abstract class AbstractEnvironment extends Environment {
         return 1;
     }
 
+    /** Returns -1. */
+    @Override public long getRewardVariableCount() {
+        return -1;
+    }
+
     /** Returns {@code getActionMask(0)}. */
     public Array getActionMask() {
         return getActionMask(0);
