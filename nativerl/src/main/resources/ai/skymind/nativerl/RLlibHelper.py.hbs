@@ -143,7 +143,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         metrics = numpy.empty(shape=(0), dtype=numpy.float32)
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
             if self.nativeEnv.isSkip(i):
-                metrics = numpy.concatenate([metrics, numpy.zeros(self.nativeEnv.getRewardVariableCount)], axis=None)
+                metrics = numpy.concatenate([metrics, numpy.zeros(self.nativeEnv.getRewardVariableCount())], axis=None)
             else:
                 metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
         return metrics
@@ -173,7 +173,6 @@ class Callbacks(DefaultCallbacks):
             [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
         result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
-
 
 
 class Stopper:
