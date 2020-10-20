@@ -306,6 +306,9 @@ public class RLlibHelper {
     @Builder.Default
     double valuePredTh = 0.01;          // value_pred_threshold
 
+    @Builder.Default
+    int metricsCount = 0;          // metrics count for multi agent simulation metrics
+
     public RLlibHelper(RLlibHelper copy) {
         this.rllibpaths = copy.rllibpaths;
         this.algorithm = copy.algorithm;
@@ -335,6 +338,7 @@ public class RLlibHelper {
         this.autoregressive = copy.autoregressive;
         this.discreteActions = copy.discreteActions;
         this.debugMetrics = copy.debugMetrics;
+        this.metricsCount = copy.metricsCount;
     }
 
     @Override public String toString() {
@@ -365,6 +369,7 @@ public class RLlibHelper {
                 + "userLog=" + userLog + ", "
                 + "debugMetrics=" + debugMetrics + ", "
                 + "discreteActions=" + discreteActions + ", "
+                + "metricsCount=" + metricsCount + ", "
                 + "customParameters=" + customParameters + "]";
     }
 
@@ -508,6 +513,8 @@ public class RLlibHelper {
                 helper.actionTupleSize(Integer.parseInt(args[++i]));
             } else if ("--discrete-actions".equals(args[i])) {
                 helper.discreteActions(Long.parseLong(args[++i]));
+            } else if ("--metrics-count".equals(args[i])) {
+                helper.metricsCount(Integer.parseInt(args[++i]));
             } else if (args[i].endsWith(".py")) {
                 output = new File(args[i]);
             }
