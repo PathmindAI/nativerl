@@ -169,7 +169,12 @@ public class {{className}} extends AbstractEnvironment {
         double[] before = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]);
         double[] after = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
 {{/if}}
-        {{{rewardSnippet}}}
+
+        if (before == null) {
+            // Do nothing, return 0 because before doesn't exist at step 0
+        } else {
+            {{{rewardSnippet}}}
+        }
 
         return (float)reward;
     }
