@@ -21,13 +21,35 @@ public class {{className}} extends AbstractEnvironment {
     public {{className}}() {
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
         this.observationFilter = new PolicyObservationFilter();
-        reset();
+        try {
+            reset();
+        } catch (Exception e) {
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(new File("ExperimentErrorStackTrace.txt"));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace(pw);
+            pw.close();
+        }
     }
 
     public {{className}}(PolicyHelper policyHelper) {
         this.policyHelper = policyHelper;
         this.observationFilter = new PolicyObservationFilter();
-        reset();
+        try {
+            reset();
+        } catch (Exception e) {
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(new File("ExperimentErrorStackTrace.txt"));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace(pw);
+            pw.close();
+        }
     }
 
     @Override
@@ -141,7 +163,18 @@ public class {{className}} extends AbstractEnvironment {
 
     @Override
     public void step() {
-        engine.runFast();
+        try {
+            engine.runFast();
+        } catch (Exception e) {
+            PrintWriter pw = null;
+            try {
+                pw = new PrintWriter(new File("ExperimentErrorStackTrace.txt"));
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            }
+            e.printStackTrace(pw);
+            pw.close();
+        }
         if (engine.getState() == Engine.State.ERROR) {
             throw new RuntimeException("Engine error at time " + engine.time());
         }
