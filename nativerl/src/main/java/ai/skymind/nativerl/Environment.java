@@ -50,8 +50,6 @@ public class Environment extends Pointer {
     @Virtual(true) public native @Const Space getObservationSpace();
     /** Returns the number of agents in this environment. */
     @Virtual(true) public native @Cast("ssize_t") long getNumberOfAgents();
-    /** Returns the number of reward variables in this environment. */
-    @Virtual(true) public native @Cast("ssize_t") long getRewardVariableCount();
     /** Returns the current state of the possible actions for the given agent. */
     @Virtual(true) public native @Const @ByRef Array getActionMask(@Cast("ssize_t") long agentId/*=0*/);
     /** Returns the current state of the simulation for the given agent. */

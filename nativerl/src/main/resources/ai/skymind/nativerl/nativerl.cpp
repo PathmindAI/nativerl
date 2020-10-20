@@ -45,9 +45,6 @@ public:
     ssize_t getNumberOfAgents() override {
         PYBIND11_OVERLOAD_PURE(ssize_t, Environment, getNumberOfAgents);
     }
-    ssize_t getRewardVariableCount() override {
-        PYBIND11_OVERLOAD_PURE(ssize_t, Environment, getRewardVariableCount);
-    }
     const Array& getActionMask(ssize_t agentId = 0) override {
         PYBIND11_OVERLOAD_PURE(const Array&, Environment, getActionMask, agentId);
     }
@@ -154,7 +151,6 @@ PYBIND11_MODULE(nativerl, m) {
         .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace)
         .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
         .def("getNumberOfAgents", &nativerl::Environment::getNumberOfAgents)
-        .def("getRewardVariableCount", &nativerl::Environment::getRewardVariableCount)
         .def("getActionMask", &nativerl::Environment::getActionMask, pybind11::arg("agentId") = 0)
         .def("getObservation", &nativerl::Environment::getObservation, pybind11::arg("agentId") = 0)
         .def("isSkip", &nativerl::Environment::isSkip, pybind11::arg("agentId") = 0)

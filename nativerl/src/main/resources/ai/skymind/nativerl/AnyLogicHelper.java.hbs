@@ -127,11 +127,6 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public long getRewardVariableCount() {
-        return PathmindHelperRegistry.getHelper().observationForReward().length;
-    }
-
-    @Override
     public void setNextAction(Array action, long agentId) {
         rewardBefore[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
         double[] array = new double[(int)action.length()];
