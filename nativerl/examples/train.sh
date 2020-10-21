@@ -82,11 +82,6 @@ if [[ "$NAMED_VARIABLE" = true ]]; then
     NAMED_VARIABLE_PARAM="--named-variables"
 fi
 
-METRICS_COUNT_PARAM=""
-if [[ ! -z "$METRICS_COUNT" ]]; then
-    METRICS_COUNT_PARAM="--metrics-count ${METRICS_COUNT}"
-fi
-
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.AnyLogicHelper \
@@ -129,7 +124,6 @@ java ai.skymind.nativerl.RLlibHelper \
     $VF_LOSS_RANGE_PARAM \
     $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
-    $METRICS_COUNT_PARAM \
     rllibtrain.py
 
 mkdir -p $OUTPUT_DIR/PPO

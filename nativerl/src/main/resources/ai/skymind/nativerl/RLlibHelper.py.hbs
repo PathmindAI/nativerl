@@ -143,11 +143,7 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
         metrics = numpy.empty(shape=(0), dtype=numpy.float32)
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
             if self.nativeEnv.isSkip(i):
-                {{#if (gt metricsCount 0)~}}
-                metrics = numpy.concatenate([metrics, numpy.zeros({{metricsCount}})], axis=None)
-                {{else}}
-                continue
-                {{/if}}
+                metrics = numpy.concatenate([metrics, numpy.zeros(self.nativeEnv.getRewardVariableCount())], axis=None)
             else:
                 metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
         return metrics
