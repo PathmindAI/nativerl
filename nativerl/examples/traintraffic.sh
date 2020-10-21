@@ -1,6 +1,7 @@
 OUTPUT_DIR="$(pwd)"
 MODEL_PACKAGE="traffic_light_opt"
 ENVIRONMENT_CLASS="$MODEL_PACKAGE.PathmindEnvironment"
+SIMULATION_CLASS="$MODEL_PACKAGE.Simulation"
 AGENT_CLASS="$MODEL_PACKAGE.Main"
 
 CLASS_SNIPPET='
@@ -25,6 +26,7 @@ OBSERVATION_SNIPPET='
 '
 
 REWARD_SNIPPET='
+    if (before == null) return 0;
     double[] s0 = before.vars, s1 = after.vars;
     // change in forward + intersection delay
     double delay0 = s0[0] + s0[2] + s0[4] + s0[6] + s0[8];
@@ -45,6 +47,7 @@ export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
+    --simulation-class-name "$SIMULATION_CLASS" \
     --agent-class-name "$AGENT_CLASS" \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \

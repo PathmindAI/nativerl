@@ -119,6 +119,8 @@ public:
     virtual const Space* getActionMaskSpace() = 0;
     /** Returns the observation Space supported. */
     virtual const Space* getObservationSpace() = 0;
+    /** Returns the metrics Space supported. */
+    virtual const Space* getMetricsSpace() = 0;
     /** Returns the number of agents in this environment. */
     virtual ssize_t getNumberOfAgents() = 0;
     /** Returns the current state of the possible actions for the given agent. */
