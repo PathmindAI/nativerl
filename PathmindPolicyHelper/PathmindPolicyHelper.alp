@@ -566,11 +566,10 @@ class Actions {<br>
 				<Variable Class="Parameter">
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
 					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
+					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" ModificatorType="ACTION">
 						<Type><![CDATA[double]]></Type>

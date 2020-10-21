@@ -37,6 +37,11 @@ if [[ "$MULTIAGENT" = true ]]; then
     MULTIAGENT_PARAM="--multi-agent"
 fi
 
+ACTIONMASKS_PARAM=""
+if [[ "$ACTIONMASKS" = true ]]; then
+    ACTIONMASKS_PARAM="--action-masks"
+fi
+
 DEBUGMETRICS_PARAM=""
 if [[ "$DEBUGMETRICS" = true ]]; then
     DEBUGMETRICS_PARAM="--debug-metrics"
@@ -118,6 +123,7 @@ java ai.skymind.nativerl.RLlibHelper \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
+    $ACTIONMASKS_PARAM \
     $DEBUGMETRICS_PARAM \
     $EPISODE_REWARD_RANGE_PARAM \
     $ENTROPY_SLOPE_PARAM \

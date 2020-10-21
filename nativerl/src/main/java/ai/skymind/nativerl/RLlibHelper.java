@@ -277,6 +277,10 @@ public class RLlibHelper {
     @Builder.Default
     boolean multiAgent = false;
 
+    /** Indicates that we are going to get action masks that should be processed by a custom parametric model. */
+    @Builder.Default
+    boolean actionMasks = false;
+
     /** Indicates that we save a raw metrics tata to metrics_raw column in progress.csv*/
     @Builder.Default
     boolean debugMetrics = false;
@@ -490,6 +494,8 @@ public class RLlibHelper {
                 helper.checkpointFrequency(Integer.parseInt(args[++i]));
             } else if ("--multi-agent".equals(args[i])) {
                 helper.multiAgent(true);
+            } else if ("--action-masks".equals(args[i])) {
+                helper.actionMasks(true);
             } else if ("--debug-metrics".equals(args[i])) {
                 helper.debugMetrics(true);
             } else if ("--episode-reward-range".equals(args[i])) {

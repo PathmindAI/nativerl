@@ -10,6 +10,8 @@ from ray.rllib.policy import Policy
 from ray.rllib.policy.sample_batch import SampleBatch
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
+from ray.rllib.agents.dqn.distributional_q_tf_model import DistributionalQTFModel
+from ray.rllib.models.tf.fcnet_v2 import FullyConnectedNetwork
 from ray.tune.logger import CSVLogger
 from ray.tune.logger import DEFAULT_LOGGERS
 from ray.tune.result import EXPR_PROGRESS_FILE
@@ -19,10 +21,10 @@ from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
 from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 from ray.rllib.utils.tuple_actions import TupleActions
 from ray.rllib.models.tf.misc import normc_initializer
+{{/if}}
 from ray.rllib.utils import try_import_tf
 
 tf = try_import_tf()
-{{/if}}
 jardir = os.getcwd()
 
 class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym.Env{{/if}}):
@@ -316,6 +318,37 @@ if os.path.isfile('database/db.properties'):
 ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, webui_host='127.0.0.1', lru_evict=True)
 {{#if autoregressive~}}
 {{{autoregressiveModel}}}
+{{~else if actionMasks~}}
+class ActionMaskingTFModel(DistributionalQTFModel):
+    """Custom TF Model that masks out illegal moves. Works for any
+    RLlib algorithm (tested only on PPO and DQN so far, though).
+    """
+
+    def __init__(self,obs_space, action_space, num_outputs,
+                 model_config, name, **kw):
+        super().__init__(obs_space, action_space, num_outputs, model_config, name, **kw)
+
+        model_config['fcnet_hiddens'] = {{hiddenLayers}}
+
+        self.base_model = FullyConnectedNetwork(
+            obs_space.original_space['real_obs'], action_space, action_space.n,
+            model_config, name)
+
+        self.register_variables(self.base_model.variables())
+
+    def forward(self, input_dict, state, seq_lens):
+        logits, _ = self.base_model({
+            'obs': input_dict['obs']['real_obs']
+        })
+        action_mask = input_dict['obs']['action_mask']
+        inf_mask = tf.maximum(tf.log(action_mask), tf.float32.min)
+        return logits + inf_mask, state
+
+    def value_function(self):
+        return self.base_model.value_function()
+
+    def import_from_h5(self, h5_file):
+        pass
 {{~else~}}
 model = ray.rllib.models.MODEL_DEFAULTS.copy()
 model['fcnet_hiddens'] = {{hiddenLayers}}
@@ -337,6 +370,10 @@ trials = run(
         'model': {
             'custom_model': 'autoregressive_model',
             'custom_action_dist': 'nary_autoreg_output',
+        },
+        {{~else if actionMasks~}}
+        'model': {
+            'custom_model': ActionMaskingTFModel,
         },
         {{~else~}}
         'model': model,{{/if}}
