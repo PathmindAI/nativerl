@@ -35,6 +35,9 @@ class $ENVIRONMENT_CLASS(nativerl.Environment):
     def getObservationSpace(self):
         return nativerl.Continuous(nativerl.FloatVector([-math.inf]), nativerl.FloatVector([math.inf]), nativerl.SSizeTVector([4]))
 
+    def getMetricsSpace(self):
+        return nativerl.Continuous(nativerl.FloatVector([-math.inf]), nativerl.FloatVector([math.inf]), nativerl.SSizeTVector([1]))
+
     def getNumberOfAgents(self):
         return 1
 

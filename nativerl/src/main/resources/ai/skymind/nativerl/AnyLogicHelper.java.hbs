@@ -133,10 +133,8 @@ public class {{className}} extends AbstractEnvironment {
         for (int i = 0; i < array.length; i++) {
             array[i] = action.data().get(i);
         }
-        if (!PathmindHelperRegistry.getHelper().isSkip((int)agentId)) {
-            // the learning framework should give us continuous values in the range [0, 1] here
-            PathmindHelperRegistry.getHelper().action[(int)agentId] = PathmindHelperRegistry.getHelper().doAction(array, true, (int)agentId);
-        }
+        // the learning framework should give us continuous values in the range [0, 1] here
+        PathmindHelperRegistry.getHelper().action[(int)agentId] = PathmindHelperRegistry.getHelper().doAction(array, true, (int)agentId);
     }
 
     @Override
@@ -163,11 +161,11 @@ public class {{className}} extends AbstractEnvironment {
         double reward = 0;
         rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
 {{#if namedVariables}}
-        {{rewardClassName}} before = PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]),
-                             after = PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]);
+        {{rewardClassName}} before = rewardBefore[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]) : null,
+                             after = rewardAfter[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]) : null;
 {{else}}
-        double[] before = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]);
-        double[] after = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
+        double[] before = rewardBefore[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]) : null;
+        double[] after = rewardAfter[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]) : null;
 {{/if}}
         {{{rewardSnippet}}}
 
@@ -179,6 +177,9 @@ public class {{className}} extends AbstractEnvironment {
         double[] metrics = null;
         {{{metricsSnippet}}}
         if (metrics == null) {
+            if (rewardAfter[(int)agentId] == null) {
+                rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
+            }
             metrics = PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]);
         }
 

@@ -42,6 +42,9 @@ public:
     const Space* getObservationSpace() override {
         PYBIND11_OVERLOAD_PURE(const Space*, Environment, getObservationSpace);
     }
+    const Space* getMetricsSpace() override {
+        PYBIND11_OVERLOAD_PURE(const Space*, Environment, getMetricsSpace);
+    }
     ssize_t getNumberOfAgents() override {
         PYBIND11_OVERLOAD_PURE(ssize_t, Environment, getNumberOfAgents);
     }
@@ -147,19 +150,20 @@ PYBIND11_MODULE(nativerl, m) {
 
     pybind11::class_<nativerl::Environment, nativerl::PythonEnvironment, std::shared_ptr<nativerl::Environment>>(m, "Environment")
         .def(pybind11::init<>())
-        .def("getActionSpace", &nativerl::Environment::getActionSpace, pybind11::arg("i") = 0)
-        .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace)
-        .def("getObservationSpace", &nativerl::Environment::getObservationSpace)
+        .def("getActionSpace", &nativerl::Environment::getActionSpace, pybind11::arg("i") = 0, pybind11::return_value_policy::reference_internal)
+        .def("getActionMaskSpace", &nativerl::Environment::getActionMaskSpace, pybind11::return_value_policy::reference_internal)
+        .def("getObservationSpace", &nativerl::Environment::getObservationSpace, pybind11::return_value_policy::reference_internal)
+        .def("getMetricsSpace", &nativerl::Environment::getMetricsSpace, pybind11::return_value_policy::reference_internal)
         .def("getNumberOfAgents", &nativerl::Environment::getNumberOfAgents)
-        .def("getActionMask", &nativerl::Environment::getActionMask, pybind11::arg("agentId") = 0)
-        .def("getObservation", &nativerl::Environment::getObservation, pybind11::arg("agentId") = 0)
+        .def("getActionMask", &nativerl::Environment::getActionMask, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal)
+        .def("getObservation", &nativerl::Environment::getObservation, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal)
         .def("isSkip", &nativerl::Environment::isSkip, pybind11::arg("agentId") = 0)
         .def("isDone", &nativerl::Environment::isDone, pybind11::arg("agentId") = -1)
         .def("reset", &nativerl::Environment::reset)
         .def("setNextAction", &nativerl::Environment::setNextAction, pybind11::arg("action"), pybind11::arg("agentId") = 0)
         .def("step", &nativerl::Environment::step)
         .def("getReward", &nativerl::Environment::getReward, pybind11::arg("agentId") = 0)
-        .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0);
+        .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal);
 
     m.def("createEnvironment", &nativerl::createEnvironment);
 
