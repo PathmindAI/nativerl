@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * This is a helper class to help users implement the reinforcement learning
@@ -142,7 +144,19 @@ public class AnyLogicHelper {
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
-                helper.observationSnippet(args[++i]);
+                String obsSnippet = args[++i];
+                if (obsSnippet.startsWith("file:")) {
+                    File file = new File(obsSnippet.split(":")[1]);
+                    if (!file.exists()) {
+                        throw new RuntimeException("observation file doesn't exist!");
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
+                            .forEach(s -> sb.append(s));
+                    obsSnippet = sb.toString();
+                }
+                helper.observationSnippet(obsSnippet);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
