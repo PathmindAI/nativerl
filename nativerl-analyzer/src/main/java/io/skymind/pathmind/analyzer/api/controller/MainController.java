@@ -2,8 +2,8 @@ package io.skymind.pathmind.analyzer.api.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.skymind.pathmind.analyzer.api.dto.HyperparametersDTO;
 import io.skymind.pathmind.analyzer.api.dto.AnalyzeRequestDTO;
+import io.skymind.pathmind.analyzer.api.dto.HyperparametersDTO;
 import io.skymind.pathmind.analyzer.service.FileService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -61,7 +61,7 @@ public class MainController {
     public HyperparametersDTO extractHyperparameters(
             @ApiParam(value = "Valid ZIP archive contains all needed files to set up environment for extract hyperparameters.")
             @RequestParam(name = "file") final MultipartFile multipartFile,
-            @RequestParam(name = "id", defaultValue="Not Defined : ") final AnalyzeRequestDTO request) throws IOException {
+            @RequestParam(name = "id", defaultValue="{\"id\":\"Not Defined : \"}") final AnalyzeRequestDTO request) throws IOException {
         log.info(String.format("Received a request for extracting hyperparameters %s ", request.getId()));
         final List<String> hyperparameters = fileService.processFile(multipartFile);
         HyperparametersDTO response = HyperparametersDTO.of(hyperparameters);
