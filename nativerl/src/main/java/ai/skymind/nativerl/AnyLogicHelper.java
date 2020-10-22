@@ -39,6 +39,14 @@ public class AnyLogicHelper {
     @Builder.Default
     String agentClassName = "MainAgent";
 
+    /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
+    @Builder.Default
+    String algorithm = "PPO";
+
+    /** The directory where to output the logs of RLlib. */
+    @Builder.Default
+    File outputDir = null;
+
     /** Arbitrary code to add to the generated class such as fields or methods. */
     @Builder.Default
     String classSnippet = "";
@@ -120,6 +128,7 @@ public class AnyLogicHelper {
                 System.out.println("usage: AnyLogicHelper [options] [output]");
                 System.out.println();
                 System.out.println("options:");
+                System.out.println("    --algorithm");
                 System.out.println("    --environment-class-name");
                 System.out.println("    --simulation-class-name");
                 System.out.println("    --agent-class-name");
@@ -141,6 +150,10 @@ public class AnyLogicHelper {
                 helper.agentClassName(args[++i]);
             } else if ("--class-snippet".equals(args[i])) {
                 helper.classSnippet(args[++i]);
+            } else if ("--algorithm".equals(args[i])) {
+                helper.algorithm(args[++i]);
+            } else if ("--output-dir".equals(args[i])) {
+                helper.outputDir(new File(args[++i]));
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
