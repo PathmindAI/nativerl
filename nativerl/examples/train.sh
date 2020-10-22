@@ -87,6 +87,8 @@ export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --simulation-class-name "$SIMULATION_CLASS" \
+    --output-dir "$OUTPUT_DIR" \
+    --algorithm "PPO" \
     --agent-class-name "$AGENT_CLASS" \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
