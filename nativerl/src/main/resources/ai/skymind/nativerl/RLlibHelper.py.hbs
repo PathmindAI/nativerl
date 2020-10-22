@@ -177,7 +177,7 @@ class Callbacks(DefaultCallbacks):
 
 
 
-def write_file(messages, file_name, mode):
+def write_file(messages, file_name, mode="a"):
     with open(f"{{outputDir}}/{{algorithm}}/{file_name}", mode) as out:
         for msg in messages:
             out.write(f"{msg}\n")
@@ -232,15 +232,15 @@ class Stopper:
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
-            write_file(["Early Stop Reason: Max Iterations Limit: {}".trial_id], "ExperimentCompletionReport.txt", "a")
+            write_file(["Early Stop Reason: Max Iterations Limit: {}".trial_id], "ExperimentCompletionReport.txt")
             return True
 
         if self.too_much_time:
-            write_file(["Early Stop Reason: Max Train Time Limit: {}".trial_id], "ExperimentCompletionReport.txt", "a")
+            write_file(["Early Stop Reason: Max Train Time Limit: {}".trial_id], "ExperimentCompletionReport.txt")
             return True
 
         if self.too_many_episodes:
-            write_file(["Early Stop Reason: Max Episode Limit: {}".trial_id], "ExperimentCompletionReport.txt", "a")
+            write_file(["Early Stop Reason: Max Episode Limit: {}".trial_id], "ExperimentCompletionReport.txt")
             return True
 
         # Collect metrics for stopping criteria
@@ -268,7 +268,7 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
-                write_file(["Early Stop Reason: No Learning Detected"], "ExperimentCompletionReport.txt", "a")
+                write_file(["Early Stop Reason: No Learning Detected"], "ExperimentCompletionReport.txt")
                 return True
 
         # Convergence check
@@ -292,7 +292,7 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
-                write_file(["Early Stop Reason: Training has converged : {}".format(trial_id)], "ExperimentCompletionReport.txt", "a")
+                write_file(["Early Stop Reason: Training has converged : {}".format(trial_id)], "ExperimentCompletionReport.txt")
                 return trial_id
 
 
@@ -397,9 +397,9 @@ best_trial_dir = "Best Trial Directory: " + str(trials.get_best_logdir(metric="e
 best_policy = "Best Policy: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max")) + "/model"
 best_checkpoint = "Best Checkpoint: " + str(trials.get_best_checkpoint(trial = trials.get_best_logdir(metric="episode_reward_mean", mode="max"), metric="episode_reward_mean", mode="max"))
 
-write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt", "a")
+write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt")
 
 if trials:
-    write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt", "a")
+    write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt")
     print("Training completed successfully")
 
