@@ -232,15 +232,15 @@ class Stopper:
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
-            write_file(["Early Stop Reason: Max Iterations Limit: {}".trial_id], "ExperimentCompletionReport.txt")
+            write_file(["Early Stop Reason: Max Iterations Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
             return True
 
         if self.too_much_time:
-            write_file(["Early Stop Reason: Max Train Time Limit: {}".trial_id], "ExperimentCompletionReport.txt")
+            write_file(["Early Stop Reason: Max Train Time Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
             return True
 
         if self.too_many_episodes:
-            write_file(["Early Stop Reason: Max Episode Limit: {}".trial_id], "ExperimentCompletionReport.txt")
+            write_file(["Early Stop Reason: Max Episode Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
             return True
 
         # Collect metrics for stopping criteria
@@ -292,7 +292,7 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
-                write_file(["Early Stop Reason: Training has converged : {}".format(trial_id)], "ExperimentCompletionReport.txt")
+                write_file(["Early Stop Reason: Training has converged : {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
                 return trial_id
 
 
