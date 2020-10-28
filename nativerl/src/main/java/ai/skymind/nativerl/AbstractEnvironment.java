@@ -29,6 +29,8 @@ public abstract class AbstractEnvironment extends Environment {
     protected Space actionMaskSpace;
     /** The state Space. */
     protected Space observationSpace;
+    /** The metrics Space. */
+    protected Space metricsSpace;
     /** The Array returned by the getActionMask() method. */
     protected Array actionMask;
     /** The Array returned by the getObservation() method. */
@@ -88,6 +90,9 @@ public abstract class AbstractEnvironment extends Environment {
 
         observation = getObservation();
         observationSpace = getContinuousSpace(observation.length());
+
+        metrics = getMetrics();
+        metricsSpace = getContinuousSpace(metrics.length());
     }
 
     /** Returns {@link #actionSpace}. */
@@ -103,6 +108,10 @@ public abstract class AbstractEnvironment extends Environment {
     /** Returns {@link #observationSpace}. */
     @Override public Space getObservationSpace() {
         return observationSpace;
+    }
+
+    @Override public Space getMetricsSpace() {
+        return metricsSpace;
     }
 
     /** Returns 1. */

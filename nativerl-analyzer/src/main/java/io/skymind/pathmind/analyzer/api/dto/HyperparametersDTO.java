@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class HyperparametersDTO {
 
     private final static Set<String> KNOWN_OUTPUT = Set.of(
+            "isEnabled",
             "observations",
             "observationsNames",
             "actions",
@@ -29,9 +30,14 @@ public class HyperparametersDTO {
             "rewardVariables",
             "reward",
             "failedSteps",
+            "agents",
             "model-analyzer-mode",
             "oldVersionFound"
             );
+
+    @ApiModelProperty(value = "Whether the pathmind helper is enabled or not", example = "true")
+    private  boolean isEnabled = false;
+
     @ApiModelProperty(value = "Flag for when old model versions are found", example = "true")
     private  boolean oldVersionFound = false;
 
@@ -67,6 +73,10 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Steps which failed while extracting hyperparameters")
     private String failedSteps;
 
+    @ApiModelProperty(value = "the number of agents", required = true)
+    @NotBlank(message = "Agents cannot be blank")
+    private String agents;
+
     @ApiModelProperty(value = "Extraction mode (single/multi)", required = true)
     @NotBlank(message = "Mode cannot be blank")
     private String mode;
@@ -82,9 +92,9 @@ public class HyperparametersDTO {
             HyperparametersDTO hyperparametersDTO = new HyperparametersDTO();
             hyperparametersDTO.setOldVersionFound(true);
             return hyperparametersDTO;
-        }
-        else {
+        } else {
             return new HyperparametersDTO(
+                    parametersMap.getOrDefault("isEnabled", "false").equals("true"),
                     false,
                     parametersMap.get("observations"),
                     filterOutEmpty(Arrays.asList(parametersMap.get("observationsNames").split("\\|"))),
@@ -93,6 +103,7 @@ public class HyperparametersDTO {
                     filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariables").split("\\|"))),
                     parametersMap.get("reward"),
                     parametersMap.get("failedSteps"),
+                    parametersMap.get("agents"),
                     parametersMap.get("model-analyzer-mode"));
         }
     }

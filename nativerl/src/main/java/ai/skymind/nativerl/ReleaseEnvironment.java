@@ -13,6 +13,7 @@ public class ReleaseEnvironment extends FunctionPointer {
     public @Name("releaseJavaEnvironment") void call(Environment environment) throws Exception {
         Environment e = CreateEnvironment.instances.remove(new Pointer(environment));
         if (e != null) {
+            e.close();
             e.deallocate();
         }
     }

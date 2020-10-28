@@ -48,7 +48,7 @@
             <activation>
                 <property>
                     <name>tfv2</name>
-                    <value>!true</value>
+                    <value>false</value>
                 </property>
             </activation>
             <dependencies>
@@ -76,7 +76,7 @@
             <activation>
                 <property>
                     <name>tfv2</name>
-                    <value>true</value>
+                    <value>!false</value>
                 </property>
             </activation>
             <dependencies>

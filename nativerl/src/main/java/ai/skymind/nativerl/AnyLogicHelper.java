@@ -13,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * This is a helper class to help users implement the reinforcement learning
@@ -36,6 +38,14 @@ public class AnyLogicHelper {
     /** The class name of the main AnyLogic agent to use. */
     @Builder.Default
     String agentClassName = "MainAgent";
+
+    /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
+    @Builder.Default
+    String algorithm = "PPO";
+
+    /** The directory where to output the logs of RLlib. */
+    @Builder.Default
+    File outputDir = null;
 
     /** Arbitrary code to add to the generated class such as fields or methods. */
     @Builder.Default
@@ -118,6 +128,7 @@ public class AnyLogicHelper {
                 System.out.println("usage: AnyLogicHelper [options] [output]");
                 System.out.println();
                 System.out.println("options:");
+                System.out.println("    --algorithm");
                 System.out.println("    --environment-class-name");
                 System.out.println("    --simulation-class-name");
                 System.out.println("    --agent-class-name");
@@ -139,10 +150,26 @@ public class AnyLogicHelper {
                 helper.agentClassName(args[++i]);
             } else if ("--class-snippet".equals(args[i])) {
                 helper.classSnippet(args[++i]);
+            } else if ("--algorithm".equals(args[i])) {
+                helper.algorithm(args[++i]);
+            } else if ("--output-dir".equals(args[i])) {
+                helper.outputDir(new File(args[++i]));
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
-                helper.observationSnippet(args[++i]);
+                String obsSnippet = args[++i];
+                if (obsSnippet.startsWith("file:")) {
+                    File file = new File(obsSnippet.split(":")[1]);
+                    if (!file.exists()) {
+                        throw new RuntimeException("observation file doesn't exist!");
+                    }
+
+                    StringBuilder sb = new StringBuilder();
+                    Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
+                            .forEach(s -> sb.append(s));
+                    obsSnippet = sb.toString();
+                }
+                helper.observationSnippet(obsSnippet);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {

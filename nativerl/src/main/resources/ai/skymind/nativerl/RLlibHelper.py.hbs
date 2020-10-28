@@ -141,10 +141,12 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
     def getMetrics(self):
 {{#if multiAgent}}
         metrics = numpy.empty(shape=(0), dtype=numpy.float32)
+        metricsSpace = self.nativeEnv.getMetricsSpace()
         for i in range(0, self.nativeEnv.getNumberOfAgents()):
             if self.nativeEnv.isSkip(i):
-                continue
-            metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
+                metrics = numpy.concatenate([metrics, numpy.zeros(metricsSpace.shape)], axis=None)
+            else:
+                metrics = numpy.concatenate([metrics, numpy.array(self.nativeEnv.getMetrics(i))], axis=None)
         return metrics
 {{else}}
         return numpy.array(self.nativeEnv.getMetrics(0))
@@ -172,6 +174,13 @@ class Callbacks(DefaultCallbacks):
             [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
         result["last_metrics"] = results[0].tolist() if results != None and len(results) > 0 else -1
+
+
+
+def write_file(messages, file_name, mode="a"):
+    with open(f"{{outputDir}}/{{algorithm}}/{file_name}", mode) as out:
+        for msg in messages:
+            out.write(f"{msg}\n")
 
 
 class Stopper:
@@ -222,7 +231,16 @@ class Stopper:
         self.too_many_episodes = result['episodes_total'] >= 30000
 
         # Stop entire experiment if max training ceiling reached
-        if self.too_many_iter or self.too_much_time or self.too_many_episodes:
+        if self.too_many_iter:
+            write_file(["Early Stop Reason: Max Iterations Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
+            return True
+
+        if self.too_much_time:
+            write_file(["Early Stop Reason: Max Train Time Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
+            return True
+
+        if self.too_many_episodes:
+            write_file(["Early Stop Reason: Max Episode Limit: {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
             return True
 
         # Collect metrics for stopping criteria
@@ -250,10 +268,11 @@ class Stopper:
 
             # Stop entire experiment if no learning occurs
             if self.no_converge_risk or self.no_discovery_risk:
+                write_file(["Early Stop Reason: No Learning Detected"], "ExperimentCompletionReport.txt")
                 return True
 
         # Convergence check
-        if result['training_iteration'] >= 150:
+        if result['training_iteration'] >= 250:
             # Episode reward range activity
             self.episode_reward_range = numpy.max(numpy.array(self.episode_reward_window[trial_id][-50:])) - numpy.min(numpy.array(self.episode_reward_window[trial_id][-50:]))
             # Episode reward mean activity
@@ -273,6 +292,7 @@ class Stopper:
 
             # Stop individual trial when convergence criteria met
             if self.episode_reward_converged and self.value_pred_converged:
+                write_file(["Early Stop Reason: Training has converged : {}".format(str(trial_id))], "ExperimentCompletionReport.txt")
                 return trial_id
 
 
@@ -291,7 +311,7 @@ pbt_scheduler = PopulationBasedTraining(
     time_attr = 'training_iteration',
     metric = 'episode_reward_mean',
     mode = 'max',
-    perturbation_interval = 10,
+    perturbation_interval = 20,
     quantile_fraction = 0.25,
     resample_probability = 0.25,
     log_config = True,
@@ -313,7 +333,7 @@ if os.path.isfile('database/db.properties'):
         if 'hsqldb.lock_file=false\n' not in lines:
             f.write('hsqldb.lock_file=false\n')
 
-ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, dashboard_host='127.0.0.1', lru_evict=True)
+ray.init(log_to_driver={{#if userLog}}True{{else}}False{{/if}}, dashboard_host='127.0.0.1')
 {{#if autoregressive~}}
 {{{autoregressiveModel}}}
 {{~else~}}
@@ -322,7 +342,7 @@ model['fcnet_hiddens'] = {{hiddenLayers}}
 {{~/if}}
 
 trials = run(
-    'PPO',
+    '{{algorithm}}',
     scheduler = pbt_scheduler,
     num_samples = {{numSamples}},
     stop = Stopper().stop,
@@ -357,8 +377,6 @@ trials = run(
                 lambda spec: random.choice([4000, 8000, 12000])),
         # Set rollout samples to episode length
         'batch_mode': 'complete_episodes',
-        # Auto-normalize observations
-        #'observation_filter': 'MeanStdFilter'
         {{#if multiAgent}}
         # Disable "deallocation" of agents for simplicity
         'no_done_at_end': True
@@ -370,15 +388,18 @@ trials = run(
     checkpoint_at_end = True,
     max_failures = 1,
     export_formats = ['model'],
-    return_trials = True
+    queue_trials = True
 )
 
-errored_trials = []
-for trial in trials:
-    if trial.status != 'TERMINATED':
-        errored_trials += [trial]
+# Write to file for Pathmind webapp
+best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max"))
+best_trial_dir = "Best Trial Directory: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max"))
+best_policy = "Best Policy: " + str(trials.get_best_logdir(metric="episode_reward_mean", mode="max")) + "/model"
+best_checkpoint = "Best Checkpoint: " + str(trials.get_best_checkpoint(trial = trials.get_best_logdir(metric="episode_reward_mean", mode="max"), metric="episode_reward_mean", mode="max"))
 
-if errored_trials:
-    print(errored_trials)
-else:
-    print("Training has been completed")
+write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt")
+
+if trials:
+    write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt")
+    print("Training completed successfully")
+

@@ -82,11 +82,18 @@ if [[ "$NAMED_VARIABLE" = true ]]; then
     NAMED_VARIABLE_PARAM="--named-variables"
 fi
 
+MAX_MEMORY_IN_MB_PARAM=""
+if [[ ! -z "$MAX_MEMORY_IN_MB" ]]; then
+    MAX_MEMORY_IN_MB_PARAM="--max-memory-in-mb ${MAX_MEMORY_IN_MB}"
+fi
+
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --simulation-class-name "$SIMULATION_CLASS" \
+    --output-dir "$OUTPUT_DIR" \
+    --algorithm "PPO" \
     --agent-class-name "$AGENT_CLASS" \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
@@ -124,6 +131,7 @@ java ai.skymind.nativerl.RLlibHelper \
     $VF_LOSS_RANGE_PARAM \
     $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
+    $MAX_MEMORY_IN_MB_PARAM \
     rllibtrain.py
 
 mkdir -p $OUTPUT_DIR/PPO

@@ -21,7 +21,7 @@
         <javacpp.version>1.5.4</javacpp.version>
         <cpython.version>3.7.9-1.5.4</cpython.version>
         <numpy.version>1.19.1-1.5.4</numpy.version>
-        <tensorflow2.version>0.2.0-SNAPSHOT</tensorflow2.version>
+        <tensorflow2.version>0.2.0</tensorflow2.version>
         <tensorflow.version>1.15.3-1.5.4</tensorflow.version>
         <mkldnn.version>0.21.5-1.5.4</mkldnn.version>
     </properties>
