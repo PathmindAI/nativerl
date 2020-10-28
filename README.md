@@ -28,7 +28,7 @@ Build Instructions
  1. Install the JDK, Maven, and Python on the system
  2. Install pybind11 with a command like `pip3 install --user pybind11`
  3. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
-    * To build for TensorFlow 2.x, append `-Dtfv2` to that command.
+    * To build for TensorFlow 1.x, append `-Dtfv2=false` to that command.
  4. Find all output files inside the `nativerl/target/nativerl-1.3.0-SNAPSHOT-bin.zip` archive
     * This also produces `nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar` (~231mb) for the PathmindHelper
 
