@@ -146,25 +146,21 @@ public class RLlibV2PolicyHelper implements PolicyHelper {
                 for (int j = 0; j < doubles.size(); j++) {
                     actionArray[k++] = Math.max(0.0f, Math.min(1.0f, (float)doubles.getDouble(j)));
                 }
-                break;
-            } if (t.dataType().equals(TFloat32.DTYPE)) {
+            } else if (t.dataType().equals(TFloat32.DTYPE)) {
                 FloatDataBuffer floats = outputs.get(0).rawData().asFloats();
                 for (int j = 0; j < floats.size(); j++) {
                     actionArray[k++] = Math.max(0.0f, Math.min(1.0f, floats.getFloat(j)));
                 }
-                break;
-            } if (t.dataType().equals(TInt32.DTYPE)) {
+            } else if (t.dataType().equals(TInt32.DTYPE)) {
                 IntDataBuffer ints = outputs.get(0).rawData().asInts();
                 for (int j = 0; j < ints.size(); j++) {
                     actionArray[k++] = ints.getInt(j);
                 }
-                break;
-            } if (t.dataType().equals(TInt64.DTYPE)) {
+            } else if (t.dataType().equals(TInt64.DTYPE)) {
                 LongDataBuffer longs = outputs.get(0).rawData().asLongs();
                 for (int j = 0; j < longs.size(); j++) {
                     actionArray[k++] = longs.getLong(j);
                 }
-                break;
             } else {
                 throw new UnsupportedOperationException("Unsupported output data type: " + t.dataType());
             }
