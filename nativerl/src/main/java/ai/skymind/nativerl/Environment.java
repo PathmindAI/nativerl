@@ -48,6 +48,8 @@ public class Environment extends Pointer {
     @Virtual(true) public native @Const Space getActionMaskSpace();
     /** Returns the observation Space supported. */
     @Virtual(true) public native @Const Space getObservationSpace();
+    /** Returns the metrics Space supported. */
+    @Virtual(true) public native @Const Space getMetricsSpace();
     /** Returns the number of agents in this environment. */
     @Virtual(true) public native @Cast("ssize_t") long getNumberOfAgents();
     /** Returns the current state of the possible actions for the given agent. */

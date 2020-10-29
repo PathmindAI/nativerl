@@ -116,6 +116,9 @@ public class RLlibPolicyHelper implements PolicyHelper {
         if (disablePolicyHelper) {
             return null;
         }
+        if (state.length != inputTensorShapes[0].num_elements()) {
+            throw new IllegalArgumentException("Array length not equal to model input size: " + state.length + " != " + inputTensorShapes[0].num_elements());
+        }
         new FloatPointer(inputTensors.get()[0].tensor_data()).put(state);
 
         Status s = bundle.session().Run(new StringTensorPairVector(realInputNames, inputTensors.get()),
@@ -176,6 +179,9 @@ public class RLlibPolicyHelper implements PolicyHelper {
     @Override public long[] computeDiscreteAction(float[] state) {
         if (disablePolicyHelper) {
             return null;
+        }
+        if (state.length != inputTensorShapes[0].num_elements()) {
+            throw new IllegalArgumentException("Array length not equal to model input size: " + state.length + " != " + inputTensorShapes[0].num_elements());
         }
         new FloatPointer(inputTensors.get()[0].tensor_data()).put(state);
 
