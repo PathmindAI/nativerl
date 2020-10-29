@@ -142,22 +142,22 @@ public class RLlibV2PolicyHelper implements PolicyHelper {
         for (int i = 0; i < actionTupleSize; i++) {
             Tensor t = actions[i];
             if (t.dataType().equals(TFloat64.DTYPE)) {
-                DoubleDataBuffer doubles = outputs.get(0).rawData().asDoubles();
+                DoubleDataBuffer doubles = outputs.get(i).rawData().asDoubles();
                 for (int j = 0; j < doubles.size(); j++) {
                     actionArray[k++] = Math.max(0.0f, Math.min(1.0f, (float)doubles.getDouble(j)));
                 }
             } else if (t.dataType().equals(TFloat32.DTYPE)) {
-                FloatDataBuffer floats = outputs.get(0).rawData().asFloats();
+                FloatDataBuffer floats = outputs.get(i).rawData().asFloats();
                 for (int j = 0; j < floats.size(); j++) {
                     actionArray[k++] = Math.max(0.0f, Math.min(1.0f, floats.getFloat(j)));
                 }
             } else if (t.dataType().equals(TInt32.DTYPE)) {
-                IntDataBuffer ints = outputs.get(0).rawData().asInts();
+                IntDataBuffer ints = outputs.get(i).rawData().asInts();
                 for (int j = 0; j < ints.size(); j++) {
                     actionArray[k++] = ints.getInt(j);
                 }
             } else if (t.dataType().equals(TInt64.DTYPE)) {
-                LongDataBuffer longs = outputs.get(0).rawData().asLongs();
+                LongDataBuffer longs = outputs.get(i).rawData().asLongs();
                 for (int j = 0; j < longs.size(); j++) {
                     actionArray[k++] = longs.getLong(j);
                 }
