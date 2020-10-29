@@ -440,8 +440,8 @@ class Observations {<br>
 				<Variable Class="Parameter">
 					<Id>1566471864343</Id>
 					<Name><![CDATA[rewardVariables]]></Name>
-					<Description><![CDATA[<h3>Reward Variables</h3>
-<p>Reward variables are the building blocks for the reward function. Reward variables can embody important simulation metrics such as revenue and cost. These metrics are likely what you directly seek to optimize.</p>
+					<Description><![CDATA[<h3>Metrics</h3>
+<p>Simulation metrics are the building blocks for the reward function. They can embody important reward variables such as revenue and cost. These metrics are likely what you directly seek to optimize.</p>
 
 <b>Supported Types</b><br>
 <li>Primitive types (int, long, float, double, boolean)</li>
@@ -450,15 +450,15 @@ class Observations {<br>
 
 <b>Example Code</b><br>
 <code>
-class Reward {<br>
+class Metrics {<br>
 &nbsp;&nbsp;double revenue = revenueVariable;<br>
 &nbsp;&nbsp;boolean targetMet = targetMet == 1;<br>
 }
 </code><br><br>
 
 <b>Learn More</b><br>
-<a href="https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables" target="_blank">https://help.pathmind.com/en/articles/3640175-5-defining-reward-variables</a><br>
-<a href=https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names" target="_blank">https://help.pathmind.com/en/articles/4436328-defining-reward-variable-names</a>]]></Description>
+<a href="https://help.pathmind.com/en/articles/3640175-5-defining-metrics" target="_blank">https://help.pathmind.com/en/articles/3640175-5-defining-metrics</a><br>
+<a href=https://help.pathmind.com/en/articles/4436328-defining-metric-names" target="_blank">https://help.pathmind.com/en/articles/4436328-defining-metric-names</a>]]></Description>
 					<X>20</X><Y>220</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -469,7 +469,7 @@ class Reward {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[class Reward {
+							<Code><![CDATA[class Metrics {
     //double revenue = revenueVariable;
     //boolean cost = costVariable;
 }]]></Code>
@@ -480,7 +480,7 @@ class Reward {<br>
 						</MethodArgument>
 						<ParameterEditor>
 							<Id>1566471864341</Id>
-							<Label><![CDATA[Reward Variables]]></Label>
+							<Label><![CDATA[Metrics]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
@@ -890,9 +890,9 @@ if (!isTraining && steps == 1) {
 			output += "  Observations:\n"
 				    + "    Array: " + observationDict + "\n"
 				    + "    Number of Observations: " + observationArray.length + "\n"
-				    + "  Reward Variables: \n"
+				    + "  Metrics: \n"
 				    + "    Array: " + rewardDict + "\n"
-				    + "    Number of Reward Variables: " + rewardArray.length + "\n"
+				    + "    Number of Metrics: " + rewardArray.length + "\n"
 				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
 				    + "  Done: " + isDone(0) + "\n";
 			return output;
@@ -918,9 +918,9 @@ if (!isTraining && steps == 1) {
 					    + "    Observations:\n"
 				    	+ "      Array: " + observationDict + "\n"
 					    + "      Number of Observations: " + observationArray.length + "\n"
-					    + "    Reward Variables: \n"
+					    + "    Metrics: \n"
 				    	+ "      Array: " + rewardDict + "\n"
-					    + "      Number of Reward Variables: " + rewardArray.length + "\n"
+					    + "      Number of Metrics: " + rewardArray.length + "\n"
 					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
 					    + "    Skip: " + isSkip(i) + "\n"
 					    + "    Done: " + isDone(i) + "\n";
