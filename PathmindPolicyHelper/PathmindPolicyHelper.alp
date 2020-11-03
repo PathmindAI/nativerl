@@ -564,6 +564,49 @@ class Actions {<br>
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1604355721627</Id>
+					<Name><![CDATA[isSkipCondition]]></Name>
+					<Description><![CDATA[<h3>Skip</h3>
+<p>The skip condition allows you to skip certain agents if they do not meet certain criteria. This field must return <code>true</code> or <code>false</code> for each agent.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436002-16-define-skip-condition" target="_blank">https://help.pathmind.com/en/articles/4436002-16-define-skip-condition</a>]]></Description>
+					<X>140</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[false
+/* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
+						</DefaultValue>
+						<MethodArgument>
+							<Name><![CDATA[agentId]]></Name>
+							<Type><![CDATA[int]]></Type>
+						</MethodArgument>
+						<ParameterEditor>
+							<Id>1604355721625</Id>
+							<Label><![CDATA[Skip]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>1604355721624</Id>
+								<ParameterId>1595822201340</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[1]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
@@ -587,49 +630,6 @@ class Actions {<br>
 							<Id>1595219001768</Id>
 							<Label><![CDATA[Action Masks]]></Label>
 							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
-					<Id>1598081984891</Id>
-					<Name><![CDATA[isSkip]]></Name>
-					<Description><![CDATA[<h3>Skip</h3>
-<p>The skip condition allows you to skip certain agents if they do not meet certain criteria. This field must return <code>true</code> or <code>false</code> for each agent.</p>
-
-<b>Learn More</b><br>
-<a href="https://help.pathmind.com/en/articles/4436002-16-define-skip-condition" target="_blank">https://help.pathmind.com/en/articles/4436002-16-define-skip-condition</a>]]></Description>
-					<X>140</X><Y>100</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>false</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[false
-/* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
-						</DefaultValue>
-						<MethodArgument>
-							<Name><![CDATA[agentId]]></Name>
-							<Type><![CDATA[int]]></Type>
-						</MethodArgument>
-						<ParameterEditor>
-							<Id>1598081984889</Id>
-							<Label><![CDATA[Skip]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<HideCondition>
-								<Id>0</Id>
-								<ParameterId>1595822201340</ParameterId>
-								<Operation>EQUALS</Operation>
-								<Value Class="CodeValue">
-									<Code><![CDATA[1]]></Code>
-								</Value>
-							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -937,6 +937,23 @@ if (!isTraining && steps == 1) {
 	throw new RuntimeException("Could not generate debug string.", e);
 }]]></Body>
 				</Function>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
+					<ReturnType><![CDATA[boolean]]></ReturnType>
+					<Id>1604359131653</Id>
+					<Name><![CDATA[isSkip]]></Name>
+					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
+					<X>140</X><Y>100</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[agentId]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
+					<Body><![CDATA[return isSkipCondition(agentId) && (getEngine().getState() != Engine.State.FINISHED);]]></Body>
+				</Function>
 			</Functions>
 			<AgentLinks>
 				<AgentLink>
@@ -1119,14 +1136,10 @@ if (!isTraining && steps == 1) {
 					<ParameterName><![CDATA[actions]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[actionMasks]]></ParameterName>
+					<ParameterName><![CDATA[isSkipCondition]]></ParameterName>
 				</Parameter>
 				<Parameter>
-					<ParameterName><![CDATA[isSkip]]></ParameterName>
-					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[false
-/* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
-					</ParameterValue>
+					<ParameterName><![CDATA[actionMasks]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[isDone]]></ParameterName>
