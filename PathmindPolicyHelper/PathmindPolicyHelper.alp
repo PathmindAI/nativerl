@@ -952,7 +952,7 @@ if (!isTraining && steps == 1) {
 						<Name><![CDATA[agentId]]></Name>
 						<Type><![CDATA[int]]></Type>
 					</Parameter>
-					<Body><![CDATA[return isSkipCondition(agentId) && (getEngine().getState() != Engine.State.FINISHED);]]></Body>
+					<Body><![CDATA[return isSkipCondition(agentId) && !isDone(agentId);]]></Body>
 				</Function>
 			</Functions>
 			<AgentLinks>
