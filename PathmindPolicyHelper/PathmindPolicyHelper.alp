@@ -44,6 +44,7 @@ triggerNextAction();
 				</GenericParameterValue>
 				<GenericParameterLabel><![CDATA[Generic parameter:]]></GenericParameterLabel>
 			</GenericParameter>
+			<FlowchartBlock>true</FlowchartBlock>
 			<Logging>false</Logging>
 			<FlowChartsUsage>ENTITY</FlowChartsUsage>
 			<SamplesToKeep>100</SamplesToKeep>
@@ -591,7 +592,7 @@ class Actions {<br>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>
+					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
@@ -1824,7 +1825,7 @@ public @interface Continuous {
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>3</VersionMinor>
-			<VersionBuild>0</VersionBuild>
+			<VersionBuild>3</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
