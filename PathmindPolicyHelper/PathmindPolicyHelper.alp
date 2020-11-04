@@ -943,7 +943,7 @@ if (!isTraining && steps == 1) {
 					<Id>1604359131653</Id>
 					<Name><![CDATA[isSkip]]></Name>
 					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
-					<X>140</X><Y>100</Y>
+					<X>140</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
