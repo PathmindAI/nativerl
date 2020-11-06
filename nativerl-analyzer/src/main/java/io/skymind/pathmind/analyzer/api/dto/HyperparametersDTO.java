@@ -25,6 +25,7 @@ public class HyperparametersDTO {
             "isEnabled",
             "observations",
             "observationsNames",
+            "observationsTypes",
             "actions",
             "rewardVariablesCount",
             "rewardVariables",
@@ -50,6 +51,9 @@ public class HyperparametersDTO {
             true)
     @NotBlank(message = "Observations names cannot be empty")
     private List<String> observationsNames;
+
+    @NotBlank(message = "Observations types cannot be empty")
+    private List<String> observationsTypes;
 
     @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
     @NotBlank(message = "Number of actions cannot be blank")
@@ -98,6 +102,7 @@ public class HyperparametersDTO {
                     false,
                     parametersMap.get("observations"),
                     filterOutEmpty(Arrays.asList(parametersMap.get("observationsNames").split("\\|"))),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("observationsTypes").split("\\|"))),
                     parametersMap.get("actions"),
                     parametersMap.get("rewardVariablesCount"),
                     filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariables").split("\\|"))),

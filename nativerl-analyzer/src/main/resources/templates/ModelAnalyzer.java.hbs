@@ -50,6 +50,7 @@ public class ModelAnalyzer {
         try {
             System.out.println("observations:" + helper.observationForTraining().length);
             System.out.println("observationsNames:" + display(helper.getObservationNames()));
+            System.out.println("observationsTypes:" + display(helper.getObservationTypes()));
         } catch (Throwable ex) {
              System.out.println("Cannot get obs:");
              ex.printStackTrace(System.out);
