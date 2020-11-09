@@ -67,7 +67,7 @@ public class ObservationProcessor {
     public String[] getObservationTypes(Object agent) throws ReflectiveOperationException {
         return getObservationTypes(agent, 0);
     }
-    /** Returns {@code toNames(getObservationTypes(agent, agentId))}. */
+    /** Returns {@code toTypes(getObservationObject(agent, agentId))}. */
     public String[] getObservationTypes(Object agent, int agentId) throws ReflectiveOperationException {
         return toTypes(getObservationObject(agent, agentId));
     }

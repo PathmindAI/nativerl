@@ -43,12 +43,12 @@ public class ObservationProcessorTest {
             assertEquals("DummyObservations", op.getObservationClass().getSimpleName());
             assertArrayEquals(new String[] {"obs1", "obs2[0]", "obs2[1]", "obs3", "obs4[0]", "obs4[1]", "obs4[2]", "obs4[3]", "obs4[4]", "obs5", "obs6", "obs7"},
                     op.getObservationNames(this));
-            assertArrayEquals(new double[] {37, 11, 15, 42, 1, 2, 3, 4, 5, 1, 0, 64}, op.getObservations(this, 64), 0.0);
-            TestObservations o = op.getObservationObject(this, 64);
-            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, new TestFilter().filter(o), 0.0);
             assertArrayEquals(new String[] {"int", "int", "int", "double", "double", "double", "double", "double", "double", "boolean", "boolean", "float"},
                     op.getObservationTypes(this));
             assertEquals(op.getObservationNames(this).length, op.getObservationTypes(this).length);
+            assertArrayEquals(new double[] {37, 11, 15, 42, 1, 2, 3, 4, 5, 1, 0, 64}, op.getObservations(this, 64), 0.0);
+            TestObservations o = op.getObservationObject(this, 64);
+            assertArrayEquals(new double[] {1, 2, 3, 4, 5}, new TestFilter().filter(o), 0.0);
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         }
