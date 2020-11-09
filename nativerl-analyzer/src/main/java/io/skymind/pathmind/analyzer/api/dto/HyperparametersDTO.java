@@ -24,11 +24,12 @@ public class HyperparametersDTO {
     private final static Set<String> KNOWN_OUTPUT = Set.of(
             "isEnabled",
             "observations",
-            "observationsNames",
-            "observationsTypes",
+            "observationNames",
+            "observationTypes",
             "actions",
             "rewardVariablesCount",
-            "rewardVariables",
+            "rewardVariableNames",
+            "rewardVariableTypes",
             "reward",
             "failedSteps",
             "agents",
@@ -49,11 +50,11 @@ public class HyperparametersDTO {
 
     @ApiModelProperty(value = "Observations names extracted from model", example = "[\"orderQueueSize\", \"collectQueueSize\"]", required =
             true)
-    @NotBlank(message = "Observations names cannot be empty")
-    private List<String> observationsNames;
+    @NotBlank(message = "Observation names cannot be empty")
+    private List<String> observationNames;
 
-    @NotBlank(message = "Observations types cannot be empty")
-    private List<String> observationsTypes;
+    @NotBlank(message = "Observation types cannot be empty")
+    private List<String> observationTypes;
 
     @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
     @NotBlank(message = "Number of actions cannot be blank")
@@ -63,10 +64,15 @@ public class HyperparametersDTO {
     @NotBlank(message = "Reward variables count cannot be blank")
     private String rewardVariablesCount;
 
-    @ApiModelProperty(value = "Reward variables names extracted from model", example = "[\"var1\", \"var2\"]", required = true)
-    @NotNull(message = "Reward variables is required")
-    @NotEmpty(message = "Reward variables cannot be empty")
-    private List<String> rewardVariables;
+    @ApiModelProperty(value = "Reward variable names extracted from model", example = "[\"var1\", \"var2\"]", required = true)
+    @NotNull(message = "Reward variable names is required")
+    @NotEmpty(message = "Reward variable names cannot be empty")
+    private List<String> rewardVariableNames;
+
+    @ApiModelProperty(value = "Reward variable types extracted from model", example = "[\"int\", \"boolean\"]", required = true)
+    @NotNull(message = "Reward variable names is required")
+    @NotEmpty(message = "Reward variable types cannot be empty")
+    private List<String> rewardVariableTypes;
 
     @ApiModelProperty(value = "Reward function definition", required =
             true)
@@ -101,11 +107,12 @@ public class HyperparametersDTO {
                     parametersMap.getOrDefault("isEnabled", "false").equals("true"),
                     false,
                     parametersMap.get("observations"),
-                    filterOutEmpty(Arrays.asList(parametersMap.get("observationsNames").split("\\|"))),
-                    filterOutEmpty(Arrays.asList(parametersMap.get("observationsTypes").split("\\|"))),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("observationNames").split("\\|"))),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("observationTypes").split("\\|"))),
                     parametersMap.get("actions"),
                     parametersMap.get("rewardVariablesCount"),
-                    filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariables").split("\\|"))),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariableNames").split("\\|"))),
+                    filterOutEmpty(Arrays.asList(parametersMap.get("rewardVariableTypes").split("\\|"))),
                     parametersMap.get("reward"),
                     parametersMap.get("failedSteps"),
                     parametersMap.get("agents"),
