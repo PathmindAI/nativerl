@@ -850,7 +850,8 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 }
 
 if (isEnabled && debugMode) {
-	trace(toString());
+	//trace(toString());
+	traceDebug();
 }
 
 /*
@@ -954,6 +955,91 @@ if (!isTraining && steps == 1) {
 					</Parameter>
 					<Body><![CDATA[return isSkipCondition(agentId) && !isDone(agentId);]]></Body>
 				</Function>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[String]]></ReturnType>
+					<Id>1605129144609</Id>
+					<Name><![CDATA[traceDebug]]></Name>
+					<X>290</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[Color headerColor = new Color(240, 105, 0);
+Color AgentIdColor = new Color(0, 0, 130);
+
+try {
+	if (!isTraining) {
+		if (numberOfAgents == 1) {
+			String header = "Pathmind:\n"
+					      + "  Step: " + steps;
+			traceln(headerColor, header);
+			String[] observationNames = observationProcessor.getObservationNames(getOwner(), 0);
+			double[] observationArray = observationForTraining(0);
+			Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < observationArray.length; i++) {
+  				observationDict.put(observationNames[i], observationArray[i]);
+			}
+
+			String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), 0);
+			double[] rewardArray = observationForReward(0);
+			Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+			for (int i = 0; i < rewardArray.length; i++) {
+  				rewardDict.put(rewardNames[i], rewardArray[i]);
+			}
+
+			String output = "  Observations:\n"
+				    + "    Array: " + observationDict + "\n"
+				    + "    Number of Observations: " + observationArray.length + "\n"
+				    + "  Metrics: \n"
+				    + "    Array: " + rewardDict + "\n"
+				    + "    Number of Metrics: " + rewardArray.length + "\n"
+				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
+				    + "  Done: " + isDone(0) + "\n";
+			traceln(output);
+		} else {
+			String header = "Pathmind:\n"
+					      + "  Step: " + steps;
+			traceln(headerColor, header);
+			for (int i = 0; i < numberOfAgents; i++) {
+				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
+				double[] observationArray = observationForTraining(i);
+				Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < observationArray.length; j++) {
+  					observationDict.put(observationNames[j], observationArray[j]);
+				}
+
+				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
+				double[] rewardArray = observationForReward(i);
+				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+				for (int j = 0; j < rewardArray.length; j++) {
+  					rewardDict.put(rewardNames[j], rewardArray[j]);
+				}
+				
+				traceln(AgentIdColor, "  Agent ID: " + i);
+				String output_agentId = "    Observations:\n"
+				    	+ "      Array: " + observationDict + "\n"
+					    + "      Number of Observations: " + observationArray.length + "\n"
+					    + "    Metrics: \n"
+				    	+ "      Array: " + rewardDict + "\n"
+					    + "      Number of Metrics: " + rewardArray.length + "\n"
+					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+					    + "    Skip: " + isSkip(i) + "\n"
+					    + "    Done: " + isDone(i) + "\n";
+					    
+				traceln(output_agentId);
+			}
+		}
+	} else if (isDone(-1)) {
+		// End debug string when done is true
+	} else {
+		// Hide debug string when training in Pathmind
+	}
+} catch (ReflectiveOperationException e) {
+	e.printStackTrace();
+	throw new RuntimeException("Could not generate debug string.", e);
+}]]></Body>
+				</Function>
 			</Functions>
 			<AgentLinks>
 				<AgentLink>
@@ -997,7 +1083,7 @@ if (!isTraining && steps == 1) {
 				<Image>
 					<Id>1564400828815</Id>
 					<Name><![CDATA[image]]></Name>
-					<X>-8</X><Y>-8</Y>
+					<X>-12</X><Y>-12</Y>
 					<Label><X>8</X><Y>8</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1005,8 +1091,8 @@ if (!isTraining && steps == 1) {
 					<DrawMode>SHAPE_DRAW_2D</DrawMode>
 					<EmbeddedIcon>true</EmbeddedIcon>
 					<Z>0</Z>
-					<Width>16</Width>
-					<Height>16</Height>
+					<Width>24</Width>
+					<Height>24</Height>
 					<Rotation>0.0</Rotation>
 					<ImageFiles>
 						<ImageResourceReference>
@@ -1014,7 +1100,7 @@ if (!isTraining && steps == 1) {
 							<ClassName><![CDATA[Assets/pathmind-single-original.png]]></ClassName>
 						</ImageResourceReference>
 					</ImageFiles>
-					<OriginalSize>true</OriginalSize>
+					<OriginalSize>false</OriginalSize>
 				</Image>
 			</Presentation>
 
@@ -1842,7 +1928,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[nativerl-policy-1.3.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1855,9 +1941,9 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.3.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[nativerl-policy-1.3.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>false</Imported>
+		<Imported>true</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
