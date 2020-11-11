@@ -995,7 +995,7 @@ try {
 				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Metrics: " + rewardArray.length + "\n"
 				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-				    + "  Done: " + isDone(0) + "\n";
+				    + "  Done: " + isDone(0);
 			traceln(output);
 		} else {
 			String header = "Pathmind:\n"
