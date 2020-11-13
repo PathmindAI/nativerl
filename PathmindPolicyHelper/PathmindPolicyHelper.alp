@@ -1720,6 +1720,16 @@ public class AbstractPathmindHelper extends Agent {
 			throw new RuntimeException("Could not get observations names: " + e);
 		}
 	}
+    public String[] getObservationTypes() {
+        try {
+            if (observationProcessor == null) {
+                init();
+            }
+            return observationProcessor.getObservationTypes(getOwner(), 0);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException("Could not get observations types: " + e);
+        }
+    }
 	public double[] observationForReward(int agentId) {
 		return rewardToDoubles(getRewardObject(agentId));
 	}
@@ -1737,6 +1747,17 @@ public class AbstractPathmindHelper extends Agent {
 			throw new RuntimeException("Could not get reward variables names.", e);
 		}
 	}
+    public String[] getRewardVariableTypes() {
+        try {
+            if (rewardProcessor == null) {
+                init();
+            }
+            return rewardProcessor.getVariableTypes(getOwner(), 0);
+        } catch (ReflectiveOperationException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Could not get reward variables types.", e);
+        }
+    }
 	public <V> V getRewardObject(int agentId) {
 		try {
 			if (rewardProcessor == null) {

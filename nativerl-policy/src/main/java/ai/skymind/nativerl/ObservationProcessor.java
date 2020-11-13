@@ -63,6 +63,15 @@ public class ObservationProcessor {
         return toNames(getObservationObject(agent, agentId));
     }
 
+    /** Returns {@code getObservationTypes(agent, 0)}. */
+    public String[] getObservationTypes(Object agent) throws ReflectiveOperationException {
+        return getObservationTypes(agent, 0);
+    }
+    /** Returns {@code toTypes(getObservationObject(agent, agentId))}. */
+    public String[] getObservationTypes(Object agent, int agentId) throws ReflectiveOperationException {
+        return toTypes(getObservationObject(agent, agentId));
+    }
+
     /** Returns {@code getObservations(agent, 0)}. */
     public double[] getObservations(Object agent) throws ReflectiveOperationException {
         return getObservations(agent, 0);
@@ -88,5 +97,9 @@ public class ObservationProcessor {
     /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
     public <O> String[] toNames(O observationObject) throws ReflectiveOperationException {
         return Reflect.getFieldNames(observationFields, observationObject);
+    }
+    /** Returns the types of the fields in the order listed within the class found */
+    public <O> String[] toTypes(O observationObject) throws ReflectiveOperationException {
+        return Reflect.getFieldTypes(observationFields, observationObject);
     }
 }
