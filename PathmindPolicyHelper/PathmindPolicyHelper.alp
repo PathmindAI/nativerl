@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202009241624" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201440" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -1010,8 +1010,8 @@ try {
 					<DrawMode>SHAPE_DRAW_2D</DrawMode>
 					<EmbeddedIcon>true</EmbeddedIcon>
 					<Z>0</Z>
-					<Width>16</Width>
-					<Height>16</Height>
+					<Width>24</Width>
+					<Height>24</Height>
 					<Rotation>0.0</Rotation>
 					<ImageFiles>
 						<ImageResourceReference>
