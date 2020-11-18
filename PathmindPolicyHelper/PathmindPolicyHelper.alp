@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201440" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202009241624" AlpVersion="8.5.7">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -880,7 +880,7 @@ if (!isTraining && steps == 1) {
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1605145082653</Id>
 					<Name><![CDATA[printDebug]]></Name>
-					<X>290</X><Y>160</Y>
+					<X>290</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -913,8 +913,7 @@ try {
 				    + "  Metrics: \n"
 				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Metrics: " + rewardArray.length + "\n"
-				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-				    + "  Done: " + isDone(0);
+				    + "  Last Action: " + Arrays.toString(action[0]);
 			traceln(output);
 		} else {
 			String header = "Pathmind:\n"
@@ -943,8 +942,7 @@ try {
 				    	+ "      Array: " + rewardDict + "\n"
 					    + "      Number of Metrics: " + rewardArray.length + "\n"
 					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-					    + "    Skip: " + isSkip(i) + "\n"
-					    + "    Done: " + isDone(i) + "\n";
+					    + "    Skip: " + isSkip(i);
 					    
 				traceln(output_agentId);
 			}
@@ -1002,7 +1000,7 @@ try {
 				<Image>
 					<Id>1564400828815</Id>
 					<Name><![CDATA[image]]></Name>
-					<X>-8</X><Y>-8</Y>
+					<X>0</X><Y>0</Y>
 					<Label><X>8</X><Y>8</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1010,8 +1008,8 @@ try {
 					<DrawMode>SHAPE_DRAW_2D</DrawMode>
 					<EmbeddedIcon>true</EmbeddedIcon>
 					<Z>0</Z>
-					<Width>24</Width>
-					<Height>24</Height>
+					<Width>32</Width>
+					<Height>32</Height>
 					<Rotation>0.0</Rotation>
 					<ImageFiles>
 						<ImageResourceReference>
