@@ -58,9 +58,18 @@ public class RewardProcessor {
     public String[] getVariableNames(Object agent) throws ReflectiveOperationException {
         return getVariableNames(agent, 0);
     }
-    /** Returns {@code toNames(getVariableNames(agent, agentId))}. */
+    /** Returns {@code toNames(getRewardObject(agent, agentId))}. */
     public String[] getVariableNames(Object agent, int agentId) throws ReflectiveOperationException {
         return toNames(getRewardObject(agent, agentId));
+    }
+
+    /** Returns {@code getVariableTypes(agent, 0)}. */
+    public String[] getVariableTypes(Object agent) throws ReflectiveOperationException {
+        return getVariableTypes(agent, 0);
+    }
+    /** Returns {@code toTypes(getRewardObject(agent, agentId))}. */
+    public String[] getVariableTypes(Object agent, int agentId) throws ReflectiveOperationException {
+        return toTypes(getRewardObject(agent, agentId));
     }
 
     /** Returns {@code getVariables(agent, 0)}. */
@@ -88,5 +97,9 @@ public class RewardProcessor {
     /** Returns the names of the fields in the order listed within the class found, with arrays flattened and suffixed with [0], [1], etc. */
     public <V> String[] toNames(V rewardObject) throws ReflectiveOperationException {
         return Reflect.getFieldNames(rewardFields, rewardObject);
+    }
+    /** Returns the types of the fields in the order listed within the class found */
+    public <V> String[] toTypes(V rewardObject) throws ReflectiveOperationException {
+        return Reflect.getFieldTypes(rewardFields, rewardObject);
     }
 }
