@@ -94,10 +94,14 @@ public class {{className}} extends AbstractEnvironment {
             engine.stop();
         }
         // Create Engine, initialize random number generator:
+        //engine = experiment.createEngine();
+        //Simulation sim = new Simulation();
+        //sim.setupEngine(engine);
+        //sim.initDefaultRandomNumberGenerator(engine);
         engine = experiment.createEngine();
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
+        RLExperiment exp = new RLExperiment();
+        exp.setupEngine_xjal(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
         // Create new agent object:
         agent = new {{agentClassName}}(engine, null, null);
         agent.setParametersToDefaultValues();
@@ -269,9 +273,12 @@ class Training extends ExperimentCustom {
 
     @AnyLogicInternalCodegenAPI
     public void setupEngine_xjal(Engine engine) {
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
+        //Simulation sim = new Simulation();
+        //sim.setupEngine(engine);
+        //sim.initDefaultRandomNumberGenerator(engine);
+        RLExperiment exp = new RLExperiment();
+        exp.setupEngine_xjal(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
     }
 
     @AnyLogicInternalCodegenAPI

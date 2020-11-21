@@ -2,9 +2,9 @@ source setup.sh
 export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep Main.class; done | awk '{print $4}' | xargs dirname)
 export MODEL_PACKAGE_NAME=$(echo $MODEL_PACKAGE | sed 's/\//\./g')
 export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
-export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep Simulation.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
+export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep RLExperiment.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
 export SIMULATION_PACKAGE_NAME=$(echo $SIMULATION_PACKAGE | sed 's/\//\./g')
-export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.Simulation"
+export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.RLExperiment"
 export AGENT_CLASS="$MODEL_PACKAGE_NAME.Main"
 export OUTPUT_DIR=$(pwd)
 
