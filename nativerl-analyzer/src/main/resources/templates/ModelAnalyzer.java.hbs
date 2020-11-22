@@ -14,9 +14,15 @@ public class ModelAnalyzer {
         List<String> failedSteps = new ArrayList<>();
 
         Engine engine = new Training(null).createEngine();
+{{#if isRLExperiment}}
+        RLExperiment exp = new RLExperiment();
+        exp.setupEngine_xjal(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
+{{else}}
         Simulation sim = new Simulation();
         sim.setupEngine(engine);
         sim.initDefaultRandomNumberGenerator(engine);
+{{/if}}
 
         // Create new agent object:
         {{agentClassName}} agent;
