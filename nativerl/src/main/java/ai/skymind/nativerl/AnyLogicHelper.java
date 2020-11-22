@@ -86,6 +86,13 @@ public class AnyLogicHelper {
     @Setter
     String className, packageName, observationClassName, rewardClassName;
 
+    @Setter
+    boolean isRLExperiment;
+
+    public boolean getIsRLExperiment() {
+        return isRLExperiment;
+    }
+
     /** Calls {@link #generateEnvironment()} and writes the result to a File. */
     public void generateEnvironment(File file) throws IOException, ReflectiveOperationException {
         File directory = file.getParentFile();
@@ -107,6 +114,7 @@ public class AnyLogicHelper {
         this.setPackageName(packageName);
         this.setObservationClassName(op.getObservationClass().getName().substring(packageName.length() + 1));
         this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
+        this.setRLExperiment(simulationClassName.endsWith("RLExperiment"));
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
