@@ -7,18 +7,18 @@ import com.anylogic.rl.data.Observation;
 
 public class PathmindLearningAgent<Obs extends Observation, Act extends Action, Config extends Configuration> implements LearningAgentInterface<Obs,Act,Config> {
 
-	@SuppressWarnings("unchecked")
-	public Act takeAction(Obs obs, Act act) {
-		// get obs extends Observaion via  reflection
+    @SuppressWarnings("unchecked")
+    public Act takeAction(Obs obs, Act act) {
+    // get obs extends Observaion via  reflection
 
-		// translate it to double[]
+    // translate it to double[]
 
-		// call this.computeActions(double[])
+    // call this.computeActions(double[])
 
-		// convert float[] to act extends Action
+    // convert float[] to act extends Action
 
-		// return act
+    // return act
 
-		throw new RuntimeException("takeAction is not allowed to run for now");
-	}
+    throw new RuntimeException("takeAction is not allowed to run for now");
+    }
 }

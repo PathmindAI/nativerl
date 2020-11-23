@@ -111,6 +111,8 @@ java ai.skymind.nativerl.AnyLogicHelper \
     $NAMED_VARIABLE_PARAM \
     $MULTIAGENT_PARAM \
 
+java ai.skymind.nativerl.LearningAgentHelper
+
 javac $(find -iname '*.java')
 
 # CHECKPOINT_PARAM=""
