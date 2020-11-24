@@ -40,17 +40,13 @@ public class CodeGenerator {
             file.mkdirs();
         }
 
-        boolean isPLE = true;
-        if (isPLE) {
-            File modelAnalyzer = new File(file, MODEL_ANALYZER_NAME);
-            Files.write(modelAnalyzer.toPath(), generateEnvironment(MODEL_ANALYZER_PLE_NAME).getBytes());
-        } else {
-            File modelAnalyzer = new File(file, MODEL_ANALYZER_NAME);
-            Files.write(modelAnalyzer.toPath(), generateEnvironment(MODEL_ANALYZER_NAME).getBytes());
-        }
+        File modelAnalyzer = new File(file, MODEL_ANALYZER_NAME);
+        Files.write(modelAnalyzer.toPath(), generateEnvironment(MODEL_ANALYZER_NAME).getBytes());
 
-        File training = new File(file, TRAINING_NAME);
-        Files.write(training.toPath(), generateEnvironment(TRAINING_NAME).getBytes());
+        if (!isRLExperiment) {
+            File training = new File(file, TRAINING_NAME);
+            Files.write(training.toPath(), generateEnvironment(TRAINING_NAME).getBytes());
+        }
 
         File pathmindLearningAgentPath = new File("com/pathmind/anylogic");
         if (!pathmindLearningAgentPath.exists()) {

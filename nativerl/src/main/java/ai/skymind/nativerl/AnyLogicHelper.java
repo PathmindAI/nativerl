@@ -89,8 +89,15 @@ public class AnyLogicHelper {
     @Setter
     boolean isRLExperiment;
 
+    @Setter
+    boolean isPLE;
+
     public boolean getIsRLExperiment() {
         return isRLExperiment;
+    }
+
+    public boolean getIsPLE() {
+        return isPLE;
     }
 
     /** Calls {@link #generateEnvironment()} and writes the result to a File. */
@@ -115,19 +122,13 @@ public class AnyLogicHelper {
         this.setObservationClassName(op.getObservationClass().getName().substring(packageName.length() + 1));
         this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
         this.setRLExperiment(simulationClassName.endsWith("RLExperiment"));
+        this.isPLE = true;
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
-
-        boolean isPLE = true;
-        Template template = null;
-        if (isPLE) {
-            template = handlebars.compile("AnyLogicHelperPLE.java");
-        } else {
-            template = handlebars.compile("AnyLogicHelper.java");
-        }
+        Template template = handlebars.compile("AnyLogicHelper.java");
 
         String env = template.apply(this);
 

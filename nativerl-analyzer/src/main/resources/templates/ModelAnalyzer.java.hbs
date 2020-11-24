@@ -12,24 +12,22 @@ public class ModelAnalyzer {
     }
     public static void main(String[] args) throws Throwable {
         List<String> failedSteps = new ArrayList<>();
-
-        Engine engine = new Training(null).createEngine();
-{{#if isRLExperiment}}
-        RLExperiment exp = new RLExperiment();
-        exp.setupEngine_xjal(engine);
-        exp.initDefaultRandomNumberGenerator(engine);
-{{else}}
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
-{{/if}}
-
-        // Create new agent object:
+        Engine engine;
         {{agentClassName}} agent;
+
         try {
-          agent = new {{agentClassName}}(engine, null, null);
-        }
-        catch(RuntimeException e) {
+{{#if isRLExperiment}}
+            RLExperiment exp = new RLExperiment();
+            agent = exp.createModel();
+            engine = agent.getEngine();
+{{else}}
+            engine = new Training(null).createEngine();
+            Simulation sim = new Simulation();
+            sim.setupEngine(engine);
+            sim.initDefaultRandomNumberGenerator(engine);
+            agent = new {{agentClassName}}(engine, null, null);
+{{/if}}
+        } catch(RuntimeException e) {
             if (e.getCause() instanceof ClassNotFoundException) {
                 System.out.println("oldVersionFound:true");
                 System.exit(0);
