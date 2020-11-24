@@ -120,7 +120,14 @@ public class AnyLogicHelper {
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
-        Template template = handlebars.compile("AnyLogicHelper.java");
+
+        boolean isPLE = true;
+        Template template = null;
+        if (isPLE) {
+            template = handlebars.compile("AnyLogicHelperPLE.java");
+        } else {
+            template = handlebars.compile("AnyLogicHelper.java");
+        }
 
         String env = template.apply(this);
 
