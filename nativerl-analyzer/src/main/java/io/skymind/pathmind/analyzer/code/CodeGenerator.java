@@ -31,7 +31,6 @@ public class CodeGenerator {
     }
 
     private final static String MODEL_ANALYZER_NAME = "ModelAnalyzer.java";
-    private final static String MODEL_ANALYZER_PLE_NAME = "ModelAnalyzerPLE.java";
     private final static String TRAINING_NAME = "Training.java";
     private final static String LEARNING_AGENT = "PathmindLearningAgent.java";
 
