@@ -12,14 +12,16 @@ public class HyperparametersDTOTest {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
                 "observations:5",
-                "observationsNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
+                "observationNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
+                "observationTypes:double|double|double|double|double",
                 "actions:4",
                 "rewardVariablesCount:4",
                 "reward: not defined",
                 "failedSteps:",
                 "model-analyzer-mode: single",
                 "agents:1",
-                "rewardVariables:vars[0]|vars[1]|vars[2]|vars[3]"
+                "rewardVariableNames:vars[0]|vars[1]|vars[2]|vars[3]",
+                "rewardVariableTypes:int|double|boolean|float"
         ));
 
         HyperparametersDTO expected = new HyperparametersDTO(
@@ -27,9 +29,11 @@ public class HyperparametersDTOTest {
                 false,
                 "5",
                 Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
+                Arrays.asList("double", "double", "double", "double", "double"),
                 "4",
                 "4",
                 Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
+                Arrays.asList("int", "double", "boolean", "float"),
                 "not defined",
                 "",
                 "1",
@@ -43,14 +47,16 @@ public class HyperparametersDTOTest {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
                 "observations:5",
-                "observationsNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
+                "observationNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
+                "observationTypes:double|double|double|double|double",
                 "actions:4",
                 "rewardVariablesCount:4",
                 "reward: not defined",
                 "failedSteps:",
                 "model-analyzer-mode: single",
                 "agents:1",
-                "rewardVariables:vars[0]|vars[1]|vars[2]|vars[3]"
+                "rewardVariableNames:vars[0]|vars[1]|vars[2]|vars[3]",
+                "rewardVariableTypes:int|double|boolean|float"
         ));
 
         HyperparametersDTO expected = new HyperparametersDTO(
@@ -58,9 +64,11 @@ public class HyperparametersDTOTest {
                 false,
                 "5",
                 Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
+                Arrays.asList("double", "double", "double", "double", "double"),
                 "4",
                 "4",
                 Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
+                Arrays.asList("int", "double", "boolean", "float"),
                 "not defined",
                 "",
                 "1",
@@ -86,14 +94,16 @@ public class HyperparametersDTOTest {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
                 "observations:0",
-                "observationsNames:",
+                "observationNames:",
+                "observationTypes:",
                 "actions:4",
                 "rewardVariablesCount:4",
                 "reward: not defined",
                 "failedSteps:observations,observationsNames",
                 "agents:1",
                 "model-analyzer-mode: single",
-                "rewardVariables:vars[0]|vars[1]|vars[2]|vars[3]"
+                "rewardVariableNames:vars[0]|vars[1]|vars[2]|vars[3]",
+                "rewardVariableTypes:int|double|boolean|float"
         ));
 
         HyperparametersDTO expected = new HyperparametersDTO(
@@ -101,9 +111,11 @@ public class HyperparametersDTOTest {
                 false,
                 "0",
                 Collections.emptyList(),
+                Collections.emptyList(),
                 "4",
                 "4",
                 Arrays.asList("vars[0]", "vars[1]", "vars[2]", "vars[3]"),
+                Arrays.asList("int", "double", "boolean", "float"),
                 "not defined",
                 "observations,observationsNames",
                 "1",

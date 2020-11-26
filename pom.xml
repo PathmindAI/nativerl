@@ -5,7 +5,7 @@
 
     <groupId>ai.skymind</groupId>
     <artifactId>nativerl-parent</artifactId>
-    <version>1.3.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>NativeRL Parent</name>
@@ -106,6 +106,14 @@
                             <goals>
                                 <goal>shade</goal>
                             </goals>
+                            <configuration>
+                                <relocations>
+                                    <relocation>
+                                        <pattern>com.google.protobuf</pattern>
+                                        <shadedPattern>org.tensorflow.pathmind.shaded.protobuf</shadedPattern>
+                                    </relocation>
+                                </relocations>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

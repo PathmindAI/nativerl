@@ -23,9 +23,16 @@ public class CodeGenerator {
     String packageName;
     @Setter
     String simulationClassName;
+    @Setter
+    boolean isRLExperiment;
+
+    public boolean getIsRLExperiment() {
+        return isRLExperiment;
+    }
 
     private final static String MODEL_ANALYZER_NAME = "ModelAnalyzer.java";
     private final static String TRAINING_NAME = "Training.java";
+    private final static String LEARNING_AGENT = "PathmindLearningAgent.java";
 
     public void generateEnvironment(File file) throws IOException {
         if (!file.exists()) {
@@ -35,11 +42,22 @@ public class CodeGenerator {
         File modelAnalyzer = new File(file, MODEL_ANALYZER_NAME);
         Files.write(modelAnalyzer.toPath(), generateEnvironment(MODEL_ANALYZER_NAME).getBytes());
 
-        File training = new File(file, TRAINING_NAME);
-        Files.write(training.toPath(), generateEnvironment(TRAINING_NAME).getBytes());
+        if (!isRLExperiment) {
+            File training = new File(file, TRAINING_NAME);
+            Files.write(training.toPath(), generateEnvironment(TRAINING_NAME).getBytes());
+        }
+
+        File pathmindLearningAgentPath = new File("com/pathmind/anylogic");
+        if (!pathmindLearningAgentPath.exists()) {
+            pathmindLearningAgentPath.mkdirs();
+        }
+        File learningAgent = new File(pathmindLearningAgentPath, LEARNING_AGENT);
+        Files.write(learningAgent.toPath(), generateEnvironment(LEARNING_AGENT).getBytes());
     }
 
     public String generateEnvironment(String fileName) throws IOException {
+        this.setRLExperiment(simulationClassName.endsWith("RLExperiment"));
+
         TemplateLoader loader = new ClassPathTemplateLoader();
         loader.setPrefix("/templates/");
         loader.setSuffix(".hbs");

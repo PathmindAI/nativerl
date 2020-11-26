@@ -12,18 +12,22 @@ public class ModelAnalyzer {
     }
     public static void main(String[] args) throws Throwable {
         List<String> failedSteps = new ArrayList<>();
-
-        Engine engine = new Training(null).createEngine();
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
-
-        // Create new agent object:
+        Engine engine;
         {{agentClassName}} agent;
+
         try {
-          agent = new {{agentClassName}}(engine, null, null);
-        }
-        catch(RuntimeException e) {
+{{#if isRLExperiment}}
+            RLExperiment exp = new RLExperiment();
+            agent = exp.createModel();
+            engine = agent.getEngine();
+{{else}}
+            engine = new Training(null).createEngine();
+            Simulation sim = new Simulation();
+            sim.setupEngine(engine);
+            sim.initDefaultRandomNumberGenerator(engine);
+            agent = new {{agentClassName}}(engine, null, null);
+{{/if}}
+        } catch(RuntimeException e) {
             if (e.getCause() instanceof ClassNotFoundException) {
                 System.out.println("oldVersionFound:true");
                 System.exit(0);
@@ -49,7 +53,8 @@ public class ModelAnalyzer {
 
         try {
             System.out.println("observations:" + helper.observationForTraining().length);
-            System.out.println("observationsNames:" + display(helper.getObservationNames()));
+            System.out.println("observationNames:" + display(helper.getObservationNames()));
+            System.out.println("observationTypes:" + display(helper.getObservationTypes()));
         } catch (Throwable ex) {
              System.out.println("Cannot get obs:");
              ex.printStackTrace(System.out);
@@ -61,7 +66,8 @@ public class ModelAnalyzer {
         // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
         System.out.println("actions:" + helper.getPossibleActionCount());
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
-        System.out.println("rewardVariables:" + display(helper.getRewardVariableNames()));
+        System.out.println("rewardVariableNames:" + display(helper.getRewardVariableNames()));
+        System.out.println("rewardVariableTypes:" + display(helper.getRewardVariableTypes()));
 
         // check number of agent
         System.out.println("agents:" + helper.numberOfAgents);
