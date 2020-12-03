@@ -132,7 +132,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>javacpp-cppbuild</id>
+                        <id>javacpp-cmake</id>
                         <phase>process-classes</phase>
                         <goals>
                             <goal>build</goal>
@@ -140,10 +140,29 @@
                         <configuration>
                             <skip>${javacpp.cppbuild.skip}</skip>
                             <buildCommand>
-                                <program>bash</program>
-                                <argument>${project.basedir}/cppbuild.sh</argument>
+                                <program>cmake</program>
+                                <argument>-DCMAKE_BUILD_TYPE=Release</argument>
+                                <argument>..</argument>
                             </buildCommand>
-                            <workingDirectory>${project.basedir}</workingDirectory>
+                            <workingDirectory>${project.basedir}/target</workingDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>javacpp-build</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${javacpp.cppbuild.skip}</skip>
+                            <buildCommand>
+                                <program>cmake</program>
+                                <argument>--build</argument>
+                                <argument>.</argument>
+                                <argument>--config</argument>
+                                <argument>Release</argument>
+                            </buildCommand>
+                            <workingDirectory>${project.basedir}/target</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>

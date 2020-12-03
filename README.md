@@ -12,9 +12,11 @@ It defines an intermediary C++ interface via the classes in `nativerl.h`, which 
 Required Software
 -----------------
 
- * Linux, Mac, or Windows (untested)
- * Clang, GCC, or MSVC (untested)
+ * Linux, Mac, or Windows
+ * Clang, GCC, or MSVC
+ * CMake 3+
  * JDK 8+
+   * On Windows, make sure that `jvm.dll` can be found in the `PATH`.
  * Maven 3+  https://maven.apache.org/download.cgi
  * JavaCPP 1.5.1+  https://github.com/bytedeco/javacpp
  * Python 3.7+  https://www.python.org/downloads/

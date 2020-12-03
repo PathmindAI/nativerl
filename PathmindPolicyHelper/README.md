@@ -10,7 +10,7 @@ This is the "PathmindHelper" palette item that users can import in their AnyLogi
 Required Software
 -----------------
 
- * AnyLogic on Linux, Mac, or Windows (untested)
+ * AnyLogic on Linux, Mac, or Windows
 
 
 Build Instructions

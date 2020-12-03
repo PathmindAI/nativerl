@@ -402,6 +402,7 @@ public class RLlibHelper {
         handlebars.registerHelpers(ConditionalHelpers.class);
         handlebars.registerHelper("className", (context, options) -> context);
         handlebars.registerHelper("classSimpleName", (context, options) -> ((String)context).substring(((String)context).lastIndexOf('.') + 1));
+        handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
 
         Template template = handlebars.compile("RLlibHelper.py");
 

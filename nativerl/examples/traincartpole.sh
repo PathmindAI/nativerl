@@ -113,4 +113,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --multi-agent \
     rllibtrain.py
 
-python3 rllibtrain.py
+which cygpath && export PATH=$PATH:$(cygpath "$JAVA_HOME")/bin/server
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+"$PYTHON" rllibtrain.py

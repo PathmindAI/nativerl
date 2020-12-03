@@ -128,6 +128,7 @@ public class AnyLogicHelper {
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
+        handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
         Template template = handlebars.compile("AnyLogicHelper.java");
 
         String env = template.apply(this);

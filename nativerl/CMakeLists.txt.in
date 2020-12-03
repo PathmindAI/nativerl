@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 3.4)
+project(pybind11-download NONE)
+
+include(ExternalProject)
+ExternalProject_Add(pybind11
+  URL               https://github.com/pybind/pybind11/archive/v2.6.1.tar.gz
+  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/pybind11-src"
+  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/pybind11-build"
+  CONFIGURE_COMMAND ""
+  CMAKE_ARGS        ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)

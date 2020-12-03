@@ -145,4 +145,6 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-python3 rllibtrain.py
+which cygpath && export PATH=$PATH:$(cygpath "$JAVA_HOME")/bin/server
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+"$PYTHON" rllibtrain.py

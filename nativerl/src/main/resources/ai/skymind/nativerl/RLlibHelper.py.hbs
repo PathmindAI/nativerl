@@ -178,7 +178,7 @@ class Callbacks(DefaultCallbacks):
 
 
 def write_file(messages, file_name, mode="a"):
-    with open(f"{{outputDir}}/{{algorithm}}/{file_name}", mode) as out:
+    with open(f"{{escapePath outputDir}}/{{algorithm}}/{file_name}", mode) as out:
         for msg in messages:
             out.write(f"{msg}\n")
 
@@ -382,7 +382,7 @@ trials = run(
         'no_done_at_end': True
         {{/if}}
     },
-    {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
+    {{#if outputDir}}local_dir = '{{escapePath outputDir}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
     checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
