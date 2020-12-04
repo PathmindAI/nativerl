@@ -228,7 +228,7 @@ class Stopper:
         {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
         {{/if~}}
-        self.too_many_episodes = result['episodes_total'] >= 30000
+        self.too_many_episodes = result['episodes_total'] >= {{maxEpisodes}}
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
