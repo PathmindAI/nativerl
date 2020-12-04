@@ -386,7 +386,7 @@ trials = run(
     resume = {{#if resume}}True{{else}}False{{/if}},
     checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
-    max_failures = 1,
+    max_failures = 3,
     export_formats = ['model'],
     queue_trials = True
 )
@@ -402,4 +402,3 @@ write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "Experime
 if trials:
     write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt")
     print("Training completed successfully")
-
