@@ -1,17 +1,32 @@
 source setup.sh
-export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep Main.class; done | awk '{print $4}' | xargs dirname)
-export MODEL_PACKAGE_NAME=$(echo $MODEL_PACKAGE | sed 's/\//\./g')
-export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
 
-EXPERIMENT_TYPE="Simulation"
-export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep Simulation.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
-if [[ -z "$SIMULATION_PACKAGE" ]]; then
-    export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep RLExperiment.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
-    EXPERIMENT_TYPE="RLExperiment"
+mainAgent=$MAIN_AGENT
+experimentClass=$EXPERIMENT_CLASS
+EXPERIMENT_TYPE=$EXPERIMENT_TYPE
+
+if [[ -z "$mainAgent" ]]; then
+    echo "main agent missing"
+    mainAgent="Main"
 fi
+if [[ -z "$experimentClass" ]]; then
+    experimentClass="Simulation"
+fi
+if [[ -z "$EXPERIMENT_TYPE" ]]; then
+    EXPERIMENT_TYPE="Simulation"
+fi
+
+echo $mainAgent
+echo $experimentClass
+echo $EXPERIMENT_TYPE
+
+export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
+export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')
+export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
+export AGENT_CLASS="$MODEL_PACKAGE_NAME.${mainAgent}"
+export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${experimentClass}.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
 export SIMULATION_PACKAGE_NAME=$(echo $SIMULATION_PACKAGE | sed 's/\//\./g')
-export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.$EXPERIMENT_TYPE"
-export AGENT_CLASS="$MODEL_PACKAGE_NAME.Main"
+export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.${experimentClass}"
+
 export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
@@ -106,6 +121,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --reward-snippet "$REWARD_SNIPPET" \
     --observation-snippet "$OBSERVATION_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
+    --experiment-type "$EXPERIMENT_TYPE" \
     --test-iterations 0 \
     --policy-helper RLlibPolicyHelper \
     $NAMED_VARIABLE_PARAM \
