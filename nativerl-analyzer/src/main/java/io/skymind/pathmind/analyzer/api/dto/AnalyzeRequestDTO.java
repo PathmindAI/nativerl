@@ -9,4 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class AnalyzeRequestDTO {
     private String id;
+    private String mainAgent;
+    private String experimentClass;
+    private String experimentType;
+    private String pathmindHelperClass;
 }

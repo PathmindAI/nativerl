@@ -63,7 +63,7 @@ public class MainController {
             @RequestParam(name = "file") final MultipartFile multipartFile,
             @RequestParam(name = "id", defaultValue="{\"id\":\"Not Defined : \"}") final AnalyzeRequestDTO request) throws IOException {
         log.info(String.format("Received a request for extracting hyperparameters %s ", request.getId()));
-        final List<String> hyperparameters = fileService.processFile(multipartFile);
+        final List<String> hyperparameters = fileService.processFile(multipartFile, request);
         HyperparametersDTO response = HyperparametersDTO.of(hyperparameters);
         log.info(String.format("Extracted Hyperparameters for %s : %s", request.getId(), response));
         return response;

@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import io.skymind.pathmind.analyzer.api.dto.AnalyzeRequestDTO;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -27,10 +28,10 @@ public class FileService {
     private static final String INVALID_ZIP_EXCEPTION_MESSAGE = "%s file is an invalid ZIP";
     private static final String CHECK_MODEL_SCRIPT = "/bin/check_model.sh";
 
-    public List<String> processFile(final MultipartFile multipartFile) throws IOException {
+    public List<String> processFile(final MultipartFile multipartFile, AnalyzeRequestDTO request) throws IOException {
         log.debug("Processing file {} started", multipartFile.getName());
         final Path unzippedPath = unzipFile(multipartFile);
-        return extractParameters(unzippedPath);
+        return extractParameters(unzippedPath, request);
     }
 
     private Path unzipFile(final MultipartFile multipartFile) throws IOException {
@@ -60,16 +61,16 @@ public class FileService {
         }
     }
 
-    private List<String> extractParameters(final Path unzippedPath) throws IOException {
+    private List<String> extractParameters(final Path unzippedPath, AnalyzeRequestDTO request) throws IOException {
         final File scriptFile = Paths.get(CHECK_MODEL_SCRIPT).toFile();
         final File newFile = new File(unzippedPath.normalize().toString(), scriptFile.getName());
         FileCopyUtils.copy(scriptFile, newFile);
 
-        return runExtractorScript(unzippedPath, newFile);
+        return runExtractorScript(unzippedPath, newFile, request);
     }
 
-    private List<String> runExtractorScript(final Path unzippedPath, File newFile) throws IOException {
-        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath()};
+    private List<String> runExtractorScript(final Path unzippedPath, File newFile, AnalyzeRequestDTO request) throws IOException {
+        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
         final Process proc = Runtime.getRuntime().exec(cmd);
         List<String> result = readResult(proc.getInputStream());
         log.info("Bash script finished");
