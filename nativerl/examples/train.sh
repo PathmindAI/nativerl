@@ -15,10 +15,6 @@ if [[ -z "$EXPERIMENT_TYPE" ]]; then
     EXPERIMENT_TYPE="Simulation"
 fi
 
-echo $mainAgent
-echo $experimentClass
-echo $EXPERIMENT_TYPE
-
 export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
 export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')
 export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"

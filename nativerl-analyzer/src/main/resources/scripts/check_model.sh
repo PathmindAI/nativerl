@@ -20,12 +20,6 @@ if [[ -z "$PATHMIND_HELPER_CLASS" ]]; then
     PATHMIND_HELPER_CLASS="pathmindHelper"
 fi
 
-echo $workDir
-echo $mainAgent
-echo $experimentClass
-echo $EXPERIMENT_TYPE
-echo $PATHMIND_HELPER_CLASS
-
 cd ${workDir}
 
 export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -printf '%p:')
