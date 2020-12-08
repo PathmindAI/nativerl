@@ -13,11 +13,11 @@ import com.fasterxml.jackson.annotation.Nulls;
 public class AnalyzeRequestDTO {
     private String id;
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private String mainAgent;
+    private String mainAgent = "";
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private String experimentClass;
+    private String experimentClass = "";
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private String experimentType;
+    private String experimentType = "";
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private String pathmindHelperClass;
+    private String pathmindHelperClass = "";
 }
