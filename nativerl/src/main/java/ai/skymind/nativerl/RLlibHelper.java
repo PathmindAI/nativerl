@@ -241,6 +241,10 @@ public class RLlibHelper {
     @Builder.Default
     int maxTimeInSec = 43200;
 
+    /** Max episodes per trial */
+    @Builder.Default
+    int maxEpisodes = 50000;
+
     /** Number of population-based training samples */
     @Builder.Default
     int numSamples = 4;
@@ -322,6 +326,7 @@ public class RLlibHelper {
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
+        this.maxEpisodes = copy.maxEpisodes;
         this.customParameters = copy.customParameters;
         this.numSamples = copy.numSamples;
         this.resume = copy.resume;
@@ -355,6 +360,7 @@ public class RLlibHelper {
                 + "maxIterations=" + maxIterations + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
                 + "maxTimeInSec=" + maxTimeInSec + ", "
+                + "maxEpisodes=" + maxEpisodes + ", "
                 + "redisAddress=" + redisAddress + ", "
                 + "resume=" + resume + ", "
                 + "checkpointFrequency=" + checkpointFrequency + ", "
@@ -476,6 +482,8 @@ public class RLlibHelper {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
+            } else if ("--max-episodes".equals(args[i])) {
+                helper.maxEpisodes(Integer.parseInt(args[++i]));
             } else if ("--num-samples".equals(args[i])) {
                 helper.numSamples(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {

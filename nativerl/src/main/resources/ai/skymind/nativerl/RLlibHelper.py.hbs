@@ -63,7 +63,6 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
             })
 
         self.id = '{{classSimpleName environment}}'
-        self.max_episode_steps = 20000
 {{#if multiAgent}}
 {{else}}
         self.unwrapped.spec = self
@@ -228,7 +227,7 @@ class Stopper:
         {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
         {{/if~}}
-        self.too_many_episodes = result['episodes_total'] >= 30000
+        self.too_many_episodes = result['episodes_total'] >= {{maxEpisodes}}
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
@@ -377,6 +376,8 @@ trials = run(
                 lambda spec: random.choice([4000, 8000, 12000])),
         # Set rollout samples to episode length
         'batch_mode': 'complete_episodes',
+        # Set max steps per episode
+        'horizon': 20000
         {{#if multiAgent}}
         # Disable "deallocation" of agents for simplicity
         'no_done_at_end': True
@@ -386,7 +387,7 @@ trials = run(
     resume = {{#if resume}}True{{else}}False{{/if}},
     checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
-    max_failures = 1,
+    max_failures = 3,
     export_formats = ['model'],
     queue_trials = True
 )
@@ -402,4 +403,3 @@ write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "Experime
 if trials:
     write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt")
     print("Training completed successfully")
-
