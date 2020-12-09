@@ -24,6 +24,10 @@ public class CodeGenerator {
     @Setter
     String simulationClassName;
     @Setter
+    String pathmindHelperClassName;
+    @Setter
+    String experimentType;
+    @Setter
     boolean isRLExperiment;
 
     public boolean getIsRLExperiment() {
@@ -56,7 +60,7 @@ public class CodeGenerator {
     }
 
     public String generateEnvironment(String fileName) throws IOException {
-        this.setRLExperiment(simulationClassName.endsWith("RLExperiment"));
+        this.setRLExperiment(experimentType.equals("RLExperiment"));
 
         TemplateLoader loader = new ClassPathTemplateLoader();
         loader.setPrefix("/templates/");
@@ -80,6 +84,10 @@ public class CodeGenerator {
                 builder.packageName(args[++i]);
             } else if ("--simulation-class-name".equals(args[i])) {
                 builder.simulationClassName(args[++i]);
+            } else if ("--pathmind-helper-class-name".equals(args[i])) {
+                builder.pathmindHelperClassName(args[++i]);
+            } else if ("--experiment-type".equals(args[i])) {
+                builder.experimentType(args[++i]);
             }
         }
 
