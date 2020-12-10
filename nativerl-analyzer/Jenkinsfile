@@ -156,6 +156,7 @@ pipeline {
 		script {
 				echo "Cloning infra repository"
                                 sh "if [ -d pathmind-webapp ]; then rm -rf pathmind-webapp; fi"
+				sh "rm -rf /tmp/pathmind-webapp"
 				sh "git clone git@github.com:SkymindIO/pathmind-webapp.git /tmp/pathmind-webapp"
 				sh "cd /tmp/pathmind-webapp"
 				sh "git checkout ${DOCKER_TAG}"
