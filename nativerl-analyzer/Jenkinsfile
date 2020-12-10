@@ -158,10 +158,8 @@ pipeline {
                                 sh "if [ -d pathmind-webapp ]; then rm -rf pathmind-webapp; fi"
 				sh "rm -rf /tmp/pathmind-webapp"
 				sh "git clone git@github.com:SkymindIO/pathmind-webapp.git /tmp/pathmind-webapp"
-				sh "cd /tmp/pathmind-webapp"
-				sh "git checkout ${DOCKER_TAG}"
 				echo "Updating helm chart"
-				sh "helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+				sh "cd /tmp/pathmind-webapp && git checkout ${DOCKER_TAG} && helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
 				sh "cd /tmp/ && rm -rf pathmind-webapp"
 		}
             }
