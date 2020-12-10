@@ -160,7 +160,7 @@ pipeline {
 				sh "cd /tmp/pathmind-webapp"
 				sh "git checkout ${DOCKER_TAG}"
 				echo "Updating helm chart"
-				sh "cd pathmind-webapp;helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
+				sh "helm upgrade --install pathmind-ma infra/helm/pathmind-ma -f infra/helm/pathmind-ma/values_${DOCKER_TAG}.yaml -n ${DOCKER_TAG}"
 				sh "cd /tmp/ && rm -rf pathmind-webapp"
 		}
             }
