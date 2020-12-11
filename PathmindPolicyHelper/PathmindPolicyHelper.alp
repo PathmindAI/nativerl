@@ -1865,7 +1865,7 @@ public @interface Continuous {
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>3</VersionMinor>
-			<VersionBuild>3</VersionBuild>
+			<VersionBuild>5</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
