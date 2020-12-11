@@ -698,8 +698,8 @@ class Actions {<br>
 				<Variable Class="Parameter">
 					<Id>1607719252648</Id>
 					<Name><![CDATA[firstOccurrence]]></Name>
-					<Description><![CDATA[<h3>Recurrence</h3>
-<p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
+					<Description><![CDATA[<h3>First Occurrence</h3>
+<p>Sets the time in which the first trigger should occur. By default, the first trigger event occurs at time 0.</p>]]></Description>
 					<X>20</X><Y>340</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
@@ -1900,8 +1900,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>3</VersionMinor>
-			<VersionBuild>5</VersionBuild>
+			<VersionMinor>4</VersionMinor>
+			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
