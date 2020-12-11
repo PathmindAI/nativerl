@@ -34,11 +34,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 
 if (numberOfAgents <= 0) {
 	throw new RuntimeException("Number of Pathmind controlled agents must be greater than 0.");
-}
-
-// makes sure we can always query the state and do actions, even at time 0
-//triggerNextAction();
-]]></StartupCode>
+}]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -573,7 +569,7 @@ class Actions {<br>
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>400</Y>
+					<X>20</X><Y>430</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -700,11 +696,48 @@ class Actions {<br>
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1607719252648</Id>
+					<Name><![CDATA[firstOccurrence]]></Name>
+					<Description><![CDATA[<h3>Recurrence</h3>
+<p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
+					<X>20</X><Y>340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[]]></Type>
+						<UnitType><![CDATA[TIME]]></UnitType>
+						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1607719252646</Id>
+							<Label><![CDATA[First Occurrence]]></Label>
+							<EditorContolType>UNIT_EDITOR</EditorContolType>
+							<HideCondition>
+								<Id>1607719252645</Id>
+								<ParameterId>1573849287879</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
 					<Description><![CDATA[<h3>Recurrence</h3>
 <p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
-					<X>20</X><Y>340</Y>
+					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -744,7 +777,7 @@ class Actions {<br>
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3634254-4-triggering-actions" target="_blank">https://help.pathmind.com/en/articles/3634254-4-triggering-actions</a>]]></Description>
-					<X>20</X><Y>370</Y>
+					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -801,8 +834,8 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 						<OccurrenceAtTime>true</OccurrenceAtTime>
 						<OccurrenceDate>1566892800000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[recurrence(SECOND)]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
+							<Code><![CDATA[firstOccurrence(SECOND)]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
 						</OccurrenceTime>
 						<RecurrenceCode Class="CodeUnitValue">
 							<Code><![CDATA[recurrence(SECOND)]]></Code>
@@ -1170,6 +1203,9 @@ try {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[useEventTrigger]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[firstOccurrence]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[recurrence]]></ParameterName>
