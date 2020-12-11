@@ -37,7 +37,7 @@ if (numberOfAgents <= 0) {
 }
 
 // makes sure we can always query the state and do actions, even at time 0
-triggerNextAction();
+//triggerNextAction();
 ]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
