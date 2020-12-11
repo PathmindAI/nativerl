@@ -31,6 +31,10 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 }
 
+if (numberOfAgents == 0) {
+	throw new RuntimeException("Number of Pathmind controlled agents must be greater than 0.");
+}
+
 // makes sure we can always query the state and do actions, even at time 0
 triggerNextAction();
 ]]></StartupCode>
