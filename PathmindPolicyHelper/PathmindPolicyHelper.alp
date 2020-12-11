@@ -857,6 +857,10 @@ if (isEnabled && debugMode) {
 	printDebug();
 }
 
+if (steps > 20000) {
+	throw new RuntimeException("Maximum steps exceeded.");
+}
+
 /*
 if (!isTraining && steps == 1) {
     PathmindSerializer.writeMeta(this);
