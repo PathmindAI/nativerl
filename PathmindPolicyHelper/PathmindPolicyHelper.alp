@@ -17,7 +17,8 @@
 			<Id>1563523926930</Id>
 			<Name><![CDATA[PathmindHelper]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
-			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;]]></Import>
+			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;
+import java.util.stream.DoubleStream;]]></Import>
 			<ExtendsReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[AbstractPathmindHelper]]></ClassName>
@@ -31,7 +32,7 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 }
 
-if (numberOfAgents == 0) {
+if (numberOfAgents <= 0) {
 	throw new RuntimeException("Number of Pathmind controlled agents must be greater than 0.");
 }
 
@@ -840,9 +841,17 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 		if (isSkip(i)) {
 			continue;
 		}
-		// be sure to call those here allowing users to fix errors before training
+		// Be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
 		double[] reward = observationForReward(i);
+		// Throw error if infinity or NaN detected in observations or rewards array
+		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
+		}
+		if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
+		}
+		
 		if (usePolicy && policyHelper != null) {
 			double[] a = policyHelper.computeActions(training);
 			action[i] = doAction(a, true, i);
