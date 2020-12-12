@@ -14,8 +14,7 @@ Required Software
 
  * Linux, Mac, or Windows
  * Clang, GCC, or MSVC
-   * On Windows, please follow the instructions from here and run Maven from there:  
-     https://docs.microsoft.com/en-us/cpp/build/walkthrough-compiling-a-native-cpp-program-on-the-command-line
+   * On Windows, please also install MSYS2
  * CMake 3+  https://cmake.org/download/
  * JDK 8+
    * On Windows, make sure that `jvm.dll` can be found in the `PATH`.
@@ -30,6 +29,9 @@ Build Instructions
 ------------------
 
  1. Install CMake, the JDK, Maven, and Python on the system
+    * On Windows, from the "Visual Studio 2019" folder found inside the Start menu, open:
+        - "x64 Native Tools Command Prompt for VS 2019" and run `c:\msys64\mingw64.exe` inside
+        - Making sure the `MSYS2_PATH_TYPE=inherit` line is *not* commented out in `mingw64.ini` or `mingw32.ini`.
  2. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
     * To build for TensorFlow 1.x, append `-Dtfv2=false` to that command.
  3. Find all output files inside the `nativerl/target/nativerl-1.4.0-SNAPSHOT-bin.zip` archive
