@@ -376,12 +376,12 @@ trials = run(
                 lambda spec: random.choice([4000, 8000, 12000])),
         # Set rollout samples to episode length
         'batch_mode': 'complete_episodes',
-        # Set max steps per episode
-        'horizon': 20000
         {{#if multiAgent}}
         # Disable "deallocation" of agents for simplicity
-        'no_done_at_end': True
+        'no_done_at_end': True,
         {{/if}}
+        # Set max steps per episode
+        'horizon': 20000
     },
     {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
