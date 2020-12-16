@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.0.202011181904" AlpVersion="8.7.0">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.1.202012141828" AlpVersion="8.7.0">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -899,7 +899,7 @@ if (isEnabled && debugMode) {
 	printDebug();
 }
 
-if (steps > 20000) {
+if (steps > 20001) {
 	throw new RuntimeException("Maximum steps exceeded.");
 }
 
