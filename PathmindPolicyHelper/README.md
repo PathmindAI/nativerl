@@ -25,6 +25,7 @@ Build Instructions
 
 By default, this outputs a `PathmindHelper.jar` file and a copy of its dependencies. We can further add to that JAR the files from `../nativerl-policy/target/nativerl-policy-1.4.0-SNAPSHOT.jar` to simplify the end user experience, but this also requires modifying the `library.xml` file manually to remove the dependency on the JAR file.
   * The `bundle.sh` script file automates this process and outputs the final archive to `target/PathmindHelper.jar`
+  * We can also call `fixup.sh` instead to rename the JAR file for NativeRL Policy to `PathmindPolicy.jar` and fix up the class path in `PathmindHelper.jar` accordingly. This way, however, AnyLogic won't copy `PathmindPolicy.jar` or its content on export.
 
 
 End User Workflow
