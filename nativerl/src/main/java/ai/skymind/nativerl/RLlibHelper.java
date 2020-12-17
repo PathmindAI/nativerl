@@ -199,7 +199,7 @@ public class RLlibHelper {
 
     /** The directory where to output the logs of RLlib. */
     @Builder.Default
-    File outputDir = null;
+    File outputDir = new File(".");
 
     /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     @Builder.Default

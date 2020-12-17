@@ -45,7 +45,7 @@ public class AnyLogicHelper {
 
     /** The directory where to output the logs of RLlib. */
     @Builder.Default
-    File outputDir = null;
+    File outputDir = new File(".");
 
     /** Arbitrary code to add to the generated class such as fields or methods. */
     @Builder.Default
