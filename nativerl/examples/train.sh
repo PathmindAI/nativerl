@@ -15,7 +15,7 @@ export AGENT_CLASS="$MODEL_PACKAGE_NAME.Main"
 export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
-    CPU_COUNT=$(lscpu -p | egrep -v '^#' | wc -l)
+    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
     if [[ $CPU_COUNT = 36 ]]; then
         export NUM_WORKERS=2
         export NUM_CPUS=4
