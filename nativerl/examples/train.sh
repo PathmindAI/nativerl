@@ -150,7 +150,7 @@ python3 run.py training \
     --max-iterations $MAX_ITERATIONS \
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
-    --checkpoint_frequency $CHECKPOINT_FREQUENCY \
+    --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
