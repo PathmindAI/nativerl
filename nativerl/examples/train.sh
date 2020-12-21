@@ -51,12 +51,12 @@ mkdir -p $MODEL_PACKAGE
 
 MULTIAGENT_PARAM=""
 if [[ "$MULTIAGENT" = true ]]; then
-    MULTIAGENT_PARAM="--multi-agent"
+    MULTIAGENT_PARAM="--multi_agent"
 fi
 
 DEBUGMETRICS_PARAM=""
 if [[ "$DEBUGMETRICS" = true ]]; then
-    DEBUGMETRICS_PARAM="--debug-metrics"
+    DEBUGMETRICS_PARAM="--debug_metrics"
 fi
 
 AUTOREGRESSIVE_PARAM=""
@@ -71,27 +71,27 @@ fi
 
 USER_LOG_PARAM=""
 if [[ "$USER_LOG" = true ]]; then
-    USER_LOG_PARAM="--user-log"
+    USER_LOG_PARAM="--user_log"
 fi
 
 EPISODE_REWARD_RANGE_PARAM=""
 if [[ ! -z "$EPISODE_REWARD_RANGE" ]]; then
-    EPISODE_REWARD_RANGE_PARAM="--episode-reward-range ${EPISODE_REWARD_RANGE}"
+    EPISODE_REWARD_RANGE_PARAM="--episode_reward_range ${EPISODE_REWARD_RANGE}"
 fi
 
 ENTROPY_SLOPE_PARAM=""
 if [[ ! -z "$ENTROPY_SLOPE" ]]; then
-    ENTROPY_SLOPE_PARAM="--entropy-slope ${ENTROPY_SLOPE}"
+    ENTROPY_SLOPE_PARAM="--entropy_slope ${ENTROPY_SLOPE}"
 fi
 
 VF_LOSS_RANGE_PARAM=""
 if [[ ! -z "$VF_LOSS_RANGE" ]]; then
-    VF_LOSS_RANGE_PARAM="--vf-loss-range ${VF_LOSS_RANGE}"
+    VF_LOSS_RANGE_PARAM="--vf_loss_range ${VF_LOSS_RANGE}"
 fi
 
 VALUE_PRED_PARAM=""
 if [[ ! -z "$VALUE_PRED" ]]; then
-    VALUE_PRED_PARAM="--value-pred ${VALUE_PRED}"
+    VALUE_PRED_PARAM="--value_pred ${VALUE_PRED}"
 fi
 
 NAMED_VARIABLE_PARAM=""
@@ -101,7 +101,17 @@ fi
 
 MAX_MEMORY_IN_MB_PARAM=""
 if [[ ! -z "$MAX_MEMORY_IN_MB" ]]; then
-    MAX_MEMORY_IN_MB_PARAM="--max-memory-in-mb ${MAX_MEMORY_IN_MB}"
+    MAX_MEMORY_IN_MB_PARAM="--max_memory_in_mb ${MAX_MEMORY_IN_MB}"
+fi
+
+ACTION_MASKING_PARAM=""
+if [[ "$ACTIONMASKS" = true ]]; then
+    ACTION_MASKING_PARAM="--action_masking"
+fi
+
+FREEZING_PARAM=""
+if [[ "$FREEZING" = true ]]; then
+    FREEZING_PARAM="--freezing"
 fi
 
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
@@ -127,21 +137,20 @@ java ai.skymind.nativerl.LearningAgentHelper
 
 javac $(find -iname '*.java')
 
-# CHECKPOINT_PARAM=""
-# if [[ ! -z "$CHECKPOINT" ]]; then
-#     CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
-# fi
+mkdir -p $OUTPUT_DIR/PPO
+cp run.py $OUTPUT_DIR/PPO
+cp -r pathmind $OUTPUT_DIR/PPO
 
-java ai.skymind.nativerl.RLlibHelper \
+python3 run.py training \
     --algorithm "PPO" \
-    --output-dir "$OUTPUT_DIR" \
+    --output_dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
-    --num-cpus $NUM_CPUS \
-    --num-workers $NUM_WORKERS \
-    --max-iterations $MAX_ITERATIONS \
-    --max-time-in-sec $MAX_TIME_IN_SEC \
-    --num-samples $NUM_SAMPLES \
-    --checkpoint-frequency $CHECKPOINT_FREQUENCY \
+    --num_cpus $NUM_CPUS \
+    --num_workers $NUM_WORKERS \
+    --max_iterations $MAX_ITERATIONS \
+    --max_time_in_sec $MAX_TIME_IN_SEC \
+    --num_samples $NUM_SAMPLES \
+    --checkpoint_frequency $CHECKPOINT_FREQUENCY \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
@@ -152,9 +161,5 @@ java ai.skymind.nativerl.RLlibHelper \
     $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
     $MAX_MEMORY_IN_MB_PARAM \
-    rllibtrain.py
-
-mkdir -p $OUTPUT_DIR/PPO
-cp rllibtrain.py $OUTPUT_DIR/PPO
-
-python3 rllibtrain.py
+    $ACTION_MASKING_PARAM \
+    $FREEZING_PARAM
