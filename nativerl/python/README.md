@@ -31,19 +31,24 @@ referenced either by name or relative Python package import. To give an
 example, you can run a gym cart pole example like this:
 
 ```shell
-USE_PY_NATIVERL=True python run.py training CartPole-v0 --is_gym
+USE_PY_NATIVERL=True python run.py training CartPole-v0 --is-gym  --freezing --max-episodes 1
 ```
 
 There are a few things of note here. First, to use pure Python you use
 the `USE_PY_NATIVERL` environment variable, which can also be exported if
 need be (`export USE_PY_NATIVERL=True`). Second, this script works with any
 built-in OpenAI gym environment. To let the tool know we're dealing with a
-gym environment, we're adding the `--is_gym` flag. After setting `USE_PY_NATIVERL`
+gym environment, we're adding the `--is_gym` flag. Also, note that we freeze
+the trained policy at various temperatures with the `freezing` flag and set
+the `max-episodes` parameter to `1` to get quick feedback.
+
+
+After setting `USE_PY_NATIVERL`
 to `True`, the same can be achieved by running the code example of the
 cart pole in the `tests` folder like this:
 
 ```shell
-python run.py training tests.gym_cartpole.CartPoleEnv --is_gym
+python run.py training tests.gym_cartpole.CartPoleEnv --is-gym
 ```
 
 A third way of running a cart pole example is using a Python implementation
