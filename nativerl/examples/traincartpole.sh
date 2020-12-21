@@ -104,13 +104,10 @@ EOF
 
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
-java ai.skymind.nativerl.RLlibHelper \
+python3 run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$MODEL_MODULE.$ENVIRONMENT_CLASS" \
     --num-workers 4 \
     --max-iterations 10 \
-    --multi-agent \
-    rllibtrain.py
-
-python3 rllibtrain.py
+    --multi-agent
