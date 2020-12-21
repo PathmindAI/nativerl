@@ -1,6 +1,7 @@
 import random
 import os
 import fire
+from typing import Optional
 
 import numpy as np
 import ray
@@ -40,6 +41,7 @@ def main(environment: str,
          action_masking: bool = False,
          freezing: bool = False,
          discrete: bool = True,
+         random_seed: Optional[int] = None,
          ):
     """
 
@@ -70,9 +72,14 @@ def main(environment: str,
     :param action_masking: Whether to use action masking or not.
     :param freezing: Whether to use policy freezing or not
     :param discrete: Discrete vs continuous actions, defaults to True (i.e. discrete)
+    :param random_seed: Optional random seed for this experiment.
 
     :return: runs training for the given environment, with nativerl
     """
+
+    if random_seed:
+        random.seed(random_seed)
+        np.random.seed(random_seed)
 
     jar_dir = os.getcwd()
     os.chdir(jar_dir)
