@@ -20,6 +20,13 @@ public class NativeRL extends ai.skymind.nativerl.NativeRLPresets {
 // #ifndef NATIVERL_H
 // #define NATIVERL_H
 
+// #ifdef _WIN32
+// #define NATIVERL_EXPORT __declspec(dllexport)
+// #include <BaseTsd.h>
+// #else
+// #define NATIVERL_EXPORT __attribute__((visibility("default")))
+// #endif
+
 // #include <vector>
 
 /**
@@ -47,8 +54,13 @@ public class NativeRL extends ai.skymind.nativerl.NativeRLPresets {
 
 
 
+// #ifdef _WIN32
+// Windows does not support undefined symbols in DLLs, disallowing circular dependencies,
+// so we cannot call createEnvironment() defined in nativerl.cpp from Java...
 @Namespace("nativerl") public static native @SharedPtr Environment createEnvironment(@Cast("const char*") BytePointer name);
 @Namespace("nativerl") public static native @SharedPtr Environment createEnvironment(String name);
+// #else
+// #endif
 
 
 

@@ -199,7 +199,7 @@ public class RLlibHelper {
 
     /** The directory where to output the logs of RLlib. */
     @Builder.Default
-    File outputDir = null;
+    File outputDir = new File(".");
 
     /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     @Builder.Default
@@ -408,6 +408,7 @@ public class RLlibHelper {
         handlebars.registerHelpers(ConditionalHelpers.class);
         handlebars.registerHelper("className", (context, options) -> context);
         handlebars.registerHelper("classSimpleName", (context, options) -> ((String)context).substring(((String)context).lastIndexOf('.') + 1));
+        handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
 
         Template template = handlebars.compile("RLlibHelper.py");
 

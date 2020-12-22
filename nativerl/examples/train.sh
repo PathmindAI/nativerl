@@ -26,7 +26,7 @@ export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.${experimentClass}"
 export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
-    CPU_COUNT=$(lscpu -p | egrep -v '^#' | wc -l)
+    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
     if [[ $CPU_COUNT = 36 ]]; then
         export NUM_WORKERS=2
         export NUM_CPUS=4
@@ -106,6 +106,11 @@ fi
 
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
+if which cygpath; then
+    export CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
+    export PATH=$PATH:$(find "$(cygpath "$JAVA_HOME")" -name 'jvm.dll' -printf '%h:')
+fi
+
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --simulation-class-name "$SIMULATION_CLASS" \
@@ -157,4 +162,5 @@ java ai.skymind.nativerl.RLlibHelper \
 mkdir -p $OUTPUT_DIR/PPO
 cp rllibtrain.py $OUTPUT_DIR/PPO
 
-python3 rllibtrain.py
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+"$PYTHON" rllibtrain.py

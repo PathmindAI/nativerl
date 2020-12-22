@@ -18,7 +18,9 @@ import org.bytedeco.javacpp.tools.*;
 )
 public class NativeRLPresets implements InfoMapper {
     public void map(InfoMap infoMap) {
-        infoMap.put(new Info("std::vector<float>").pointerTypes("FloatVector").define())
+        infoMap.put(new Info("NATIVERL_EXPORT").annotations().cppTypes())
+               .put(new Info("SSIZE_T").cast().valueTypes("long").pointerTypes("SizeTPointer"))
+               .put(new Info("std::vector<float>").pointerTypes("FloatVector").define())
                .put(new Info("std::vector<ssize_t>").pointerTypes("SSizeTVector").define())
                .put(new Info("nativerl::Environment").virtualize());
     }
