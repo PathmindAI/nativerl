@@ -199,7 +199,7 @@ public class RLlibHelper {
 
     /** The directory where to output the logs of RLlib. */
     @Builder.Default
-    File outputDir = null;
+    File outputDir = new File(".");
 
     /** The RLlib checkpoint to restore for the PythonPolicyHelper or to start training from instead of a random policy. */
     @Builder.Default
@@ -240,6 +240,10 @@ public class RLlibHelper {
     /** Max time in seconds */
     @Builder.Default
     int maxTimeInSec = 43200;
+
+    /** Max episodes per trial */
+    @Builder.Default
+    int maxEpisodes = 50000;
 
     /** Number of population-based training samples */
     @Builder.Default
@@ -322,6 +326,7 @@ public class RLlibHelper {
         this.savePolicyInterval = copy.savePolicyInterval;
         this.redisAddress = copy.redisAddress;
         this.maxTimeInSec = copy.maxTimeInSec;
+        this.maxEpisodes = copy.maxEpisodes;
         this.customParameters = copy.customParameters;
         this.numSamples = copy.numSamples;
         this.resume = copy.resume;
@@ -355,6 +360,7 @@ public class RLlibHelper {
                 + "maxIterations=" + maxIterations + ", "
                 + "savePolicyInterval=" + savePolicyInterval + ", "
                 + "maxTimeInSec=" + maxTimeInSec + ", "
+                + "maxEpisodes=" + maxEpisodes + ", "
                 + "redisAddress=" + redisAddress + ", "
                 + "resume=" + resume + ", "
                 + "checkpointFrequency=" + checkpointFrequency + ", "
@@ -402,6 +408,7 @@ public class RLlibHelper {
         handlebars.registerHelpers(ConditionalHelpers.class);
         handlebars.registerHelper("className", (context, options) -> context);
         handlebars.registerHelper("classSimpleName", (context, options) -> ((String)context).substring(((String)context).lastIndexOf('.') + 1));
+        handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
 
         Template template = handlebars.compile("RLlibHelper.py");
 
@@ -476,6 +483,8 @@ public class RLlibHelper {
                 helper.maxIterations(Integer.parseInt(args[++i]));
             } else if ("--max-time-in-sec".equals(args[i])) {
                 helper.maxTimeInSec(Integer.parseInt(args[++i]));
+            } else if ("--max-episodes".equals(args[i])) {
+                helper.maxEpisodes(Integer.parseInt(args[++i]));
             } else if ("--num-samples".equals(args[i])) {
                 helper.numSamples(Integer.parseInt(args[++i]));
             } else if ("--save-policy-interval".equals(args[i])) {

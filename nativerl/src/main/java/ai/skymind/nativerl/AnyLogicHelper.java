@@ -39,13 +39,17 @@ public class AnyLogicHelper {
     @Builder.Default
     String agentClassName = "MainAgent";
 
+    /** The type of Experiment, now we have Simulation or RLExperiment.  */
+    @Builder.Default
+    String experimentType;
+
     /** The algorithm to use with RLlib for training and the PythonPolicyHelper. */
     @Builder.Default
     String algorithm = "PPO";
 
     /** The directory where to output the logs of RLlib. */
     @Builder.Default
-    File outputDir = null;
+    File outputDir = new File(".");
 
     /** Arbitrary code to add to the generated class such as fields or methods. */
     @Builder.Default
@@ -121,13 +125,14 @@ public class AnyLogicHelper {
         this.setPackageName(packageName);
         this.setObservationClassName(op.getObservationClass().getName().substring(packageName.length() + 1));
         this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
-        this.setRLExperiment(simulationClassName.endsWith("RLExperiment"));
+        this.setRLExperiment(experimentType.equals("RLExperiment"));
         this.isPLE = true;
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
 
         handlebars.registerHelpers(ConditionalHelpers.class);
+        handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
         Template template = handlebars.compile("AnyLogicHelper.java");
 
         String env = template.apply(this);
@@ -148,6 +153,7 @@ public class AnyLogicHelper {
                 System.out.println("    --environment-class-name");
                 System.out.println("    --simulation-class-name");
                 System.out.println("    --agent-class-name");
+                System.out.println("    --experiment-type");
                 System.out.println("    --class-snippet");
                 System.out.println("    --reset-snippet");
                 System.out.println("    --observation-snippet");
@@ -164,6 +170,8 @@ public class AnyLogicHelper {
                 helper.simulationClassName(args[++i]);
             } else if ("--agent-class-name".equals(args[i])) {
                 helper.agentClassName(args[++i]);
+            } else if ("--experiment-type".equals(args[i])) {
+                helper.experimentType(args[++i]);
             } else if ("--class-snippet".equals(args[i])) {
                 helper.classSnippet(args[++i]);
             } else if ("--algorithm".equals(args[i])) {

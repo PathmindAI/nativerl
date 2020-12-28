@@ -95,16 +95,15 @@ public class {{className}} extends AbstractEnvironment {
         if (engine != null) {
             engine.stop();
         }
+        {{simulationClassName}} exp = new {{simulationClassName}}();
 {{#if isRLExperiment}}
     {{#if isPLE}}
-        RLExperiment exp = new RLExperiment();
         agent = exp.createModel();
         agent.setParametersToDefaultValues();
         engine = agent.getEngine();
     {{else}}
         // Create Engine, initialize random number generator:
         engine = experiment.createEngine();
-        RLExperiment exp = new RLExperiment();
         exp.setupEngine_xjal(engine);
         exp.initDefaultRandomNumberGenerator(engine);
         // Create new agent object:
@@ -114,9 +113,8 @@ public class {{className}} extends AbstractEnvironment {
 {{else}}
         // Create Engine, initialize random number generator:
         engine = experiment.createEngine();
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
+        exp.setupEngine(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
         // Create new agent object:
         agent = new {{agentClassName}}(engine, null, null);
         agent.setParametersToDefaultValues();
@@ -267,7 +265,7 @@ public class {{className}} extends AbstractEnvironment {
 
     public static void printExperimentErrorStackTrace(Exception exception) {
         String filename = "ExperimentErrorStackTrace.txt";
-        try (PrintWriter pw = new PrintWriter(new FileOutputStream(new File("{{outputDir}}/{{algorithm}}", filename), true))) {
+        try (PrintWriter pw = new PrintWriter(new FileOutputStream(new File("{{escapePath outputDir}}/{{algorithm}}", filename), true))) {
             exception.printStackTrace(pw);
         } catch (FileNotFoundException e) {
             exception.printStackTrace();
@@ -291,9 +289,9 @@ class Training extends ExperimentCustom {
 
     @AnyLogicInternalCodegenAPI
     public void setupEngine_xjal(Engine engine) {
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
+        {{simulationClassName}} exp = new {{simulationClassName}}();
+        exp.setupEngine(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
     }
 
     @AnyLogicInternalCodegenAPI

@@ -77,7 +77,11 @@ public:
     }
 };
 
-std::shared_ptr<Environment> createEnvironment(const char* name) {
+#ifdef _WIN32
+NATIVERL_EXPORT std::shared_ptr<Environment> createEnvironment2(const char* name) {
+#else
+NATIVERL_EXPORT std::shared_ptr<Environment> createEnvironment(const char* name) {
+#endif
     try {
         return std::shared_ptr<Environment>(createJavaEnvironment(name),
                             [](Environment *e) { releaseJavaEnvironment(e); });
@@ -165,7 +169,11 @@ PYBIND11_MODULE(nativerl, m) {
         .def("getReward", &nativerl::Environment::getReward, pybind11::arg("agentId") = 0)
         .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal);
 
+#ifdef _WIN32
+    m.def("createEnvironment", &nativerl::createEnvironment2);
+#else
     m.def("createEnvironment", &nativerl::createEnvironment);
+#endif
 
     m.def("init", &nativerl::init);
     m.def("uninit", &nativerl::uninit);
