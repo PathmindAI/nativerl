@@ -147,6 +147,7 @@ public class AnyLogicHelper {
         return env;
     }
 
+    /** Handle observation snippet, if the content is too long, it will split it into multiple methods. */
     public void setObservationSnippet() throws IOException {
         this.setObs = new ArrayList<>();
         String obsSnippet = this.getObservationSnippet();
