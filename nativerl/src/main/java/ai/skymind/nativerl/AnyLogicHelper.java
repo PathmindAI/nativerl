@@ -161,11 +161,11 @@ public class AnyLogicHelper {
             List<String> lines = Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
                     .collect(Collectors.toList());
 
-//            int limit = 3000;
-            int limit = 2;
+            // add double[] out = new double[n];
+            sb.append(lines.remove(0) + "\n");
+
+            int limit = 3000;
             int numObsSelection = lines.size() / limit + 1;
-            System.out.println(lines.size());
-            System.out.println(setObs);
 
             for (int i = 0; i < numObsSelection; i++) {
                 sb.append("setObs_" + i + "(out);\n");
