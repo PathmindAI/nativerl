@@ -306,7 +306,6 @@ class Training extends ExperimentCustom {
 {{/unless}}
 
 class PolicyObservationFilter implements ObservationFilter {
-    {{observationClassName}} in = null;
 
     // for some reason, the compiler fails if we try to use the name of inner classes more than once
     // so here we cast our objects using generics to work around this bug
@@ -315,17 +314,22 @@ class PolicyObservationFilter implements ObservationFilter {
     }
 
     public double[] filter(Object object) {
-        in = workAroundJavaBug(object);
+        {{observationClassName}} in = workAroundJavaBug(object);
         double[] out = null;
 
         {{{observationSnippet}}}
 
+        {{#each obsMap}}
+        {{#if (eq this.length 1)}}
+        out[idx++] = in.{{@key}};
+        {{else}}
+        int[] {{@key}} = {{{convertArray this}}};
+        for (int i = 0; i < {{@key}}.length; i++) {
+            out[idx++] = in.{{@key}}[{{@key}}[i]];
+        }
+        {{/if}}
+        {{/each}}
+
         return out;
     }
-
-    {{#each setObs}}
-    public void setObs_{{@index}}(double[] out) {
-        {{{this}}}
-    }
-    {{/each}}
 }
