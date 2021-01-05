@@ -1597,10 +1597,6 @@ public class AnyLogicCloudHelper {
         javacppPath.mkdirs();
         javacppPath.setExecutable(true, false);
 
-        // set necessary property
-        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
-        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-
         // extract the proper jar file name
         Class klass = PolicyHelper.class;
         File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
