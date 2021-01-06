@@ -17,6 +17,7 @@ from pathmind.freezing import freeze_trained_policy
 def main(environment: str,
          is_gym: bool = False,
          algorithm: str = 'PPO',
+         scheduler: str = 'PBT',
          output_dir: str = os.getcwd(),
          multi_agent: bool = True,
          max_memory_in_mb: int = 4096,
@@ -48,6 +49,7 @@ def main(environment: str,
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
+    :param scheduler: The tune scheduler used for picking trials, currently supports "PBT" and "PB2"
     :param output_dir: The directory where to output the logs of RLlib.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
@@ -119,7 +121,9 @@ def main(environment: str,
     )
 
     callbacks = get_callbacks(debug_metrics, is_gym)
-    scheduler = get_scheduler()
+
+    assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
+    scheduler_instance = get_scheduler(scheduler_name=scheduler)
     loggers = get_loggers()
 
     config = {
@@ -146,7 +150,7 @@ def main(environment: str,
 
     trials = run(
         algorithm,
-        scheduler=scheduler,
+        scheduler=scheduler_instance,
         num_samples=num_samples,
         stop=stopper.stop,
         loggers=loggers,

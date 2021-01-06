@@ -6,3 +6,5 @@ ray[rllib]==1.0.1.post1
 fire==0.3.1
 matplotlib==3.3.3
 tensorflow==2.4.0
+Gpy==1.9.9
+scikit-learn==0.24.0
