@@ -63,7 +63,6 @@ class {{classSimpleName environment}}({{#if multiAgent}}MultiAgentEnv{{else}}gym
             })
 
         self.id = '{{classSimpleName environment}}'
-        self.max_episode_steps = 20000
 {{#if multiAgent}}
 {{else}}
         self.unwrapped.spec = self
@@ -178,7 +177,7 @@ class Callbacks(DefaultCallbacks):
 
 
 def write_file(messages, file_name, mode="a"):
-    with open(f"{{outputDir}}/{{algorithm}}/{file_name}", mode) as out:
+    with open(f"{{escapePath outputDir}}/{{algorithm}}/{file_name}", mode) as out:
         for msg in messages:
             out.write(f"{msg}\n")
 
@@ -228,7 +227,7 @@ class Stopper:
         {{#if (gt maxTimeInSec 0)~}}
         self.too_much_time = result['time_total_s'] >= {{maxTimeInSec}}
         {{/if~}}
-        self.too_many_episodes = result['episodes_total'] >= 30000
+        self.too_many_episodes = result['episodes_total'] >= {{maxEpisodes}}
 
         # Stop entire experiment if max training ceiling reached
         if self.too_many_iter:
@@ -379,14 +378,16 @@ trials = run(
         'batch_mode': 'complete_episodes',
         {{#if multiAgent}}
         # Disable "deallocation" of agents for simplicity
-        'no_done_at_end': True
+        'no_done_at_end': True,
         {{/if}}
+        # Set max steps per episode
+        'horizon': 20000
     },
-    {{#if outputDir}}local_dir = '{{outputDir.absolutePath}}{{else}}""{{/if}}',
+    {{#if outputDir}}local_dir = '{{escapePath outputDir}}{{else}}""{{/if}}',
     resume = {{#if resume}}True{{else}}False{{/if}},
     checkpoint_freq = {{checkpointFrequency}},
     checkpoint_at_end = True,
-    max_failures = 1,
+    max_failures = 3,
     export_formats = ['model'],
     queue_trials = True
 )
@@ -402,4 +403,3 @@ write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "Experime
 if trials:
     write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt")
     print("Training completed successfully")
-
