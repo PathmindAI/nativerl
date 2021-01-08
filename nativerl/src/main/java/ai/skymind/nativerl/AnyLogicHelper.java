@@ -16,6 +16,13 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This is a helper class to help users implement the reinforcement learning
@@ -96,6 +103,9 @@ public class AnyLogicHelper {
     @Setter
     boolean isPLE;
 
+    @Setter
+    Map<String, List<String>> obsMap;
+
     public boolean getIsRLExperiment() {
         return isRLExperiment;
     }
@@ -103,6 +113,8 @@ public class AnyLogicHelper {
     public boolean getIsPLE() {
         return isPLE;
     }
+
+    private static Pattern pattern = Pattern.compile("\\[[0-9]+\\];");
 
     /** Calls {@link #generateEnvironment()} and writes the result to a File. */
     public void generateEnvironment(File file) throws IOException, ReflectiveOperationException {
@@ -120,6 +132,7 @@ public class AnyLogicHelper {
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
         ObservationProcessor op = new ObservationProcessor(agentClassName);
         RewardProcessor rp = new RewardProcessor(agentClassName);
+        setObservationSnippet();
 
         this.setClassName(className);
         this.setPackageName(packageName);
@@ -133,11 +146,58 @@ public class AnyLogicHelper {
 
         handlebars.registerHelpers(ConditionalHelpers.class);
         handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
+    handlebars.registerHelper("convertArray", (context, options) -> (context.toString()).replace("[", "{").replace("]", "}"));
         Template template = handlebars.compile("AnyLogicHelper.java");
 
         String env = template.apply(this);
 
         return env;
+    }
+
+    /** Handle observation snippet, if the content is too long, it will split it into multiple methods. */
+    public void setObservationSnippet() throws IOException {
+        this.obsMap = new LinkedHashMap<>();
+        String obsSnippet = this.getObservationSnippet();
+
+        if (obsSnippet.startsWith("file:")) {
+            File file = new File(obsSnippet.split(":")[1]);
+            if (!file.exists()) {
+                throw new RuntimeException("observation file doesn't exist!");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            List<String> lines = Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
+                    .collect(Collectors.toList());
+
+            // add int idx = 0;
+            sb.append("int idx = 0; \n");
+            // add double[] out = new double[n];
+            sb.append(lines.remove(0) + "\n");
+
+            lines.forEach(l -> {
+                String[] split = l.split("in\\.");
+                Matcher matcher = pattern.matcher(split[1]);
+                String index = "-1";
+                String field;
+                if (matcher.find()) {
+                    String matched = matcher.group(0);
+                    index = matched.substring(1, matched.length() - 2);
+                    field = split[1].replace(matched, "");
+                } else {
+                    field = split[1].replace(";", "");
+                }
+
+                if (obsMap.containsKey(field)) {
+                    obsMap.get(field).add(index);
+                } else {
+                    List<String> indexes = new ArrayList<>();
+                    indexes.add(index);
+                    obsMap.put(field, indexes);
+                }
+            });
+
+            this.observationSnippet = sb.toString();
+        }
     }
 
     /** The command line interface of this helper. */
@@ -181,19 +241,7 @@ public class AnyLogicHelper {
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
-                String obsSnippet = args[++i];
-                if (obsSnippet.startsWith("file:")) {
-                    File file = new File(obsSnippet.split(":")[1]);
-                    if (!file.exists()) {
-                        throw new RuntimeException("observation file doesn't exist!");
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
-                            .forEach(s -> sb.append(s));
-                    obsSnippet = sb.toString();
-                }
-                helper.observationSnippet(obsSnippet);
+                helper.observationSnippet(args[++i]);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {

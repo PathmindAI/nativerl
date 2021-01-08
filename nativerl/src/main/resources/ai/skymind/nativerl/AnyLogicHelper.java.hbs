@@ -319,6 +319,17 @@ class PolicyObservationFilter implements ObservationFilter {
 
         {{{observationSnippet}}}
 
+        {{#each obsMap}}
+        {{#if (eq this.length 1)}}
+        out[idx++] = in.{{@key}};
+        {{else}}
+        int[] {{@key}} = {{{convertArray this}}};
+        for (int i = 0; i < {{@key}}.length; i++) {
+            out[idx++] = in.{{@key}}[{{@key}}[i]];
+        }
+        {{/if}}
+        {{/each}}
+
         return out;
     }
 }
