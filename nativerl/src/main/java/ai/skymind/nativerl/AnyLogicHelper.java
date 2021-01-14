@@ -17,11 +17,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +100,7 @@ public class AnyLogicHelper {
     boolean isPLE;
 
     @Setter
-    Map<String, List<String>> obsMap;
+    List<String> setObs;
 
     public boolean getIsRLExperiment() {
         return isRLExperiment;
@@ -113,8 +109,6 @@ public class AnyLogicHelper {
     public boolean getIsPLE() {
         return isPLE;
     }
-
-    private static Pattern pattern = Pattern.compile("\\[[0-9]+\\];");
 
     /** Calls {@link #generateEnvironment()} and writes the result to a File. */
     public void generateEnvironment(File file) throws IOException, ReflectiveOperationException {
@@ -146,7 +140,6 @@ public class AnyLogicHelper {
 
         handlebars.registerHelpers(ConditionalHelpers.class);
         handlebars.registerHelper("escapePath", (context, options) -> ((File)context).getAbsolutePath().replace("\\", "/"));
-    handlebars.registerHelper("convertArray", (context, options) -> (context.toString()).replace("[", "{").replace("]", "}"));
         Template template = handlebars.compile("AnyLogicHelper.java");
 
         String env = template.apply(this);
@@ -156,7 +149,7 @@ public class AnyLogicHelper {
 
     /** Handle observation snippet, if the content is too long, it will split it into multiple methods. */
     public void setObservationSnippet() throws IOException {
-        this.obsMap = new LinkedHashMap<>();
+        this.setObs = new ArrayList<>();
         String obsSnippet = this.getObservationSnippet();
 
         if (obsSnippet.startsWith("file:")) {
@@ -169,32 +162,16 @@ public class AnyLogicHelper {
             List<String> lines = Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
                     .collect(Collectors.toList());
 
-            // add int idx = 0;
-            sb.append("int idx = 0; \n");
             // add double[] out = new double[n];
             sb.append(lines.remove(0) + "\n");
 
-            lines.forEach(l -> {
-                String[] split = l.split("in\\.");
-                Matcher matcher = pattern.matcher(split[1]);
-                String index = "-1";
-                String field;
-                if (matcher.find()) {
-                    String matched = matcher.group(0);
-                    index = matched.substring(1, matched.length() - 2);
-                    field = split[1].replace(matched, "");
-                } else {
-                    field = split[1].replace(";", "");
-                }
+            int limit = 3000;
+            int numObsSelection = lines.size() / limit + 1;
 
-                if (obsMap.containsKey(field)) {
-                    obsMap.get(field).add(index);
-                } else {
-                    List<String> indexes = new ArrayList<>();
-                    indexes.add(index);
-                    obsMap.put(field, indexes);
-                }
-            });
+            for (int i = 0; i < numObsSelection; i++) {
+                sb.append("setObs_" + i + "(out);\n");
+                setObs.add(String.join("\n", lines.subList((limit * i), Math.min(limit * (i+1), lines.size()))));
+            }
 
             this.observationSnippet = sb.toString();
         }
