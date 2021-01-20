@@ -65,9 +65,6 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
 
     temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
 
-    # ray.shutdown()
-    # ray.init()
-
     register_freezing_distributions(env=env)
 
     best_trial = trials.get_best_trial(metric="episode_reward_mean", mode="max")

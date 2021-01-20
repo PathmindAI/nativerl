@@ -22,12 +22,14 @@ HOT_TEMP = 100.0
 
 def register_freezing_distributions(env):
 
-    env_action_space = env.action_space
+    env_action_space = env.actionSpaces if hasattr(env, "actionSpaces") else env.action_space
     if not isinstance(env_action_space, list):  # gym case
         env_action_space = [env_action_space]
 
     env_output_sizes = [env_action_space[i].n for i in range(len(env_action_space))]
     env_output_shape = sum(env_output_sizes)
+
+    child_dists = [Categorical] * len(env_action_space)
 
     class IcyMultiActionDistribution(MultiActionDistribution):
         def _build_sample_op(self) -> TensorType:
@@ -37,7 +39,7 @@ def register_freezing_distributions(env):
         def required_model_output_shape(action_space, model_config, **kwargs):
             return env_output_shape  # controls model output feature vector size
 
-        def __init__(self, inputs, model, *, child_distributions=[Categorical]*len(env_action_space),
+        def __init__(self, inputs, model, *, child_distributions=child_dists,
                      input_lens=env_output_sizes,
                      action_space=env_action_space, temperature = ICY_TEMP):
             ActionDistribution.__init__(self, inputs / temperature, model)
@@ -62,9 +64,9 @@ def register_freezing_distributions(env):
         def required_model_output_shape(action_space, model_config, **kwargs):
             return env_output_shape  # controls model output feature vector size
 
-        def __init__(self, inputs, model, *, child_distributions=[Categorical]*len(env_action_space),
+        def __init__(self, inputs, model, *, child_distributions=child_dists,
                      input_lens=env_output_sizes,
-                     action_space=env_action_space, temperature = COLD_TEMP):
+                     action_space=env_action_space, temperature=COLD_TEMP):
             ActionDistribution.__init__(self, inputs / temperature, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
@@ -87,9 +89,9 @@ def register_freezing_distributions(env):
         def required_model_output_shape(action_space, model_config, **kwargs):
             return env_output_shape  # controls model output feature vector size
 
-        def __init__(self, inputs, model, *, child_distributions=[Categorical]*len(env_action_space),
+        def __init__(self, inputs, model, *, child_distributions=child_dists,
                      input_lens=env_output_sizes,
-                     action_space=env_action_space, temperature = COOL_TEMP):
+                     action_space=env_action_space, temperature=COOL_TEMP):
             ActionDistribution.__init__(self, inputs / temperature, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
@@ -112,9 +114,9 @@ def register_freezing_distributions(env):
         def required_model_output_shape(action_space, model_config, **kwargs):
             return env_output_shape  # controls model output feature vector size
 
-        def __init__(self, inputs, model, *, child_distributions=[Categorical]*len(env_action_space),
+        def __init__(self, inputs, model, *, child_distributions=child_dists,
                      input_lens=env_output_sizes,
-                     action_space=env_action_space, temperature = WARM_TEMP):
+                     action_space=env_action_space, temperature=WARM_TEMP):
             ActionDistribution.__init__(self, inputs / temperature, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
@@ -137,9 +139,9 @@ def register_freezing_distributions(env):
         def required_model_output_shape(action_space, model_config, **kwargs):
             return env_output_shape  # controls model output feature vector size
 
-        def __init__(self, inputs, model, *, child_distributions=[Categorical]*len(env_action_space),
+        def __init__(self, inputs, model, *, child_distributions=child_dists,
                      input_lens=env_output_sizes,
-                     action_space=env_action_space, temperature = HOT_TEMP):
+                     action_space=env_action_space, temperature=HOT_TEMP):
             ActionDistribution.__init__(self, inputs / temperature, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
