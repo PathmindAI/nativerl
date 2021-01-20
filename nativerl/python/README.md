@@ -72,8 +72,28 @@ This latter way is likely better long-term, at least for experimentation purpose
 as it frees you from setting environment variables like a pedestrian.
 
 If you want to register custom callbacks for more advanced modifications, e.g., elaborate
-curriculum learning
+curriculum learning scenarios, use the `custom-callback` flag to register a callback like
+this:
 
+```shell
+python run.py training CartPole-v0 --is_gym --max_episodes=1 --freezing --custom-callback tests.custom_callback.get_callback
+```
+
+### Lagor PoC
+
+We added the fairly advanced LPoC factory model as a test case to this module, which
+comes with four basic environments. Here are examples to run them:
+
+```shell
+python run.py training tests.factory.environments.FactoryEnv --is_gym --max_episodes=1
+python run.py training tests.factory.environments.TupleFactoryEnv --is_gym --max_episodes=1
+python run.py training tests.factory.environments.RoundRobinFactoryEnv --is_gym --max_episodes=1
+python run.py training tests.factory.environments.MultiAgentFactoryEnv --is_gym --max_episodes=1
+```
+
+The configuration of the underlying factory can be modified in `tests/factory/config.yml`.
+It should be interesting to use this non-trivial case for faster prototyping, e.g. for
+evaluating action masking or using autoregression.
 
 ## Help
 
