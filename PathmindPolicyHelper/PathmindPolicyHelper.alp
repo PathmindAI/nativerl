@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.1.202012141828" AlpVersion="8.7.0">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.2.202012250258" AlpVersion="8.7.0">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -1597,15 +1597,12 @@ public class AnyLogicCloudHelper {
         javacppPath.mkdirs();
         javacppPath.setExecutable(true, false);
 
-        // set necessary property
-        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
-        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-
         // extract the proper jar file name
         Class klass = PolicyHelper.class;
         File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
 
-        File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
+        //File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
+        File dest = new File(javacppPath, jarFile.getName() + "/org/tensorflow/internal/c_api/linux-x86_64");
         dest.mkdirs();
 
         // copy libstdc++ so files to javacpp cache due to ld.library.path

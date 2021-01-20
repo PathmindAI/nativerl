@@ -26,7 +26,7 @@ export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.${experimentClass}"
 export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
-    CPU_COUNT=$(lscpu -p | egrep -v '^#' | wc -l)
+    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
     if [[ $CPU_COUNT = 36 ]]; then
         export NUM_WORKERS=2
         export NUM_CPUS=4
@@ -116,6 +116,11 @@ fi
 
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
+if which cygpath; then
+    export CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
+    export PATH=$PATH:$(find "$(cygpath "$JAVA_HOME")" -name 'jvm.dll' -printf '%h:')
+fi
+
 java ai.skymind.nativerl.AnyLogicHelper \
     --environment-class-name "$ENVIRONMENT_CLASS" \
     --simulation-class-name "$SIMULATION_CLASS" \
@@ -141,7 +146,9 @@ mkdir -p $OUTPUT_DIR/PPO
 cp run.py $OUTPUT_DIR/PPO
 cp -r pathmind $OUTPUT_DIR/PPO
 
-python3 run.py training \
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+
+"$PYTHON"  run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \

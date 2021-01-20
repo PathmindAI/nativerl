@@ -12,9 +12,12 @@ It defines an intermediary C++ interface via the classes in `nativerl.h`, which 
 Required Software
 -----------------
 
- * Linux, Mac, or Windows (untested)
- * Clang, GCC, or MSVC (untested)
+ * Linux, Mac, or Windows
+ * Clang, GCC, or MSVC
+   * On Windows, please also install MSYS2
+ * CMake 3+  https://cmake.org/download/
  * JDK 8+
+   * On Windows, make sure that `jvm.dll` can be found in the `PATH`.
  * Maven 3+  https://maven.apache.org/download.cgi
  * JavaCPP 1.5.1+  https://github.com/bytedeco/javacpp
  * Python 3.7+  https://www.python.org/downloads/
@@ -25,11 +28,13 @@ Required Software
 Build Instructions
 ------------------
 
- 1. Install the JDK, Maven, and Python on the system
- 2. Install pybind11 with a command like `pip3 install --user pybind11`
- 3. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
+ 1. Install CMake, the JDK, Maven, and Python on the system
+    * On Windows, from the "Visual Studio 2019" folder found inside the Start menu, open:
+        - "x64 Native Tools Command Prompt for VS 2019" and run `c:\msys64\mingw64.exe` inside
+        - Making sure the `MSYS2_PATH_TYPE=inherit` line is *not* commented out in `mingw64.ini` or `mingw32.ini`.
+ 2. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
     * To build for TensorFlow 1.x, append `-Dtfv2=false` to that command.
- 4. Find all output files inside the `nativerl/target/nativerl-1.4.0-SNAPSHOT-bin.zip` archive
+ 3. Find all output files inside the `nativerl/target/nativerl-1.4.0-SNAPSHOT-bin.zip` archive
     * This also produces `nativerl-policy/target/nativerl-policy-1.4.0-SNAPSHOT.jar` (~231mb) for the PathmindHelper
 
 ### Building with Docker
@@ -54,11 +59,12 @@ on Unix machines, on Windows you'll likely have to use `${PWD}` instead of `$(pw
 ```bash
 sudo yum update
 sudo yum install centos-release-scl
-sudo yum install gcc-c++ java-1.8.0-openjdk-devel git wget devtoolset-7 rh-maven35
+sudo yum install gcc-c++ cmake3 make java-1.8.0-openjdk-devel git wget devtoolset-7 rh-maven35
+sudo ln -s /usr/bin/cmake3 /usr/bin/cmake
 
 wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh
 bash Anaconda3-2019.03-Linux-x86_64.sh
-conda install pybind11 tensorflow
+conda install tensorflow
 pip install ray[rllib]
 
 scl enable devtoolset-7 rh-maven35 bash

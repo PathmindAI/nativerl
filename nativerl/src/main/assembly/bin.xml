@@ -25,6 +25,7 @@
         <include>*.jar</include>
         <include>*.dll</include>
         <include>*.dylib</include>
+        <include>*.pyd</include>
         <include>*.so</include>
       </includes>
       <excludes>
