@@ -10,7 +10,7 @@ from ray.tune import run, sample_from
 from pathmind import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
 from pathmind.environments import get_environment, get_gym_environment
 from pathmind.models import get_custom_model
-from pathmind.callbacks import get_callbacks
+from pathmind.callbacks import get_callbacks, get_callback_function
 from pathmind.freezing import freeze_trained_policy
 
 
@@ -43,6 +43,7 @@ def main(environment: str,
          freezing: bool = False,
          discrete: bool = True,
          random_seed: Optional[int] = None,
+         custom_callback: Optional[str] = None,
          ):
     """
 
@@ -75,6 +76,8 @@ def main(environment: str,
     :param freezing: Whether to use policy freezing or not
     :param discrete: Discrete vs continuous actions, defaults to True (i.e. discrete)
     :param random_seed: Optional random seed for this experiment.
+    :param custom_callback: Optional name of a custom Python function returning a callback implementation
+        of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
 
     :return: runs training for the given environment, with nativerl
     """
@@ -120,7 +123,11 @@ def main(environment: str,
         vf_loss_range_th=vf_loss_range_th, value_pred_th=value_pred_th
     )
 
-    callbacks = get_callbacks(debug_metrics, is_gym)
+    if custom_callback:
+        # from tests.custom_callback import get_callback as foo
+        callbacks = get_callback_function(custom_callback)()
+    else:
+        callbacks = get_callbacks(debug_metrics, is_gym)
 
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(scheduler_name=scheduler)
