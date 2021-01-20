@@ -71,6 +71,9 @@ python run.py from_config config.json
 This latter way is likely better long-term, at least for experimentation purposes,
 as it frees you from setting environment variables like a pedestrian.
 
+If you want to register custom callbacks for more advanced modifications, e.g., elaborate
+curriculum learning
+
 
 ## Help
 
