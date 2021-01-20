@@ -1,10 +1,22 @@
 from typing import Dict
 
+import importlib
 import ray
 from ray.rllib.env import BaseEnv
 from ray.rllib.policy import Policy
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
+
+
+def get_callback_function(callback_function_name):
+    """Get callback function from a string interpreted as Python module
+    :param callback_function_name: name of the python module and function as string
+    :return: callback function
+    """
+    class_name = callback_function_name.split('.')[-1]
+    module = callback_function_name.replace(f'.{class_name}', '')
+    lib = importlib.import_module(module)
+    return getattr(lib, class_name)
 
 
 def get_callbacks(debug_metrics, is_gym):
