@@ -63,7 +63,7 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
         logger.warning('Freezing skipped. Only supported for models with discrete actions.')
         return
 
-    temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
+    temperature_list = temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
 
     register_freezing_distributions(env=env)
 
@@ -78,48 +78,65 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
     trainer_class = get_agent_class('PPO')
     mock_env = get_mock_env(env)
 
-    for temp in temperature_list:
-        if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
-
-        agent = trainer_class(env=mock_env, config=config)
-        agent.restore(checkpoint_path)
-
-        mean_reward_dict[temp], std_reward_dict[temp], range_reward_dict[temp] = \
-            mc_rollout(mc_iterations, agent, env, step_tolerance)
-
-    # Filter out policies with under (filter_tolerance*100)% of max mean reward
-    filtered_range_reward_dict = {temp: range_reward_dict[temp]
-                                  for temp in mean_reward_dict.keys()
-                                  if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
-
-    top_performing_temp = max(mean_reward_dict, key=lambda k: mean_reward_dict[k])
-    most_clustered_temp = min(range_reward_dict, key=lambda k: std_reward_dict[k])
-    most_reliable_temp = min(filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k])
+# Naive freezing ---------------------------------------------------
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
-        trainer_class = get_agent_class(algorithm)
-        agent = trainer_class(env=mock_env, config=config)
+            config['model'] =  {'custom_action_dist': temp}
+        
+        # Create trainer agent
+        trainer = get_agent_class('PPO')
+        agent = trainer(env=mock_env, config=config)
+    
+        # Restore from checkpoint
         agent.restore(checkpoint_path)
-        if temp == top_performing_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
-        if temp == most_clustered_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-most-clustered")
-        if temp == most_reliable_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
-        else:
-            agent.export_policy_model(f"{output_dir}/model/{temp}")
+        agent.export_policy_model(f"{output_dir}/model/{temp}")
+    
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-    # Write freezing completion report
-    message_list = [
-        f"Mean reward dict: {mean_reward_dict}",
-        f"Standard deviation reward dict: {std_reward_dict}",
-        f"Range reward dict: {range_reward_dict}",
-        f"Top performing reward temperature: {top_performing_temp}",
-        f"Filtered temperature list: {filtered_range_reward_dict}",
-        f"Most clustered reward temparature: {most_clustered_temp}",
-        f"Most reliable temperature (our policy of choice): {most_reliable_temp}"
-    ]
-    write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
+
+#    for temp in temperature_list:
+#        if temp != "vanilla":
+#            config['model'] = {'custom_action_dist': temp}
+#
+#        agent = trainer_class(env=mock_env, config=config)
+#        agent.restore(checkpoint_path)
+#
+#        mean_reward_dict[temp], std_reward_dict[temp], range_reward_dict[temp] = \
+#            mc_rollout(mc_iterations, agent, env, step_tolerance)
+#
+#    # Filter out policies with under (filter_tolerance*100)% of max mean reward
+#    filtered_range_reward_dict = {temp: range_reward_dict[temp]
+#                                  for temp in mean_reward_dict.keys()
+#                                  if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
+#
+#    top_performing_temp = max(mean_reward_dict, key=lambda k: mean_reward_dict[k])
+#    most_clustered_temp = min(range_reward_dict, key=lambda k: std_reward_dict[k])
+#    most_reliable_temp = min(filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k])
+#
+#    for temp in temperature_list:
+#        if temp != "vanilla":
+#            config['model'] = {'custom_action_dist': temp}
+#        trainer_class = get_agent_class(algorithm)
+#        agent = trainer_class(env=mock_env, config=config)
+#        agent.restore(checkpoint_path)
+#        if temp == top_performing_temp:
+#            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
+#        if temp == most_clustered_temp:
+#            agent.export_policy_model(f"{output_dir}/model/{temp}-most-clustered")
+#        if temp == most_reliable_temp:
+#            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
+#        else:
+#            agent.export_policy_model(f"{output_dir}/model/{temp}")
+#
+#    # Write freezing completion report
+#    message_list = [
+#        f"Mean reward dict: {mean_reward_dict}",
+#        f"Standard deviation reward dict: {std_reward_dict}",
+#        f"Range reward dict: {range_reward_dict}",
+#        f"Top performing reward temperature: {top_performing_temp}",
+#        f"Filtered temperature list: {filtered_range_reward_dict}",
+#        f"Most clustered reward temparature: {most_clustered_temp}",
+#        f"Most reliable temperature (our policy of choice): {most_reliable_temp}"
+#    ]
+#    write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
