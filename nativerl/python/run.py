@@ -177,9 +177,6 @@ def main(environment: str,
     if isinstance(env_instance.action_space, gym.spaces.Tuple):
         for i in len(env_instance.action_space):
             if not isinstance(env_instance.action_space[i], gym.spaces.Discrete):
-                print("HEY HEY HEY")
-                print("HEY HEY HEY")
-                print("HEY HEY HEY")
                 is_discrete = False
     elif isinstance(env_instance.action_space, gym.spaces.Discrete):
         is_discrete = True
@@ -187,14 +184,6 @@ def main(environment: str,
         is_discrete = False
 
     if freezing:
-        print("ACTION SPACE")
-        print(env_instance.action_space)
-        print("ACTION SPACE")
-        print(env_instance.action_space)
-        print("ACTION SPACE")
-        print(env_instance.action_space)
-        print("ACTION SPACE")
-        print(env_instance.action_space)
         freeze_trained_policy(env=env_instance, trials=trials, algorithm=algorithm,
                               output_dir=output_dir, is_discrete=discrete)
 

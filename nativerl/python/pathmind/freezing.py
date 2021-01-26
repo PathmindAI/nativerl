@@ -63,13 +63,6 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
         logger.warning('Freezing skipped. Only supported for models with discrete actions.')
         return
 
-    print("IS DISCRETE-------------------------------------------------")
-    print(is_discrete)
-    print("IS DISCRETE-------------------------------------------------")
-    print(is_discrete)
-    print("IS DISCRETE-------------------------------------------------")
-    print(is_discrete)
-
     temperature_list = temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
 
     register_freezing_distributions(env=env)
