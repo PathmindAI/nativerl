@@ -25,9 +25,13 @@ HOT_TEMP = 100.0
 def register_freezing_distributions(env):
 
     env_action_space = env.action_space
-    env_output_sizes = [env_action_space[i].n for i in range(len(env_action_space.spaces))]
+    if isinstance(env.action_space, gym.spaces.Tuple):
+        env_output_sizes = [env_action_space[i].n for i in range(len(env_action_space.spaces))]
+        child_dists = [Categorical] * len(env_action_space.spaces)
+    else:
+        env_output_sizes = [env_action_space.n]
+        child_dists = [Categorical]
     env_output_shape = sum(env_output_sizes)
-    child_dists = [Categorical] * len(env_action_space.spaces)
 
     class IcyMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
@@ -444,15 +448,17 @@ def register_freezing_distributions(env):
         def __init__(self, inputs, model=None, temperature=HOT_TEMP):
             super().__init__(inputs / temperature, model=None)
 
-    if len(env_action_space) > 1:
+    if isinstance(env_action_space, gym.spaces.Discrete):
+        ModelCatalog.register_custom_action_dist("icy", IcyCategorical)
+        ModelCatalog.register_custom_action_dist("cold", ColdCategorical)
+        ModelCatalog.register_custom_action_dist("cool", CoolCategorical)
+        ModelCatalog.register_custom_action_dist("warm", WarmCategorical)
+        ModelCatalog.register_custom_action_dist("hot", HotCategorical)
+    elif isinstance(env_action_space, gym.spaces.Tuple):
         ModelCatalog.register_custom_action_dist("icy", IcyMultiActionDistribution)
         ModelCatalog.register_custom_action_dist("cold", ColdMultiActionDistribution)
         ModelCatalog.register_custom_action_dist("cool", CoolMultiActionDistribution)
         ModelCatalog.register_custom_action_dist("warm", WarmMultiActionDistribution)
         ModelCatalog.register_custom_action_dist("hot", HotMultiActionDistribution)
     else:
-        ModelCatalog.register_custom_action_dist("icy", IcyCategorical)
-        ModelCatalog.register_custom_action_dist("cold", ColdCategorical)
-        ModelCatalog.register_custom_action_dist("cool", CoolCategorical)
-        ModelCatalog.register_custom_action_dist("warm", WarmCategorical)
-        ModelCatalog.register_custom_action_dist("hot", HotCategorical)
+        print("Custom distributions currently only built for Discrete and Tuple")
