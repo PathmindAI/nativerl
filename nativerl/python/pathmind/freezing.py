@@ -1,13 +1,33 @@
 import logging
+import os
 from math import sqrt
 
+import ray
 from ray.rllib.agents.registry import get_agent_class
+from ray.tune import run
 
+from pathmind import modify_anylogic_db_properties
+from pathmind.environments import get_environment, get_gym_environment
 from pathmind.distributions import register_freezing_distributions
 from pathmind.utils import get_mock_env, write_file
+from pathmind.callbacks import get_callbacks, get_callback_function
 
+def find(key, value):
+  for k, v in value.items():
+    if k == key:
+      yield v
+    elif isinstance(v, dict):
+      for result in find(key, v):
+        yield result
+    elif isinstance(v, list):
+      for d in v:
+        for result in find(key, d):
+          yield r			
 
-def mc_rollout(episodes, agent, environment, step_tolerance=1000000):
+def mc_rollout(steps, checkpoint, environment, input_config, 
+               step_tolerance=1000000, debug_metrics=True, is_gym=False,
+               custom_callback=False, algorithm='PPO', multi_agent=True,
+               max_memory_in_mb=4096):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
 
@@ -17,33 +37,67 @@ def mc_rollout(episodes, agent, environment, step_tolerance=1000000):
     :param step_tolerance:
     :return:
     """
-    reward_list = []
-    episode_count = -1
-    while episode_count + 1 < episodes:
-        episode_count += 1
-        observation = environment.reset()
-        step_count = 0
-        episode_reward = 0
-        done = False
-        while not done:
-            action = agent.compute_action(observation)
-            obs, reward, done, info = environment.step(action)
-            step_count += 1
-            episode_reward += reward
-            if step_count > step_tolerance:
-                done = True
-            if done:
-                reward_list.append(episode_reward)
+    
+    jar_dir = os.getcwd()
+    os.chdir(jar_dir)
+    output_dir = os.path.abspath(os.getcwd())
+    modify_anylogic_db_properties()
 
-    mean_reward = float(sum(reward_list) / len(reward_list))
-    std_reward = sqrt(sum((x - mean_reward)**2 for x in reward_list) / len(reward_list))
-    range_of_rewards = max(reward_list) - min(reward_list)
+    if is_gym:
+        env, env_creator = get_gym_environment(environment_name=environment)
+    else:
+        env = get_environment(
+            jar_dir=jar_dir,
+            is_multi_agent=multi_agent,
+            environment_name="tests.cartpole.PathmindEnvironment",
+            max_memory_in_mb=max_memory_in_mb
+        )
+        env_creator = env
 
-    return mean_reward, std_reward, range_of_rewards
+    env_instance = env_creator(env_config={})
+    
+    if custom_callback:
+        # from tests.custom_callback import get_callback as foo
+        callbacks = get_callback_function(custom_callback)()
+    else:
+        callbacks = get_callbacks(debug_metrics, is_gym)
+
+    config = {
+        'env': env,
+        'callbacks': callbacks,
+        'num_gpus': 0,
+        'num_workers': 6,
+        'num_cpus_per_worker': 1,
+        'model': input_config['model'],
+        'lr': 0.0,
+        'num_sgd_iter': 1,
+        'sgd_minibatch_size': 1,
+        'train_batch_size': steps,
+        'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
+        'horizon': step_tolerance, # Set max steps per episode
+    }
+    
+    trials = run(
+        algorithm,
+        num_samples=1,
+        stop={'training_iteration': 1},
+        config=config,
+        local_dir=output_dir,
+        restore=checkpoint,
+        max_failures=10,
+    )
+    
+    trial_name = trials.get_best_trial(metric='episode_reward_mean', mode='max')
+    max_reward = next(find('episode_reward_max', trials.results))
+    min_reward = next(find('episode_reward_min', trials.results))
+    range_of_rewards = max_reward - min_reward
+    mean_reward = next(find('episode_reward_mean', trials.results))
+
+    return mean_reward, range_of_rewards
 
 
 def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discrete: bool,
-                          filter_tolerance: float = 0.85, mc_iterations: int = 100,
+                          filter_tolerance: float = 0.85, mc_steps: int = 10000,
                           step_tolerance: int = 100_000_000):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
@@ -54,7 +108,7 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
     :param is_discrete: for continuous actions we currently skip this step.
     :param filter_tolerance: Used for removing low mean performance policies from the reliability selection pool.
     0.85 means policies will be at least 85% of the top performer.
-    :param mc_iterations: Number of episodes by which to judge policy
+    :param mc_steps: Number of steps by which to judge policy
     :param step_tolerance: Maximum allowed step count for each iteration of Monte Carlo
     :return:
     """
@@ -72,71 +126,46 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
     checkpoint_path = trials.get_best_checkpoint(trial=best_trial, metric="episode_reward_mean", mode="max")
 
     mean_reward_dict = dict.fromkeys(temperature_list)
-    std_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
 
     trainer_class = get_agent_class('PPO')
     mock_env = get_mock_env(env)
 
-# Naive freezing ---------------------------------------------------
-
     for temp in temperature_list:
         if temp != "vanilla":
             config['model'] =  {'custom_action_dist': temp}
-        
-        # Create trainer agent
-        trainer = get_agent_class('PPO')
-        agent = trainer(env=mock_env, config=config)
-    
-        # Restore from checkpoint
+
+        mean_reward_dict[temp], range_reward_dict[temp] = \
+            mc_rollout(mc_steps, checkpoint_path, env, config, step_tolerance)
+
+
+    # Filter out policies with under (filter_tolerance*100)% of max mean reward
+    filtered_range_reward_dict = {temp: range_reward_dict[temp]
+                                  for temp in mean_reward_dict.keys()
+                                  if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
+
+    top_performing_temp = max(mean_reward_dict, key=lambda k: mean_reward_dict[k])
+    most_reliable_temp = min(filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k])
+
+    for temp in temperature_list:
+        if temp != "vanilla":
+            config['model'] = {'custom_action_dist': temp}
+        trainer_class = get_agent_class(algorithm)
+        agent = trainer_class(env=mock_env, config=config)
         agent.restore(checkpoint_path)
-        agent.export_policy_model(f"{output_dir}/model/{temp}")
-    
-# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+        if temp == top_performing_temp:
+            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
+        if temp == most_reliable_temp:
+            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
+        else:
+            agent.export_policy_model(f"{output_dir}/model/{temp}")
 
-
-#    for temp in temperature_list:
-#        if temp != "vanilla":
-#            config['model'] = {'custom_action_dist': temp}
-#
-#        agent = trainer_class(env=mock_env, config=config)
-#        agent.restore(checkpoint_path)
-#
-#        mean_reward_dict[temp], std_reward_dict[temp], range_reward_dict[temp] = \
-#            mc_rollout(mc_iterations, agent, env, step_tolerance)
-#
-#    # Filter out policies with under (filter_tolerance*100)% of max mean reward
-#    filtered_range_reward_dict = {temp: range_reward_dict[temp]
-#                                  for temp in mean_reward_dict.keys()
-#                                  if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
-#
-#    top_performing_temp = max(mean_reward_dict, key=lambda k: mean_reward_dict[k])
-#    most_clustered_temp = min(range_reward_dict, key=lambda k: std_reward_dict[k])
-#    most_reliable_temp = min(filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k])
-#
-#    for temp in temperature_list:
-#        if temp != "vanilla":
-#            config['model'] = {'custom_action_dist': temp}
-#        trainer_class = get_agent_class(algorithm)
-#        agent = trainer_class(env=mock_env, config=config)
-#        agent.restore(checkpoint_path)
-#        if temp == top_performing_temp:
-#            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
-#        if temp == most_clustered_temp:
-#            agent.export_policy_model(f"{output_dir}/model/{temp}-most-clustered")
-#        if temp == most_reliable_temp:
-#            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
-#        else:
-#            agent.export_policy_model(f"{output_dir}/model/{temp}")
-#
-#    # Write freezing completion report
-#    message_list = [
-#        f"Mean reward dict: {mean_reward_dict}",
-#        f"Standard deviation reward dict: {std_reward_dict}",
-#        f"Range reward dict: {range_reward_dict}",
-#        f"Top performing reward temperature: {top_performing_temp}",
-#        f"Filtered temperature list: {filtered_range_reward_dict}",
-#        f"Most clustered reward temparature: {most_clustered_temp}",
-#        f"Most reliable temperature (our policy of choice): {most_reliable_temp}"
-#    ]
-#    write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
+    # Write freezing completion report
+    message_list = [
+        f"Mean reward dict: {mean_reward_dict}",
+        f"Range reward dict: {range_reward_dict}",
+        f"Top performing reward temperature: {top_performing_temp}",
+        f"Filtered temperature list: {filtered_range_reward_dict}",
+        f"Most reliable temperature (our policy of choice): {most_reliable_temp}"
+    ]
+    write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
