@@ -89,6 +89,10 @@ class Environment(ABC):
     def getMetrics(self, agent_id: int = 0) -> np.array:
         return NotImplemented
 
+    @abstractmethod
+    def updateReward(self, agent_id: int = 0) -> np.array:
+        return NotImplemented
+
 
 def get_environment_class(env_name):
     """Get environment class instance from a string, interpreted as Python module
