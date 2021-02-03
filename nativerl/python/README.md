@@ -126,7 +126,7 @@ FLAGS
     --algorithm=ALGORITHM
         The algorithm to use with RLlib for training and the PythonPolicyHelper.
     --scheduler=SCHEDULER
-        The tune scheduler used for picking trials, currently supports "PBT" and "PB2"
+        The tune scheduler used for picking trials, currently supports "PBT" (and "PB2", once we upgrade to at least ray==1.0.1.post1)
     --output_dir=OUTPUT_DIR
         The directory where to output the logs of RLlib.
     --multi_agent=MULTI_AGENT

@@ -1,5 +1,5 @@
 from ray.tune.schedulers import PopulationBasedTraining
-from ray.tune.schedulers.pb2 import PB2
+# from ray.tune.schedulers.pb2 import PB2
 import numpy as np
 
 
@@ -23,24 +23,24 @@ def get_scheduler(scheduler_name):
                 'train_batch_size': [4000, 6000, 8000, 10000, 12000]
             }
         )
-    elif scheduler_name == "PB2":
-        return PB2(
-            time_attr='training_iteration',
-            metric='episode_reward_mean',
-            mode='max',
-            perturbation_interval=20,
-            quantile_fraction=0.25,
-            log_config=True,
-            hyperparam_bounds={
-                "lambda": [0.9, 1.0],
-                "clip_param": [0.01, 0.5],
-                "entropy_coeff": [0, 5],
-                "lr": [1e-3, 1e-5],
-                'num_sgd_iter': [5, 30],
-                'sgd_minibatch_size': [128, 2048],
-                "train_batch_size": [4000, 12000],
-            }
-        )
+    # elif scheduler_name == "PB2":
+    #     return PB2(
+    #         time_attr='training_iteration',
+    #         metric='episode_reward_mean',
+    #         mode='max',
+    #         perturbation_interval=20,
+    #         quantile_fraction=0.25,
+    #         log_config=True,
+    #         hyperparam_bounds={
+    #             "lambda": [0.9, 1.0],
+    #             "clip_param": [0.01, 0.5],
+    #             "entropy_coeff": [0, 5],
+    #             "lr": [1e-3, 1e-5],
+    #             'num_sgd_iter': [5, 30],
+    #             'sgd_minibatch_size': [128, 2048],
+    #             "train_batch_size": [4000, 12000],
+    #         }
+    #     )
     else:
         raise ValueError(f"{scheduler_name} not supported")
 
