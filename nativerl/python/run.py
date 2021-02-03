@@ -36,10 +36,10 @@ def main(environment: str,
          debug_metrics: bool = False,
          user_log: bool = False,
          autoregressive: bool = False,
-         episode_reward_range_th: float = 0.01,
-         entropy_slope_th: float = 0.01,
-         vf_loss_range_th: float = 0.1,
-         value_pred_th: float = 0.01,
+         episode_reward_range: float = 0.01,
+         entropy_slope: float = 0.01,
+         vf_loss_range: float = 0.1,
+         value_pred: float = 0.01,
          action_masking: bool = False,
          freezing: bool = False,
          discrete: bool = True,
@@ -69,10 +69,10 @@ def main(environment: str,
     :param debug_metrics: Indicates that we save raw metrics data to metrics_raw column in progress.csv.
     :param user_log: Reduce size of output log file.
     :param autoregressive: Whether to use auto-regressive models.
-    :param episode_reward_range_th: Episode reward range threshold
-    :param entropy_slope_th: Entropy slope threshold
-    :param vf_loss_range_th: VF loss range threshold
-    :param value_pred_th: value pred threshold
+    :param episode_reward_range: Episode reward range threshold
+    :param entropy_slope: Entropy slope threshold
+    :param vf_loss_range: VF loss range threshold
+    :param value_pred: value pred threshold
     :param action_masking: Whether to use action masking or not.
     :param freezing: Whether to use policy freezing or not
     :param discrete: Discrete vs continuous actions, defaults to True (i.e. discrete)
@@ -93,15 +93,15 @@ def main(environment: str,
     modify_anylogic_db_properties()
 
     if is_gym:
-        env, env_creator = get_gym_environment(environment_name=environment)
+        env_name, env_creator = get_gym_environment(environment_name=environment)
     else:
-        env = get_environment(
+        env_name = get_environment(
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
             environment_name=environment,
             max_memory_in_mb=max_memory_in_mb
         )
-        env_creator = env
+        env_creator = env_name
 
     env_instance = env_creator(env_config={})
     env_instance.max_steps = env_instance._max_episode_steps if hasattr(env_instance, "_max_episode_steps") \
@@ -120,8 +120,8 @@ def main(environment: str,
     stopper = Stopper(
         output_dir=output_dir, algorithm=algorithm, max_iterations=max_iterations,
         max_time_in_sec=max_time_in_sec, max_episodes=max_episodes,
-        episode_reward_range_th=episode_reward_range_th, entropy_slope_th=entropy_slope_th,
-        vf_loss_range_th=vf_loss_range_th, value_pred_th=value_pred_th
+        episode_reward_range_th=episode_reward_range, entropy_slope_th=entropy_slope,
+        vf_loss_range_th=vf_loss_range, value_pred_th=value_pred
     )
 
     if custom_callback:
@@ -135,7 +135,7 @@ def main(environment: str,
     loggers = get_loggers()
 
     config = {
-        'env': env,
+        'env': env_name,
         'callbacks': callbacks,
         'num_gpus': num_gpus,
         'num_workers': num_workers,
@@ -173,19 +173,10 @@ def main(environment: str,
     )
 
     write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
-    
-    if isinstance(env_instance.action_space, gym.spaces.Tuple):
-        for i in len(env_instance.action_space):
-            if not isinstance(env_instance.action_space[i], gym.spaces.Discrete):
-                is_discrete = False
-    elif isinstance(env_instance.action_space, gym.spaces.Discrete):
-        is_discrete = True
-    else:
-        is_discrete = False
 
     if freezing:
-        freeze_trained_policy(env=env_instance, trials=trials, algorithm=algorithm,
-                              output_dir=output_dir, is_discrete=discrete)
+        freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
+                              algorithm=algorithm, output_dir=output_dir, is_discrete=discrete)
 
     ray.shutdown()
 
