@@ -76,22 +76,22 @@ fi
 
 EPISODE_REWARD_RANGE_PARAM=""
 if [[ ! -z "$EPISODE_REWARD_RANGE" ]]; then
-    EPISODE_REWARD_RANGE_PARAM="--episode-reward-range ${EPISODE_REWARD_RANGE}"
+    EPISODE_REWARD_RANGE_PARAM="--episode-reward-range-th ${EPISODE_REWARD_RANGE}"
 fi
 
 ENTROPY_SLOPE_PARAM=""
 if [[ ! -z "$ENTROPY_SLOPE" ]]; then
-    ENTROPY_SLOPE_PARAM="--entropy-slope ${ENTROPY_SLOPE}"
+    ENTROPY_SLOPE_PARAM="--entropy-slope-th ${ENTROPY_SLOPE}"
 fi
 
 VF_LOSS_RANGE_PARAM=""
 if [[ ! -z "$VF_LOSS_RANGE" ]]; then
-    VF_LOSS_RANGE_PARAM="--vf-loss-range ${VF_LOSS_RANGE}"
+    VF_LOSS_RANGE_PARAM="--vf-loss-range-th ${VF_LOSS_RANGE}"
 fi
 
 VALUE_PRED_PARAM=""
 if [[ ! -z "$VALUE_PRED" ]]; then
-    VALUE_PRED_PARAM="--value-pred ${VALUE_PRED}"
+    VALUE_PRED_PARAM="--value-pred-th ${VALUE_PRED}"
 fi
 
 NAMED_VARIABLE_PARAM=""
@@ -143,8 +143,7 @@ java ai.skymind.nativerl.LearningAgentHelper
 javac $(find -iname '*.java')
 
 mkdir -p $OUTPUT_DIR/PPO
-cp run.py $OUTPUT_DIR/PPO
-cp -r pathmind $OUTPUT_DIR/PPO
+cp -r python/*  .
 
 PYTHON=$(which python.exe) || PYTHON=$(which python3)
 
