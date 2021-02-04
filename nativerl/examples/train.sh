@@ -104,6 +104,16 @@ if [[ ! -z "$MAX_MEMORY_IN_MB" ]]; then
     MAX_MEMORY_IN_MB_PARAM="--max-memory-in-mb ${MAX_MEMORY_IN_MB}"
 fi
 
+ACTION_MASKING_PARAM=""
+if [[ "$ACTIONMASKS" = true ]]; then
+    ACTION_MASKING_PARAM="--action-masking"
+fi
+
+FREEZING_PARAM=""
+if [[ "$FREEZING" = true ]]; then
+    FREEZING_PARAM="--freezing"
+fi
+
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
 if which cygpath; then
@@ -132,12 +142,12 @@ java ai.skymind.nativerl.LearningAgentHelper
 
 javac $(find -iname '*.java')
 
-# CHECKPOINT_PARAM=""
-# if [[ ! -z "$CHECKPOINT" ]]; then
-#     CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
-# fi
+mkdir -p $OUTPUT_DIR/PPO
+cp -r python/* .
 
-java ai.skymind.nativerl.RLlibHelper \
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+
+"$PYTHON"  run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
@@ -157,10 +167,5 @@ java ai.skymind.nativerl.RLlibHelper \
     $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
     $MAX_MEMORY_IN_MB_PARAM \
-    rllibtrain.py
-
-mkdir -p $OUTPUT_DIR/PPO
-cp rllibtrain.py $OUTPUT_DIR/PPO
-
-PYTHON=$(which python.exe) || PYTHON=$(which python3)
-"$PYTHON" rllibtrain.py
+    $ACTION_MASKING_PARAM \
+    $FREEZING_PARAM
