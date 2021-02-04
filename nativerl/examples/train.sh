@@ -143,8 +143,7 @@ java ai.skymind.nativerl.LearningAgentHelper
 javac $(find -iname '*.java')
 
 mkdir -p $OUTPUT_DIR/PPO
-cp run.py $OUTPUT_DIR/PPO
-cp -r pathmind $OUTPUT_DIR/PPO
+cp -r python/* .
 
 PYTHON=$(which python.exe) || PYTHON=$(which python3)
 
