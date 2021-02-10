@@ -10,6 +10,10 @@ import math
 import random
 import numpy as np
 
+# "from rewardfunction import NUM_REWARD_TERMS"
+NUM_REWARD_TERMS = 2
+# "from rewardfunction import REWARD_TERMS_RAW"
+REWARD_TERMS_RAW = [1.0, 1000.0]
 
 class PathmindEnvironment(nativerl.Environment):
     def __init__(self):
@@ -32,15 +36,12 @@ class PathmindEnvironment(nativerl.Environment):
         self.theta_threshold_radians = 12 * 2 * math.pi / 360
         self.x_threshold = 2.4
 
-        # Curriculum phase
-        self.phase = 0
-
         # Reward term contribution metrics
-        self.num_terms = 2
-        self.reward_terms = [1.0, 1.0] # Defined below in getReward()
-        self.alphas = [3.0, 1.0] # Reward term preferences from user input (uniform default)
-        self.betas = [1.0, 1.0]  # Uniform initialization, to be modified after each episode
-        self.contributions_list = [0.0, 0.0]
+        self.reward_terms = [1.0] * NUM_REWARD_TERMS # Defined below in getReward()
+        self.alphas = [1.0] * NUM_REWARD_TERMS # Reward term preferences from user input (uniform default)
+        self.betas = [1.0] * NUM_REWARD_TERMS  # Uniform initialization, to be modified after each episode
+        self.raw_contributions_list = [0.0] * NUM_REWARD_TERMS
+        self.final_contributions_list = [0.0] * NUM_REWARD_TERMS
 
     def getActionSpace(self, agent_id=0):
         return nativerl.Discrete(n=2) if agent_id == 0 else None
@@ -68,6 +69,8 @@ class PathmindEnvironment(nativerl.Environment):
                       random.uniform(-0.05, 0.05), random.uniform(-0.05, 0.05)]
         self.steps = 0
         self.steps_beyond_done = None
+        self.raw_contributions_list = [0.0] * len(self.reward_terms) # reset contributions
+        self.final_contributions_list = [0.0] * len(self.reward_terms) # reset contributions
 
     def setNextAction(self, action, agent_id=0):
         self.action = action
@@ -101,16 +104,18 @@ class PathmindEnvironment(nativerl.Environment):
             or x > self.x_threshold
             or theta < -self.theta_threshold_radians
             or theta > self.theta_threshold_radians
-            or self.steps > 1000
+            or self.steps > 1 # 1000
         )
 
     def getReward(self, agent_id=0):
         x, x_dot, theta, theta_dot = self.state
-        self.reward_terms_raw = [1.0, theta]
-        print("getReward---------------------------------------------")
-        print(self.reward_terms_raw)
-        print("DEBUG-------------------------------------------------")
-        self.reward_terms = [self.alphas[i] * self.betas[i] * self.reward_terms_raw[i] for i in range(self.num_terms)]
+
+        # User defined ------------------------------------
+        self.reward_terms_raw = REWARD_TERMS_RAW
+        # -------------------------------------------------
+
+        self.reward_terms_norm = [self.betas[i] * self.reward_terms_raw[i] for i in range(2)]
+        self.reward_terms = [self.alphas[i] * self.reward_terms_norm[i] for i in range(2)]
         if not self.isDone(agent_id):
             reward = sum(self.reward_terms)
         elif self.steps_beyond_done is None:
@@ -121,24 +126,18 @@ class PathmindEnvironment(nativerl.Environment):
             self.steps_beyond_done += 1
             reward = 0.0
 
-        for i in range(self.num_terms):
-            print("CONTRIB DICT ------------------------------")
-            print(self.contributions_list[i])
-            print("REWARD TERMS ------------------------------")
-            print(self.reward_terms[i])
-            print("-------------------------------------------")
-            self.contributions_list[i] = self.reward_terms[i] + self.betas[i] #self.contributions_list[i]
+        for i in range(len(self.reward_terms)):
+            self.raw_contributions_list[i] += self.reward_terms_raw[i]
+            self.final_contributions_list[i] += self.reward_terms[i]
 
         return reward
 
     def getMetrics(self, agent_id=0):
-        return np.asarray([self.steps_beyond_done]) if self.steps_beyond_done else np.asarray([])
+        #return np.asarray([self.steps_beyond_done]) if self.steps_beyond_done else np.asarray([])
 
-    def updateReward(self, agent_id=0):
-        print("CONTRIBUTIONS DICT -------------------------------------------------")
-        print(self.contributions_list)
-        betas = [1.0 / self.contributions_list[i] if self.contributions_list != 0.0 else 1.0 for i in range(len(self.contributions_list))]
+        # metrics based on raw contribution of each reward term
+        metrics = self.raw_contributions_list + self.final_contributions_list
+        return np.asarray(metrics) 
+
+    def updateReward(self, betas, agent_id=0):
         self.betas = betas
-        self.contributions_list = dict.fromkeys(range(self.num_terms)) # reset contributions
-        print("CONTRIBUTIONS DICT (RESET) -----------------------------------------")
-        print(self.contributions_list)

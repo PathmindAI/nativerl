@@ -76,6 +76,8 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
+            self.num_reward_terms = 1
+
         def define_action_space(self):
             i = 0
             action_space = self.nativeEnv.getActionSpace(i)
@@ -198,8 +200,8 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
-        def updateReward(self):
-            self.nativeEnv.updateReward()
+        def updateReward(self, betas):
+            self.nativeEnv.updateReward(betas=betas)
 
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name

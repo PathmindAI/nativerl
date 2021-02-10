@@ -90,7 +90,7 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def updateReward(self, agent_id: int = 0) -> np.array:
+    def updateReward(self, metrics, agent_id: int = 0) -> np.array:
         return NotImplemented
 
 
