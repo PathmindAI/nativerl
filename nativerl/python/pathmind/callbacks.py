@@ -57,7 +57,6 @@ def get_callbacks(debug_metrics, is_gym):
                          else 1.0
                          for i in range(NUM_REWARD_TERMS)]
 
-
                 if result["training_iteration"] == 1 or result["training_iteration"] % REWARD_BALANCE_PERIOD == 0: 
                     for w in trainer.workers.remote_workers():
                         w.apply.remote(lambda worker: worker.env.updateReward(betas))
