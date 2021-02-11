@@ -51,13 +51,14 @@ def get_callbacks(debug_metrics, is_gym):
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
                 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
-                
-                betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
-                         if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
-                         else 1.0
-                         for i in range(NUM_REWARD_TERMS)]
 
+                # When to (re)balance reward terms
                 if result["training_iteration"] == 1 or result["training_iteration"] % REWARD_BALANCE_PERIOD == 0: 
+                    # Normalization factors for reward terms
+                    betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
+                             if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
+                             else 1.0
+                             for i in range(NUM_REWARD_TERMS)]
                     for w in trainer.workers.remote_workers():
                         w.apply.remote(lambda worker: worker.env.updateReward(betas))
 
