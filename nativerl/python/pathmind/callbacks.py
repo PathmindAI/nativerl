@@ -11,7 +11,7 @@ from ray.rllib.agents.callbacks import DefaultCallbacks
 NUM_REWARD_TERMS = 2
 
 # Design choice
-REWARD_BALANCE_PERIOD = 50
+REWARD_BALANCE_PERIOD = 25 
 
 
 def get_callback_function(callback_function_name):
@@ -58,7 +58,7 @@ def get_callbacks(debug_metrics, is_gym):
                          for i in range(NUM_REWARD_TERMS)]
 
 
-                if result["training_iteration"] % REWARD_BALANCE_PERIOD == 0: 
+                if result["training_iteration"] == 1 or result["training_iteration"] % REWARD_BALANCE_PERIOD == 0: 
                     for w in trainer.workers.remote_workers():
                         w.apply.remote(lambda worker: worker.env.updateReward(betas))
 
