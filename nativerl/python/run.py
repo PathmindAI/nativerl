@@ -193,6 +193,7 @@ def test(environment: str,
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
+    :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
 
     :return: runs training for the given environment, with nativerl
     """
