@@ -181,6 +181,37 @@ def main(environment: str,
 
     ray.shutdown()
 
+def test(environment: str,
+         is_gym: bool = False,
+         output_dir: str = os.getcwd(),
+         multi_agent: bool = True,
+         max_memory_in_mb: int = 4096,
+         ):
+    """
+    :check if valid environment or not for Model Analyzer
+
+    :param environment: The name of a subclass of "Environment" to use as environment for training.
+    :param is_gym: if True, "environment" must be a gym environment.
+    :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
+    :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
+
+    :return: runs training for the given environment, with nativerl
+    """
+
+    jar_dir = os.getcwd()
+    os.chdir(jar_dir)
+
+    if is_gym:
+        env_name, env_creator = get_gym_environment(environment_name=environment)
+    else:
+        env_name = get_environment(
+            jar_dir=jar_dir,
+            is_multi_agent=multi_agent,
+            environment_name=environment,
+            max_memory_in_mb=max_memory_in_mb
+        )
+        env_creator = env_name
+
 
 def from_config(config_file="./config.json"):
     """Run training from a config file
@@ -197,5 +228,6 @@ def from_config(config_file="./config.json"):
 if __name__ == '__main__':
     fire.Fire({
         "training": main,
-        "from_config": from_config
+        "from_config": from_config,
+        "test": test
     })
