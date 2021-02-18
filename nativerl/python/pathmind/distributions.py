@@ -22,6 +22,7 @@ COOL_TEMP = 0.1
 WARM_TEMP = 10.0
 HOT_TEMP = 100.0
 
+
 def register_freezing_distributions(env):
 
     env_action_space = env.action_space

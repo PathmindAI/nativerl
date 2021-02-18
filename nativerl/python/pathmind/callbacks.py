@@ -7,6 +7,7 @@ from ray.rllib.policy import Policy
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
 
+
 # "from rewardfunction import NUM_REWARD_TERMS"
 NUM_REWARD_TERMS = 2
 
@@ -43,12 +44,12 @@ def get_callbacks(debug_metrics, is_gym):
 
                 for i, val in enumerate(metrics):
                     episode.custom_metrics["metrics_" + str(i)] = metrics[i]
-            
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
+
                 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
@@ -62,5 +63,7 @@ def get_callbacks(debug_metrics, is_gym):
                     for w in trainer.workers.remote_workers():
                         w.apply.remote(lambda worker: worker.env.updateReward(betas))
 
+
+                result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
     return Callbacks

@@ -12,6 +12,7 @@ from pathmind.distributions import register_freezing_distributions
 from pathmind.utils import get_mock_env, write_file
 from pathmind.callbacks import get_callbacks, get_callback_function
 
+
 def find(key, value):
   for k, v in value.items():
     if k == key:
@@ -22,7 +23,7 @@ def find(key, value):
     elif isinstance(v, list):
       for d in v:
         for result in find(key, d):
-          yield r			
+          yield result
 
 def mc_rollout(steps, checkpoint, environment, input_config, 
                step_tolerance=1000000, debug_metrics=True, is_gym=False,
@@ -64,6 +65,16 @@ def mc_rollout(steps, checkpoint, environment, input_config,
 
     config = {
         'env': env,
+
+
+def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, input_config,
+               step_tolerance=1000000, algorithm='PPO'):
+    """
+    Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
+    """
+
+    config = {
+        'env': env_name,
         'callbacks': callbacks,
         'num_gpus': 0,
         'num_workers': 6,
@@ -90,18 +101,22 @@ def mc_rollout(steps, checkpoint, environment, input_config,
     trial_name = trials.get_best_trial(metric='episode_reward_mean', mode='max')
     max_reward = next(find('episode_reward_max', trials.results))
     min_reward = next(find('episode_reward_min', trials.results))
+
     range_of_rewards = max_reward - min_reward
     mean_reward = next(find('episode_reward_mean', trials.results))
 
     return mean_reward, range_of_rewards
 
 
-def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discrete: bool,
+
+def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, algorithm: str, is_discrete: bool,
                           filter_tolerance: float = 0.85, mc_steps: int = 10000,
                           step_tolerance: int = 100_000_000):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
     :param env: nativerl.Environment instance
+    :param env_name: name of the env (str)
+    :param callbacks: ray Callbacks class
     :param trials: The trials returned from a ray tune run.
     :param output_dir: output directory for logs
     :param algorithm: the Rllib algorithm used (defaults to "PPO")
@@ -117,7 +132,8 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
         logger.warning('Freezing skipped. Only supported for models with discrete actions.')
         return
 
-    temperature_list = temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
+
+    temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
 
     register_freezing_distributions(env=env)
 
@@ -129,15 +145,16 @@ def freeze_trained_policy(env, trials, output_dir: str, algorithm: str, is_discr
     range_reward_dict = dict.fromkeys(temperature_list)
 
     trainer_class = get_agent_class('PPO')
+
     mock_env = get_mock_env(env)
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] =  {'custom_action_dist': temp}
+            config['model'] = {'custom_action_dist': temp}
 
         mean_reward_dict[temp], range_reward_dict[temp] = \
-            mc_rollout(mc_steps, checkpoint_path, env, config, step_tolerance)
-
+            mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, output_dir, config,
+                       step_tolerance, algorithm)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
     filtered_range_reward_dict = {temp: range_reward_dict[temp]

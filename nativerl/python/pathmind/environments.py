@@ -203,6 +203,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
         def updateReward(self, betas):
             self.nativeEnv.updateReward(betas=betas)
 
+
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name
     PathmindEnvironment.__qualname__ = simple_name

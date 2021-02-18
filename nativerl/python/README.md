@@ -107,6 +107,84 @@ which shows you all input arguments in detail. You can also access
 `python run.py --help` for general help and `python run.py from_config --help`
 for help with the "from configuration" trainer.
 
+
+Here's a snapshot of the current `training` help page, to give you an overview:
+
+```text
+NAME
+    run.py training
+
+SYNOPSIS
+    run.py training ENVIRONMENT <flags>
+
+POSITIONAL ARGUMENTS
+    ENVIRONMENT
+        The name of a subclass of "Environment" to use as environment for training.
+
+FLAGS
+    --is_gym=IS_GYM
+        if True, "environment" must be a gym environment.
+    --algorithm=ALGORITHM
+        The algorithm to use with RLlib for training and the PythonPolicyHelper.
+    --scheduler=SCHEDULER
+        The tune scheduler used for picking trials, currently supports "PBT" (and "PB2", once we upgrade to at least ray==1.0.1.post1)
+    --output_dir=OUTPUT_DIR
+        The directory where to output the logs of RLlib.
+    --multi_agent=MULTI_AGENT
+        Indicates that we need multi-agent support with the Environment class provided.
+    --max_memory_in_mb=MAX_MEMORY_IN_MB
+        The maximum amount of memory in MB to use for Java environments.
+    --num_cpus=NUM_CPUS
+        The number of CPU cores to let RLlib use during training.
+    --num_gpus=NUM_GPUS
+        The number of GPUs to let RLlib use during training.
+    --num_workers=NUM_WORKERS
+        The number of parallel workers that RLlib should execute during training.
+    --num_hidden_layers=NUM_HIDDEN_LAYERS
+        The number of hidden layers in the MLP to use for the learning model.
+    --num_hidden_nodes=NUM_HIDDEN_NODES
+        The number of nodes per layer in the MLP to use for the learning model.
+    --max_iterations=MAX_ITERATIONS
+        The maximum number of training iterations as a stopping criterion.
+    --max_time_in_sec=MAX_TIME_IN_SEC
+        Maximum amount of  time in seconds.
+    --max_episodes=MAX_EPISODES
+        Maximum number of episodes per trial.
+    --num_samples=NUM_SAMPLES
+        Number of population-based training samples.
+    --resume=RESUME
+        Resume training when AWS spot instance terminates.
+    --checkpoint_frequency=CHECKPOINT_FREQUENCY
+        Periodic checkpointing to allow training to recover from AWS spot instance termination.
+    --debug_metrics=DEBUG_METRICS
+        Indicates that we save raw metrics data to metrics_raw column in progress.csv.
+    --user_log=USER_LOG
+        Reduce size of output log file.
+    --autoregressive=AUTOREGRESSIVE
+        Whether to use auto-regressive models.
+    --episode_reward_range=EPISODE_REWARD_RANGE
+        Episode reward range threshold
+    --entropy_slope=ENTROPY_SLOPE
+        Entropy slope threshold
+    --vf_loss_range=VF_LOSS_RANGE
+        VF loss range threshold
+    --value_pred=VALUE_PRED
+        value pred threshold
+    --action_masking=ACTION_MASKING
+        Whether to use action masking or not.
+    --freezing=FREEZING
+        Whether to use policy freezing or not
+    --discrete=DISCRETE
+        Discrete vs continuous actions, defaults to True (i.e. discrete)
+    --random_seed=RANDOM_SEED
+        Optional random seed for this experiment.
+    --custom_callback=CUSTOM_CALLBACK
+        Optional name of a custom Python function returning a callback implementation of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
+
+NOTES
+    You can also use flags syntax for POSITIONAL ARGUMENTS
+```
+
 ## Tests
 
 Make sure to install `pytest` first and then run
