@@ -83,7 +83,8 @@ public class FileService {
             return result;
         } else {
             // todo need to get is_gym or not?
-            final String[] cmd = new String[]{"/lib/pathmind/conda/bin/python", "/lib/pathmind/nativerl-bin/python/run.py", "test", request.getEnvironment(), "--is_gym"};
+            final String[] cmd = new String[]{"/lib/pathmind/conda/bin/python", "/lib/pathmind/nativerl-bin/python/run.py",
+                    "test", request.getEnvironment(), "--is_gym", "--module_path=" + newFile.getParentFile().getAbsolutePath()};
             final String[] envp = {"USE_PY_NATIVERL=True"};
             final Process proc = Runtime.getRuntime().exec(cmd, envp);
             int returnCode = proc.waitFor();
