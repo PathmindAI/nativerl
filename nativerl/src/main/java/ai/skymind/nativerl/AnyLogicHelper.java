@@ -16,6 +16,9 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This is a helper class to help users implement the reinforcement learning
@@ -96,6 +99,9 @@ public class AnyLogicHelper {
     @Setter
     boolean isPLE;
 
+    @Setter
+    List<String> setObs;
+
     public boolean getIsRLExperiment() {
         return isRLExperiment;
     }
@@ -120,6 +126,7 @@ public class AnyLogicHelper {
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
         ObservationProcessor op = new ObservationProcessor(agentClassName);
         RewardProcessor rp = new RewardProcessor(agentClassName);
+        setObservationSnippet();
 
         this.setClassName(className);
         this.setPackageName(packageName);
@@ -138,6 +145,36 @@ public class AnyLogicHelper {
         String env = template.apply(this);
 
         return env;
+    }
+
+    /** Handle observation snippet, if the content is too long, it will split it into multiple methods. */
+    public void setObservationSnippet() throws IOException {
+        this.setObs = new ArrayList<>();
+        String obsSnippet = this.getObservationSnippet();
+
+        if (obsSnippet.startsWith("file:")) {
+            File file = new File(obsSnippet.split(":")[1]);
+            if (!file.exists()) {
+                throw new RuntimeException("observation file doesn't exist!");
+            }
+
+            StringBuilder sb = new StringBuilder();
+            List<String> lines = Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
+                    .collect(Collectors.toList());
+
+            // add double[] out = new double[n];
+            sb.append(lines.remove(0) + "\n");
+
+            int limit = 3000;
+            int numObsSelection = lines.size() / limit + 1;
+
+            for (int i = 0; i < numObsSelection; i++) {
+                sb.append("setObs_" + i + "(out);\n");
+                setObs.add(String.join("\n", lines.subList((limit * i), Math.min(limit * (i+1), lines.size()))));
+            }
+
+            this.observationSnippet = sb.toString();
+        }
     }
 
     /** The command line interface of this helper. */
@@ -181,19 +218,7 @@ public class AnyLogicHelper {
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
-                String obsSnippet = args[++i];
-                if (obsSnippet.startsWith("file:")) {
-                    File file = new File(obsSnippet.split(":")[1]);
-                    if (!file.exists()) {
-                        throw new RuntimeException("observation file doesn't exist!");
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    Files.lines(Paths.get(file.getPath()), Charset.defaultCharset())
-                            .forEach(s -> sb.append(s));
-                    obsSnippet = sb.toString();
-                }
-                helper.observationSnippet(obsSnippet);
+                helper.observationSnippet(args[++i]);
             } else if ("--reward-snippet".equals(args[i])) {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
