@@ -183,9 +183,9 @@ def main(environment: str,
 
 def test(environment: str,
          is_gym: bool = False,
-         output_dir: str = os.getcwd(),
          multi_agent: bool = True,
          max_memory_in_mb: int = 4096,
+         module_path: str = None
          ):
     """
     :check if valid environment or not for Model Analyzer
@@ -202,6 +202,10 @@ def test(environment: str,
     os.chdir(jar_dir)
 
     if is_gym:
+        if module_path:
+            import sys
+            sys.path.append(module_path)
+
         env_name, env_creator = get_gym_environment(environment_name=environment)
     else:
         env_name = get_environment(
