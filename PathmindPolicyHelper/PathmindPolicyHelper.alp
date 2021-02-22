@@ -912,6 +912,14 @@ if (isEnabled && debugMode) {
 	printDebug();
 }
 
+if (observationForTraining(0).length == 0) {
+	throw new RuntimeException("No observations detected.");
+}
+
+if (observationForReward(0).length == 0) {
+	throw new RuntimeException("No metrics detected.");
+}
+
 /*
 if (steps > 20001) {
 	throw new RuntimeException("Maximum steps exceeded.");
