@@ -862,6 +862,10 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
+					<Parameter>
+						<Name><![CDATA[i]]></Name>
+						<Type><![CDATA[int]]></Type>
+					</Parameter>
 					<Action><![CDATA[// Be sure to call those here allowing users to fix errors before training
 double[] training = observationForTraining(i);
 double[] reward = observationForReward(i);
@@ -979,31 +983,36 @@ try {
 					      + "  Step: " + steps;
 			traceln(headerColor, header);
 			for (int i = 0; i < numberOfAgents; i++) {
-				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
-				double[] observationArray = observationForTraining(i);
-				Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
-				for (int j = 0; j < observationArray.length; j++) {
-  					observationDict.put(observationNames[j], observationArray[j]);
-				}
-
-				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
-				double[] rewardArray = observationForReward(i);
-				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
-				for (int j = 0; j < rewardArray.length; j++) {
-  					rewardDict.put(rewardNames[j], rewardArray[j]);
+				if(!isSkip(i)){
+					String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
+					double[] observationArray = observationForTraining(i);
+					Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+					for (int j = 0; j < observationArray.length; j++) {
+	  					observationDict.put(observationNames[j], observationArray[j]);
+					}
+	
+					String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
+					double[] rewardArray = observationForReward(i);
+					Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+					for (int j = 0; j < rewardArray.length; j++) {
+	  					rewardDict.put(rewardNames[j], rewardArray[j]);
+					}
+					
+					traceln(AgentIdColor, "  Agent ID: " + i);
+					String output_agentId = "    Observations:\n"
+					    	+ "      Array: " + observationDict + "\n"
+						    + "      Number of Observations: " + observationArray.length + "\n"
+						    + "    Metrics: \n"
+					    	+ "      Array: " + rewardDict + "\n"
+						    + "      Number of Metrics: " + rewardArray.length + "\n"
+						    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+						    + "    Skip: " + isSkip(i);
+						    
+					traceln(output_agentId);
+				} else {
+					traceln(silver, "  Agent ID: " + i + "    Skipped");
 				}
 				
-				traceln(AgentIdColor, "  Agent ID: " + i);
-				String output_agentId = "    Observations:\n"
-				    	+ "      Array: " + observationDict + "\n"
-					    + "      Number of Observations: " + observationArray.length + "\n"
-					    + "    Metrics: \n"
-				    	+ "      Array: " + rewardDict + "\n"
-					    + "      Number of Metrics: " + rewardArray.length + "\n"
-					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-					    + "    Skip: " + isSkip(i);
-					    
-				traceln(output_agentId);
 			}
 		}
 	} else if (isDone(-1)) {
