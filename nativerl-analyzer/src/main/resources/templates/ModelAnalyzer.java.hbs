@@ -70,7 +70,9 @@ public class ModelAnalyzer {
 
         // check number of agent
         System.out.println("agents:" + helper.numberOfAgents);
-        System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "al_multi" : "al_single"));
+        //System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "al_multi" : "al_single"));
+        //this is for temporary roll back for support staging and dev server again
+        System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "multi" : "single"));
 
         try {
             if (helper.isEnabled) {
