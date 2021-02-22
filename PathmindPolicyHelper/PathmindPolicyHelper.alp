@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.2.202012250258" AlpVersion="8.7.0">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.2.202012241846" AlpVersion="8.7.0">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -853,6 +853,35 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 }]]></Action>
 				</Event>
 			</Events>
+			<DynamicEvents>
+				<DynamicEventClass>
+					<Id>1614025531741</Id>
+					<Name><![CDATA[DE_executeStep]]></Name>
+					<X>570</X><Y>130</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Action><![CDATA[// Be sure to call those here allowing users to fix errors before training
+double[] training = observationForTraining(i);
+double[] reward = observationForReward(i);
+// Throw error if infinity or NaN detected in observations or rewards array
+if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+	throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
+}
+if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+	throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
+}
+
+if (usePolicy && policyHelper != null) {
+	double[] a = policyHelper.computeActions(training);
+	action[i] = doAction(a, true, i);
+} else if (!usePolicy) {
+	double[] a = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
+	action[i] = doAction(a, false, i);
+}]]></Action>
+				</DynamicEventClass>
+			</DynamicEvents>
 			<Functions>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>VOID</ReturnModificator>
@@ -870,29 +899,9 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 	steps++;
 } else if (isEnabled) {
 	steps++;
-	for (int i = 0; i < numberOfAgents; i++) {
-		if (isSkip(i)) {
-			continue;
-		}
-		// Be sure to call those here allowing users to fix errors before training
-		double[] training = observationForTraining(i);
-		double[] reward = observationForReward(i);
-		// Throw error if infinity or NaN detected in observations or rewards array
-		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
-			throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
-		}
-		if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
-			throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
-		}
-		
-		if (usePolicy && policyHelper != null) {
-			double[] a = policyHelper.computeActions(training);
-			action[i] = doAction(a, true, i);
-		} else if (!usePolicy) {
-			double[] a = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
-			action[i] = doAction(a, false, i);
-		}
-	}
+	for (int i = 0; i < numberOfAgents; i++)
+		if (!isSkip(i))
+			create_DE_executeStep(0, i);
 }
 
 if (isEnabled && debugMode) {
