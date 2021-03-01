@@ -920,11 +920,12 @@ if (observationForReward(0).length == 0) {
 	throw new RuntimeException("No metrics detected.");
 }
 
-/*
-if (steps > 20001) {
+
+if (!usePolicy && steps > 20001) {
 	throw new RuntimeException("Maximum steps exceeded.");
 }
 
+/*
 if (!isTraining && steps == 1) {
     PathmindSerializer.writeMeta(this);
 }
