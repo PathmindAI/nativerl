@@ -1936,7 +1936,7 @@ public @interface Continuous {
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>4</VersionMinor>
-			<VersionBuild>0</VersionBuild>
+			<VersionBuild>1</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
@@ -1955,14 +1955,6 @@ public @interface Continuous {
 		</Resource>
 		<Resource>
 			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.5.0-SNAPSHOT.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
-			<Path><![CDATA[nativerl-policy-1.5.0-SNAPSHOT.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
-			<Path><![CDATA[../../../../nativerl-policy-1.5.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
