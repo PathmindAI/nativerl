@@ -111,6 +111,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
                        step_tolerance, algorithm)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
+    filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1./filter_tolerance
     filtered_range_reward_dict = {temp: range_reward_dict[temp]
                                   for temp in mean_reward_dict.keys()
                                   if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
