@@ -177,7 +177,7 @@ def main(environment: str,
 
     if freezing:
         freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
-                              algorithm=algorithm, output_dir=output_dir, is_discrete=discrete)
+                              algorithm=algorithm, output_dir=output_dir + "/PPO/freezing", is_discrete=discrete)
 
     ray.shutdown()
 
