@@ -862,38 +862,31 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Parameter>
-						<Name><![CDATA[i]]></Name>
-						<Type><![CDATA[int]]></Type>
-					</Parameter>
-					<Action><![CDATA[// Be sure to call those here allowing users to fix errors before training
-double[] training = observationForTraining(i);
-double[] reward = observationForReward(i);
-// Throw error if infinity or NaN detected in observations or rewards array
-if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
-	throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
-}
-if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
-	throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
+					<Action><![CDATA[for (int i = numberOfAgents-1; i >= 0; i--) {
+	if (!isSkip(i)) {
+		// Be sure to call those here allowing users to fix errors before training
+		double[] training = observationForTraining(i);
+		double[] reward = observationForReward(i);
+		// Throw error if infinity or NaN detected in observations or rewards array
+		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
+		}
+		if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
+		}
+		
+		if (usePolicy && policyHelper != null) {
+			double[] a = policyHelper.computeActions(training);
+			action[i] = doAction(a, true, i);
+		} else if (!usePolicy) {
+			double[] a = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
+			action[i] = doAction(a, false, i);
+		}
+	}
 }
 
-if (usePolicy && policyHelper != null) {
-	double[] a = policyHelper.computeActions(training);
-	action[i] = doAction(a, true, i);
-} else if (!usePolicy) {
-	double[] a = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
-	action[i] = doAction(a, false, i);
-}]]></Action>
-				</DynamicEventClass>
-				<DynamicEventClass>
-					<Id>1614718225494</Id>
-					<Name><![CDATA[DE_printDebug]]></Name>
-					<X>570</X><Y>160</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Action><![CDATA[printDebug();]]></Action>
+if(debugMode)
+	printDebug();]]></Action>
 				</DynamicEventClass>
 			</DynamicEvents>
 			<Functions>
@@ -912,15 +905,8 @@ if (usePolicy && policyHelper != null) {
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 	steps++;
 } else if (isEnabled) {
-	steps++;
-	//The default order of executing code is first in last out
-	//that is why print debug is first then agents from buttom to up
-	if(debugMode)
-		create_DE_printDebug(0);
-		
-	for (int i = numberOfAgents-1; i >= 0; i--)
-		if (!isSkip(i))
-			create_DE_executeStep(0, i);
+	steps++;	
+	create_DE_executeStep(0);
 }
 
 if (observationForTraining(0).length == 0) {
