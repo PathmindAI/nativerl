@@ -123,7 +123,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
         if temp != "vanilla":
             config['model'] = {'custom_action_dist': temp}
         trainer_class = get_agent_class(algorithm)
-        agent = trainer_class(env=mock_env, config=config)
+        agent = trainer_class(env=config['env'], config=config)
         agent.restore(checkpoint_path)
         if temp == top_performing_temp:
             agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
