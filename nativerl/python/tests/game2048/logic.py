@@ -7,7 +7,7 @@
 # code easily while grading your problem set.
 import random
 
-import constants as c
+from . import constants as c
 
 #######
 # Task 1a #
@@ -136,9 +136,6 @@ def transpose(mat):
 # No idea how to grade this one at the moment. I have it pegged to 8 (which gives you like,
 # 2 per up/down/left/right?) But if you get one correct likely to get all correct so...
 # Check the down one. Reverse/transpose if ordered wrongly will give you wrong result.
-
-
-from . import constants as c
 
 
 def cover_up(mat):
