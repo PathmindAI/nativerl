@@ -1,8 +1,8 @@
 import typing
-from .simulation import SingleAgentSimulation, Discrete, Continuous
+from .simulation import MultiAgentSimulation, Discrete, Continuous
 
 
-class MouseAndCheese(SingleAgentSimulation):
+class MouseAndCheese(MultiAgentSimulation):
 
     action = None  # Dynamically generated for each state by Pathmind
 
@@ -10,7 +10,10 @@ class MouseAndCheese(SingleAgentSimulation):
     cheese = (4, 4)
     steps = 0
 
-    def action_space(self) -> typing.Union[Continuous, Discrete]:
+    def number_of_agents(self) -> int:
+        return 1
+
+    def action_space(self, agent_id) -> typing.Union[Continuous, Discrete]:
         return Discrete(4)
 
     def reset(self) -> None:
@@ -21,7 +24,7 @@ class MouseAndCheese(SingleAgentSimulation):
     def step(self) -> None:
         self.steps += 1
 
-        action = self.action
+        action = self.action["0"]
 
         if action == 0:  # move up
             self.mouse = (min(self.mouse[0] + 1, 5), self.mouse[1])
@@ -34,7 +37,7 @@ class MouseAndCheese(SingleAgentSimulation):
         else:
             raise ValueError("Invalid action")
 
-    def get_observation(self) -> typing.Dict[str, float]:
+    def get_observation(self, agent_id) -> typing.Dict[str, float]:
         return {
             "mouse_row":  float(self.mouse[0]) / 5.0,
             "mouse_col": float(self.mouse[1]) / 5.0,
@@ -42,12 +45,12 @@ class MouseAndCheese(SingleAgentSimulation):
             "mouse_col_dist": abs(self.cheese[1] - self.mouse[1]) / 5.0,
         }
 
-    def get_reward(self) -> typing.Dict[str, float]:
+    def get_reward(self, agent_id) -> typing.Dict[str, float]:
         return {
             "found_cheese": 1 if self.mouse == self.cheese else 0
         }
 
-    def is_done(self) -> bool:
+    def is_done(self, agent_id) -> bool:
         return self.mouse == self.cheese
 
 
