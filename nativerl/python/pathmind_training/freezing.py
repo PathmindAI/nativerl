@@ -1,29 +1,22 @@
 import logging
-import os
-from math import sqrt
-
-import ray
 from ray.rllib.agents.registry import get_agent_class
 from ray.tune import run
 
-from pathmind import modify_anylogic_db_properties
-from pathmind.environments import get_environment, get_gym_environment
 from pathmind.distributions import register_freezing_distributions
 from pathmind.utils import write_file
-from pathmind.callbacks import get_callbacks, get_callback_function
 
 
 def find(key, value):
-  for k, v in value.items():
-    if k == key:
-      yield v
-    elif isinstance(v, dict):
-      for result in find(key, v):
-        yield result
-    elif isinstance(v, list):
-      for d in v:
-        for result in find(key, d):
-          yield result
+    for k, v in value.items():
+        if k == key:
+            yield v
+        elif isinstance(v, dict):
+            for result in find(key, v):
+                yield result
+        elif isinstance(v, list):
+            for d in v:
+                for result in find(key, d):
+                    yield result
 
 
 def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, input_config,
@@ -46,7 +39,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
         'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
         'horizon': environment.max_steps,  # Set max steps per episode
     }
-    
+
     trials = run(
         algorithm,
         num_samples=1,
@@ -56,7 +49,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
         restore=checkpoint,
         max_failures=10,
     )
-    
+
     max_reward = next(find('episode_reward_max', trials.results))
     min_reward = next(find('episode_reward_min', trials.results))
 
@@ -109,7 +102,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
                        step_tolerance, algorithm)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
-    filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1./filter_tolerance
+    filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1. / filter_tolerance
     filtered_range_reward_dict = {temp: range_reward_dict[temp]
                                   for temp in mean_reward_dict.keys()
                                   if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}

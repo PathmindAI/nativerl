@@ -1,5 +1,5 @@
 import numpy as np
-from pathmind.utils import write_file
+from pathmind_training.utils import write_file
 
 
 class Stopper:

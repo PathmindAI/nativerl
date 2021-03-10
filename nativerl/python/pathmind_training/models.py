@@ -23,7 +23,7 @@ def get_custom_model(num_hidden_nodes: int, num_hidden_layers: int, autoregressi
     model['fcnet_hiddens'] = hidden_layers
 
     if autoregressive:
-        from pathmind.autoregression import get_autoregressive_action_distribution, get_autoregressive_actions_model
+        from pathmind_training.autoregression import get_autoregressive_action_distribution, get_autoregressive_actions_model
 
         # TODO: need input arguments on run in general
         num_actions = 2

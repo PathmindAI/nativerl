@@ -1,14 +1,14 @@
 import pytest
 import os
 
-from pathmind.environments import make_env, get_environment, get_gym_environment
-from pathmind.callbacks import get_callbacks
-from pathmind.distributions import register_freezing_distributions
-from pathmind.loggers import get_loggers
-from pathmind.models import get_action_masking_model, get_custom_model
-from pathmind.pynativerl import get_environment_class, createEnvironment
-from pathmind.scheduler import get_scheduler
-from pathmind.stopper import Stopper
+from pathmind_training.environments import make_env, get_environment, get_gym_environment
+from pathmind_training.callbacks import get_callbacks
+from pathmind_training.distributions import register_freezing_distributions
+from pathmind_training.loggers import get_loggers
+from pathmind_training.models import get_action_masking_model, get_custom_model
+from pathmind_training.pynativerl import get_environment_class, createEnvironment
+from pathmind_training.scheduler import get_scheduler
+from pathmind_training.stopper import Stopper
 
 
 def test_make_envs():

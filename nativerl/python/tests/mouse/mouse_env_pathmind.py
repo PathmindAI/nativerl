@@ -1,10 +1,8 @@
 import typing
-from .simulation import MultiAgentSimulation, Discrete, Continuous
+from pathmind.simulation import Simulation, Discrete, Continuous
 
 
-class MouseAndCheese(MultiAgentSimulation):
-
-    action = None  # Dynamically generated for each state by Pathmind
+class MouseAndCheese(Simulation):
 
     mouse = (0, 0)
     cheese = (4, 4)

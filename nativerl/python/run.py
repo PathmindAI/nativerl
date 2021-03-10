@@ -8,11 +8,11 @@ import gym
 import ray
 from ray.tune import run, sample_from
 
-from pathmind import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
-from pathmind.environments import get_environment, get_gym_environment
-from pathmind.models import get_custom_model
-from pathmind.callbacks import get_callbacks, get_callback_function
-from pathmind.freezing import freeze_trained_policy
+from pathmind_training import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
+from pathmind_training.environments import get_environment, get_gym_environment
+from pathmind_training.models import get_custom_model
+from pathmind_training.callbacks import get_callbacks, get_callback_function
+from pathmind_training.freezing import freeze_trained_policy
 
 
 def main(environment: str,

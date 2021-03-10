@@ -3,7 +3,7 @@ import gym
 import math
 import numpy as np
 if os.environ.get("USE_PY_NATIVERL"):
-    import pathmind.pynativerl as nativerl
+    import pathmind_training.pynativerl as nativerl
 else:
     import nativerl
 

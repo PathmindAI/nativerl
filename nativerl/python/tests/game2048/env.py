@@ -5,8 +5,8 @@ import yaml
 import numpy as np
 from collections import OrderedDict
 
-from pathmind import pynativerl as nativerl
-from pathmind.pynativerl import Continuous
+from pathmind_training import pynativerl as nativerl
+from pathmind_training.pynativerl import Continuous
 from .base import Game2048
 
 import os
