@@ -22,7 +22,7 @@ class MouseAndCheese(Simulation):
     def step(self) -> None:
         self.steps += 1
 
-        action = self.action["0"]
+        action = self.action[0]
 
         if action == 0:  # move up
             self.mouse = (min(self.mouse[0] + 1, 5), self.mouse[1])

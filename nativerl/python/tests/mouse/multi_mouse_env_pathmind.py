@@ -6,7 +6,7 @@ class MultiMouseAndCheese(Simulation):
 
     mouses = [(0, 0), (1, 1), (5, 5)]
     cheeses = [(4, 4), (3, 2), (0, 1)]
-    has_moved = [False, False, False]
+    moved = [False, False, False]
     steps = 0
 
     def number_of_agents(self) -> int:
@@ -25,7 +25,7 @@ class MultiMouseAndCheese(Simulation):
 
         for i in range(self.number_of_agents()):
             if not self.is_done(i):
-                self.has_moved[i] = True
+                self.moved[i] = True
                 action = self.action[i][0]
 
                 if action == 0:  # move up
@@ -39,7 +39,7 @@ class MultiMouseAndCheese(Simulation):
                 else:
                     raise ValueError("Invalid action")
             else:
-                self.has_moved[i] = False
+                self.moved[i] = False
 
     def get_observation(self, agent_id) -> typing.Dict[str, float]:
         return {
@@ -51,7 +51,7 @@ class MultiMouseAndCheese(Simulation):
 
     def get_reward(self, agent_id) -> typing.Dict[str, float]:
         return {
-            "found_cheese": 1 if self.is_done(agent_id) and self.has_moved[agent_id] else 0
+            "found_cheese": 1 if self.is_done(agent_id) and self.moved[agent_id] else 0
         }
 
     def is_done(self, agent_id) -> bool:

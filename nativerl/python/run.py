@@ -17,6 +17,9 @@ from pathmind_training.freezing import freeze_trained_policy
 
 def main(environment: str,
          is_gym: bool = False,
+         is_pathmind_simulation: bool = False,
+         obs_selection: str = None,
+         rew_fct_name: str = None,
          algorithm: str = 'PPO',
          scheduler: str = 'PBT',
          output_dir: str = os.getcwd(),
@@ -50,6 +53,10 @@ def main(environment: str,
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
+    :param is_pathmind_simulation: if True, use the "Simulation" interface from the pathmind package.
+    :param obs_selection: If provided, read the names of the observations to be selected from this yaml file.
+    :param rew_fct_name: If provided, read a Python function from this file to compute the reward from
+                                 reward terms.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
     :param scheduler: The tune scheduler used for picking trials, currently supports "PBT"
                       (and "PB2", once we upgrade to at least ray==1.0.1.post1)
@@ -100,7 +107,10 @@ def main(environment: str,
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
             environment_name=environment,
-            max_memory_in_mb=max_memory_in_mb
+            max_memory_in_mb=max_memory_in_mb,
+            is_pathmind_simulation=is_pathmind_simulation,
+            obs_selection=obs_selection,
+            reward_function_name=rew_fct_name
         )
         env_creator = env_name
 

@@ -6,7 +6,7 @@ from pathmind_training.callbacks import get_callbacks
 from pathmind_training.distributions import register_freezing_distributions
 from pathmind_training.loggers import get_loggers
 from pathmind_training.models import get_action_masking_model, get_custom_model
-from pathmind_training.pynativerl import get_environment_class, createEnvironment
+from pathmind_training.utils import get_class_from_string, createEnvironment
 from pathmind_training.scheduler import get_scheduler
 from pathmind_training.stopper import Stopper
 
@@ -55,7 +55,7 @@ def test_pynativerl():
     env = createEnvironment("tests.cartpole.PathmindEnvironment")
     assert hasattr(env, "getMetrics")
 
-    clz = get_environment_class("tests.cartpole.PathmindEnvironment")
+    clz = get_class_from_string("tests.cartpole.PathmindEnvironment")
     assert env.__class__ == clz
 
 
