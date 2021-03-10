@@ -104,19 +104,21 @@ EOF
 
 export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
 
+
 if which cygpath; then
     export CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
     export PATH=$PATH:$(find "$(cygpath "$JAVA_HOME")" -name 'jvm.dll' -printf '%h:')
 fi
 
-java ai.skymind.nativerl.RLlibHelper \
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+
+"$PYTHON" run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$MODEL_MODULE.$ENVIRONMENT_CLASS" \
     --num-workers 4 \
     --max-iterations 10 \
-    --multi-agent \
-    rllibtrain.py
+    --multi-agent
 
-PYTHON=$(which python.exe) || PYTHON=$(which python3)
-"$PYTHON" rllibtrain.py
+
+

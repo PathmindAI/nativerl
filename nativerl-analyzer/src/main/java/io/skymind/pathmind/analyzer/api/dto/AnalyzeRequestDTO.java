@@ -11,7 +11,14 @@ import com.fasterxml.jackson.annotation.Nulls;
 @AllArgsConstructor
 @Data
 public class AnalyzeRequestDTO {
+    public enum ModelType {
+        ANY_LOGIC,
+        PYTHON
+    }
+
     private String id;
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private ModelType type = ModelType.ANY_LOGIC;
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private String mainAgent = "";
     @JsonSetter(nulls = Nulls.AS_EMPTY)
@@ -20,4 +27,6 @@ public class AnalyzeRequestDTO {
     private String experimentType = "";
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private String pathmindHelperClass = "";
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private String environment = "";
 }

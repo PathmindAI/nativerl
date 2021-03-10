@@ -65,7 +65,9 @@ java ai.skymind.nativerl.AnyLogicHelper \
 
 javac $(find -iname '*.java')
 
-java ai.skymind.nativerl.RLlibHelper \
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+
+"$PYTHON" run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
@@ -75,9 +77,6 @@ java ai.skymind.nativerl.RLlibHelper \
     --max-reward-mean 100 \
     --multi-agent \
     rllibtrain.py
-
-PYTHON=$(which python.exe) || PYTHON=$(which python3)
-"$PYTHON" rllibtrain.py
 
 # Execute the simulation with all models to get test metrics
 #find "$OUTPUT_DIR" -iname model -type d -exec java "$ENVIRONMENT_CLASS" {} \;

@@ -1,29 +1,10 @@
 source setup.sh
 
-mainAgent=$MAIN_AGENT
-experimentClass=$EXPERIMENT_CLASS
-EXPERIMENT_TYPE=$EXPERIMENT_TYPE
-
-if [[ -z "$mainAgent" ]]; then
-    echo "main agent missing"
-    mainAgent="Main"
+MODEL_TYPE="ANYLOGIC"
+if [[ "$ENVIRONMENT_NAME" ]]; then
+    MODEL_TYPE="PYTHON"
+    export ENVIRONMENT_CLASS=$ENVIRONMENT_NAME
 fi
-if [[ -z "$experimentClass" ]]; then
-    experimentClass="Simulation"
-fi
-if [[ -z "$EXPERIMENT_TYPE" ]]; then
-    EXPERIMENT_TYPE="Simulation"
-fi
-
-export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
-export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')
-export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
-export AGENT_CLASS="$MODEL_PACKAGE_NAME.${mainAgent}"
-export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${experimentClass}.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
-export SIMULATION_PACKAGE_NAME=$(echo $SIMULATION_PACKAGE | sed 's/\//\./g')
-export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.${experimentClass}"
-
-export OUTPUT_DIR=$(pwd)
 
 if [[ -z "$NUM_WORKERS" ]]; then
     CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
@@ -46,8 +27,6 @@ fi
 if [[ $NUM_CPUS < 1 ]]; then
     export NUM_CPUS=1
 fi
-
-mkdir -p $MODEL_PACKAGE
 
 MULTIAGENT_PARAM=""
 if [[ "$MULTIAGENT" = true ]]; then
@@ -104,40 +83,83 @@ if [[ ! -z "$MAX_MEMORY_IN_MB" ]]; then
     MAX_MEMORY_IN_MB_PARAM="--max-memory-in-mb ${MAX_MEMORY_IN_MB}"
 fi
 
-export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
-
-if which cygpath; then
-    export CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
-    export PATH=$PATH:$(find "$(cygpath "$JAVA_HOME")" -name 'jvm.dll' -printf '%h:')
+ACTION_MASKING_PARAM=""
+if [[ "$ACTIONMASKS" = true ]]; then
+    ACTION_MASKING_PARAM="--action-masking"
 fi
 
-java ai.skymind.nativerl.AnyLogicHelper \
-    --environment-class-name "$ENVIRONMENT_CLASS" \
-    --simulation-class-name "$SIMULATION_CLASS" \
-    --output-dir "$OUTPUT_DIR" \
-    --algorithm "PPO" \
-    --agent-class-name "$AGENT_CLASS" \
-    --class-snippet "$CLASS_SNIPPET" \
-    --reset-snippet "$RESET_SNIPPET" \
-    --reward-snippet "$REWARD_SNIPPET" \
-    --observation-snippet "$OBSERVATION_SNIPPET" \
-    --metrics-snippet "$METRICS_SNIPPET" \
-    --experiment-type "$EXPERIMENT_TYPE" \
-    --test-iterations 0 \
-    --policy-helper RLlibPolicyHelper \
-    $NAMED_VARIABLE_PARAM \
-    $MULTIAGENT_PARAM \
+FREEZING_PARAM=""
+if [[ "$FREEZING" = true ]]; then
+    FREEZING_PARAM="--freezing"
+fi
 
-java ai.skymind.nativerl.LearningAgentHelper
+mainAgent=$MAIN_AGENT
+experimentClass=$EXPERIMENT_CLASS
+EXPERIMENT_TYPE=$EXPERIMENT_TYPE
 
-javac $(find -iname '*.java')
+if [[ -z "$mainAgent" ]]; then
+    mainAgent="Main"
+fi
+if [[ -z "$experimentClass" ]]; then
+    experimentClass="Simulation"
+fi
+if [[ -z "$EXPERIMENT_TYPE" ]]; then
+    EXPERIMENT_TYPE="Simulation"
+fi
 
-# CHECKPOINT_PARAM=""
-# if [[ ! -z "$CHECKPOINT" ]]; then
-#     CHECKPOINT_PARAM="--checkpoint $CHECKPOINT"
-# fi
+IS_GYM_PARAM=""
+if [[ "$IS_GYM" = true ]]; then
+    IS_GYM_PARAM="--is-gym"
+fi
 
-java ai.skymind.nativerl.RLlibHelper \
+export OUTPUT_DIR=$(pwd)
+
+if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
+    export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
+    export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')
+    export ENVIRONMENT_CLASS="$MODEL_PACKAGE_NAME.PathmindEnvironment"
+    export AGENT_CLASS="$MODEL_PACKAGE_NAME.${mainAgent}"
+    export SIMULATION_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${experimentClass}.class | grep -v pathmind/policyhelper; done | awk '{print $4}' | xargs dirname)
+    export SIMULATION_PACKAGE_NAME=$(echo $SIMULATION_PACKAGE | sed 's/\//\./g')
+    export SIMULATION_CLASS="$SIMULATION_PACKAGE_NAME.${experimentClass}"
+
+    mkdir -p $MODEL_PACKAGE
+
+    export CLASSPATH=$(find . -iname '*.jar' | tr '\n' :)
+
+    if which cygpath; then
+        export CLASSPATH=$(cygpath --path --windows "$CLASSPATH")
+        export PATH=$PATH:$(find "$(cygpath "$JAVA_HOME")" -name 'jvm.dll' -printf '%h:')
+    fi
+
+    java ai.skymind.nativerl.AnyLogicHelper \
+        --environment-class-name "$ENVIRONMENT_CLASS" \
+        --simulation-class-name "$SIMULATION_CLASS" \
+        --output-dir "$OUTPUT_DIR" \
+        --algorithm "PPO" \
+        --agent-class-name "$AGENT_CLASS" \
+        --class-snippet "$CLASS_SNIPPET" \
+        --reset-snippet "$RESET_SNIPPET" \
+        --reward-snippet "$REWARD_SNIPPET" \
+        --observation-snippet "$OBSERVATION_SNIPPET" \
+        --metrics-snippet "$METRICS_SNIPPET" \
+        --experiment-type "$EXPERIMENT_TYPE" \
+        --test-iterations 0 \
+        --policy-helper RLlibPolicyHelper \
+        $NAMED_VARIABLE_PARAM \
+        $MULTIAGENT_PARAM \
+
+    java ai.skymind.nativerl.LearningAgentHelper
+
+    javac $(find -iname '*.java')
+fi
+
+mkdir -p $OUTPUT_DIR/PPO
+cp -r python/* .
+
+PYTHON=$(which python.exe) || PYTHON=$(which python3)
+
+"$PYTHON"  run.py training \
     --algorithm "PPO" \
     --output-dir "$OUTPUT_DIR" \
     --environment "$ENVIRONMENT_CLASS" \
@@ -157,10 +179,6 @@ java ai.skymind.nativerl.RLlibHelper \
     $VALUE_PRED_PARAM \
     $USER_LOG_PARAM \
     $MAX_MEMORY_IN_MB_PARAM \
-    rllibtrain.py
-
-mkdir -p $OUTPUT_DIR/PPO
-cp rllibtrain.py $OUTPUT_DIR/PPO
-
-PYTHON=$(which python.exe) || PYTHON=$(which python3)
-"$PYTHON" rllibtrain.py
+    $ACTION_MASKING_PARAM \
+    $FREEZING_PARAM \
+    $IS_GYM_PARAM
