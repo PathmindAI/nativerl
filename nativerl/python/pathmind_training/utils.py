@@ -1,3 +1,4 @@
+import importlib
 import os
 import gym
 import math
@@ -71,7 +72,7 @@ def get_mock_env(env):
 def get_py_nativerl_from_gym_env(env_name: str):
     """Creates a Pathmind Environment from a simple gym.Env with discrete actions and 'Box' observations."""
 
-    env: gym.Env = nativerl.createEnvironment(env_name)
+    env: gym.Env = createEnvironment(env_name)
     assert isinstance(env, gym.Env), f"Provided environment {env_name} is not a gym environment."
 
     assert isinstance(env.action_space, gym.spaces.Discrete), "Only works with discrete actions"
@@ -134,3 +135,20 @@ def get_py_nativerl_from_gym_env(env_name: str):
             pass
 
     return PathmindEnv
+
+
+def get_class_from_string(class_string: str):
+    """Get class or function instance from a string, interpreted as Python module.
+    :param class_string:
+    :return:
+    """
+    class_name = class_string.split('.')[-1]
+    module = class_string.replace(f'.{class_name}', '')
+    lib = importlib.import_module(module)
+    return getattr(lib, class_name)
+
+
+def createEnvironment(env_name):
+    clazz = get_class_from_string(env_name)
+    obj = clazz()
+    return obj
