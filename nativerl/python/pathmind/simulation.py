@@ -1,6 +1,8 @@
-import typing
-from typing import List
+from typing import List, Union, Dict, Optional
 import math
+import numpy as np
+
+__all__ = ["Discrete", "Continuous", "Simulation"]
 
 
 class Discrete:
@@ -32,58 +34,12 @@ class Continuous:
         self.high = high
 
 
-class SingleAgentSimulation:
-    """Pathmind's Python interface for single agents."""
-
-    # TODO: how to make sure this is used correctly by users?
-    action = None  # Dynamically generated for each state by Pathmind
-
-    def __init__(self, *args, **kwargs):
-        """Set any properties and initial states needed for your simulation.Make sure to initialize
-        all parameters you need for your simulation here, so that e.g. the `reset`
-        method can restart a new simulation."""
-        pass
-
-    def step(self) -> None:
-        """Carry out all things necessary at the next time-step of your simulation,
-        in particular update the state of it. You have access to 'self.action' from
-        Pathmind's backend."""
-        raise NotImplementedError
-
-    def reset(self) -> None:
-        """Reset your simulation parameters."""
-        raise NotImplementedError
-
-    def action_space(self) -> typing.Union[Continuous, Discrete]:
-        """Return a Discrete or Continuous action space"""
-        raise NotImplementedError
-
-    def get_reward(self) -> typing.Dict[str, float]:
-        """Get the reward terms of the simulation as a dictionary, given the current simulation state."""
-        raise NotImplementedError
-
-    def get_observation(self) -> typing.Dict[str, typing.Union[float, List[float]]]:
-        """Get a dictionary of observations for the current state of the simulation. Each
-        observation can either be a """
-        raise NotImplementedError
-
-    def is_done(self) -> bool:
-        """Is the simulation over?"""
-        raise NotImplementedError
-
-    def get_metrics(self) -> typing.Optional[typing.List[float]]:
-        """Return a list of numerical values you want to track. If you don't
-        specify any metrics, we simply use all provided observations for your agent."""
-        return None
-
-
-class MultiAgentSimulation:
+class Simulation:
     """Pathmind's Python interface for multiple agents. Make sure to initialize
     all parameters you need for your simulation here, so that e.g. the `reset`
     method can restart a new simulation."""
 
-    # TODO: how to make sure this is used correctly by users?
-    action = None  # Dynamically generated for each state by Pathmind
+    action: Dict[int, Union[float, np.ndarray]] = None  # Dynamically generated for each state by Pathmind
 
     def __init__(self, *args, **kwargs):
         """Set any properties and initial states needed for your simulation."""
@@ -103,15 +59,15 @@ class MultiAgentSimulation:
         """Returns the total number of agents to be controlled by Pathmind."""
         raise NotImplementedError
 
-    def action_space(self, agent_id: int) -> typing.Union[Continuous, Discrete]:
+    def action_space(self, agent_id: int) -> Union[Continuous, Discrete]:
         """Return a Discrete or Continuous action space per agent."""
         raise NotImplementedError
 
-    def get_reward(self, agent_id: int) -> typing.Dict[str, float]:
+    def get_reward(self, agent_id: int) -> Dict[str, float]:
         """Get the reward terms of the simulation as a dictionary, given the current simulation state."""
         raise NotImplementedError
 
-    def get_observation(self, agent_id: int) -> typing.Dict[str, typing.Union[float, List[float]]]:
+    def get_observation(self, agent_id: int) -> Dict[str, Union[float, List[float]]]:
         """Get a dictionary of observations for the current state of the simulation. Each
         observation can either be a """
         raise NotImplementedError
@@ -120,7 +76,7 @@ class MultiAgentSimulation:
         """Is the simulation over?"""
         raise NotImplementedError
 
-    def get_metrics(self, agent_id: int) -> typing.Optional[typing.List[float]]:
+    def get_metrics(self, agent_id: int) -> Optional[List[float]]:
         """Return a list of numerical values you want to track. If you don't
-        specify any metrics, we simply use all provided observations for your agent."""
+        specify any metrics, we simply use all provided observations for your agents."""
         return None
