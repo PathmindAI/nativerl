@@ -126,11 +126,12 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
         agent = trainer_class(env=config['env'], config=config)
         agent.restore(checkpoint_path)
         if temp == top_performing_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
+            agent.export_policy_model(f"{output_dir}/models/{temp}-top-mean-reward")
         if temp == most_reliable_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
+            agent.export_policy_model(f"{output_dir}/models/{temp}-most-reliable")
+            agent.export_policy_model(f"{output_dir}/model")
         else:
-            agent.export_policy_model(f"{output_dir}/model/{temp}")
+            agent.export_policy_model(f"{output_dir}/models/{temp}")
 
     # Write freezing completion report
     message_list = [
