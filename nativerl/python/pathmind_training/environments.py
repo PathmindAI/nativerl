@@ -135,14 +135,15 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 for i in range(0, self.nativeEnv.getNumberOfAgents()):
                     if self.nativeEnv.isSkip(i):
                         continue
-                    act = action[str(i)]
-                    if isinstance(self.action_space, gym.spaces.Tuple):
-                        action_array = np.empty(shape=0, dtype=np.float32)
-                        for j in range(0, len(act)):
-                            action_array = np.concatenate([action_array, act[j].astype(np.float32)], axis=None)
-                    else:
-                        action_array = act.astype(np.float32)
-                    self.nativeEnv.setNextAction(nativerl.Array(action_array), i)
+                    if str(i) in action.keys():  # sometimes keys are not present, e.g. when done
+                        act = action[str(i)]
+                        if isinstance(self.action_space, gym.spaces.Tuple):
+                            action_array = np.empty(shape=0, dtype=np.float32)
+                            for j in range(0, len(act)):
+                                action_array = np.concatenate([action_array, act[j].astype(np.float32)], axis=None)
+                        else:
+                            action_array = act.astype(np.float32)
+                        self.nativeEnv.setNextAction(nativerl.Array(action_array), i)
 
                 self.nativeEnv.step()
 
@@ -162,7 +163,8 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     reward_dict[str(i)] = self.nativeEnv.getReward(i)
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
-                # TODO: why is "all" true, if the last agent is done? should check for all(done_dict)...
+                # TODO: why is "all" true, if the last agent is done? should check for all(done_dict), i.e.:
+                #  done_dict['__all__'] = all(done_dict.values()
                 done_dict['__all__'] = self.nativeEnv.isDone(-1)
                 return obs_dict, reward_dict, done_dict, {}
 
