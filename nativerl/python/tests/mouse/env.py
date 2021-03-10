@@ -2,12 +2,11 @@ import math
 import typing
 import itertools
 import yaml
-import numpy as np
 from collections import OrderedDict
 
 from pathmind import pynativerl as nativerl
 from pathmind.pynativerl import Continuous
-from .base import Game2048
+from .mouse_env_pathmind import MouseAndCheese
 
 import os
 
@@ -17,17 +16,22 @@ with open(os.path.join(dir_path, "obs.yaml"), "r") as f:
 OBS = schema.get("observations")
 
 
-class Game2048Env(nativerl.Environment):
+class MouseEnv(nativerl.Environment):
 
-    def __init__(self, simulation=Game2048()):
+    def __init__(self, simulation=MouseAndCheese()):
         nativerl.Environment.__init__(self)
         self.simulation = simulation
 
     def getActionSpace(self, agent_id=0):
-        return nativerl.Discrete(self.simulation.number_of_actions) if agent_id == 0 else None
+        space = self.simulation.action_space()
+        if hasattr(space, "choices"):
+            nativerl_space = nativerl.Discrete(n=space.choices, size=space.size)
+        else:
+            nativerl_space = nativerl.Continuous(low=[space.low], high=[space.high], shape=space.shape)
+        return nativerl_space if agent_id == 0 else None
 
     def getObservationSpace(self):
-        obs_shape = [self.simulation.number_of_observations]
+        obs_shape = [len(self.getObservation(agent_id=0))]
         return nativerl.Continuous([-math.inf], [math.inf], obs_shape)
 
     def getNumberOfAgents(self):
@@ -51,6 +55,7 @@ class Game2048Env(nativerl.Environment):
         self.simulation.reset()
 
     def setNextAction(self, action, agent_id=0):
+        # TODO: for multi-agent scenarios, make this a dictionary?
         self.simulation.action = action
 
     def isSkip(self, agent_id=0):

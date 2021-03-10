@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Union
 import numpy as np
 import importlib
 
@@ -26,8 +26,8 @@ class Continuous(Space):
 
 
 # Smart hack: use a pass-through function to act as Array constructor (already have numpy)
-def Array(arr: np.array):
-    return arr
+def Array(arr: Union[np.array, List]):
+    return np.asarray(arr)
 
 
 class Environment(ABC):
@@ -41,6 +41,7 @@ class Environment(ABC):
     def getActionMaskSpace(self) -> Continuous:
         return NotImplemented
 
+    # TODO: Going forward this should be per agent, too
     @abstractmethod
     def getObservationSpace(self) -> Continuous:
         return NotImplemented
