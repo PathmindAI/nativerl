@@ -1,0 +1,5 @@
+observations:
+  - mouse_row
+  - mouse_col
+  - mouse_row_dist
+  - mouse_col_dist
