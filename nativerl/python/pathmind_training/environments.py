@@ -2,7 +2,7 @@ import glob
 import os
 
 if os.environ.get("USE_PY_NATIVERL"):
-    import pathmind.pynativerl as nativerl
+    import pathmind_training.pynativerl as nativerl
 else:
     import nativerl
 
