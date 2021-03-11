@@ -227,12 +227,21 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
 
     simulation_class = get_class_from_string(simulation_name)
 
+    reward_function = get_class_from_string(reward_function_name) if reward_function_name else None
+
+    obs_names: typing.Optional[str] = None
+    if observation_file:
+        with open(observation_file, "r") as f:
+            schema: OrderedDict = yaml.safe_load(f.read())
+            obs_names = schema.get("observations")
+
     class PathmindEnv(nativerl.Environment):
 
-        def __init__(self, simulation=simulation_class()):
+        def __init__(self, simulation=simulation_class(), reward_fct=reward_function, obs=obs_names):
             nativerl.Environment.__init__(self)
             self.simulation = simulation
-
+            self.reward_function = reward_fct
+            self.obs_names = obs
 
         def getActionSpace(self, agent_id=0):
             space = self.simulation.action_space(agent_id=agent_id)
@@ -258,12 +267,8 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
         def getObservation(self, agent_id=0):
             obs_dict = self.simulation.get_observation(agent_id)
 
-            if observation_file:
-                with open(observation_file, "r") as f:
-                    schema: OrderedDict = yaml.safe_load(f.read())
-                    obs_names = schema.get("observations")
-            else:
-                obs_names = obs_dict.keys()
+            if not self.obs_names:
+                self.obs_names = obs_dict.keys()
 
             # Flatten all observations here, e.g. [1, 2, [3, 4], 5] => [1, 2, 3, 4, 5]
             lists = [[obs_dict[obs]] if not isinstance(obs_dict[obs], typing.List) else obs_dict[obs]
@@ -291,9 +296,8 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
 
         def getReward(self, agent_id=0) -> float:
             reward_dict = self.simulation.get_reward(agent_id)
-            if reward_function_name:
-                reward_function = get_class_from_string(reward_function_name)
-                return reward_function(reward_dict)
+            if self.reward_function:
+                return self.reward_function(reward_dict)
             else:
                 return sum(reward_dict.values())
 
