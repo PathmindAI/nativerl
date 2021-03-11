@@ -37,9 +37,15 @@ class Continuous:
 class Simulation:
     """Pathmind's Python interface for multiple agents. Make sure to initialize
     all parameters you need for your simulation here, so that e.g. the `reset`
-    method can restart a new simulation."""
+    method can restart a new simulation.
 
-    action: Dict[int, Union[float, np.ndarray]] = None  # Dynamically generated for each state by Pathmind
+    The "action" value below is a per-agent dictionary. If your action_space returns
+    a single value for agent 0, then action[0] will be a float value, otherwise
+    a numpy array with specified shape. You use "action" to apply the next actions
+    to your agents in the "step" function.
+    """
+
+    action: Dict[int, Union[float, np.ndarray]] = None
 
     def __init__(self, *args, **kwargs):
         """Set any properties and initial states needed for your simulation."""
@@ -47,8 +53,8 @@ class Simulation:
 
     def step(self) -> None:
         """Carry out all things necessary at the next time-step of your simulation,
-        in particular update the state of it. You have access to 'self.action' from
-        Pathmind's backend."""
+        in particular update the state of it. You have access to 'self.action', as
+        explained above."""
         raise NotImplementedError
 
     def reset(self) -> None:
