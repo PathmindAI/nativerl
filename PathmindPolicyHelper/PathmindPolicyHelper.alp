@@ -862,7 +862,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Action><![CDATA[for (int i = numberOfAgents-1; i >= 0; i--) {
+					<Action><![CDATA[for (int i = 0; i < numberOfAgents; i++) {
 	if (!isSkip(i)) {
 		// Be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
@@ -909,15 +909,18 @@ if(debugMode)
 	create_DE_executeStep(0);
 }
 
-if (observationForTraining(0).length == 0) {
-	throw new RuntimeException("No observations detected.");
+// Only check at step 1
+if (steps == 1) {
+	if (observationForTraining(0).length == 0) {
+		throw new RuntimeException("No observations detected.");
+	}
+	
+	if (observationForReward(0).length == 0) {
+		throw new RuntimeException("No metrics detected.");
+	}
 }
 
-if (observationForReward(0).length == 0) {
-	throw new RuntimeException("No metrics detected.");
-}
-
-
+// Notify users if step count exceeds horizon set in NativeRL
 if (!usePolicy && steps > 20001) {
 	throw new RuntimeException("Maximum steps exceeded.");
 }
