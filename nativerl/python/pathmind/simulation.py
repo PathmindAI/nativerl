@@ -70,16 +70,17 @@ class Simulation:
         raise NotImplementedError
 
     def get_reward(self, agent_id: int) -> Dict[str, float]:
-        """Get the reward terms of the simulation as a dictionary, given the current simulation state."""
+        """Get the reward terms of the simulation as a dictionary, given the current simulation state,
+        per agent."""
         raise NotImplementedError
 
     def get_observation(self, agent_id: int) -> Dict[str, Union[float, List[float]]]:
-        """Get a dictionary of observations for the current state of the simulation. Each
-        observation can either be a """
+        """Get a dictionary of observations for the current state of the simulation per agent. Each
+        observation can either be a single numeric value or a list thereof."""
         raise NotImplementedError
 
     def is_done(self, agent_id: int) -> bool:
-        """Is the simulation over?"""
+        """Has this agent reached its target?"""
         raise NotImplementedError
 
     def get_metrics(self, agent_id: int) -> Optional[List[float]]:
