@@ -51,6 +51,14 @@ class Simulation:
         """Set any properties and initial states needed for your simulation."""
         pass
 
+    def number_of_agents(self) -> int:
+        """Returns the total number of agents to be controlled by Pathmind."""
+        raise NotImplementedError
+
+    def action_space(self, agent_id: int) -> Union[Continuous, Discrete]:
+        """Return a Discrete or Continuous action space per agent."""
+        raise NotImplementedError
+
     def step(self) -> None:
         """Carry out all things necessary at the next time-step of your simulation,
         in particular update the state of it. You have access to 'self.action', as
@@ -59,14 +67,6 @@ class Simulation:
 
     def reset(self) -> None:
         """Reset your simulation parameters."""
-        raise NotImplementedError
-
-    def number_of_agents(self) -> int:
-        """Returns the total number of agents to be controlled by Pathmind."""
-        raise NotImplementedError
-
-    def action_space(self, agent_id: int) -> Union[Continuous, Discrete]:
-        """Return a Discrete or Continuous action space per agent."""
         raise NotImplementedError
 
     def get_reward(self, agent_id: int) -> Dict[str, float]:

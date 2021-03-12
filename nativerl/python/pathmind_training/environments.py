@@ -179,9 +179,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     reward_dict[str(i)] = self.nativeEnv.getReward(i)
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
-                # TODO: why is "all" true, if the last agent is done? should check for all(done_dict), i.e.:
-                #  done_dict['__all__'] = all(done_dict.values()
-                done_dict['__all__'] = self.nativeEnv.isDone(-1)
+                done_dict['__all__'] = all(done_dict.values())
                 return obs_dict, reward_dict, done_dict, {}
 
             else:
