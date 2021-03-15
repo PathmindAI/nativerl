@@ -9,7 +9,7 @@ from ray.tune import run
 from pathmind import modify_anylogic_db_properties
 from pathmind.environments import get_environment, get_gym_environment
 from pathmind.distributions import register_freezing_distributions
-from pathmind.utils import get_mock_env, write_file
+from pathmind.utils import write_file
 from pathmind.callbacks import get_callbacks, get_callback_function
 
 
@@ -99,8 +99,6 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
 
     mean_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
-
-    mock_env = get_mock_env(env)
 
     for temp in temperature_list:
         if temp != "vanilla":
