@@ -16,7 +16,7 @@ We might properly package this library at some point and maybe put it on a
 private PyPI server for installation. For now, there's nothing to install,
 as we treat the main `run.py` tool as a simple script which accesses dependencies
 from the `pathmind_training/` folder. To use this library, e.g., for AnyLogic models,
-simply make sure to copy `run.py` and `pathmind/` to where ever your nativerl
+simply make sure to copy `run.py` and `pathmind_training/` to where ever your nativerl
 JARs and models reside (the same spot your `rllibtrain.py` script would have
 been).
 
