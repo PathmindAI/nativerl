@@ -9,7 +9,7 @@ from ray.tune import run
 from pathmind import modify_anylogic_db_properties
 from pathmind.environments import get_environment, get_gym_environment
 from pathmind.distributions import register_freezing_distributions
-from pathmind.utils import get_mock_env, write_file
+from pathmind.utils import write_file
 from pathmind.callbacks import get_callbacks, get_callback_function
 
 
@@ -100,8 +100,6 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
     mean_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
 
-    mock_env = get_mock_env(env)
-
     for temp in temperature_list:
         if temp != "vanilla":
             config['model'] = {'custom_action_dist': temp}
@@ -111,6 +109,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
                        step_tolerance, algorithm)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
+    filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1./filter_tolerance
     filtered_range_reward_dict = {temp: range_reward_dict[temp]
                                   for temp in mean_reward_dict.keys()
                                   if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
@@ -122,14 +121,15 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
         if temp != "vanilla":
             config['model'] = {'custom_action_dist': temp}
         trainer_class = get_agent_class(algorithm)
-        agent = trainer_class(env=mock_env, config=config)
+        agent = trainer_class(env=config['env'], config=config)
         agent.restore(checkpoint_path)
         if temp == top_performing_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-top-mean-reward")
+            agent.export_policy_model(f"{output_dir}/models/{temp}-top-mean-reward")
         if temp == most_reliable_temp:
-            agent.export_policy_model(f"{output_dir}/model/{temp}-most-reliable")
+            agent.export_policy_model(f"{output_dir}/models/{temp}-most-reliable")
+            agent.export_policy_model(f"{output_dir}/model")
         else:
-            agent.export_policy_model(f"{output_dir}/model/{temp}")
+            agent.export_policy_model(f"{output_dir}/models/{temp}")
 
     # Write freezing completion report
     message_list = [

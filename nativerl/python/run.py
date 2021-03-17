@@ -20,7 +20,7 @@ def main(environment: str,
          algorithm: str = 'PPO',
          scheduler: str = 'PBT',
          output_dir: str = os.getcwd(),
-         multi_agent: bool = True,
+         multi_agent: bool = False,
          max_memory_in_mb: int = 4096,
          num_cpus: int = 1,
          num_gpus: int = 0,
@@ -29,7 +29,7 @@ def main(environment: str,
          num_hidden_nodes: int = 256,
          max_iterations: int = 500,
          max_time_in_sec: int = 43200,
-         max_episodes: int = 50000,
+         max_episodes: int = 200000,
          num_samples: int = 4,
          resume: bool = False,
          checkpoint_frequency: int = 50,
@@ -168,7 +168,7 @@ def main(environment: str,
         resume=resume,
         checkpoint_freq=checkpoint_frequency,
         checkpoint_at_end=True,
-        max_failures=3,
+        max_failures=5,
         export_formats=['model'],
         queue_trials=True
     )
@@ -177,7 +177,7 @@ def main(environment: str,
 
     if freezing:
         freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
-                              algorithm=algorithm, output_dir=output_dir, is_discrete=discrete)
+                              algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete)
 
     ray.shutdown()
 
