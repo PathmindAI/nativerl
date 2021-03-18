@@ -25,47 +25,6 @@ def find(key, value):
         for result in find(key, d):
           yield result
 
-def mc_rollout(steps, checkpoint, environment, input_config, 
-               step_tolerance=1000000, debug_metrics=True, is_gym=False,
-               custom_callback=False, algorithm='PPO', multi_agent=True,
-               max_memory_in_mb=4096):
-    """
-    Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
-
-    :param episodes:
-    :param agent:
-    :param environment:
-    :param step_tolerance:
-    :return:
-    """
-    
-    jar_dir = os.getcwd()
-    os.chdir(jar_dir)
-    output_dir = os.path.abspath(os.getcwd())
-    modify_anylogic_db_properties()
-
-    if is_gym:
-        env, env_creator = get_gym_environment(environment_name=environment)
-    else:
-        env = get_environment(
-            jar_dir=jar_dir,
-            is_multi_agent=multi_agent,
-            environment_name="tests.cartpole.PathmindEnvironment",
-            max_memory_in_mb=max_memory_in_mb
-        )
-        env_creator = env
-
-    env_instance = env_creator(env_config={})
-    
-    if custom_callback:
-        # from tests.custom_callback import get_callback as foo
-        callbacks = get_callback_function(custom_callback)()
-    else:
-        callbacks = get_callbacks(debug_metrics, is_gym)
-
-    config = {
-        'env': env,
-
 
 def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, input_config,
                step_tolerance=1000000, algorithm='PPO'):
@@ -98,7 +57,6 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
         max_failures=10,
     )
     
-    trial_name = trials.get_best_trial(metric='episode_reward_mean', mode='max')
     max_reward = next(find('episode_reward_max', trials.results))
     min_reward = next(find('episode_reward_min', trials.results))
 
@@ -106,7 +64,6 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
     mean_reward = next(find('episode_reward_mean', trials.results))
 
     return mean_reward, range_of_rewards
-
 
 
 def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, algorithm: str, is_discrete: bool,

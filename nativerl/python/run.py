@@ -51,7 +51,8 @@ def main(environment: str,
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
-    :param scheduler: The tune scheduler used for picking trials, currently supports "PBT" and "PB2"
+    :param scheduler: The tune scheduler used for picking trials, currently supports "PBT"
+                      (and "PB2", once we upgrade to at least ray==1.0.1.post1)
     :param output_dir: The directory where to output the logs of RLlib.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
@@ -173,21 +174,13 @@ def main(environment: str,
     )
 
     write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
-    
-    if isinstance(env_instance.action_space, gym.spaces.Tuple):
-        for i in len(env_instance.action_space):
-            if not isinstance(env_instance.action_space[i], gym.spaces.Discrete):
-                is_discrete = False
-    elif isinstance(env_instance.action_space, gym.spaces.Discrete):
-        is_discrete = True
-    else:
-        is_discrete = False
 
     if freezing:
         freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
                               algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete)
 
     ray.shutdown()
+
 
 def test(environment: str,
          is_gym: bool = False,
