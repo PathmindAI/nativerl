@@ -1,6 +1,8 @@
 from typing import List, Union, Dict, Optional
 import math
 import numpy as np
+import requests
+
 
 __all__ = ["Discrete", "Continuous", "Simulation"]
 
@@ -51,6 +53,11 @@ class Simulation:
         """Set any properties and initial states needed for your simulation."""
         pass
 
+    def set_action(self, action: Dict[int, Union[float, np.ndarray]]):
+        """Use this to test your own decisions, or to integrate with Pathmind's Policy Server.
+        set_action should always be executed before running the next step of your simulation."""
+        self.action = action
+
     def number_of_agents(self) -> int:
         """Returns the total number of agents to be controlled by Pathmind."""
         raise NotImplementedError
@@ -87,3 +94,24 @@ class Simulation:
         """Return a list of numerical values you want to track. If you don't
         specify any metrics, we simply use all provided observations for your agents."""
         return None
+
+
+class PolicyServer:
+    """Connect to an existing policy server for your simulation."""
+
+    def __init__(self, url, api_key):
+        self.url = url + "/predict/"
+        self.headers = {'access_token': api_key}
+
+    def get_action(self, simulation: Simulation) -> Dict[int, Union[float, np.ndarray]]:
+        action = {}
+        for i in range(simulation.number_of_agents()):
+            obs: dict = simulation.get_observation(i)
+            import json
+            data = json.dumps(obs)
+            content = requests.post(url=self.url, data=data, headers=self.headers).content
+            action[i] = np.asarray(json.loads(content).get("actions"))
+        return action
+
+
+
