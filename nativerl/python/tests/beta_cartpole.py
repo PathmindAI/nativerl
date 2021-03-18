@@ -1,6 +1,3 @@
-# Have you ever seen a more complicated way to massage a gym env into something
-# else, only to make it a gym env again internally? You're welcome.
-
 import os
 if os.environ.get("USE_PY_NATIVERL"):
     import pathmind.pynativerl as nativerl
@@ -10,10 +7,8 @@ import math
 import random
 import numpy as np
 
-# "from rewardfunction import NUM_REWARD_TERMS"
 NUM_REWARD_TERMS = 2
-# "from rewardfunction import REWARD_TERMS_RAW"
-REWARD_TERMS_RAW = [1.0, 1000.0]
+
 
 class PathmindEnvironment(nativerl.Environment):
     def __init__(self):
@@ -108,11 +103,9 @@ class PathmindEnvironment(nativerl.Environment):
         )
 
     def getReward(self, agent_id=0):
-        x, x_dot, theta, theta_dot = self.state
 
-        # User defined ------------------------------------
-        self.reward_terms_raw = REWARD_TERMS_RAW
-        # -------------------------------------------------
+        # User defined
+        self.reward_terms_raw = [1.0, 1000.0]
 
         self.reward_terms_norm = [self.betas[i] * self.reward_terms_raw[i] for i in range(2)]
         self.reward_terms = [self.alphas[i] * self.reward_terms_norm[i] for i in range(2)]
@@ -133,11 +126,5 @@ class PathmindEnvironment(nativerl.Environment):
         return reward
 
     def getMetrics(self, agent_id=0):
-        #return np.asarray([self.steps_beyond_done]) if self.steps_beyond_done else np.asarray([])
-
-        # metrics based on raw contribution of each reward term
         metrics = self.raw_contributions_list + self.final_contributions_list
         return np.asarray(metrics) 
-
-    def updateReward(self, betas, agent_id=0):
-        self.betas = betas

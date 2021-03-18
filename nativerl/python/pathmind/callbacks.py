@@ -8,13 +8,6 @@ from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
 
 
-# "from rewardfunction import NUM_REWARD_TERMS"
-NUM_REWARD_TERMS = 2
-
-# Design choice
-REWARD_BALANCE_PERIOD = 25 
-
-
 def get_callback_function(callback_function_name):
     """Get callback function from a string interpreted as Python module
     :param callback_function_name: name of the python module and function as string
@@ -26,7 +19,7 @@ def get_callback_function(callback_function_name):
     return getattr(lib, class_name)
 
 
-def get_callbacks(debug_metrics, is_gym):
+def get_callbacks(debug_metrics, is_gym, use_reward_balancing, num_reward_terms, reward_balance_period):
 
     class Callbacks(DefaultCallbacks):
         def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
@@ -50,19 +43,17 @@ def get_callbacks(debug_metrics, is_gym):
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-                
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
-                # When to (re)balance reward terms
-                if result["training_iteration"] == 1 or result["training_iteration"] % REWARD_BALANCE_PERIOD == 0: 
-                    # Normalization factors for reward terms
-                    betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
-                             if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
-                             else 1.0
-                             for i in range(NUM_REWARD_TERMS)]
-                    for w in trainer.workers.remote_workers():
-                        w.apply.remote(lambda worker: worker.env.updateReward(betas))
-
+                if use_reward_balancing:
+                    if result["training_iteration"] == 1 or result["training_iteration"] % reward_balance_period == 0:
+                        # Normalization factors for reward terms
+                        betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
+                                 if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
+                                 else 1.0
+                                 for i in range(num_reward_terms)]
+                        for w in trainer.workers.remote_workers():
+                            w.apply.remote(lambda worker: worker.env.updateReward(betas))
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 

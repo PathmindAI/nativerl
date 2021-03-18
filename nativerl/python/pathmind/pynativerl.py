@@ -32,6 +32,8 @@ def Array(arr: np.array):
 
 class Environment(ABC):
 
+    betas = None
+
     @abstractmethod
     def getActionSpace(self, agent_id: int = 0) -> Optional[Space]:
         return NotImplemented
@@ -89,9 +91,8 @@ class Environment(ABC):
     def getMetrics(self, agent_id: int = 0) -> np.array:
         return NotImplemented
 
-    @abstractmethod
-    def updateReward(self, metrics, agent_id: int = 0) -> np.array:
-        return NotImplemented
+    def updateReward(self, betas) -> None:
+        self.betas = betas
 
 
 def get_environment_class(env_name):

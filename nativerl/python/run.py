@@ -45,6 +45,9 @@ def main(environment: str,
          discrete: bool = True,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
+         use_reward_balancing: bool = False,
+         num_reward_terms: Optional[int] = None,
+         reward_balance_period: int = 25,
          ):
     """
 
@@ -80,6 +83,10 @@ def main(environment: str,
     :param random_seed: Optional random seed for this experiment.
     :param custom_callback: Optional name of a custom Python function returning a callback implementation
         of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
+    :param use_reward_balancing: if True, use reward balancing mechanism. In this case, you need to specify
+                                 "num_reward_terms" as well
+    :param num_reward_terms: the number of reward terms used in reward balancing.
+    :param reward_balance_period: after how many training iterations should we re-balance the reward.
 
     :return: runs training for the given environment, with nativerl
     """
@@ -129,7 +136,7 @@ def main(environment: str,
         # from tests.custom_callback import get_callback as foo
         callbacks = get_callback_function(custom_callback)()
     else:
-        callbacks = get_callbacks(debug_metrics, is_gym)
+        callbacks = get_callbacks(debug_metrics, is_gym, use_reward_balancing, num_reward_terms, reward_balance_period)
 
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(scheduler_name=scheduler)
