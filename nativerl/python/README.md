@@ -16,7 +16,7 @@ We might properly package this library at some point and maybe put it on a
 private PyPI server for installation. For now, there's nothing to install,
 as we treat the main `run.py` tool as a simple script which accesses dependencies
 from the `pathmind_training/` folder. To use this library, e.g., for AnyLogic models,
-simply make sure to copy `run.py` and `pathmind/` to where ever your nativerl
+simply make sure to copy `run.py` and `pathmind_training/` to where ever your nativerl
 JARs and models reside (the same spot your `rllibtrain.py` script would have
 been).
 
@@ -34,7 +34,7 @@ referenced either by name or relative Python package import. To give an
 example, you can run a gym cart pole example like this:
 
 ```shell
-USE_PY_NATIVERL=True python run.py training CartPole-v0 --is-gym  --freezing --max-episodes 1
+USE_PY_NATIVERL=True python run.py training CartPole-v0 --is_gym  --freezing --max_episodes 1
 ```
 
 There are a few things of note here. First, to use pure Python you use
@@ -43,15 +43,14 @@ need be (`export USE_PY_NATIVERL=True`). Second, this script works with any
 built-in OpenAI gym environment. To let the tool know we're dealing with a
 gym environment, we're adding the `--is_gym` flag. Also, note that we freeze
 the trained policy at various temperatures with the `freezing` flag and set
-the `max-episodes` parameter to `1` to get quick feedback.
-
+the `max_episodes` parameter to `1` to get quick feedback.
 
 After setting `USE_PY_NATIVERL`
 to `True`, the same can be achieved by running the code example of the
 cart pole in the `tests` folder like this:
 
 ```shell
-python run.py training tests.gym_cartpole.CartPoleEnv --is-gym
+python run.py training tests.gym_cartpole.CartPoleEnv --is_gym
 ```
 
 A third way of running a cart pole example is using a Python implementation
@@ -75,11 +74,29 @@ This latter way is likely better long-term, at least for experimentation purpose
 as it frees you from setting environment variables like a pedestrian.
 
 If you want to register custom callbacks for more advanced modifications, e.g., elaborate
-curriculum learning scenarios, use the `custom-callback` flag to register a callback like
+curriculum learning scenarios, use the `custom_callback` flag to register a callback like
 this:
 
 ```shell
-python run.py training CartPole-v0 --is_gym --max_episodes=1 --freezing --custom-callback tests.custom_callback.get_callback
+python run.py training CartPole-v0 --is_gym --max_episodes=1 --freezing --custom_callback tests.custom_callback.get_callback
+```
+
+### Running Pathmind Python simulations
+
+To run training for simulations defined with the `pathmind` package, you need to
+
+- specify your `Simulation` implementation as a Python package reference,
+- provide the training script with the `--is_pathmind_simulation` flag,
+- optionally provide the path to an observation selection YAML file with `--obs_selection`,
+- and optionally provide a Python reference to your custom reward function with `--rew_fct_name`
+
+Here's an example to run:
+
+```shell
+python run.py training tests.mouse.multi_mouse_env_pathmind.MultiMouseAndCheese \
+--is_pathmind_simulation \
+--obs_selection tests/mouse/obs.yaml \
+--rew_fct_name tests.mouse.reward.reward_function
 ```
 
 ### Running Pathmind Python simulations
@@ -130,7 +147,6 @@ python run.py training --help
 which shows you all input arguments in detail. You can also access
 `python run.py --help` for general help and `python run.py from_config --help`
 for help with the "from configuration" trainer.
-
 
 ## Tests
 
