@@ -1,16 +1,10 @@
 import logging
-import os
-from math import sqrt
 
-import ray
 from ray.rllib.agents.registry import get_agent_class
 from ray.tune import run
 
-from pathmind import modify_anylogic_db_properties
-from pathmind.environments import get_environment, get_gym_environment
 from pathmind.distributions import register_freezing_distributions
 from pathmind.utils import write_file
-from pathmind.callbacks import get_callbacks, get_callback_function
 
 
 def find(key, value):
@@ -99,7 +93,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
 
     mean_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
-    
+
     for temp in temperature_list:
         if temp != "vanilla":
             config['model'] = {'custom_action_dist': temp}
