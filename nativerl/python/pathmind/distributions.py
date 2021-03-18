@@ -6,7 +6,6 @@ import gym
 from ray.rllib.models.tf.tf_action_dist import Categorical, TFActionDistribution
 from ray.rllib.models.action_dist import ActionDistribution
 from ray.rllib.utils.spaces.space_utils import get_base_struct_from_space
-from ray.rllib.utils.typing import TensorType
 from ray.rllib.models import ModelCatalog
 from ray.rllib.utils.annotations import override
 

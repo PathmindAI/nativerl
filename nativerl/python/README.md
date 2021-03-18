@@ -107,7 +107,6 @@ which shows you all input arguments in detail. You can also access
 `python run.py --help` for general help and `python run.py from_config --help`
 for help with the "from configuration" trainer.
 
-
 Here's a snapshot of the current `training` help page, to give you an overview:
 
 ```text

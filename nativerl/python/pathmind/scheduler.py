@@ -1,6 +1,5 @@
 from ray.tune.schedulers import PopulationBasedTraining
 # from ray.tune.schedulers.pb2 import PB2
-
 import numpy as np
 
 

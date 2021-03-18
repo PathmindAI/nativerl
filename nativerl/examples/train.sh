@@ -155,9 +155,7 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
 fi
 
 mkdir -p $OUTPUT_DIR/PPO
-
 cp -r python/* .
-
 
 PYTHON=$(which python.exe) || PYTHON=$(which python3)
 
