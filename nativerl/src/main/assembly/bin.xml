@@ -13,6 +13,7 @@
         <include>examples/*</include>
         <include>python/*</include>
         <include>python/pathmind_training/*</include>
+        <include>python/pathmind/*</include>
         <include>CHANGELOG*</include>
         <include>README*</include>
         <include>LICENSE*</include>

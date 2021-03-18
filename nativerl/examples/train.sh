@@ -109,7 +109,12 @@ fi
 
 IS_GYM_PARAM=""
 if [[ "$IS_GYM" = true ]]; then
-    IS_GYM_PARAM="--is-gym"
+    IS_GYM_PARAM="--is_gym"
+fi
+
+IS_PATHMIND_SIMULATION_PARAM=""
+if [[ "$IS_PATHMIND_SIMULATION" = true ]]; then
+    IS_PATHMIND_SIMULATION_PARAM="--is_pathmind_simulation"
 fi
 
 export OUTPUT_DIR=$(pwd)
@@ -181,4 +186,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $MAX_MEMORY_IN_MB_PARAM \
     $ACTION_MASKING_PARAM \
     $FREEZING_PARAM \
-    $IS_GYM_PARAM
+    $IS_GYM_PARAM \
+    $IS_PATHMIND_SIMULATION_PARAM
