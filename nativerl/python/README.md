@@ -105,16 +105,17 @@ To run training for simulations defined with the `pathmind` package, you need to
 
 - specify your `Simulation` implementation as a Python package reference,
 - provide the training script with the `--is_pathmind_simulation` flag,
-- optionally provide the path to an observation selection YAML file with `--obs-selection`,
-- and optionally provide a Python reference to your custom reward function with `--rew-fct-name`
+- optionally provide the path to an observation selection YAML file with `--obs_selection`,
+- and optionally provide a Python reference to your custom reward function with `--rew_fct_name`
 
 Here's an example to run:
 
 ```shell
 python run.py training tests.mouse.multi_mouse_env_pathmind.MultiMouseAndCheese \
 --is_pathmind_simulation \
---obs-selection tests/mouse/obs.yaml \
---rew-fct-name tests.mouse.reward.reward_function
+--obs_selection tests/mouse/obs.yaml \
+--rew_fct_name tests.mouse.reward.reward_function \
+--multi_agent
 ```
 
 Note that if no observation selection YAML is specified, all observations previously defined will be used, and if
