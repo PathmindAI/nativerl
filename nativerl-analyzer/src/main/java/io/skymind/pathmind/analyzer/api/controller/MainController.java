@@ -61,7 +61,7 @@ public class MainController {
     public HyperparametersDTO extractHyperparameters(
             @ApiParam(value = "Valid ZIP archive contains all needed files to set up environment for extract hyperparameters.")
             @RequestParam(name = "file") final MultipartFile multipartFile,
-            @RequestParam(name = "id", defaultValue="{\"id\":\"Not Defined : \"}") final AnalyzeRequestDTO request) throws IOException {
+            @RequestParam(name = "id", defaultValue="{\"id\":\"Not Defined : \"}") final AnalyzeRequestDTO request) throws IOException, InterruptedException {
         log.info(String.format("Received a request for extracting hyperparameters %s ", request.getId()));
         final List<String> hyperparameters = fileService.processFile(multipartFile, request);
         HyperparametersDTO response = HyperparametersDTO.of(hyperparameters);

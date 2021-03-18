@@ -20,7 +20,7 @@ def main(environment: str,
          algorithm: str = 'PPO',
          scheduler: str = 'PBT',
          output_dir: str = os.getcwd(),
-         multi_agent: bool = True,
+         multi_agent: bool = False,
          max_memory_in_mb: int = 4096,
          num_cpus: int = 1,
          num_gpus: int = 0,
@@ -29,7 +29,7 @@ def main(environment: str,
          num_hidden_nodes: int = 256,
          max_iterations: int = 500,
          max_time_in_sec: int = 43200,
-         max_episodes: int = 50000,
+         max_episodes: int = 200000,
          num_samples: int = 4,
          resume: bool = False,
          checkpoint_frequency: int = 50,
@@ -167,7 +167,7 @@ def main(environment: str,
         resume=resume,
         checkpoint_freq=checkpoint_frequency,
         checkpoint_at_end=True,
-        max_failures=3,
+        max_failures=5,
         export_formats=['model'],
         queue_trials=True
     )
@@ -185,9 +185,44 @@ def main(environment: str,
 
     if freezing:
         freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
-                              algorithm=algorithm, output_dir=output_dir, is_discrete=discrete)
+                              algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete)
 
     ray.shutdown()
+
+def test(environment: str,
+         is_gym: bool = False,
+         multi_agent: bool = True,
+         max_memory_in_mb: int = 4096,
+         module_path: str = None
+         ):
+    """
+    :check if valid environment or not for Model Analyzer
+
+    :param environment: The name of a subclass of "Environment" to use as environment for training.
+    :param is_gym: if True, "environment" must be a gym environment.
+    :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
+    :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
+
+    :return: runs training for the given environment, with nativerl
+    """
+
+    jar_dir = os.getcwd()
+    os.chdir(jar_dir)
+
+    if is_gym:
+        if module_path:
+            import sys
+            sys.path.append(module_path)
+
+        env_name, env_creator = get_gym_environment(environment_name=environment)
+    else:
+        env_name = get_environment(
+            jar_dir=jar_dir,
+            is_multi_agent=multi_agent,
+            environment_name=environment,
+            max_memory_in_mb=max_memory_in_mb
+        )
+        env_creator = env_name
 
 
 def from_config(config_file="./config.json"):
@@ -205,5 +240,6 @@ def from_config(config_file="./config.json"):
 if __name__ == '__main__':
     fire.Fire({
         "training": main,
-        "from_config": from_config
+        "from_config": from_config,
+        "test": test
     })

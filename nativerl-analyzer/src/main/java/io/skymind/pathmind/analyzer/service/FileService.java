@@ -28,13 +28,13 @@ public class FileService {
     private static final String INVALID_ZIP_EXCEPTION_MESSAGE = "%s file is an invalid ZIP";
     private static final String CHECK_MODEL_SCRIPT = "/bin/check_model.sh";
 
-    public List<String> processFile(final MultipartFile multipartFile, AnalyzeRequestDTO request) throws IOException {
+    public List<String> processFile(final MultipartFile multipartFile, AnalyzeRequestDTO request) throws IOException, InterruptedException {
         log.debug("Processing file {} started", multipartFile.getName());
         final Path unzippedPath = unzipFile(multipartFile);
         return extractParameters(unzippedPath, request);
     }
 
-    private Path unzipFile(final MultipartFile multipartFile) throws IOException {
+    private Path unzipFile(final MultipartFile multipartFile) throws IOException, InterruptedException {
         final UUID uuid = UUID.randomUUID();
         final Path tempDirectory = Files.createTempDirectory(uuid.toString());
         final File tempFile = Files.createFile(tempDirectory.resolve(TEMP_FILE_PREFIX + System.nanoTime())).toFile();
@@ -61,7 +61,7 @@ public class FileService {
         }
     }
 
-    private List<String> extractParameters(final Path unzippedPath, AnalyzeRequestDTO request) throws IOException {
+    private List<String> extractParameters(final Path unzippedPath, AnalyzeRequestDTO request) throws IOException, InterruptedException {
         final File scriptFile = Paths.get(CHECK_MODEL_SCRIPT).toFile();
         final File newFile = new File(unzippedPath.normalize().toString(), scriptFile.getName());
         FileCopyUtils.copy(scriptFile, newFile);
@@ -69,18 +69,40 @@ public class FileService {
         return runExtractorScript(unzippedPath, newFile, request);
     }
 
-    private List<String> runExtractorScript(final Path unzippedPath, File newFile, AnalyzeRequestDTO request) throws IOException {
-        final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
-        final Process proc = Runtime.getRuntime().exec(cmd);
-        List<String> result = readResult(proc.getInputStream());
-        log.info("Bash script finished");
+    private List<String> runExtractorScript(final Path unzippedPath, File newFile, AnalyzeRequestDTO request) throws IOException, InterruptedException {
+        if (request.getType().equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
+            final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
+            final Process proc = Runtime.getRuntime().exec(cmd);
+            List<String> result = readResult(proc.getInputStream());
+            log.info("Bash script finished");
 
-        if (result.size() < 16) {
-            List<String> err = readResult(proc.getErrorStream());
-            log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
+            if (result.size() < 16) {
+                List<String> err = readResult(proc.getErrorStream());
+                log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
+            }
+            return result;
+        } else {
+            // todo need to get is_gym or not?
+            final String[] cmd = new String[]{"/lib/pathmind/conda/bin/python", "/lib/pathmind/nativerl-bin/python/run.py",
+                    "test", request.getEnvironment(), "--is_gym", "--module_path=" + newFile.getParentFile().getAbsolutePath()};
+            final String[] envp = {"USE_PY_NATIVERL=True"};
+            final Process proc = Runtime.getRuntime().exec(cmd, envp);
+            int returnCode = proc.waitFor();
+            List<String> result = readResult(proc.getInputStream());
+            if (returnCode != 0) {
+                List<String> err = readResult(proc.getErrorStream());
+                if (err.size() > 0) {
+                    result.add("failedSteps:" + err.get(err.size() - 1));
+                } else {
+                    result.add("failedSteps:" + "failed without error message");
+                }
+                System.out.println(err);
+            }
+            // todo extract model type:py_single or py_multi
+            result.add("model-analyzer-mode:" + "py_single");
+
+            return result;
         }
-
-        return result;
     }
 
     private List<String> readResult(final InputStream inputStream) {

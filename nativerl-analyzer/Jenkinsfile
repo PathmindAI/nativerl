@@ -29,7 +29,7 @@ def publishDockerImage(image_name,DOCKER_TAG) {
 	sh "aws ecr get-login --no-include-email --region us-east-1 | sh"
 	echo "Tagging and pushing the pathmind Docker Image"                
 	sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
-	sh "docker push ${DOCKER_REG}/${image_name}"
+	sh "docker push ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 }
 
 
