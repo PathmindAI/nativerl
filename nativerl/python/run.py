@@ -183,11 +183,11 @@ def main(environment: str,
         queue_trials=True
     )
 
-    write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
-
     if freezing:
         freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
                               algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete)
+
+    write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
 
     ray.shutdown()
 
