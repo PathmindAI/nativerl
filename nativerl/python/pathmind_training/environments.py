@@ -83,7 +83,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     environment_name, obs_selection, reward_function_name
                 )
             else:
-                self.nativeEnv = pathmind_training.utils.createEnvironment(environment_name)
+                self.nativeEnv = nativerl.createEnvironment(environment_name)
 
             self.action_space = self.define_action_space()
             self.observation_space = self.define_observation_space()
