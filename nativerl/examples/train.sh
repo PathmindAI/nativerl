@@ -109,7 +109,22 @@ fi
 
 IS_GYM_PARAM=""
 if [[ "$IS_GYM" = true ]]; then
-    IS_GYM_PARAM="--is-gym"
+    IS_GYM_PARAM="--is_gym"
+fi
+
+IS_PATHMIND_SIMULATION_PARAM=""
+if [[ "$IS_PATHMIND_SIMULATION" = true ]]; then
+    IS_PATHMIND_SIMULATION_PARAM="--is_pathmind_simulation"
+fi
+
+OBS_SELECTION_PARAM=""
+if [[ ! -z "$OBS_SELECTION" ]]; then
+    OBS_SELECTION_PARAM="--obs_selection $OBS_SELECTION"
+fi
+
+REW_FCT_NAME_PARAM=""
+if [[ ! -z "$REW_FCT_NAME" ]]; then
+    REW_FCT_NAME_PARAM="--rew_fct_name $REW_FCT_NAME"
 fi
 
 export OUTPUT_DIR=$(pwd)
@@ -181,4 +196,7 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $MAX_MEMORY_IN_MB_PARAM \
     $ACTION_MASKING_PARAM \
     $FREEZING_PARAM \
-    $IS_GYM_PARAM
+    $IS_GYM_PARAM \
+    $IS_PATHMIND_SIMULATION_PARAM \
+    $OBS_SELECTION_PARAM \
+    $REW_FCT_NAME_PARAM
