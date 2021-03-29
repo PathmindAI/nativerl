@@ -30,9 +30,9 @@ RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.5.0-SNAPSHOT-bin.zip ./ \
  && unzip nativerl-1.5.0-SNAPSHOT-bin.zip \
  && rm nativerl-1.5.0-SNAPSHOT-bin.zip
 
-RUN aws s3 cp s3://${S3BUCKET}/baseEnv-8.7.0.zip ./ \
- && unzip baseEnv-8.7.0.zip \
- && rm baseEnv-8.7.0.zip
+RUN aws s3 cp s3://${S3BUCKET}/baseEnv-8.7.3.zip ./ \
+ && unzip baseEnv-8.7.3.zip \
+ && rm baseEnv-8.7.3.zip
 
 WORKDIR /
  
