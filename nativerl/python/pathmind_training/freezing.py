@@ -29,7 +29,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
         'env': env_name,
         'callbacks': callbacks,
         'num_gpus': 0,
-        'num_workers': 1,
+        'num_workers': 6,
         'num_cpus_per_worker': 1,
         'model': input_config['model'],
         'lr': 0.0,
