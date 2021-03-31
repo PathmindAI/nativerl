@@ -19,7 +19,7 @@ def find(key, value):
                     yield result
 
 
-def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, input_config,
+def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, output_dir, input_config,
                step_tolerance=1000000, algorithm='PPO'):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
@@ -44,6 +44,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
         algorithm,
         num_samples=1,
         stop={'training_iteration': 1},
+        loggers=loggers,
         config=config,
         local_dir=output_dir,
         restore=checkpoint,
@@ -56,10 +57,10 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, output_dir, 
     range_of_rewards = max_reward - min_reward
     mean_reward = next(find('episode_reward_mean', trials.results))
 
-    return mean_reward, range_of_rewards
+    return mean_reward, range_of_rewards, trials.get_best_logdir(metric="episode_reward_mean", mode="max")
 
 
-def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, algorithm: str, is_discrete: bool,
+def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
                           filter_tolerance: float = 0.85, mc_steps: int = 10000,
                           step_tolerance: int = 100_000_000):
     """Freeze the trained policy at several temperatures and pick the best ones.
@@ -68,6 +69,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
     :param env_name: name of the env (str)
     :param callbacks: ray Callbacks class
     :param trials: The trials returned from a ray tune run.
+    :param loggers: loggers for mc_rollout
     :param output_dir: output directory for logs
     :param algorithm: the Rllib algorithm used (defaults to "PPO")
     :param is_discrete: for continuous actions we currently skip this step.
@@ -75,7 +77,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
     0.85 means policies will be at least 85% of the top performer.
     :param mc_steps: Number of steps by which to judge policy
     :param step_tolerance: Maximum allowed step count for each iteration of Monte Carlo
-    :return:
+    :return: Best Freezing log dir
     """
     if not is_discrete:
         logger = logging.getLogger('freezing')
@@ -92,13 +94,14 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
 
     mean_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
+    log_dir_dict = dict.fromkeys(temperature_list)
 
     for temp in temperature_list:
         if temp != "vanilla":
             config['model'] = {'custom_action_dist': temp}
 
-        mean_reward_dict[temp], range_reward_dict[temp] = \
-            mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, output_dir, config,
+        mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
+            mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, loggers, output_dir, config,
                        step_tolerance, algorithm)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
@@ -130,6 +133,9 @@ def freeze_trained_policy(env, env_name, callbacks, trials, output_dir: str, alg
         f"Range reward dict: {range_reward_dict}",
         f"Top performing reward temperature: {top_performing_temp}",
         f"Filtered temperature list: {filtered_range_reward_dict}",
-        f"Most reliable temperature (our policy of choice): {most_reliable_temp}"
+        f"Most reliable temperature (our policy of choice): {most_reliable_temp}",
+        f"Most reliable temperature log dir: {log_dir_dict[most_reliable_temp]}"
     ]
     write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
+
+    return log_dir_dict[most_reliable_temp]
