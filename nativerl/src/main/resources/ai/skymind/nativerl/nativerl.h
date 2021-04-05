@@ -1,6 +1,14 @@
 #ifndef NATIVERL_H
 #define NATIVERL_H
 
+#ifdef _WIN32
+#define NATIVERL_EXPORT __declspec(dllexport)
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
+#define NATIVERL_EXPORT __attribute__((visibility("default")))
+#endif
+
 #include <vector>
 
 /**
@@ -143,7 +151,13 @@ public:
     virtual const Array& getMetrics(ssize_t agentId = 0) = 0;
 };
 
+#ifdef _WIN32
+// Windows does not support undefined symbols in DLLs, disallowing circular dependencies,
+// so we cannot call createEnvironment() defined in nativerl.cpp from Java...
+std::shared_ptr<Environment> createEnvironment(const char* name) { return std::shared_ptr<Environment>(); }
+#else
 std::shared_ptr<Environment> createEnvironment(const char* name);
+#endif
 
 }
 

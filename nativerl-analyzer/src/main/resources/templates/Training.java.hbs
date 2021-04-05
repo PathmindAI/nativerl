@@ -20,9 +20,9 @@ public class Training extends ExperimentCustom {
 
     @AnyLogicInternalCodegenAPI
     public void setupEngine_xjal(Engine engine) {
-        Simulation sim = new Simulation();
-        sim.setupEngine(engine);
-        sim.initDefaultRandomNumberGenerator(engine);
+        {{simulationClassName}} exp = new {{simulationClassName}}();
+        exp.setupEngine(engine);
+        exp.initDefaultRandomNumberGenerator(engine);
     }
 
     @AnyLogicInternalCodegenAPI

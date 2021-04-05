@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201440" AlpVersion="8.5.7">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.2.202012250258" AlpVersion="8.7.0">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -17,7 +17,8 @@
 			<Id>1563523926930</Id>
 			<Name><![CDATA[PathmindHelper]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
-			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;]]></Import>
+			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;
+import java.util.stream.DoubleStream;]]></Import>
 			<ExtendsReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[AbstractPathmindHelper]]></ClassName>
@@ -31,9 +32,9 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
    observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 }
 
-// makes sure we can always query the state and do actions, even at time 0
-triggerNextAction();
-]]></StartupCode>
+if (numberOfAgents <= 0) {
+	throw new RuntimeException("Number of Pathmind controlled agents must be greater than 0.");
+}]]></StartupCode>
 			<DestroyCode><![CDATA[PathmindHelperRegistry.unregister(this);]]></DestroyCode>
 			<Generic>false</Generic>
 			<GenericParameter>
@@ -568,7 +569,7 @@ class Actions {<br>
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>400</Y>
+					<X>20</X><Y>430</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -695,11 +696,48 @@ class Actions {<br>
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1607719252648</Id>
+					<Name><![CDATA[firstOccurrence]]></Name>
+					<Description><![CDATA[<h3>First Occurrence</h3>
+<p>Sets the time in which the first trigger should occur. By default, the first trigger event occurs at time 0.</p>]]></Description>
+					<X>20</X><Y>340</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[]]></Type>
+						<UnitType><![CDATA[TIME]]></UnitType>
+						<UnitOfValue Class="TimeUnits"><![CDATA[SECOND]]></UnitOfValue>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeUnitValue">
+							<Code><![CDATA[0]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1607719252646</Id>
+							<Label><![CDATA[First Occurrence]]></Label>
+							<EditorContolType>UNIT_EDITOR</EditorContolType>
+							<HideCondition>
+								<Id>1607719252645</Id>
+								<ParameterId>1573849287879</ParameterId>
+								<Operation>EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
 					<Name><![CDATA[recurrence]]></Name>
 					<Description><![CDATA[<h3>Recurrence</h3>
 <p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
-					<X>20</X><Y>340</Y>
+					<X>20</X><Y>370</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -739,7 +777,7 @@ class Actions {<br>
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3634254-4-triggering-actions" target="_blank">https://help.pathmind.com/en/articles/3634254-4-triggering-actions</a>]]></Description>
-					<X>20</X><Y>370</Y>
+					<X>20</X><Y>400</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -796,8 +834,8 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 						<OccurrenceAtTime>true</OccurrenceAtTime>
 						<OccurrenceDate>1566892800000</OccurrenceDate>
 						<OccurrenceTime Class="CodeUnitValue">
-							<Code><![CDATA[0]]></Code>
-							<Unit Class="TimeUnits"><![CDATA[MINUTE]]></Unit>
+							<Code><![CDATA[firstOccurrence(SECOND)]]></Code>
+							<Unit Class="TimeUnits"><![CDATA[SECOND]]></Unit>
 						</OccurrenceTime>
 						<RecurrenceCode Class="CodeUnitValue">
 							<Code><![CDATA[recurrence(SECOND)]]></Code>
@@ -836,9 +874,17 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 		if (isSkip(i)) {
 			continue;
 		}
-		// be sure to call those here allowing users to fix errors before training
+		// Be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
 		double[] reward = observationForReward(i);
+		// Throw error if infinity or NaN detected in observations or rewards array
+		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Observations cannot contain a value of infinity or NaN.");
+		}
+		if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
+			throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
+		}
+		
 		if (usePolicy && policyHelper != null) {
 			double[] a = policyHelper.computeActions(training);
 			action[i] = doAction(a, true, i);
@@ -851,6 +897,10 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 
 if (isEnabled && debugMode) {
 	printDebug();
+}
+
+if (steps > 20001) {
+	throw new RuntimeException("Maximum steps exceeded.");
 }
 
 /*
@@ -880,7 +930,7 @@ if (!isTraining && steps == 1) {
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1605145082653</Id>
 					<Name><![CDATA[printDebug]]></Name>
-					<X>290</X><Y>160</Y>
+					<X>290</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -913,8 +963,7 @@ try {
 				    + "  Metrics: \n"
 				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Metrics: " + rewardArray.length + "\n"
-				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-				    + "  Done: " + isDone(0);
+				    + "  Last Action: " + Arrays.toString(action[0]);
 			traceln(output);
 		} else {
 			String header = "Pathmind:\n"
@@ -943,8 +992,7 @@ try {
 				    	+ "      Array: " + rewardDict + "\n"
 					    + "      Number of Metrics: " + rewardArray.length + "\n"
 					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-					    + "    Skip: " + isSkip(i) + "\n"
-					    + "    Done: " + isDone(i) + "\n";
+					    + "    Skip: " + isSkip(i);
 					    
 				traceln(output_agentId);
 			}
@@ -1002,7 +1050,7 @@ try {
 				<Image>
 					<Id>1564400828815</Id>
 					<Name><![CDATA[image]]></Name>
-					<X>-8</X><Y>-8</Y>
+					<X>0</X><Y>0</Y>
 					<Label><X>8</X><Y>8</Y></Label>
 					<PublicFlag>true</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1010,8 +1058,8 @@ try {
 					<DrawMode>SHAPE_DRAW_2D</DrawMode>
 					<EmbeddedIcon>true</EmbeddedIcon>
 					<Z>0</Z>
-					<Width>24</Width>
-					<Height>24</Height>
+					<Width>32</Width>
+					<Height>32</Height>
 					<Rotation>0.0</Rotation>
 					<ImageFiles>
 						<ImageResourceReference>
@@ -1155,6 +1203,9 @@ try {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[useEventTrigger]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[firstOccurrence]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[recurrence]]></ParameterName>
@@ -1546,15 +1597,12 @@ public class AnyLogicCloudHelper {
         javacppPath.mkdirs();
         javacppPath.setExecutable(true, false);
 
-        // set necessary property
-        System.setProperty("org.bytedeco.javacpp.cachedir", javacppPath.getAbsolutePath());
-        System.setProperty("ld.library.path", libstdcPath.getAbsolutePath());
-
         // extract the proper jar file name
         Class klass = PolicyHelper.class;
         File jarFile = new File(klass.getProtectionDomain().getCodeSource().getLocation().getFile());
 
-        File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
+        //File dest = new File(javacppPath, jarFile.getName() + "/org/bytedeco/tensorflow/linux-x86_64");
+        File dest = new File(javacppPath, jarFile.getName() + "/org/tensorflow/internal/c_api/linux-x86_64");
         dest.mkdirs();
 
         // copy libstdc++ so files to javacpp cache due to ld.library.path
@@ -1849,8 +1897,8 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>3</VersionMinor>
-			<VersionBuild>3</VersionBuild>
+			<VersionMinor>4</VersionMinor>
+			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
 	</Libraries>
@@ -1868,7 +1916,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.4.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.5.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1881,7 +1929,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.4.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.5.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>

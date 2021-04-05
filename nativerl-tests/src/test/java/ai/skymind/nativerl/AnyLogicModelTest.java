@@ -22,6 +22,7 @@ public class AnyLogicModelTest extends ModelTest {
 
     @Test public void testTrafficPhases() throws Exception {
         File binDir = new File("target/dependency/nativerl-bin/");
+        File helperDir = new File("../PathmindPolicyHelper/target/");
         File exportDir = folder.newFolder("TrafficPhases");
         File modelDir = new File(getClass().getResource("trafficphases").toURI());
         File simulationDir = new File(exportDir, "TrafficPhases_Simulation");
@@ -29,6 +30,7 @@ public class AnyLogicModelTest extends ModelTest {
         execute(modelDir, "anylogic", "-e", "-o", exportDir.getAbsolutePath(), modelDir.getAbsolutePath() + "/TrafficPhases.alp");
 
         copy(binDir, simulationDir);
+        copy(helperDir, new File(simulationDir, "lib"));
         copy(new File(binDir, "examples/traintraffic.sh"), simulationDir);
         execute(simulationDir, "bash", "traintraffic.sh");
 

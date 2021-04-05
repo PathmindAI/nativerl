@@ -11,6 +11,8 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>examples/*</include>
+        <include>python/*</include>
+        <include>python/pathmind/*</include>
         <include>CHANGELOG*</include>
         <include>README*</include>
         <include>LICENSE*</include>
@@ -24,6 +26,7 @@
         <include>*.jar</include>
         <include>*.dll</include>
         <include>*.dylib</include>
+        <include>*.pyd</include>
         <include>*.so</include>
       </includes>
       <excludes>

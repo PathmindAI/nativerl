@@ -16,15 +16,14 @@ public class ModelAnalyzer {
         {{agentClassName}} agent;
 
         try {
+            {{simulationClassName}} exp = new {{simulationClassName}}();
 {{#if isRLExperiment}}
-            RLExperiment exp = new RLExperiment();
             agent = exp.createModel();
             engine = agent.getEngine();
 {{else}}
             engine = new Training(null).createEngine();
-            Simulation sim = new Simulation();
-            sim.setupEngine(engine);
-            sim.initDefaultRandomNumberGenerator(engine);
+            exp.setupEngine(engine);
+            exp.initDefaultRandomNumberGenerator(engine);
             agent = new {{agentClassName}}(engine, null, null);
 {{/if}}
         } catch(RuntimeException e) {
@@ -49,7 +48,7 @@ public class ModelAnalyzer {
             failedSteps.add("startEngine");
         }
 
-        PathmindHelper helper = agent.pathmindHelper;
+        PathmindHelper helper = agent.{{pathmindHelperClassName}};
 
         try {
             System.out.println("observations:" + helper.observationForTraining().length);
@@ -71,6 +70,8 @@ public class ModelAnalyzer {
 
         // check number of agent
         System.out.println("agents:" + helper.numberOfAgents);
+        //System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "al_multi" : "al_single"));
+        //this is for temporary roll back for support staging and dev server again
         System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "multi" : "single"));
 
         try {
