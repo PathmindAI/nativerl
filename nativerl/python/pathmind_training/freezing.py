@@ -20,7 +20,7 @@ def find(key, value):
 
 
 def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, output_dir, input_config,
-               step_tolerance=1000000, algorithm='PPO'):
+               step_tolerance=1000000, algorithm='PPO', multi_agent=False):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
     """
@@ -37,7 +37,8 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
         'sgd_minibatch_size': 1,
         'train_batch_size': steps,
         'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
-        'horizon': environment.max_steps,  # Set max steps per episode
+        'horizon': environment.max_steps,  # Set max steps per episode,
+        'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
     }
 
     trials = run(
@@ -62,7 +63,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
 
 def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
                           filter_tolerance: float = 0.85, mc_steps: int = 10000,
-                          step_tolerance: int = 100_000_000):
+                          step_tolerance: int = 100_000_000, multi_agent: bool = False):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
     :param env: nativerl.Environment instance
@@ -77,6 +78,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
     0.85 means policies will be at least 85% of the top performer.
     :param mc_steps: Number of steps by which to judge policy
     :param step_tolerance: Maximum allowed step count for each iteration of Monte Carlo
+    :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :return: Best Freezing log dir
     """
     if not is_discrete:
@@ -102,7 +104,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
 
         mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
             mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, loggers, output_dir, config,
-                       step_tolerance, algorithm)
+                       step_tolerance, algorithm, multi_agent)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
     filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1. / filter_tolerance
