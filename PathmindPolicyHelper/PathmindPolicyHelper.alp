@@ -915,7 +915,18 @@ steps++;]]></Action>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if (isTraining) {
+					<Body><![CDATA[// see if at least one agent is not skipped
+boolean flag = true;
+for (int i = 0; i < numberOfAgents; i++) 
+	if (!isSkip(i)) {
+		flag = false;
+		break;
+	}
+// if all agents are skipped, dont take step
+if(flag)
+	return;
+
+if (isTraining) {
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 	steps++;
 } else if (isEnabled) {	
