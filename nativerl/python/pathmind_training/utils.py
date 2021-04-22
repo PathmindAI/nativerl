@@ -15,7 +15,7 @@ def write_file(messages, file_name, output_dir, algorithm, mode="a"):
             out.write(f"{msg}\n")
 
 
-def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir):
+def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir = None):
     # Write to file for Pathmind webapp
     best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max"))
     max_log_dir = trials.get_best_logdir(metric="episode_reward_mean", mode="max")
@@ -25,8 +25,10 @@ def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir
     best_checkpoint = f"Best Checkpoint: {max_checkpoint}"
     if best_freezing_log_dir:
         best_freezing_dir = f"Best Freezing: {best_freezing_log_dir}"
-
-    write_file([best_trial, best_trial_dir, best_policy, best_checkpoint, best_freezing_dir], "ExperimentCompletionReport.txt",
+        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint, best_freezing_dir], "ExperimentCompletionReport.txt",
+                       output_dir, algorithm)
+    else:
+        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt",
                output_dir, algorithm)
 
     if trials:
