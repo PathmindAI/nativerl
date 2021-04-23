@@ -24,7 +24,7 @@ RUN aws s3 cp s3://${S3BUCKET}/rllibpack.tar.gz ./ \
 
 WORKDIR /lib/pathmind
 
-RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy-1.5.0-SNAPSHOT.jar ./
+RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy-1.6.0-SNAPSHOT.jar ./
 
 RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.6.0-SNAPSHOT-bin.zip ./ \
  && unzip nativerl-1.6.0-SNAPSHOT-bin.zip \
