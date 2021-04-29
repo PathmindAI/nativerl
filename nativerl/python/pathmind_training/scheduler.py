@@ -1,7 +1,5 @@
 from ray.tune.schedulers import PopulationBasedTraining
-from ray.tune.schedulers.pb2 import PB2
 import numpy as np
-
 
 def get_scheduler(scheduler_name):
     if scheduler_name == "PBT":
@@ -24,6 +22,7 @@ def get_scheduler(scheduler_name):
             }
         )
     elif scheduler_name == "PB2":
+        from ray.tune.schedulers.pb2 import PB2
         return PB2(
             time_attr='training_iteration',
             metric='episode_reward_mean',
