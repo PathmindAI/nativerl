@@ -59,7 +59,6 @@ def main(environment: str,
                                  reward terms.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
     :param scheduler: The tune scheduler used for picking trials, currently supports "PBT"
-                      (and "PB2", once we upgrade to at least ray==1.0.1.post1)
     :param output_dir: The directory where to output the logs of RLlib.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
