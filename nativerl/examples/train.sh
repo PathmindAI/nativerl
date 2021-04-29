@@ -127,6 +127,11 @@ if [[ ! -z "$REW_FCT_NAME" ]]; then
     REW_FCT_NAME_PARAM="--rew_fct_name $REW_FCT_NAME"
 fi
 
+SCHEDULER_PARAM=""
+if [[ "$SCHEDULER" = "PB2" ]]; then
+    SCHEDULER_PARAM="--scheduler $SCHEDULER"
+fi
+
 export OUTPUT_DIR=$(pwd)
 
 if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
@@ -199,4 +204,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $IS_GYM_PARAM \
     $IS_PATHMIND_SIMULATION_PARAM \
     $OBS_SELECTION_PARAM \
-    $REW_FCT_NAME_PARAM
+    $REW_FCT_NAME_PARAM \
+    $SCHEDULER_PARAM
