@@ -7,6 +7,7 @@ class Stopper:
                  max_iterations: int,
                  max_time_in_sec: int,
                  max_episodes: int,
+                 convergence_check_start_iteration: int,
                  episode_reward_range_th: float,
                  entropy_slope_th: float,
                  vf_loss_range_th: float,
@@ -52,6 +53,7 @@ class Stopper:
         self.output_dir = output_dir
 
         self.max_iterations = max_iterations
+        self.convergence_check_start_iteration = convergence_check_start_iteration
         self.max_time_in_sec = max_time_in_sec
         self.max_episodes = max_episodes
 
@@ -114,7 +116,7 @@ class Stopper:
                 return True
 
         # Convergence check
-        if result['training_iteration'] >= 250:
+        if result['training_iteration'] >= self.convergence_check_start_iteration:
             # Episode reward range activity
             self.episode_reward_range = np.max(np.array(self.episode_reward_window[trial_id][-50:])) \
                                         - np.min(np.array(self.episode_reward_window[trial_id][-50:]))
