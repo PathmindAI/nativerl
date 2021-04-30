@@ -1,5 +1,4 @@
 import typing
-import random
 from gym import Env, spaces
 
 

@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.2.202012250258" AlpVersion="8.7.0">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.3.202103181411" AlpVersion="8.7.1">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -853,27 +853,18 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 }]]></Action>
 				</Event>
 			</Events>
-			<Functions>
-				<Function AccessType="public" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double]]></ReturnType>
-					<Id>1566466772537</Id>
-					<Name><![CDATA[triggerNextAction]]></Name>
-					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
-					<X>570</X><Y>70</Y>
+			<DynamicEvents>
+				<DynamicEventClass>
+					<Id>1614025531741</Id>
+					<Name><![CDATA[DE_executeStep]]></Name>
+					<X>570</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[if (isTraining) {
-	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
-	steps++;
-} else if (isEnabled) {
-	steps++;
-	for (int i = 0; i < numberOfAgents; i++) {
-		if (isSkip(i)) {
-			continue;
-		}
+					<Action><![CDATA[// calculate observations and rewards to catch errors and save actions
+for (int i = 0; i < numberOfAgents; i++) {
+	if (!isSkip(i)) {
 		// Be sure to call those here allowing users to fix errors before training
 		double[] training = observationForTraining(i);
 		double[] reward = observationForReward(i);
@@ -886,23 +877,75 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 		}
 		
 		if (usePolicy && policyHelper != null) {
-			double[] a = policyHelper.computeActions(training);
-			action[i] = doAction(a, true, i);
+			action[i] = policyHelper.computeActions(training);
 		} else if (!usePolicy) {
-			double[] a = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
-			action[i] = doAction(a, false, i);
+			action[i] = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
 		}
 	}
 }
 
-if (isEnabled && debugMode) {
+// print debug
+if(debugMode)
 	printDebug();
+
+// execute actions
+for (int i = 0; i < numberOfAgents; i++) {
+	if (!isSkip(i)) {
+		
+		if (usePolicy && policyHelper != null) {
+			doAction(action[i], true, i);
+		} else if (!usePolicy) {
+			doAction(action[i], false, i);
+		}
+	}
 }
 
-if (steps > 20001) {
-	throw new RuntimeException("Maximum steps exceeded.");
-}
+steps++;]]></Action>
+				</DynamicEventClass>
+			</DynamicEvents>
+			<Functions>
+				<Function AccessType="public" StaticFunction="false">
+					<ReturnModificator>VOID</ReturnModificator>
+					<ReturnType><![CDATA[double]]></ReturnType>
+					<Id>1566466772537</Id>
+					<Name><![CDATA[triggerNextAction]]></Name>
+					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
+					<X>570</X><Y>70</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Body><![CDATA[// see if at least one agent is not skipped
+boolean flag = true;
+for (int i = 0; i < numberOfAgents; i++) 
+	if (!isSkip(i)) {
+		flag = false;
+		break;
+	}
+// if all agents are skipped, dont take step
+if(flag)
+	return;
 
+if (isTraining) {
+	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
+	steps++;
+} else if (isEnabled) {	
+	// Only check at step 1
+	if (steps == 1) {
+		if (observationForTraining(0).length == 0) {
+			throw new RuntimeException("No observations detected.");
+		}
+		
+		if (observationForReward(0).length == 0) {
+			throw new RuntimeException("No metrics detected.");
+		}
+	}
+	// Notify users if step count exceeds horizon set in NativeRL
+	if (!usePolicy && steps > 20000) {
+		throw new RuntimeException("Maximum steps exceeded.");
+	}	
+	create_DE_executeStep(0);
+}
 /*
 if (!isTraining && steps == 1) {
     PathmindSerializer.writeMeta(this);
@@ -970,31 +1013,36 @@ try {
 					      + "  Step: " + steps;
 			traceln(headerColor, header);
 			for (int i = 0; i < numberOfAgents; i++) {
-				String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
-				double[] observationArray = observationForTraining(i);
-				Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
-				for (int j = 0; j < observationArray.length; j++) {
-  					observationDict.put(observationNames[j], observationArray[j]);
-				}
-
-				String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
-				double[] rewardArray = observationForReward(i);
-				Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
-				for (int j = 0; j < rewardArray.length; j++) {
-  					rewardDict.put(rewardNames[j], rewardArray[j]);
+				if(!isSkip(i)){
+					String[] observationNames = observationProcessor.getObservationNames(getOwner(), i);
+					double[] observationArray = observationForTraining(i);
+					Map<String, Double> observationDict = new LinkedHashMap<String, Double>();
+					for (int j = 0; j < observationArray.length; j++) {
+	  					observationDict.put(observationNames[j], observationArray[j]);
+					}
+	
+					String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
+					double[] rewardArray = observationForReward(i);
+					Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
+					for (int j = 0; j < rewardArray.length; j++) {
+	  					rewardDict.put(rewardNames[j], rewardArray[j]);
+					}
+					
+					traceln(AgentIdColor, "  Agent ID: " + i);
+					String output_agentId = "    Observations:\n"
+					    	+ "      Array: " + observationDict + "\n"
+						    + "      Number of Observations: " + observationArray.length + "\n"
+						    + "    Metrics: \n"
+					    	+ "      Array: " + rewardDict + "\n"
+						    + "      Number of Metrics: " + rewardArray.length + "\n"
+						    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
+						    + "    Skip: " + isSkip(i);
+						    
+					traceln(output_agentId);
+				} else {
+					traceln(silver, "  Agent ID: " + i + "    Skipped");
 				}
 				
-				traceln(AgentIdColor, "  Agent ID: " + i);
-				String output_agentId = "    Observations:\n"
-				    	+ "      Array: " + observationDict + "\n"
-					    + "      Number of Observations: " + observationArray.length + "\n"
-					    + "    Metrics: \n"
-				    	+ "      Array: " + rewardDict + "\n"
-					    + "      Number of Metrics: " + rewardArray.length + "\n"
-					    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-					    + "    Skip: " + isSkip(i);
-					    
-				traceln(output_agentId);
 			}
 		}
 	} else if (isDone(-1)) {
@@ -1897,7 +1945,7 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>4</VersionMinor>
+			<VersionMinor>5</VersionMinor>
 			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
@@ -1916,7 +1964,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.5.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1929,7 +1977,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.5.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>

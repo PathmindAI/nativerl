@@ -1,9 +1,10 @@
+import importlib
 import os
 import gym
 import math
 import numpy as np
 if os.environ.get("USE_PY_NATIVERL"):
-    import pathmind.pynativerl as nativerl
+    import pathmind_training.pynativerl as nativerl
 else:
     import nativerl
 
@@ -14,7 +15,7 @@ def write_file(messages, file_name, output_dir, algorithm, mode="a"):
             out.write(f"{msg}\n")
 
 
-def write_completion_report(trials, output_dir, algorithm):
+def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir = None):
     # Write to file for Pathmind webapp
     best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max"))
     max_log_dir = trials.get_best_logdir(metric="episode_reward_mean", mode="max")
@@ -22,8 +23,12 @@ def write_completion_report(trials, output_dir, algorithm):
     best_policy = f"Best Policy: {max_log_dir}/model"
     max_checkpoint = trials.get_best_checkpoint(trial=max_log_dir, metric="episode_reward_mean", mode="max")
     best_checkpoint = f"Best Checkpoint: {max_checkpoint}"
-
-    write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt",
+    if best_freezing_log_dir:
+        best_freezing_dir = f"Best Freezing: {best_freezing_log_dir}"
+        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint, best_freezing_dir], "ExperimentCompletionReport.txt",
+                       output_dir, algorithm)
+    else:
+        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt",
                output_dir, algorithm)
 
     if trials:
@@ -71,7 +76,7 @@ def get_mock_env(env):
 def get_py_nativerl_from_gym_env(env_name: str):
     """Creates a Pathmind Environment from a simple gym.Env with discrete actions and 'Box' observations."""
 
-    env: gym.Env = nativerl.createEnvironment(env_name)
+    env: gym.Env = createEnvironment(env_name)
     assert isinstance(env, gym.Env), f"Provided environment {env_name} is not a gym environment."
 
     assert isinstance(env.action_space, gym.spaces.Discrete), "Only works with discrete actions"
@@ -134,3 +139,20 @@ def get_py_nativerl_from_gym_env(env_name: str):
             pass
 
     return PathmindEnv
+
+
+def get_class_from_string(class_string: str):
+    """Get class or function instance from a string, interpreted as Python module.
+    :param class_string:
+    :return:
+    """
+    class_name = class_string.split('.')[-1]
+    module = class_string.replace(f'.{class_name}', '')
+    lib = importlib.import_module(module)
+    return getattr(lib, class_name)
+
+
+def createEnvironment(env_name):
+    clazz = get_class_from_string(env_name)
+    obj = clazz()
+    return obj

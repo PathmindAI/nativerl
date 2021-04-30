@@ -1,5 +1,5 @@
 import numpy as np
-from pathmind.utils import write_file
+from pathmind_training.utils import write_file
 
 
 class Stopper:
@@ -78,21 +78,27 @@ class Stopper:
                        "ExperimentCompletionReport.txt", self.output_dir, self.algorithm)
             return True
 
+        if 'learner_stats' in result['info']['learner']['default_policy']:
+            result_stats = result['info']['learner']['default_policy']['learner_stats']
+        else:
+            result_stats = result['info']['learner']['default_policy']
+
+
         # Collect metrics for stopping criteria
         if result['training_iteration'] == 1:
-            self.entropy_start = result['info']['learner']['default_policy']['entropy']
+            self.entropy_start = result_stats['entropy']
 
         if result['training_iteration'] <= 50:
-            self.vf_loss_window.append(result['info']['learner']['default_policy']['vf_loss'])
+            self.vf_loss_window.append(result_stats['vf_loss'])
 
         if trial_id not in self.episode_reward_window:
             self.episode_reward_window[trial_id] = []
         self.episode_reward_window[trial_id].append(result['episode_reward_mean'])
-        self.vf_pred_window.append(result['info']['learner']['default_policy']['vf_explained_var'])
+        self.vf_pred_window.append(result_stats['vf_explained_var'])
 
         # Early learning check
         if result['training_iteration'] == 50:
-            self.entropy_now = result['info']['learner']['default_policy']['entropy']
+            self.entropy_now = result_stats['entropy']
             self.entropy_slope = self.entropy_now - self.entropy_start
             self.vf_loss_range = np.max(np.array(self.vf_loss_window)) - np.min(np.array(self.vf_loss_window))
 

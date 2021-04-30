@@ -8,19 +8,22 @@ import gym
 import ray
 from ray.tune import run, sample_from
 
-from pathmind import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
-from pathmind.environments import get_environment, get_gym_environment
-from pathmind.models import get_custom_model
-from pathmind.callbacks import get_callbacks, get_callback_function
-from pathmind.freezing import freeze_trained_policy
+from pathmind_training import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
+from pathmind_training.environments import get_environment, get_gym_environment
+from pathmind_training.models import get_custom_model
+from pathmind_training.callbacks import get_callbacks, get_callback_function
+from pathmind_training.freezing import freeze_trained_policy
 
 
 def main(environment: str,
          is_gym: bool = False,
+         is_pathmind_simulation: bool = False,
+         obs_selection: str = None,
+         rew_fct_name: str = None,
          algorithm: str = 'PPO',
          scheduler: str = 'PBT',
          output_dir: str = os.getcwd(),
-         multi_agent: bool = True,
+         multi_agent: bool = False,
          max_memory_in_mb: int = 4096,
          num_cpus: int = 1,
          num_gpus: int = 0,
@@ -29,7 +32,7 @@ def main(environment: str,
          num_hidden_nodes: int = 256,
          max_iterations: int = 500,
          max_time_in_sec: int = 43200,
-         max_episodes: int = 50000,
+         max_episodes: int = 200000,
          num_samples: int = 4,
          resume: bool = False,
          checkpoint_frequency: int = 50,
@@ -50,9 +53,12 @@ def main(environment: str,
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
+    :param is_pathmind_simulation: if True, use the "Simulation" interface from the pathmind package.
+    :param obs_selection: If provided, read the names of the observations to be selected from this yaml file.
+    :param rew_fct_name: If provided, read a Python function from this file to compute the reward from
+                                 reward terms.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
     :param scheduler: The tune scheduler used for picking trials, currently supports "PBT"
-                      (and "PB2", once we upgrade to at least ray==1.0.1.post1)
     :param output_dir: The directory where to output the logs of RLlib.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
@@ -100,7 +106,10 @@ def main(environment: str,
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
             environment_name=environment,
-            max_memory_in_mb=max_memory_in_mb
+            max_memory_in_mb=max_memory_in_mb,
+            is_pathmind_simulation=is_pathmind_simulation,
+            obs_selection=obs_selection,
+            reward_function_name=rew_fct_name
         )
         env_creator = env_name
 
@@ -168,16 +177,17 @@ def main(environment: str,
         resume=resume,
         checkpoint_freq=checkpoint_frequency,
         checkpoint_at_end=True,
-        max_failures=3,
+        max_failures=5,
         export_formats=['model'],
         queue_trials=True
     )
 
-    write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
-
     if freezing:
-        freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials,
-                              algorithm=algorithm, output_dir=output_dir, is_discrete=discrete)
+        best_freezing_log_dir = freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials, loggers=loggers,
+                              algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete, multi_agent=multi_agent)
+        write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm, best_freezing_log_dir=best_freezing_log_dir)
+    else:
+        write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
 
     ray.shutdown()
 
