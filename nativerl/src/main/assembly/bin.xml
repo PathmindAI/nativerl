@@ -29,6 +29,7 @@
         <include>*.dylib</include>
         <include>*.pyd</include>
         <include>*.so</include>
+        <include>git.properties</include>
       </includes>
       <excludes>
         <exclude>*-javadoc.jar</exclude>
