@@ -38,7 +38,7 @@ $ curl localhost:<HOST_PORT>/actuator/health
 
 To run local service instance using IDE:
 * prepare `/lib/pathmind` directory contains:
-  * unzipped content of `nativerl-1.6.0-SNAPSHOT-bin.zip`
+  * unzipped content of `nativerl-1.6.1-SNAPSHOT-bin.zip`
   * unzipped content of `baseEnv.zip`
   * `cfr-0.148.jar` (curl -s https://www.benf.org/other/cfr/cfr-0.148.jar -o cfr-0.148.jar)
 * prepare `/lib/policy` directory contains (naming is important):
