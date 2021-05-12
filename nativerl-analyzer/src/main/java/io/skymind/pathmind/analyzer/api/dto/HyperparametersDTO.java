@@ -27,6 +27,7 @@ public class HyperparametersDTO {
             "observationNames",
             "observationTypes",
             "actions",
+            "isActionMask",
             "rewardVariablesCount",
             "rewardVariableNames",
             "rewardVariableTypes",
@@ -38,10 +39,10 @@ public class HyperparametersDTO {
             );
 
     @ApiModelProperty(value = "Whether the pathmind helper is enabled or not", example = "true")
-    private  boolean isEnabled = false;
+    private boolean isEnabled = false;
 
     @ApiModelProperty(value = "Flag for when old model versions are found", example = "true")
-    private  boolean oldVersionFound = false;
+    private boolean oldVersionFound = false;
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -59,6 +60,9 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Number of actions extracted from model", example = "5", required = true)
 //    @NotBlank(message = "Number of actions cannot be blank")
     private String actions;
+
+    @ApiModelProperty(value = "Whether the action mask is enabled or not", example = "true")
+    private boolean isActionMask;
 
     @ApiModelProperty(value = "Length of reward variables array extracted from model", example = "7", required = true)
 //    @NotBlank(message = "Reward variables count cannot be blank")
@@ -110,6 +114,7 @@ public class HyperparametersDTO {
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationNames", "").split("\\|"))),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationTypes", "").split("\\|"))),
                     parametersMap.get("actions"),
+                    parametersMap.getOrDefault("isActionMask", "false").equals("true"),
                     parametersMap.get("rewardVariablesCount"),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("rewardVariableNames", "").split("\\|"))),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("rewardVariableTypes", "").split("\\|"))),

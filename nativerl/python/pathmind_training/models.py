@@ -1,10 +1,11 @@
+from ray.rllib.agents.dqn.distributional_q_tf_model import DistributionalQTFModel
+from ray.rllib.models.tf.fcnet import FullyConnectedNetwork
 from ray.rllib.models import MODEL_DEFAULTS
 from ray.rllib.models import ModelCatalog
-from ray.rllib.models.tf.fcnet import FullyConnectedNetwork
-from ray.rllib.agents.dqn.distributional_q_tf_model import DistributionalQTFModel
-from ray.rllib.utils.framework import try_import_tf
+from ray.rllib.models.tf.tf_modelv2 import TFModelV2
+from ray.rllib.utils import try_import_tf
 
-tf = try_import_tf()
+tf1_module, tf, version = try_import_tf()
 
 
 def get_custom_model(num_hidden_nodes: int, num_hidden_layers: int, autoregressive: bool, action_masking: bool,
@@ -51,7 +52,7 @@ def get_custom_model(num_hidden_nodes: int, num_hidden_layers: int, autoregressi
 
 
 def get_action_masking_model(hidden_layers):
-    class ActionMaskingTFModel(DistributionalQTFModel):
+    class ActionMaskingTFModel(TFModelV2):
         """Custom TF Model that masks out illegal moves. Works for any
         RLlib algorithm (tested only on PPO and DQN so far, though).
         """
@@ -66,6 +67,7 @@ def get_action_masking_model(hidden_layers):
                 obs_space.original_space['real_obs'], action_space, action_space.n,
                 model_config, name)
 
+            # Necessary for Ray 1.0.0. Remove for Ray 1.3.0+.
             self.register_variables(self.base_model.variables())
 
         def forward(self, input_dict, state, seq_lens):
@@ -73,7 +75,7 @@ def get_action_masking_model(hidden_layers):
                 'obs': input_dict['obs']['real_obs']
             })
             action_mask = input_dict['obs']['action_mask']
-            inf_mask = tf.maximum(tf.log(action_mask), tf.float32.min)
+            inf_mask = tf.math.maximum(tf.math.log(action_mask), tf.float32.min)
             return logits + inf_mask, state
 
         def value_function(self):
