@@ -20,9 +20,9 @@ def buildNativerl(image_name) {
         docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl
     """
     sh "docker run --mount \"src=${WORKSPACE}/nativerl/,target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.0-SNAPSHOT-bin.zip s3://test-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.0-SNAPSHOT-bin.zip"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.0-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.0-SNAPSHOT-bin.zip"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.0-SNAPSHOT-bin.zip s3://prod-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.0-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.1-SNAPSHOT-bin.zip s3://test-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.1-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.1-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.1-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.6.1-SNAPSHOT-bin.zip s3://prod-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.6.1-SNAPSHOT-bin.zip"
 }
 
 def boolean isVersionTag(String tag) {
