@@ -31,11 +31,14 @@ def main(environment: str,
          num_hidden_layers: int = 2,
          num_hidden_nodes: int = 256,
          max_iterations: int = 500,
+         convergence_check_start_iteration: int = 250,
          max_time_in_sec: int = 43200,
          max_episodes: int = 200000,
          num_samples: int = 4,
          resume: bool = False,
-         checkpoint_frequency: int = 50,
+         checkpoint_frequency: int = 5,
+         keep_checkpoints_number: int = 5,
+         max_failures: int = 5,
          debug_metrics: bool = False,
          user_log: bool = False,
          autoregressive: bool = False,
@@ -68,11 +71,14 @@ def main(environment: str,
     :param num_hidden_layers: The number of hidden layers in the MLP to use for the learning model.
     :param num_hidden_nodes: The number of nodes per layer in the MLP to use for the learning model.
     :param max_iterations: The maximum number of training iterations as a stopping criterion.
+    :param convergence_check_start_iteration: The training iteration in which the convergence check should begin.
     :param max_time_in_sec: Maximum amount of  time in seconds.
     :param max_episodes: Maximum number of episodes per trial.
     :param num_samples: Number of population-based training samples.
     :param resume: Resume training when AWS spot instance terminates.
     :param checkpoint_frequency: Periodic checkpointing to allow training to recover from AWS spot instance termination.
+    :param keep_checkpoints_number: Maximum number of checkpoints to keep. Checkpoints beyond this threshold are deleted on a rolling basis.
+    :param max_failures: Maximum number of failures before terminating training. Forgives rare AnyLogic errors so that training may continue.
     :param debug_metrics: Indicates that we save raw metrics data to metrics_raw column in progress.csv.
     :param user_log: Reduce size of output log file.
     :param autoregressive: Whether to use auto-regressive models.
@@ -129,7 +135,7 @@ def main(environment: str,
 
     stopper = Stopper(
         output_dir=output_dir, algorithm=algorithm, max_iterations=max_iterations,
-        max_time_in_sec=max_time_in_sec, max_episodes=max_episodes,
+        max_time_in_sec=max_time_in_sec, max_episodes=max_episodes, convergence_check_start_iteration=convergence_check_start_iteration,
         episode_reward_range_th=episode_reward_range, entropy_slope_th=entropy_slope,
         vf_loss_range_th=vf_loss_range, value_pred_th=value_pred
     )
@@ -176,8 +182,9 @@ def main(environment: str,
         local_dir=output_dir if output_dir else None,
         resume=resume,
         checkpoint_freq=checkpoint_frequency,
+        keep_checkpoints_num=keep_checkpoints_number,
         checkpoint_at_end=True,
-        max_failures=5,
+        max_failures=max_failures,
         export_formats=['model'],
         queue_trials=True
     )
