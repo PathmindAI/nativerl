@@ -22,6 +22,7 @@ def get_custom_model(num_hidden_nodes: int, num_hidden_layers: int, autoregressi
 
     hidden_layers = [num_hidden_nodes for _ in range(num_hidden_layers)]
     model['fcnet_hiddens'] = hidden_layers
+    model['vf_share_layers'] = False
 
     if autoregressive:
         from pathmind_training.autoregression import get_autoregressive_action_distribution, get_autoregressive_actions_model
@@ -62,6 +63,7 @@ def get_action_masking_model(hidden_layers):
             super().__init__(obs_space, action_space, num_outputs, model_config, name, **kw)
 
             model_config['fcnet_hiddens'] = hidden_layers
+            model_config['vf_share_layers'] = False
 
             self.base_model = FullyConnectedNetwork(
                 obs_space.original_space['real_obs'], action_space, action_space.n,
