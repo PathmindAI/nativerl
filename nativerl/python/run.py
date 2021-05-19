@@ -25,6 +25,7 @@ def main(environment: str,
          output_dir: str = os.getcwd(),
          multi_agent: bool = False,
          max_memory_in_mb: int = 4096,
+         cpu_count: int = 8,
          num_cpus: int = 1,
          num_gpus: int = 0,
          num_workers: int = 1,
@@ -65,6 +66,7 @@ def main(environment: str,
     :param output_dir: The directory where to output the logs of RLlib.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
+    :param cpu_count: The number of CPUs to let init Ray for the training.
     :param num_cpus: The number of CPU cores to let RLlib use during training.
     :param num_gpus: The number of GPUs to let RLlib use during training.
     :param num_workers: The number of parallel workers that RLlib should execute during training.
@@ -123,7 +125,7 @@ def main(environment: str,
     env_instance.max_steps = env_instance._max_episode_steps if hasattr(env_instance, "_max_episode_steps") \
         else 20000
 
-    ray.init(log_to_driver=user_log, dashboard_host='127.0.0.1')
+    ray.init(log_to_driver=user_log, dashboard_host='127.0.0.1', num_cpus=cpu_count)
 
     model = get_custom_model(
         num_hidden_nodes=num_hidden_nodes,

@@ -6,8 +6,9 @@ if [[ "$ENVIRONMENT_NAME" ]]; then
     export ENVIRONMENT_CLASS=$ENVIRONMENT_NAME
 fi
 
+CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
+
 if [[ -z "$NUM_WORKERS" ]]; then
-    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
     if [[ $CPU_COUNT = 72 ]]; then
         export NUM_WORKERS=4
         export NUM_CPUS=2
@@ -32,7 +33,6 @@ if [[ $NUM_CPUS < 1 ]]; then
 fi
 
 if [[ -z "$NUM_SAMPLES" ]]; then
-    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
     if [[ $CPU_COUNT = 72 ]]; then
         export NUM_SAMPLES=8
     else
@@ -201,6 +201,7 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
+    --cpu-count $CPU_COUNT \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
