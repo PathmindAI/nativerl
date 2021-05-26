@@ -568,8 +568,17 @@ class Actions {<br>
 				<Variable Class="Parameter">
 					<Id>1595219001770</Id>
 					<Name><![CDATA[actionMasks]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>430</Y>
+					<Description><![CDATA[<h3>Action Masking</h3>
+
+<b>Please note that action masking only applies to discrete actions (@Discrete where size = 1 only).</b><br>
+
+<p>An action mask allows you to tell the policy whether or not a selected action is valid at any given moment in time. By ignoring invalid actions, the policy can better filter out noise and useless information.</p>
+
+<p>This field must return a boolean array in which each element in the array corresponds to the action in question.  False means mask the action because the action is invalid, true means do not mask because the action is valid.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/articles/4436170-14-action-masking" target="_blank">https://help.pathmind.com/en/articles/4436170-14-action-masking</a><br>]]></Description>
+					<X>20</X><Y>280</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -579,7 +588,10 @@ class Actions {<br>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
 						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[/* TBD */]]></Code>
+							<Code><![CDATA[/* https://help.pathmind.com/en/articles/4436170-14-action-masking */
+class ActionMasks {
+    //boolean[] masks = {false, true};
+}]]></Code>
 						</DefaultValue>
 						<MethodArgument>
 							<Name><![CDATA[agentId]]></Name>
@@ -642,7 +654,7 @@ class Actions {<br>
 					<Id>1566471148671</Id>
 					<Name><![CDATA[isDone]]></Name>
 					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>280</Y>
+					<X>20</X><Y>430</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1006,7 +1018,8 @@ try {
 				    + "  Metrics: \n"
 				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Metrics: " + rewardArray.length + "\n"
-				    + "  Last Action: " + Arrays.toString(action[0]);
+				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
+				    + "  Action Mask: " + Arrays.toString(actionMask(0));				    
 			traceln(output);
 		} else {
 			String header = "Pathmind:\n"
@@ -1036,7 +1049,8 @@ try {
 					    	+ "      Array: " + rewardDict + "\n"
 						    + "      Number of Metrics: " + rewardArray.length + "\n"
 						    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
-						    + "    Skip: " + isSkip(i);
+						    + "    Action Mask: " + Arrays.toString(actionMask(i));
+						    //+ "    Skip: " + isSkip(i);
 						    
 					traceln(output_agentId);
 				} else {
@@ -1964,7 +1978,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1977,7 +1991,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>

@@ -64,6 +64,7 @@ public class ModelAnalyzer {
 
         // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
         System.out.println("actions:" + helper.getPossibleActionCount());
+        System.out.println("isActionMask:" + (helper.actionMask() != null));
         System.out.println("rewardVariablesCount:" + helper.observationForReward().length);
         System.out.println("rewardVariableNames:" + display(helper.getRewardVariableNames()));
         System.out.println("rewardVariableTypes:" + display(helper.getRewardVariableTypes()));

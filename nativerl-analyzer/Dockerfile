@@ -24,11 +24,11 @@ RUN aws s3 cp s3://${S3BUCKET}/rllibpack.tar.gz ./ \
 
 WORKDIR /lib/pathmind
 
-RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy-1.6.0-SNAPSHOT.jar ./
+RUN aws s3 cp s3://${S3BUCKET}/PathmindPolicy-1.6.1-SNAPSHOT.jar ./
 
-RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.6.0-SNAPSHOT-bin.zip ./ \
- && unzip nativerl-1.6.0-SNAPSHOT-bin.zip \
- && rm nativerl-1.6.0-SNAPSHOT-bin.zip
+RUN aws s3 cp s3://${S3BUCKET}/nativerl-1.6.1-SNAPSHOT-bin.zip ./ \
+ && unzip nativerl-1.6.1-SNAPSHOT-bin.zip \
+ && rm nativerl-1.6.1-SNAPSHOT-bin.zip
 
 RUN aws s3 cp s3://${S3BUCKET}/baseEnv-8.7.4.zip ./ \
  && unzip baseEnv-8.7.4.zip \
