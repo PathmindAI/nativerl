@@ -6,11 +6,15 @@ if [[ "$ENVIRONMENT_NAME" ]]; then
     export ENVIRONMENT_CLASS=$ENVIRONMENT_NAME
 fi
 
+CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
+
 if [[ -z "$NUM_WORKERS" ]]; then
-    CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
-    if [[ $CPU_COUNT = 36 ]]; then
-        export NUM_WORKERS=2
-        export NUM_CPUS=4
+    if [[ $CPU_COUNT = 72 ]]; then
+        export NUM_WORKERS=4
+        export NUM_CPUS=2
+    elif [[ $CPU_COUNT = 36 ]]; then
+        export NUM_WORKERS=4
+        export NUM_CPUS=2
     elif [[ $CPU_COUNT = 16 ]]; then
         export NUM_WORKERS=3
         export NUM_CPUS=1
@@ -26,6 +30,14 @@ fi
 
 if [[ $NUM_CPUS < 1 ]]; then
     export NUM_CPUS=1
+fi
+
+if [[ -z "$NUM_SAMPLES" ]]; then
+    if [[ $CPU_COUNT = 72 ]]; then
+        export NUM_SAMPLES=8
+    else
+        export NUM_SAMPLES=4
+    fi
 fi
 
 MULTIAGENT_PARAM=""
@@ -93,6 +105,11 @@ if [[ "$FREEZING" = true ]]; then
     FREEZING_PARAM="--freezing"
 fi
 
+CONVERGENCE_CHECK_START_ITERATION_PARAM=""
+if [[ ! -z "$CONVERGENCE_CHECK_START_ITERATION" ]]; then
+    CONVERGENCE_CHECK_START_ITERATION_PARAM="--convergence_check_start_iteration ${CONVERGENCE_CHECK_START_ITERATION}"
+fi
+
 mainAgent=$MAIN_AGENT
 experimentClass=$EXPERIMENT_CLASS
 EXPERIMENT_TYPE=$EXPERIMENT_TYPE
@@ -130,6 +147,16 @@ fi
 SCHEDULER_PARAM=""
 if [[ "$SCHEDULER" = "PB2" ]]; then
     SCHEDULER_PARAM="--scheduler $SCHEDULER"
+fi
+
+NUM_HIDDEN_LAYERS_PARAM=""
+if [[ ! -z "$NUM_HIDDEN_LAYERS" ]]; then
+    NUM_HIDDEN_LAYERS_PARAM="--num_hidden_layers $NUM_HIDDEN_LAYERS"
+fi
+
+NUM_HIDDEN_NODES_PARAM=""
+if [[ ! -z "$NUM_HIDDEN_NODES" ]]; then
+    NUM_HIDDEN_NODES_PARAM="--num_hidden_nodes $NUM_HIDDEN_NODES"
 fi
 
 export OUTPUT_DIR=$(pwd)
@@ -189,6 +216,7 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     --max-time-in-sec $MAX_TIME_IN_SEC \
     --num-samples $NUM_SAMPLES \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
+    --cpu-count $CPU_COUNT \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
@@ -205,4 +233,7 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $IS_PATHMIND_SIMULATION_PARAM \
     $OBS_SELECTION_PARAM \
     $REW_FCT_NAME_PARAM \
-    $SCHEDULER_PARAM
+    $SCHEDULER_PARAM \
+    $CONVERGENCE_CHECK_START_ITERATION_PARAM \
+    $NUM_HIDDEN_LAYERS_PARAM \
+    $NUM_HIDDEN_NODES_PARAM
