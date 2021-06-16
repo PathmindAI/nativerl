@@ -203,14 +203,14 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
 
         def getMetrics(self):
             if is_multi_agent:
-                metrics = np.empty(shape=0, dtype=np.float32)
                 metrics_space = self.nativeEnv.getMetricsSpace()
                 for i in range(0, self.nativeEnv.getNumberOfAgents()):
                     if self.nativeEnv.isSkip(i):
-                        metrics = np.concatenate([metrics, np.zeros(metrics_space.shape)], axis=None)
+                        agent_metrics = np.zeros(metrics_space.shape)
                     else:
-                        metrics = np.concatenate([metrics, np.array(self.nativeEnv.getMetrics(i))], axis=None)
-                return metrics
+                        agent_metrics = np.array(self.nativeEnv.getMetrics(i))
+                    metrics = agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
+                return np.mean(metrics, axis=0)
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
