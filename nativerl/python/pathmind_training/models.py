@@ -66,11 +66,11 @@ def get_action_masking_model(hidden_layers):
             model_config['vf_share_layers'] = False
 
             self.base_model = FullyConnectedNetwork(
-                obs_space.original_space['real_obs'], action_space, action_space.n,
+                obs_space.original_space['real_obs'], action_space, num_outputs,
                 model_config, name)
 
             # Necessary for Ray 1.0.0. Remove for Ray 1.3.0+.
-            self.register_variables(self.base_model.variables())
+            # self.register_variables(self.base_model.variables())
 
         def forward(self, input_dict, state, seq_lens):
             logits, _ = self.base_model({
