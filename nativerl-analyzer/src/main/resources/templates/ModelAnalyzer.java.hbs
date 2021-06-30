@@ -11,6 +11,7 @@ public class ModelAnalyzer {
         return Stream.of(theStrings).collect(Collectors.joining("|"));
     }
     public static void main(String[] args) throws Throwable {
+        System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
         List<String> failedSteps = new ArrayList<>();
         Engine engine;
         {{agentClassName}} agent;
