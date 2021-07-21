@@ -19,7 +19,8 @@
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
 			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;
 import java.util.stream.DoubleStream;
-import ai.skymind.nativerl.ServerPolicyHelper;]]></Import>
+import ai.skymind.nativerl.ServerPolicyHelper;
+import ai.skymind.nativerl.exception.PathmindInvalidResponseException;]]></Import>
 			<ExtendsReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[AbstractPathmindHelper]]></ClassName>
@@ -33,6 +34,13 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 		policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 		observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 	} else {
+		if (policyServer == null || policyServer.isEmpty()) {
+			throw new RuntimeException("Policy Server URL cannot be blank.");
+		}
+		if (token == null || token.isEmpty()) {
+			throw new RuntimeException("Policy Server token cannot be blank.");
+		}
+		
 		policyHelper = new ServerPolicyHelper();	
 	}
 }
@@ -1056,7 +1064,12 @@ for (int i = 0; i < numberOfAgents; i++) {
 			if (usePolicyFile) {
 				action[i] = policyHelper.computeActions(training);
 			} else {
-				action[i] = policyHelper.computeActions(policyServer, token, observationJson());
+				try {
+					action[i] = policyHelper.computeActions(policyServer, token, observationJson());
+				} catch (PathmindInvalidResponseException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e.getMessage(), e);
+				}
 			}
 		} else if (!usePolicy) {
 			action[i] = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
