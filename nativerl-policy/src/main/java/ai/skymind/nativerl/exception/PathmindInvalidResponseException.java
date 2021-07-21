@@ -1,4 +1,4 @@
-package ai.skymind.nativerl.Exception;
+package ai.skymind.nativerl.exception;
 
 public class PathmindInvalidResponseException extends RuntimeException {
     public PathmindInvalidResponseException(String message) {

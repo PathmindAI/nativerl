@@ -1,6 +1,6 @@
 package ai.skymind.nativerl;
 
-import ai.skymind.nativerl.Exception.PathmindInvalidResponseException;
+import ai.skymind.nativerl.exception.PathmindInvalidResponseException;
 import ai.skymind.nativerl.util.ObjectMapperHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
