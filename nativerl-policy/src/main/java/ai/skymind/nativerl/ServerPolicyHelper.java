@@ -68,6 +68,8 @@ public class ServerPolicyHelper implements PolicyHelper {
                         throw new PathmindInvalidResponseException("Make sure your token is valid.");
                     case HTTP_NOT_FOUND:
                         throw new PathmindInvalidResponseException("You reached out to wrong path. Please contact Pathmind team.");
+                    case 422:   // observation mismatch
+                        throw new PathmindInvalidResponseException("Make sure your AL model's Observation is the same with Policy Server's expected Observation");
                     default:
                         throw new PathmindInvalidResponseException("Error Occurred " + response);
                 }
