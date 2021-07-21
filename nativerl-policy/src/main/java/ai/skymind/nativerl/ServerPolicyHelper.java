@@ -1,5 +1,6 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.Exception.PathmindInvalidResponseException;
 import ai.skymind.nativerl.util.ObjectMapperHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
@@ -62,11 +63,13 @@ public class ServerPolicyHelper implements PolicyHelper {
             } else {
                 switch (response.code()) {
                     case HTTP_UNAUTHORIZED:
-                        throw new RuntimeException("need to check token");
+                        throw new PathmindInvalidResponseException("Make sure your Policy Server is up and Policy Server URL is valid.");
                     case HTTP_FORBIDDEN:
+                        throw new PathmindInvalidResponseException("Make sure your token is valid.");
                     case HTTP_NOT_FOUND:
+                        throw new PathmindInvalidResponseException("You reached out to wrong path. Please contact Pathmind team.");
                     default:
-                        System.err.println("Error Occurred " + response);
+                        throw new PathmindInvalidResponseException("Error Occurred " + response);
                 }
             }
         } catch (Exception e) {
