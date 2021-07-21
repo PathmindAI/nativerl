@@ -14,6 +14,7 @@ public class ServerPolicyHelper implements PolicyHelper {
     }
 
     private ObjectMapper objectMapper = ObjectMapperHolder.getJsonMapper();
+    private OkHttpClient client = null;
 
     @Override
     public float[] computeActions(float[] state) {
@@ -32,7 +33,9 @@ public class ServerPolicyHelper implements PolicyHelper {
         }
 
         try {
-            OkHttpClient client = new OkHttpClient();
+            if (client == null) {
+                client = new OkHttpClient();
+            }
 
             RequestBody requestBody = RequestBody.create(
                     MediaType.parse("application/json; charset=utf-8"), postBody);
@@ -47,7 +50,6 @@ public class ServerPolicyHelper implements PolicyHelper {
                 ResponseBody body = response.body();
                 String bodyStr = body.string();
                 if (body != null) {
-                    System.out.println("Response:" + bodyStr);
                     int k = 0;
                     Action action = objectMapper.readValue(bodyStr, Action.class);
                     double[] actionArray = new double[action.actions.size()];
@@ -58,11 +60,9 @@ public class ServerPolicyHelper implements PolicyHelper {
                 }
             } else {
                 System.err.println("Error Occurred " + response);
-                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
         return null;
     }
