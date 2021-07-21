@@ -27,7 +27,7 @@ public class ServerPolicyHelper implements PolicyHelper {
     }
 
     @Override
-    public double[] computeActions(String url, String token, String postBody) {
+    public double[] computeActions(String baseUrl, String token, String postBody) {
         if (disablePolicyHelper) {
             return null;
         }
@@ -40,7 +40,7 @@ public class ServerPolicyHelper implements PolicyHelper {
             RequestBody requestBody = RequestBody.create(
                     MediaType.parse("application/json; charset=utf-8"), postBody);
 
-            Request.Builder builder = new Request.Builder().url(url)
+            Request.Builder builder = new Request.Builder().url(buildPredictPath(baseUrl))
                     .addHeader("access-token", token)
                     .post(requestBody);
             Request request = builder.build();
@@ -65,5 +65,11 @@ public class ServerPolicyHelper implements PolicyHelper {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static String buildPredictPath(String baseURL) {
+        baseURL = baseURL.replaceAll("/$", "");
+
+        return baseURL + "/predict";
     }
 }

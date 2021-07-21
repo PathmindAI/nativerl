@@ -61,5 +61,13 @@ public interface PolicyHelper {
     /** Returns the discrete actions that should be performed in the given state. (Single Policy, Tuple Decisions) */
     long[] computeDiscreteAction(float[] state);
 
-    double[] computeActions(String url, String token, String postBody);
+    /**
+     *
+     * @param baseUrl policy server url
+     *                ex) https://api.test.devpathmind.com/policy/id4350
+     * @param token
+     * @param postBody
+     * @return
+     */
+    double[] computeActions(String baseUrl, String token, String postBody);
 }
