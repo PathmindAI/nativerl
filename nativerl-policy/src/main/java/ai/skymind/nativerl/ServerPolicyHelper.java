@@ -26,7 +26,7 @@ public class ServerPolicyHelper implements PolicyHelper {
     }
 
     @Override
-    public float[] computeActions(String url, String token, String postBody) {
+    public double[] computeActions(String url, String token, String postBody) {
         if (disablePolicyHelper) {
             return null;
         }
@@ -50,9 +50,9 @@ public class ServerPolicyHelper implements PolicyHelper {
                     System.out.println("Response:" + bodyStr);
                     int k = 0;
                     Action action = objectMapper.readValue(bodyStr, Action.class);
-                    float[] actionArray = new float[action.actions.size()];
+                    double[] actionArray = new double[action.actions.size()];
                     for (Integer a : action.actions) {
-                        actionArray[k++] = (float)a;
+                        actionArray[k++] = (double)a;
                     }
                     return actionArray;
                 }
