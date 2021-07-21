@@ -33,7 +33,6 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 		policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 		observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 	} else {
-	    System.out.println("aaa");
 		policyHelper = new ServerPolicyHelper();	
 	}
 }
