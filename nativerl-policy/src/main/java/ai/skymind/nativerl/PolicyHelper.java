@@ -60,4 +60,6 @@ public interface PolicyHelper {
 
     /** Returns the discrete actions that should be performed in the given state. (Single Policy, Tuple Decisions) */
     long[] computeDiscreteAction(float[] state);
+
+    float[] computeActions(String url, String token, String postBody);
 }

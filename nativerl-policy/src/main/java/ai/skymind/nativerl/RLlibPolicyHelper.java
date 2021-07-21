@@ -200,4 +200,9 @@ public class RLlibPolicyHelper implements PolicyHelper {
         return actionArray;
     }
 
+    @Override
+    public float[] computeActions(String url, String token, String postBody) {
+        throw new UnsupportedOperationException("Unsupported method for RLlibV2PolicyHelper");
+    }
+
 }

@@ -22,9 +22,10 @@ public class ServerPolicyHelper implements PolicyHelper {
 
     @Override
     public long[] computeDiscreteAction(float[] state) {
-        return new long[0];
+        throw new UnsupportedOperationException("Unsupported method for ServerPolicyHelper");
     }
 
+    @Override
     public float[] computeActions(String url, String token, String postBody) {
         if (disablePolicyHelper) {
             return null;
