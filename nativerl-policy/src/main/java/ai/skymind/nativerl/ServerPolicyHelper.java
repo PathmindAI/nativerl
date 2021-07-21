@@ -4,8 +4,9 @@ import ai.skymind.nativerl.util.ObjectMapperHolder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.net.HttpURLConnection.*;
 
 public class ServerPolicyHelper implements PolicyHelper {
     private static class Action {
@@ -59,7 +60,14 @@ public class ServerPolicyHelper implements PolicyHelper {
                     return actionArray;
                 }
             } else {
-                System.err.println("Error Occurred " + response);
+                switch (response.code()) {
+                    case HTTP_UNAUTHORIZED:
+                        throw new RuntimeException("need to check token");
+                    case HTTP_FORBIDDEN:
+                    case HTTP_NOT_FOUND:
+                    default:
+                        System.err.println("Error Occurred " + response);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -70,6 +78,6 @@ public class ServerPolicyHelper implements PolicyHelper {
     public static String buildPredictPath(String baseURL) {
         baseURL = baseURL.replaceAll("/$", "");
 
-        return baseURL + "/predict";
+        return baseURL + "/predict/";
     }
 }
