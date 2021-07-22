@@ -50,7 +50,13 @@ public class ObservationProcessorTest {
             assertArrayEquals(new double[] {37, 11, 15, 42, 1, 2, 3, 4, 5, 1, 0, 64}, op.getObservations(this, 64), 0.0);
             TestObservations o = op.getObservationObject(this, 64);
             assertArrayEquals(new double[] {1, 2, 3, 4, 5}, new TestFilter().filter(o), 0.0);
-            assertEquals("{\"obs1\":37,\"obs2\":[11,15],\"obs3\":42.0,\"obs4\":[1.0,2.0,3.0,4.0,5.0],\"obs5\":true,\"obs6\":false,\"obs7\":64.0}", op.toJsonString(o));
+
+            // json test without action masking array
+            assertEquals("{\"obs1\":37,\"obs2\":[11,15],\"obs3\":42.0,\"obs4\":[1.0,2.0,3.0,4.0,5.0],\"obs5\":true,\"obs6\":false,\"obs7\":64.0}", op.toJsonString(o, null));
+
+            // json test with action masking array
+            boolean[] actMasks = {true, true, false, true};
+            assertEquals("{\"actionMask\":[1.0,1.0,0.0,1.0],\"obs1\":37,\"obs2\":[11,15],\"obs3\":42.0,\"obs4\":[1.0,2.0,3.0,4.0,5.0],\"obs5\":true,\"obs6\":false,\"obs7\":64.0}", op.toJsonString(o, actMasks));
         } catch (ReflectiveOperationException ex) {
             fail(ex.getMessage());
         } catch (JsonProcessingException e) {

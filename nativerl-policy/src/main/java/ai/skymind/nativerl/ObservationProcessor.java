@@ -4,9 +4,12 @@ import ai.skymind.nativerl.util.ObjectMapperHolder;
 import ai.skymind.nativerl.util.Reflect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Finds the class containing values for the observations within the agent class,
@@ -110,8 +113,23 @@ public class ObservationProcessor {
         return Reflect.getFieldTypes(observationFields, observationObject);
     }
 
-    /** Returns the json string of the given observation object*/
-    public <O> String toJsonString(O observationObject) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(observationObject);
+    /** Returns the json string of the given observation object
+     * if actionMask array is not null, it will be converted to double array and added at the first of json*/
+    public <O> String toJsonString(O observationObject, boolean[] actionMasks) throws JsonProcessingException {
+        if (actionMasks != null) {
+            double[] doubles = new double[actionMasks.length];
+            for (int i = 0; i < actionMasks.length; i++) {
+                doubles[i] = actionMasks[i] ? 1.0 : 0.0;
+            }
+            MapType mapType = objectMapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("actionMask", doubles);
+            map.putAll(objectMapper.convertValue(observationObject, mapType));
+
+            return objectMapper.writeValueAsString(map);
+        } else {
+            return objectMapper.writeValueAsString(observationObject);
+        }
     }
 }
