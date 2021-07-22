@@ -1908,21 +1908,27 @@ public class AbstractPathmindHelper extends Agent {
 			} catch (ClassNotFoundException e) {
 				actionMaskProcessor = null;
 			}
+			
 			observationProcessor = new ObservationProcessor(getOwner().getClass());
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
-			possibleActionCount = 1;
+			possibleActionCount = 0;
 			actionTupleSize = 0;
 			AnnotationProcessor[] actionSpaces = actionProcessor.getActionSpaces();
 			for (int i = 0; i < actionSpaces.length; i++) {
 				if (actionSpaces[i].discrete) {
 					AnnotationProcessor d = actionSpaces[i];
-					possibleActionCount *= (int)d.n;
+					possibleActionCount += (int)d.n * (int)d.size;
 					actionTupleSize += (int)d.size;
 				} else if (actionSpaces[i].continuous) {
 					AnnotationProcessor c = actionSpaces[i];
 					// nothing to do for now
 				}
+			}
+
+			if (actionMaskProcessor != null && possibleActionCount != actionMask().length) {
+				throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : " 
+								+ actionMask().length + " != " +  possibleActionCount + "\n");
 			}
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
