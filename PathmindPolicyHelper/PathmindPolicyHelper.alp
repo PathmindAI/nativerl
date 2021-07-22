@@ -1050,7 +1050,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 for (int i = 0; i < numberOfAgents; i++) {
 	if (!isSkip(i)) {
 		// Be sure to call those here allowing users to fix errors before training
-		double[] training = observationForTraining(i);
+		double[] training = observationForTrainingWithActionMask(i);
 		double[] reward = observationForReward(i);
 		// Throw error if infinity or NaN detected in observations or rewards array
 		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
@@ -1991,6 +1991,24 @@ public class AbstractPathmindHelper extends Agent {
 	}
 	public double[] observationForTraining(int agentId) {
 		return observationToDoubles(getObservationObject(agentId));
+	}
+	public double[] observationForTrainingWithActionMask(int agentId) {
+		double[] observations = observationForTraining(agentId);
+		if (actionMaskProcessor == null) {
+			return observations;
+		} else {
+			boolean[] actMasks = actionMask(agentId);
+			double[] concat = new double[actMasks.length + observations.length];
+
+			int k = 0;
+			for (boolean actMask : actMasks) {
+				concat[k++] = actMask ? 1.0 : 0.0;
+			}
+			for (double obs : observations) {
+				concat[k++] = obs;
+			}
+			return concat;
+		}
 	}
 	public <O> O getObservationObject(int agentId) {
 		try {
