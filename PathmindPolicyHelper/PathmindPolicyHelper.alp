@@ -2036,7 +2036,7 @@ public class AbstractPathmindHelper extends Agent {
 	
 	public String observationJson(int agentId) {
 		try {
-		return observationProcessor.toJsonString(getObservationObject(agentId));
+			return observationProcessor.toJsonString(getObservationObject(agentId), actionMask(agentId));
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get observation json.", e);
