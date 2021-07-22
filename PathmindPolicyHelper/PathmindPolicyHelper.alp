@@ -1985,11 +1985,20 @@ public class AbstractPathmindHelper extends Agent {
 			if (observationProcessor == null) {
 				init();
 			}
-			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
+			boolean[] actMasks = actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
+			if (actMasks != null && isAllFalse(actMasks)) {
+				throw new RuntimeException("Action masks should not be all false. \n");
+			}
+			return actMasks;
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get action masks.", e);
 		}
+	}
+	
+	private boolean isAllFalse(boolean[] array) {
+		for (boolean b : array) if (b) return false;
+		return true;
 	}
 
 	public double[] observationForTraining() {
