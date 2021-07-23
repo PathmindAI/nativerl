@@ -443,6 +443,9 @@ if (numberOfAgents <= 0) {
 						<Type><![CDATA[String]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA["PASTE_SERVER_URL"]]></Code>
+						</DefaultValue>
 						<ParameterEditor>
 							<Id>1626372352835</Id>
 							<Label><![CDATA[Policy Server URL]]></Label>
@@ -489,6 +492,9 @@ if (numberOfAgents <= 0) {
 						<Type><![CDATA[String]]></Type>
 						<UnitType><![CDATA[NONE]]></UnitType>
 						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA["PASTE_TOKEN_HERE"]]></Code>
+						</DefaultValue>
 						<ParameterEditor>
 							<Id>1626824497379</Id>
 							<Label><![CDATA[Policy Server Token]]></Label>
@@ -1995,7 +2001,6 @@ public class AbstractPathmindHelper extends Agent {
 			throw new RuntimeException("Could not get action masks.", e);
 		}
 	}
-	
 	private boolean isAllFalse(boolean[] array) {
 		for (boolean b : array) if (b) return false;
 		return true;
