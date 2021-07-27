@@ -1895,6 +1895,8 @@ public class AbstractPathmindHelper extends Agent {
 
 	protected int possibleActionCount;
 	protected int actionTupleSize;
+	
+	private boolean actionMaskLengthVerified = false;
 
 	public AbstractPathmindHelper() {
 	}
@@ -1930,11 +1932,6 @@ public class AbstractPathmindHelper extends Agent {
 					AnnotationProcessor c = actionSpaces[i];
 					// nothing to do for now
 				}
-			}
-
-			if (actionMaskProcessor != null && possibleActionCount != actionMask().length) {
-				throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : " 
-								+ actionMask().length + " != " +  possibleActionCount + "\n");
 			}
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
@@ -1992,8 +1989,15 @@ public class AbstractPathmindHelper extends Agent {
 				init();
 			}
 			boolean[] actMasks = actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
-			if (actMasks != null && isAllFalse(actMasks)) {
+			if (actMasks != null && actMasks.length > 0 && isAllFalse(actMasks)) {
 				throw new RuntimeException("Action masks should not be all false. \n");
+			}
+			if (!actionMaskLengthVerified) {
+				if (actionMaskProcessor != null && actMasks.length > 0 && possibleActionCount != actMasks.length) {
+					throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : " 
+									+ actMasks.length + " != " +  possibleActionCount + "\n");
+				}
+				actionMaskLengthVerified = true;
 			}
 			return actMasks;
 		} catch (ReflectiveOperationException e) {
