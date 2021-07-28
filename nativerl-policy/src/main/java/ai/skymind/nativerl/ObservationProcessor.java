@@ -116,7 +116,7 @@ public class ObservationProcessor {
     /** Returns the json string of the given observation object
      * if actionMask array is not null, it will be converted to double array and added at the first of json*/
     public <O> String toJsonString(O observationObject, boolean[] actionMasks) throws JsonProcessingException {
-        if (actionMasks != null) {
+        if (actionMasks != null && actionMasks.length > 0) {
             double[] doubles = new double[actionMasks.length];
             for (int i = 0; i < actionMasks.length; i++) {
                 doubles[i] = actionMasks[i] ? 1.0 : 0.0;
