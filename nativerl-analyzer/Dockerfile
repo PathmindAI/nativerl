@@ -25,9 +25,9 @@ RUN bash /bin/download_lib.sh ${S3BUCKET} rllibpack.tar.gz rllibpack.tar.gz
 
 WORKDIR /lib/pathmind
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.6.1-SNAPSHOT.jar
+RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.7.0-SNAPSHOT.jar
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.6.2-SNAPSHOT-bin.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.7.0-SNAPSHOT-bin.zip
 
 RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.5.zip
 
