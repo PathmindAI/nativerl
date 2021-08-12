@@ -1,6 +1,7 @@
 package io.skymind.pathmind.analyzer.api.dto;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Assertions;
@@ -11,6 +12,7 @@ public class HyperparametersDTOTest {
     public void testOf_allOk() {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
+                "agentParams:{\"usePathmind\":true,\"triggerRecurrance_seconds\":60.0}",
                 "observations:5",
                 "observationNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
                 "observationTypes:double|double|double|double|double",
@@ -28,6 +30,7 @@ public class HyperparametersDTOTest {
         HyperparametersDTO expected = new HyperparametersDTO(
                 true,
                 false,
+                Map.of("usePathmind", true, "triggerRecurrance_seconds", 60.0),
                 "5",
                 Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
                 Arrays.asList("double", "double", "double", "double", "double"),
@@ -48,6 +51,7 @@ public class HyperparametersDTOTest {
     public void testOf_allOk_butThereIsTheVarOldVersionFoundWithValueFalse() {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
+                "agentParams:{\"usePathmind\":true,\"triggerRecurrance_seconds\":60.0}",
                 "observations:5",
                 "observationNames:orderQueueSize|collectQueueSize|payBillQueueSize|kitchenCleanlinessLevel|timeOfDay",
                 "observationTypes:double|double|double|double|double",
@@ -65,6 +69,7 @@ public class HyperparametersDTOTest {
         HyperparametersDTO expected = new HyperparametersDTO(
                 true,
                 false,
+                Map.of("usePathmind", true, "triggerRecurrance_seconds", 60.0),
                 "5",
                 Arrays.asList("orderQueueSize", "collectQueueSize", "payBillQueueSize", "kitchenCleanlinessLevel", "timeOfDay"),
                 Arrays.asList("double", "double", "double", "double", "double"),
@@ -97,6 +102,7 @@ public class HyperparametersDTOTest {
     public void testOf_withFailedSteps() {
         HyperparametersDTO result = HyperparametersDTO.of(Arrays.asList(
                 "isEnabled:true",
+                "agentParams:{\"usePathmind\":true,\"triggerRecurrance_seconds\":60.0}",
                 "observations:0",
                 "observationNames:",
                 "observationTypes:",
@@ -114,6 +120,7 @@ public class HyperparametersDTOTest {
         HyperparametersDTO expected = new HyperparametersDTO(
                 true,
                 false,
+                Map.of("usePathmind", true, "triggerRecurrance_seconds", 60.0),
                 "0",
                 Collections.emptyList(),
                 Collections.emptyList(),
