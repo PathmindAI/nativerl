@@ -188,6 +188,7 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
         --reward-snippet "$REWARD_SNIPPET" \
+        --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \
         --metrics-snippet "$METRICS_SNIPPET" \
         --experiment-type "$EXPERIMENT_TYPE" \
