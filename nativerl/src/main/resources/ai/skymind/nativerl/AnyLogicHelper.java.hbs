@@ -100,6 +100,7 @@ public class {{className}} extends AbstractEnvironment {
     {{#if isPLE}}
         agent = exp.createModel();
         agent.setParametersToDefaultValues();
+        {{{simulationParameterSnippet}}}
         engine = agent.getEngine();
     {{else}}
         // Create Engine, initialize random number generator:
@@ -109,6 +110,7 @@ public class {{className}} extends AbstractEnvironment {
         // Create new agent object:
         agent = new {{agentClassName}}(engine, null, null);
         agent.setParametersToDefaultValues();
+        {{{simulationParameterSnippet}}}
     {{/if}}
 {{else}}
         // Create Engine, initialize random number generator:
@@ -118,6 +120,7 @@ public class {{className}} extends AbstractEnvironment {
         // Create new agent object:
         agent = new {{agentClassName}}(engine, null, null);
         agent.setParametersToDefaultValues();
+        {{{simulationParameterSnippet}}}
 {{/if}}
 
         PathmindHelperRegistry.setForceLoadPolicy(policyHelper);
