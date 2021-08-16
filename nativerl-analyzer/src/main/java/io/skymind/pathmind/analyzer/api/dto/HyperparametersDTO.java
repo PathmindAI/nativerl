@@ -1,6 +1,8 @@
 package io.skymind.pathmind.analyzer.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +25,7 @@ public class HyperparametersDTO {
 
     private final static Set<String> KNOWN_OUTPUT = Set.of(
             "isEnabled",
+            "agentParams",
             "observations",
             "observationNames",
             "observationTypes",
@@ -43,6 +46,8 @@ public class HyperparametersDTO {
 
     @ApiModelProperty(value = "Flag for when old model versions are found", example = "true")
     private boolean oldVersionFound = false;
+
+    private Map<String, Object> agentParams;
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -110,6 +115,7 @@ public class HyperparametersDTO {
             return new HyperparametersDTO(
                     parametersMap.getOrDefault("isEnabled", "false").equals("true"),
                     false,
+                    HyperparametersDTO.asParamMap(parametersMap.getOrDefault("agentParams", "")),
                     parametersMap.get("observations"),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationNames", "").split("\\|"))),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationTypes", "").split("\\|"))),
@@ -131,5 +137,15 @@ public class HyperparametersDTO {
 
     private static boolean isHyperparameters(String parameterCandidate) {
         return KNOWN_OUTPUT.contains(parameterCandidate);
+    }
+
+    private static Map asParamMap(String mapString) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(mapString, Map.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
