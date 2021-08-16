@@ -1,8 +1,15 @@
 package ai.skymind.nativerl;
 
+import ai.skymind.nativerl.util.ObjectMapperHolder;
 import ai.skymind.nativerl.util.Reflect;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.MapType;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Finds the class containing values for the observations within the agent class,
@@ -19,6 +26,8 @@ public class ObservationProcessor {
     Field[] observationFields;
     Constructor observationConstructor;
     boolean usesAgentId;
+
+    ObjectMapper objectMapper;
 
     /** Calls {@code this(Class.forName(agentClassName, false, this.getClassLoader()))}. */
     public ObservationProcessor(String agentClassName) throws ReflectiveOperationException {
@@ -42,6 +51,7 @@ public class ObservationProcessor {
             }
         }
         this.observationConstructor.setAccessible(true);
+        this.objectMapper = ObjectMapperHolder.getJsonMapper();
     }
 
     /** Returns the class we found within the {@link #METHOD_NAME} method of the agent class. */
@@ -101,5 +111,25 @@ public class ObservationProcessor {
     /** Returns the types of the fields in the order listed within the class found */
     public <O> String[] toTypes(O observationObject) throws ReflectiveOperationException {
         return Reflect.getFieldTypes(observationFields, observationObject);
+    }
+
+    /** Returns the json string of the given observation object
+     * if actionMask array is not null, it will be converted to double array and added at the first of json*/
+    public <O> String toJsonString(O observationObject, boolean[] actionMasks) throws JsonProcessingException {
+        if (actionMasks != null && actionMasks.length > 0) {
+            double[] doubles = new double[actionMasks.length];
+            for (int i = 0; i < actionMasks.length; i++) {
+                doubles[i] = actionMasks[i] ? 1.0 : 0.0;
+            }
+            MapType mapType = objectMapper.getTypeFactory().constructMapType(LinkedHashMap.class, String.class, Object.class);
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("actionMask", doubles);
+            map.putAll(objectMapper.convertValue(observationObject, mapType));
+
+            return objectMapper.writeValueAsString(map);
+        } else {
+            return objectMapper.writeValueAsString(observationObject);
+        }
     }
 }
