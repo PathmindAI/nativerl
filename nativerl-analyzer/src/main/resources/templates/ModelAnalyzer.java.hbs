@@ -50,7 +50,7 @@ public class ModelAnalyzer {
         agent.setParametersToDefaultValues();
 
         Map<String, Object> agentParamMap = Arrays.stream(agent.getParameterNames())
-                                            .map(p -> Map.entry(p, agent.getParameter(p)))
+                                            .map(p -> Map.entry(p, wrappedValue(agent.getParameter(p))))
                                             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         if (!agentParamMap.isEmpty()) {
@@ -109,5 +109,23 @@ public class ModelAnalyzer {
         System.out.println("failedSteps:" + String.join(",", failedSteps));
 
         System.exit(0);
+    }
+
+    private static final List<Class> supportClass = List.of(
+        java.lang.Boolean.class,
+        java.lang.Integer.class,
+        java.lang.Double.class,
+        java.lang.String.class,
+        java.util.Date.class
+    );
+
+    private static Object wrappedValue(Object value) {
+        if (value == null) {
+            return "NULL_VALUE";
+        } else if (supportClass.contains(value.getClass())) {
+            return value;
+        } else {
+            return value.toString();
+        }
     }
 }
