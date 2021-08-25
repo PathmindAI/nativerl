@@ -47,7 +47,7 @@ public class HyperparametersDTO {
     @ApiModelProperty(value = "Flag for when old model versions are found", example = "true")
     private boolean oldVersionFound = false;
 
-    private Map<String, Object> agentParams;
+    private List<SimulationParameter> agentParams;
 
     @ApiModelProperty(value = "Number of observations extracted from model", example = "10", required =
             true)
@@ -115,7 +115,7 @@ public class HyperparametersDTO {
             return new HyperparametersDTO(
                     parametersMap.getOrDefault("isEnabled", "false").equals("true"),
                     false,
-                    HyperparametersDTO.asParamMap(parametersMap.getOrDefault("agentParams", "")),
+                    HyperparametersDTO.asParamList(parametersMap.getOrDefault("agentParams", "")),
                     parametersMap.get("observations"),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationNames", "").split("\\|"))),
                     filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationTypes", "").split("\\|"))),
@@ -139,10 +139,10 @@ public class HyperparametersDTO {
         return KNOWN_OUTPUT.contains(parameterCandidate);
     }
 
-    private static Map asParamMap(String mapString) {
+    private static List<SimulationParameter> asParamList(String mapString) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(mapString, Map.class);
+            return objectMapper.readValue(mapString, List.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return null;
