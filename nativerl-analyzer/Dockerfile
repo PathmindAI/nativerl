@@ -38,6 +38,8 @@ COPY . .
 RUN mvn clean install \
   && cp target/pathmind-model-analyzer.jar ./
 
+RUN unzip target/pathmind-model-analyzer.jar -d /lib/ma
+
 ARG CHECK_MODEL_SCRIPT=src/main/resources/scripts/check_model.sh
 COPY ${CHECK_MODEL_SCRIPT} bin
 

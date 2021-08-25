@@ -24,7 +24,7 @@ cd ${workDir}
 
 export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -printf '%p:')
 export CLASSPATH=$(find $PWD/lib -iname '*.jar' -printf '%p:'):${CLASSPATH}
-export CLASSPATH=$PWD:$PWD/model.jar:${CLASSPATH}:${POLICY}:/pathmind-model-analyzer.jar
+export CLASSPATH=$PWD:$PWD/model.jar:${CLASSPATH}:/lib/ma/BOOT-INF/classes
 
 export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
 export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')

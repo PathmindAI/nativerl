@@ -73,10 +73,11 @@ public class FileService {
         if (request.getType().equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
             final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
             final Process proc = Runtime.getRuntime().exec(cmd);
+            int returnCode = proc.waitFor();
             List<String> result = readResult(proc.getInputStream());
             log.info("Bash script finished");
 
-            if (result.size() < 16) {
+            if (returnCode != 0) {
                 List<String> err = readResult(proc.getErrorStream());
                 log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
             }
