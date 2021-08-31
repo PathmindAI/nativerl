@@ -50,6 +50,10 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
+    def getRewardTermsSpace(self) -> Continuous:
+        return NotImplemented
+
+    @abstractmethod
     def getNumberOfAgents(self) -> int:
         return NotImplemented
 
@@ -87,5 +91,9 @@ class Environment(ABC):
 
     @abstractmethod
     def getMetrics(self, agent_id: int = 0) -> np.array:
+        return NotImplemented
+
+    @abstractmethod
+    def getRewardTerms(self, agent_id: int = 0) -> np.array:
         return NotImplemented
 
