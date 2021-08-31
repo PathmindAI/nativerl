@@ -52,6 +52,7 @@ def main(environment: str,
          discrete: bool = True,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
+         reward_balance_period: int = 50
          ):
     """
 
@@ -154,6 +155,7 @@ def main(environment: str,
 
     config = {
         'env': env_name,
+        'env_config': reward_balance_period,
         'callbacks': callbacks,
         'num_gpus': num_gpus,
         'num_workers': num_workers,
