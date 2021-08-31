@@ -50,10 +50,6 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def getRewardTermsSpace(self) -> Continuous:
-        return NotImplemented
-
-    @abstractmethod
     def getNumberOfAgents(self) -> int:
         return NotImplemented
 
