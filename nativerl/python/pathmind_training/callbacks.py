@@ -44,9 +44,9 @@ def get_callbacks(debug_metrics, is_gym):
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
                 period = trainer.config["env_config"]["reward_balance_period"]
-
+                num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
+                
                 if result["training_iteration"] == 1 or result["training_iteration"] % period == 0:
-                    # Normalization factors for reward terms
                     betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
                              if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
                              else 1.0
