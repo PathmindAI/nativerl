@@ -255,6 +255,36 @@ public class {{className}} extends AbstractEnvironment {
         return allMetrics;
     }
 
+    @Override
+    public Array getRewardTerms(long agentId) {
+        double[] rewardTerms = new double[{{{NumRewardTerms}}}];
+        rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
+{{#if namedVariables}}
+        {{rewardClassName}} before = rewardBefore[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]) : null,
+                             after = rewardAfter[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]) : null;
+{{else}}
+        double[] before = rewardBefore[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]) : null;
+        double[] after = rewardAfter[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]) : null;
+{{/if}}
+
+        if (before == null) {
+            // Do nothing, return double[] of zeroes because before doesn't exist at step 0
+        } else {
+            {{{rewardTermsSnippet}}}
+            // rewardTerms terms set to meaningful values using for loop
+        }
+
+        if (this.rewardTerms == null || this.rewardTerms.length() != rewardTerms.length) {
+            this.rewardTerms = new Array(new SSizeTVector().put(rewardTerms.length));
+        }
+        float[] array2 = new float[rewardTerms.length];
+        for (int i = 0; i < rewardTerms.length; i++) {
+            array3[i] = (float)rewardTerms[i];
+        }
+        this.rewardTerms.data().put(array3);
+        return this.rewardTerms;
+    }
+
     public static void main(String[] args) throws Exception {
         ArrayList<String> lines = new ArrayList<String>({{testIterations}});
         {{~#if policyHelper}}

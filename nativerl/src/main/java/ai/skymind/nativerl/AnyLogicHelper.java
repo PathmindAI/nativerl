@@ -77,6 +77,10 @@ public class AnyLogicHelper {
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
+    
+    /** Arbitrary code to add to the test() method of the generated class to compute reward terms. */
+    @Builder.Default
+    String rewardTermsSnippet = "";
 
     /** The name of the PolicyHelper, such as RLlibPolicyHelper, to run the metrics code as part of the main() method. */
     @Builder.Default
@@ -221,6 +225,7 @@ public class AnyLogicHelper {
                 System.out.println("    --observation-snippet");
                 System.out.println("    --reward-snippet");
                 System.out.println("    --metrics-snippet");
+                System.out.println("    --reward-terms-snippet");
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --multi-agent");
@@ -250,6 +255,8 @@ public class AnyLogicHelper {
                 helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
                 helper.metricsSnippet(args[++i]);
+            } else if ("--reward-terms-snippet".equals(args[i])) {
+                helper.rewardTermsSnippet(args[++i]);
             } else if ("--policy-helper".equals(args[i])) {
                 helper.policyHelper(args[++i]);
             } else if ("--test-iterations".equals(args[i])) {

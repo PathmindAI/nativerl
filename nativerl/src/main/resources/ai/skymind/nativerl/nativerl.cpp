@@ -75,6 +75,9 @@ public:
     const Array& getMetrics(ssize_t agentId = 0) override {
         PYBIND11_OVERLOAD_PURE(const Array&, Environment, getMetrics, agentId);
     }
+    const Array& getRewardTerms(ssize_t agentId = 0) override {
+        PYBIND11_OVERLOAD_PURE(const Array&, Environment, getRewardTerms, agentId);
+    }
 };
 
 #ifdef _WIN32
@@ -168,6 +171,7 @@ PYBIND11_MODULE(nativerl, m) {
         .def("step", &nativerl::Environment::step)
         .def("getReward", &nativerl::Environment::getReward, pybind11::arg("agentId") = 0)
         .def("getMetrics", &nativerl::Environment::getMetrics, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal);
+        .def("getRewardTerms", &nativerl::Environment::getRewardTerms, pybind11::arg("agentId") = 0, pybind11::return_value_policy::reference_internal);
 
 #ifdef _WIN32
     m.def("createEnvironment", &nativerl::createEnvironment2);
