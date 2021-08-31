@@ -92,7 +92,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
-            self.alphas = env_config["alphas"]
+            self.alphas = np.array(env_config["alphas"])
             self.betas = np.ones(env_config["num_reward_terms"])
 
         def define_action_space(self):

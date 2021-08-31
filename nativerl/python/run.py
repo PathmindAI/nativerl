@@ -53,7 +53,8 @@ def main(environment: str,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
          reward_balance_period: int = 50,
-         num_reward_terms: int = None
+         num_reward_terms: int = None,
+         alphas: str = None
          ):
     """
 
@@ -96,6 +97,9 @@ def main(environment: str,
     :param random_seed: Optional random seed for this experiment.
     :param custom_callback: Optional name of a custom Python function returning a callback implementation
         of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
+    :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
+    :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
+    :param alphas: User defined importance weights on conceptual chunks (reward terms) 
 
     :return: runs training for the given environment, with nativerl
     """
@@ -154,12 +158,15 @@ def main(environment: str,
     scheduler_instance = get_scheduler(scheduler_name=scheduler)
     loggers = get_loggers()
 
+    env_config = {
+        'reward_balance_period': reward_balance_period,
+        'num_reward_terms': num_reward_terms,
+        'alphas': [float(item) for item in i.split(".") for i in alphas.split(" ")] 
+    }
+
     config = {
         'env': env_name,
-        'env_config': {
-            'reward_balance_period': reward_balance_period,
-            'num_reward_terms': num_reward_terms
-        }
+        'env_config': env_config,
         'callbacks': callbacks,
         'num_gpus': num_gpus,
         'num_workers': num_workers,
