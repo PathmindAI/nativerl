@@ -92,6 +92,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
+            self.alphas = env_config["alphas"]
             self.betas = np.ones(env_config["num_reward_terms"])
 
         def define_action_space(self):
@@ -179,7 +180,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                         }
                     obs_dict[str(i)] = obs
 #                    reward_dict[str(i)] = self.nativeEnv.getReward(i)
-                    reward_dict[str(i)] = np.dot(np.array(self.nativeEnv.getRewardTerms(i)), self.betas)
+                    reward_dict[str(i)] = np.sum(np.array(self.nativeEnv.getRewardTerms(i)) * self.alphas * self.betas)
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
                 done_dict['__all__'] = all(done_dict.values())
@@ -197,7 +198,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 self.nativeEnv.setNextAction(nativerl.Array(action_array))
                 self.nativeEnv.step()
  #               reward = self.nativeEnv.getReward()
-                reward = np.dot(np.array(self.nativeEnv.getRewardTerms()), self.betas)
+                reward = np.sum(np.array(self.nativeEnv.getRewardTerms()) * self.alphas * self.betas)
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
 
