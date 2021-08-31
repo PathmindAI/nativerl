@@ -218,6 +218,9 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
+        def updateBetas(self, betas):
+            self.betas = betas
+
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name
     PathmindEnvironment.__qualname__ = simple_name

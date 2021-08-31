@@ -43,6 +43,15 @@ def get_callbacks(debug_metrics, is_gym):
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
+                if result["training_iteration"] == 1 or result["training_iteration"] % reward_balance_period == 0:
+                    # Normalization factors for reward terms
+                    betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
+                             if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
+                             else 1.0
+                             for i in range(num_reward_terms)]
+                    for w in trainer.workers.remote_workers():
+                        w.apply.remote(lambda worker: worker.env.updateBetas(betas))
+
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
     return Callbacks
