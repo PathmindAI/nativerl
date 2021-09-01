@@ -95,6 +95,9 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             self.alphas = np.array(env_config["alphas"])
             self.betas = np.ones(env_config["num_reward_terms"])
 
+            self.term_contributions_dict = {}
+            self.term_contributions = np.zeros(env_config["num_reward_terms"])
+
         def define_action_space(self):
             i = 0
             action_space = self.nativeEnv.getActionSpace(i)
@@ -127,6 +130,9 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
 
         def reset(self):
             self.nativeEnv.reset()
+
+            self.term_contributions_dict = {}
+            self.term_contributions = np.zeros(env_config["num_reward_terms"])
 
             if is_multi_agent:
                 obs_dict = {}
@@ -183,6 +189,10 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     reward_dict[str(i)] = np.sum(np.array(self.nativeEnv.getRewardTerms(i)) * self.alphas * self.betas)
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
+                    self.term_contributions_dict[str(i)] += np.array(self.nativeEnv.getRewardTerms(i))
+                
+                self.term_contributions += sum(self.terms_contributions_dict.values()) / len(self.term_contributions_dict)
+
                 done_dict['__all__'] = all(done_dict.values())
                 return obs_dict, reward_dict, done_dict, {}
 
@@ -202,6 +212,8 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
 
+                self.term_contributions += np.array(self.nativeEnv.getRewardTerms())
+
                 if isinstance(self.observation_space, gym.spaces.Dict):
                     obs = {"action_mask": np.array(self.nativeEnv.getActionMask()), "real_obs": obs}
                 return obs, reward, done, {}
@@ -215,9 +227,11 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
                     metrics = agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
-                return np.mean(metrics, axis=0)
+                raw_metrics = np.mean(metrics, axis=0)
+                return np.concatenate([self.term_contributions, raw_metrics])
             else:
-                return np.array(self.nativeEnv.getMetrics(0))
+                raw_metrics = np.array(self.nativeEnv.getMetrics(0))
+                return np.concatenate([self.term_contributions, raw_metrics])
 
         def updateBetas(self, betas):
             self.betas = betas
