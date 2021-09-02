@@ -159,6 +159,11 @@ if [[ ! -z "$NUM_HIDDEN_NODES" ]]; then
     NUM_HIDDEN_NODES_PARAM="--num_hidden_nodes $NUM_HIDDEN_NODES"
 fi
 
+GAMMA_PARAM=""
+if [[ ! -z "$GAMMA" ]]; then
+    GAMMA_PARAM="--gamma $GAMMA"
+fi
+
 export OUTPUT_DIR=$(pwd)
 
 if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
@@ -237,4 +242,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $SCHEDULER_PARAM \
     $CONVERGENCE_CHECK_START_ITERATION_PARAM \
     $NUM_HIDDEN_LAYERS_PARAM \
-    $NUM_HIDDEN_NODES_PARAM
+    $NUM_HIDDEN_NODES_PARAM \
+    $GAMMA_PARAM
