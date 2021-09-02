@@ -70,6 +70,6 @@ public class Environment extends Pointer {
     @Virtual(true) public native float getReward(@Cast("ssize_t") long agentId/*=0*/);
     /** Returns the last values of observationForReward() */
     @Virtual(true) public native @Const @ByRef Array getMetrics(@Cast("ssize_t") long agentId/*=0*/);
-    /** Returns the reward terms. */
+    /** Returns the reward terms */
     @Virtual(true) public native @Const @ByRef Array getRewardTerms(@Cast("ssize_t") long agentId/*=0*/);
 }
