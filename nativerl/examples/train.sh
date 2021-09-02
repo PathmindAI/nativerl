@@ -159,6 +159,11 @@ if [[ ! -z "$NUM_HIDDEN_NODES" ]]; then
     NUM_HIDDEN_NODES_PARAM="--num_hidden_nodes $NUM_HIDDEN_NODES"
 fi
 
+REWARD_TERM_WEIGHTS_PARAM=""
+if [[ ! -z "$REWARD_TERM_WEIGHTS" ]]; then
+    REWARD_TERM_WEIGHTS_PARAM="--reward-term-weights $REWARD_TERM_WEIGHTS"
+fi
+
 export OUTPUT_DIR=$(pwd)
 
 if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
@@ -188,6 +193,7 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
         --reward-snippet "$REWARD_SNIPPET" \
+        $REWARD_TERM_WEIGHTS_PARAM \
         --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \
         --metrics-snippet "$METRICS_SNIPPET" \

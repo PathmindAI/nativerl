@@ -11,12 +11,11 @@ import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,10 +73,13 @@ public class AnyLogicHelper {
     @Builder.Default
     String rewardSnippet = "";
 
+    /** The weights for the reward terms */
+    String rewardTermWeights = "";
+
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
-    
+
     /** Arbitrary code to add to the test() method of the generated class to compute reward terms. */
     @Builder.Default
     String rewardTermsSnippet = "";
@@ -129,6 +131,28 @@ public class AnyLogicHelper {
 
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() throws IOException, ReflectiveOperationException {
+        if (rewardTermsSnippet == null || rewardTermsSnippet.isEmpty()) {
+            List<String> processedRewardTerms = Arrays.stream(rewardSnippet.split("\n"))
+                    .map(t -> {
+                        if (t.startsWith("reward += ")) {
+                            t = t.replaceFirst("reward \\+= ", "");
+                        } else if (t.startsWith("reward -= ")) {
+                            t = t.replaceFirst("reward \\-= ", "");
+                            int index = t.lastIndexOf(";");
+                            t = "- ( " + t.substring(0, index) + " ) " + t.substring(index);
+                        }
+                        return t;
+                    })
+                    .collect(Collectors.toList());
+
+            List<String> tempRewardTermsSnippet = new ArrayList<>();
+            tempRewardTermsSnippet.add("rewardTermsRaw = new double[" + processedRewardTerms.size() + "];");
+            for (int i = 0; i < processedRewardTerms.size(); i++) {
+                tempRewardTermsSnippet.add("rewardTermsRaw[" + i + "] = " + processedRewardTerms.get(i));
+            }
+            rewardTermsSnippet = String.join("\n", tempRewardTermsSnippet);
+        }
+
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
@@ -224,6 +248,7 @@ public class AnyLogicHelper {
                 System.out.println("    --simulation-parameter-snippet");
                 System.out.println("    --observation-snippet");
                 System.out.println("    --reward-snippet");
+                System.out.println("    --reward-term-weights");
                 System.out.println("    --metrics-snippet");
                 System.out.println("    --reward-terms-snippet");
                 System.out.println("    --policy-helper");
@@ -247,6 +272,8 @@ public class AnyLogicHelper {
                 helper.outputDir(new File(args[++i]));
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
+            } else if ("--reward-term-weights".equals(args[i])) {
+                helper.rewardTermWeights(args[++i]);
             } else if ("--simulation-parameter-snippet".equals(args[i])) {
                 helper.simulationParameterSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
