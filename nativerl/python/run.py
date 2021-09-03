@@ -113,6 +113,14 @@ def main(environment: str,
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
 
+    env_config = {
+        'reward_balance_period': reward_balance_period,
+        #'num_reward_terms': num_reward_terms,
+        'num_reward_terms': 7,
+        #'alphas': [float(item) for item in i.split(".") for i in alphas.split(" ")]
+        'alphas': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5]
+    }
+
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
     else:
@@ -127,7 +135,7 @@ def main(environment: str,
         )
         env_creator = env_name
 
-    env_instance = env_creator(env_config={})
+    env_instance = env_creator(env_config=env_config)
     env_instance.max_steps = env_instance._max_episode_steps if hasattr(env_instance, "_max_episode_steps") \
         else 20000
 
@@ -157,12 +165,6 @@ def main(environment: str,
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(scheduler_name=scheduler)
     loggers = get_loggers()
-
-    env_config = {
-        'reward_balance_period': reward_balance_period,
-        'num_reward_terms': num_reward_terms,
-        'alphas': [float(item) for item in i.split(".") for i in alphas.split(" ")] 
-    }
 
     config = {
         'env': env_name,

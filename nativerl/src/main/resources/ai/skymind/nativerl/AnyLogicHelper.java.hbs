@@ -194,27 +194,6 @@ public class {{className}} extends AbstractEnvironment {
     }
 
     @Override
-    public float getReward(long agentId) {
-        double reward = 0;
-        rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
-{{#if namedVariables}}
-        {{rewardClassName}} before = rewardBefore[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]) : null,
-                             after = rewardAfter[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardAfter[(int)agentId]) : null;
-{{else}}
-        double[] before = rewardBefore[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardBefore[(int)agentId]) : null;
-        double[] after = rewardAfter[(int)agentId] != null ? PathmindHelperRegistry.getHelper().rewardToDoubles(rewardAfter[(int)agentId]) : null;
-{{/if}}
-
-        if (before == null) {
-            // Do nothing, return 0 because before doesn't exist at step 0
-        } else {
-            {{{rewardSnippet}}}
-        }
-
-        return (float)reward;
-    }
-
-    @Override
     public Array getMetrics(long agentId) {
         double[] metrics = null;
         {{{metricsSnippet}}}
@@ -255,9 +234,8 @@ public class {{className}} extends AbstractEnvironment {
         return allMetrics;
     }
 
-    @Override
-    public Array getRewardTerms(long agentId) {
-        double[] rewardTermsRaw = null;
+    private double[] calculateRewardTerms(long agentId) {
+        double[] rewardTermsRaw = new double[{{numRewardTerms}}];
         rewardAfter[(int)agentId] = PathmindHelperRegistry.getHelper().getRewardObject((int)agentId);
 {{#if namedVariables}}
         {{rewardClassName}} before = rewardBefore[(int)agentId] != null ? PolicyObservationFilter.workAroundJavaBug(rewardBefore[(int)agentId]) : null,
@@ -268,10 +246,29 @@ public class {{className}} extends AbstractEnvironment {
 {{/if}}
 
         if (before == null) {
-            // Do nothing, return double[] of zeroes because before doesn't exist at step 0
+        // Do nothing, return double[] of zeroes because before doesn't exist at step 0
         } else {
             {{{rewardTermsSnippet}}}
         }
+
+        return rewardTermsRaw;
+    }
+
+    @Override
+    public float getReward(long agentId) {
+        double reward = 0;
+
+        double[] rewardTermsRaw = calculateRewardTerms(agentId);
+        for (int i = 0; i < rewardTermsRaw.length; i++) {
+            reward += rewardTermsRaw[i];
+        }
+
+        return (float)reward;
+    }
+
+    @Override
+    public Array getRewardTerms(long agentId) {
+        double[] rewardTermsRaw = calculateRewardTerms(agentId);
 
         if (this.rewardTerms == null || this.rewardTerms.length() != rewardTermsRaw.length) {
             this.rewardTerms = new Array(new SSizeTVector().put(rewardTermsRaw.length));

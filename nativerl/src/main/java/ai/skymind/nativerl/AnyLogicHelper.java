@@ -112,6 +112,9 @@ public class AnyLogicHelper {
     @Setter
     List<String> setObs;
 
+    @Setter
+    int numRewardTerms;
+
     public boolean getIsRLExperiment() {
         return isRLExperiment;
     }
@@ -146,7 +149,6 @@ public class AnyLogicHelper {
                     .collect(Collectors.toList());
 
             List<String> tempRewardTermsSnippet = new ArrayList<>();
-            tempRewardTermsSnippet.add("rewardTermsRaw = new double[" + processedRewardTerms.size() + "];");
             for (int i = 0; i < processedRewardTerms.size(); i++) {
                 tempRewardTermsSnippet.add("rewardTermsRaw[" + i + "] = " + processedRewardTerms.get(i));
             }
@@ -167,6 +169,7 @@ public class AnyLogicHelper {
         this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
         this.setRLExperiment(experimentType.equals("RLExperiment"));
         this.isPLE = true;
+        this.setNumRewardTerms(rewardTermsSnippet.split("\n").length);
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
