@@ -233,14 +233,15 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
                     metrics = agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
-                raw_metrics = np.mean(metrics, axis=0)
-                return np.concatenate([self.term_contributions, raw_metrics])
+                return np.mean(metrics, axis=0)
             else:
-                raw_metrics = np.array(self.nativeEnv.getMetrics(0))
-                return np.concatenate([self.term_contributions, raw_metrics])
+                return np.array(self.nativeEnv.getMetrics(0))
 
         def updateBetas(self, betas):
             self.betas = betas
+
+        def getRewardTermContributions(self):
+            return self.term_contributions
 
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name

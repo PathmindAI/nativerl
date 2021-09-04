@@ -118,7 +118,7 @@ def main(environment: str,
         #'num_reward_terms': num_reward_terms,
         'num_reward_terms': 7,
         #'alphas': [float(item) for item in i.split(".") for i in alphas.split(" ")]
-        'alphas': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5]
+        'alphas': [5.0, 2.0, 4.0, 2.0, 2.0, 1.0, 1.5]
     }
 
     if is_gym:

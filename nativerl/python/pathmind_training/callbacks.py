@@ -31,12 +31,16 @@ def get_callbacks(debug_metrics, is_gym):
                            policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
             if not is_gym:
                 metrics = worker.env.getMetrics().tolist()
+                term_contributions = worker.env.getRewardTermContributions().tolist()
 
                 if debug_metrics:
                     episode.hist_data["metrics_raw"] = metrics
 
                 for i, val in enumerate(metrics):
                     episode.custom_metrics["metrics_" + str(i)] = metrics[i]
+
+                for i, val in enumerate(term_contributions):
+                    episode.custom_metrics["metrics_term_" + str(i)] = term_contributions[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
@@ -48,8 +52,8 @@ def get_callbacks(debug_metrics, is_gym):
                 
                 if result["training_iteration"] == 1 or result["training_iteration"] % period == 0:
                     # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
-                    betas = [1.0 / result["custom_metrics"]["metrics_" + str(i) + "_mean"]
-                             if result["custom_metrics"]["metrics_" + str(i) + "_mean"] != 0.0
+                    betas = [1.0 / result["custom_metrics"]["metrics_term_" + str(i) + "_mean"]
+                             if result["custom_metrics"]["metrics_term_" + str(i) + "_mean"] != 0.0
                              else 1.0
                              for i in range(num_reward_terms)]
                     for w in trainer.workers.remote_workers():
