@@ -73,9 +73,6 @@ public class AnyLogicHelper {
     @Builder.Default
     String rewardSnippet = "";
 
-    /** The weights for the reward terms */
-    String rewardTermWeights = "";
-
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
@@ -251,7 +248,6 @@ public class AnyLogicHelper {
                 System.out.println("    --simulation-parameter-snippet");
                 System.out.println("    --observation-snippet");
                 System.out.println("    --reward-snippet");
-                System.out.println("    --reward-term-weights");
                 System.out.println("    --metrics-snippet");
                 System.out.println("    --reward-terms-snippet");
                 System.out.println("    --policy-helper");
@@ -275,8 +271,6 @@ public class AnyLogicHelper {
                 helper.outputDir(new File(args[++i]));
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
-            } else if ("--reward-term-weights".equals(args[i])) {
-                helper.rewardTermWeights(args[++i]);
             } else if ("--simulation-parameter-snippet".equals(args[i])) {
                 helper.simulationParameterSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {

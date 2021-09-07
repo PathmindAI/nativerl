@@ -161,7 +161,7 @@ fi
 
 REWARD_TERM_WEIGHTS_PARAM=""
 if [[ ! -z "$REWARD_TERM_WEIGHTS" ]]; then
-    REWARD_TERM_WEIGHTS_PARAM="--reward-term-weights $REWARD_TERM_WEIGHTS"
+    REWARD_TERM_WEIGHTS_PARAM="--alphas $REWARD_TERM_WEIGHTS"
 fi
 
 export OUTPUT_DIR=$(pwd)
@@ -193,7 +193,6 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
         --reward-snippet "$REWARD_SNIPPET" \
-        $REWARD_TERM_WEIGHTS_PARAM \
         --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \
         --metrics-snippet "$METRICS_SNIPPET" \
@@ -243,4 +242,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $SCHEDULER_PARAM \
     $CONVERGENCE_CHECK_START_ITERATION_PARAM \
     $NUM_HIDDEN_LAYERS_PARAM \
-    $NUM_HIDDEN_NODES_PARAM
+    $NUM_HIDDEN_NODES_PARAM \
+    $REWARD_TERM_WEIGHTS_PARAM \
