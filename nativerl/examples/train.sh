@@ -10,7 +10,7 @@ CPU_COUNT=$(getconf _NPROCESSORS_ONLN)
 
 if [[ -z "$NUM_WORKERS" ]]; then
     if [[ $CPU_COUNT = 72 ]]; then
-        export NUM_WORKERS=4
+        export NUM_WORKERS=8
         export NUM_CPUS=2
     elif [[ $CPU_COUNT = 36 ]]; then
         export NUM_WORKERS=4
@@ -33,11 +33,7 @@ if [[ $NUM_CPUS < 1 ]]; then
 fi
 
 if [[ -z "$NUM_SAMPLES" ]]; then
-    if [[ $CPU_COUNT = 72 ]]; then
-        export NUM_SAMPLES=8
-    else
-        export NUM_SAMPLES=4
-    fi
+    export NUM_SAMPLES=4
 fi
 
 MULTIAGENT_PARAM=""
