@@ -36,12 +36,13 @@ def register_freezing_distributions(env):
     class IcyMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
                      action_space=env_action_space, temperature=ICY_TEMP):
-            ActionDistribution.__init__(self, inputs / temperature, model)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            ActionDistribution.__init__(self, tempered_inputs, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
 
             self.input_lens = np.array(input_lens, dtype=np.int32)
-            split_inputs = tf.split(inputs / temperature, self.input_lens, axis=1)
+            split_inputs = tf.split(tempered_inputs, self.input_lens, axis=1)
             self.flat_child_distributions = tree.map_structure(
                 lambda dist, input_: dist(input_, model), child_distributions,
                 split_inputs)
@@ -114,17 +115,19 @@ def register_freezing_distributions(env):
 
     class IcyCategorical(Categorical):
         def __init__(self, inputs, model=None, temperature=ICY_TEMP):
-            super().__init__(inputs / temperature, model=None)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            super().__init__(tempered_inputs, model=None)
     
     class ColdMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
                      action_space=env_action_space, temperature=COLD_TEMP):
-            ActionDistribution.__init__(self, inputs / temperature, model)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            ActionDistribution.__init__(self, tempered_inputs, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
 
             self.input_lens = np.array(input_lens, dtype=np.int32)
-            split_inputs = tf.split(inputs / temperature, self.input_lens, axis=1)
+            split_inputs = tf.split(tempered_inputs, self.input_lens, axis=1)
             self.flat_child_distributions = tree.map_structure(
                 lambda dist, input_: dist(input_, model), child_distributions,
                 split_inputs)
@@ -197,17 +200,19 @@ def register_freezing_distributions(env):
 
     class ColdCategorical(Categorical):
         def __init__(self, inputs, model=None, temperature=COLD_TEMP):
-            super().__init__(inputs / temperature, model=None)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            super().__init__(tempered_inputs, model=None)
     
     class CoolMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
                      action_space=env_action_space, temperature=COOL_TEMP):
-            ActionDistribution.__init__(self, inputs / temperature, model)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            ActionDistribution.__init__(self, tempered_inputs, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
 
             self.input_lens = np.array(input_lens, dtype=np.int32)
-            split_inputs = tf.split(inputs / temperature, self.input_lens, axis=1)
+            split_inputs = tf.split(tempered_inputs, self.input_lens, axis=1)
             self.flat_child_distributions = tree.map_structure(
                 lambda dist, input_: dist(input_, model), child_distributions,
                 split_inputs)
@@ -280,17 +285,19 @@ def register_freezing_distributions(env):
 
     class CoolCategorical(Categorical):
         def __init__(self, inputs, model=None, temperature=COOL_TEMP):
-            super().__init__(inputs / temperature, model=None)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            super().__init__(tempered_inputs, model=None)
     
     class WarmMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
                      action_space=env_action_space, temperature=WARM_TEMP):
-            ActionDistribution.__init__(self, inputs / temperature, model)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            ActionDistribution.__init__(self, tempered_inputs, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
 
             self.input_lens = np.array(input_lens, dtype=np.int32)
-            split_inputs = tf.split(inputs / temperature, self.input_lens, axis=1)
+            split_inputs = tf.split(tempered_inputs, self.input_lens, axis=1)
             self.flat_child_distributions = tree.map_structure(
                 lambda dist, input_: dist(input_, model), child_distributions,
                 split_inputs)
@@ -363,17 +370,19 @@ def register_freezing_distributions(env):
     
     class WarmCategorical(Categorical):
         def __init__(self, inputs, model=None, temperature=WARM_TEMP):
-            super().__init__(inputs / temperature, model=None)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            super().__init__(tempered_inputs, model=None)
     
     class HotMultiActionDistribution(TFActionDistribution):
         def __init__(self, inputs, model, *, child_distributions=child_dists, input_lens=env_output_sizes,
                      action_space=env_action_space, temperature=HOT_TEMP):
-            ActionDistribution.__init__(self, inputs / temperature, model)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            ActionDistribution.__init__(self, tempered_inputs, model)
 
             self.action_space_struct = get_base_struct_from_space(action_space)
 
             self.input_lens = np.array(input_lens, dtype=np.int32)
-            split_inputs = tf.split(inputs / temperature, self.input_lens, axis=1)
+            split_inputs = tf.split(tempered_inputs, self.input_lens, axis=1)
             self.flat_child_distributions = tree.map_structure(
                 lambda dist, input_: dist(input_, model), child_distributions,
                 split_inputs)
@@ -446,7 +455,8 @@ def register_freezing_distributions(env):
     
     class HotCategorical(Categorical):
         def __init__(self, inputs, model=None, temperature=HOT_TEMP):
-            super().__init__(inputs / temperature, model=None)
+            tempered_inputs = tf.math.maximum(inputs / temperature, tf.float32.min)
+            super().__init__(tempered_inputs, model=None)
 
     if isinstance(env_action_space, gym.spaces.Discrete):
         ModelCatalog.register_custom_action_dist("icy", IcyCategorical)
