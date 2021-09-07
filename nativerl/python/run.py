@@ -6,13 +6,17 @@ from typing import Optional
 import numpy as np
 import gym
 import ray
-from ray.tune import run, sample_from
+from ray.tune import run, sample_from, Analysis
+
+import ipdb
+#ipdb.set_trace()
 
 from pathmind_training import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
 from pathmind_training.environments import get_environment, get_gym_environment
 from pathmind_training.models import get_custom_model
 from pathmind_training.callbacks import get_callbacks, get_callback_function
 from pathmind_training.freezing import freeze_trained_policy
+
 
 
 def main(environment: str,
@@ -35,8 +39,10 @@ def main(environment: str,
          convergence_check_start_iteration: int = 250,
          max_time_in_sec: int = 43200,
          max_episodes: int = 200000,
-         num_samples: int = 4,
+         num_samples: int = 1,
          resume: bool = False,
+         restore: bool = True,
+         restore_exp_name: str = None,
          checkpoint_frequency: int = 5,
          keep_checkpoints_number: int = 5,
          max_failures: int = 5,
@@ -50,11 +56,10 @@ def main(environment: str,
          action_masking: bool = False,
          freezing: bool = False,
          discrete: bool = True,
+         use_dropout: bool = False,
+         use_gnn: bool = False,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
-         gamma: float = 0.99,
-         train_batch_model: str = 'complete_episodes',
-         rollout_fragment_length: int = 200
          ):
     """
 
@@ -97,12 +102,10 @@ def main(environment: str,
     :param random_seed: Optional random seed for this experiment.
     :param custom_callback: Optional name of a custom Python function returning a callback implementation
         of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
-    :param gamma: gamma value
-    :param train_batch_model: Train Batch Mode [truncate_episodes, complete_episodes]
-    :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
 
     :return: runs training for the given environment, with nativerl
     """
+
 
     if random_seed:
         random.seed(random_seed)
@@ -112,10 +115,12 @@ def main(environment: str,
     os.chdir(jar_dir)
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
+    
 
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
     else:
+        ipdb.set_trace(context=20) 
         env_name = get_environment(
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
@@ -138,7 +143,9 @@ def main(environment: str,
         num_hidden_layers=num_hidden_layers,
         autoregressive=autoregressive,
         action_masking=action_masking,
-        discrete=discrete
+        discrete=discrete,
+        use_dropout=use_dropout,
+        use_gnn=use_gnn
     )
 
     stopper = Stopper(
@@ -171,26 +178,34 @@ def main(environment: str,
         'lambda': 0.95,
         'clip_param': 0.2,
         'lr': 1e-4,
-        'gamma': gamma,
         'entropy_coeff': 0.0,
         'num_sgd_iter': sample_from(lambda spec: random.choice([10, 20, 30])),
-        'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 512, 2048])),
-        'train_batch_size': sample_from(lambda spec: random.choice([4000, 8000, 12000])),
-        'rollout_fragment_length': rollout_fragment_length,
-        'batch_mode': train_batch_model,  # Set rollout samples to episode length
+#        'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 512, 2048])),
+        'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 256])),
+#        'train_batch_size': sample_from(lambda spec: random.choice([4000, 8000, 12000])),
+        'train_batch_size': sample_from(lambda spec: random.choice([256, 512])),
+        'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
+#        'batch_mode': 'truncate_episodes',  # Set rollout samples to episode length
         'horizon': env_instance.max_steps, # Set max steps per episode
         'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
     }
+
+    ipdb.set_trace(context=20) 
+    results = Analysis(os.path.join(output_dir, restore_exp_name))
+    best_logdir = results.get_best_logdir(metric="episode_reward_mean", mode="max") 
+    restore_checkpoint_path = results.get_best_checkpoint(trial=best_logdir, metric="episode_reward_mean", mode="max") if restore else False
 
     trials = run(
         algorithm,
         scheduler=scheduler_instance,
         num_samples=num_samples,
-        stop=stopper.stop,
+        stop={"training_iteration": 2},
+#        stop=stopper.stop,
         loggers=loggers,
         config=config,
         local_dir=output_dir if output_dir else None,
         resume=resume,
+        restore=restore_checkpoint_path,
         checkpoint_freq=checkpoint_frequency,
         keep_checkpoints_num=keep_checkpoints_number,
         checkpoint_at_end=True,

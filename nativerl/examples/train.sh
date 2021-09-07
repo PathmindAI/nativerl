@@ -233,6 +233,8 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     --num-samples $NUM_SAMPLES \
     --checkpoint-frequency $CHECKPOINT_FREQUENCY \
     --cpu-count $CPU_COUNT \
+    --restore $RESTORE_PARAM \
+    --restore_exp_name $RESTORE_EXP_NAME \
     $RESUME_PARAM \
     $AUTOREGRESSIVE_PARAM \
     $MULTIAGENT_PARAM \
