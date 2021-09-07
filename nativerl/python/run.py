@@ -52,6 +52,7 @@ def main(environment: str,
          discrete: bool = True,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
+         gamma: float = 0.99,
          reward_balance_period: int = 50,
          num_reward_terms: int = None,
          alphas: str = None
@@ -97,9 +98,10 @@ def main(environment: str,
     :param random_seed: Optional random seed for this experiment.
     :param custom_callback: Optional name of a custom Python function returning a callback implementation
         of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
+    :param gamma: gamma value
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
     :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
-    :param alphas: User defined importance weights on conceptual chunks (reward terms) 
+    :param alphas: User defined importance weights on conceptual chunks (reward terms)
 
     :return: runs training for the given environment, with nativerl
     """
@@ -180,6 +182,7 @@ def main(environment: str,
         'lambda': 0.95,
         'clip_param': 0.2,
         'lr': 1e-4,
+        'gamma': gamma,
         'entropy_coeff': 0.0,
         'num_sgd_iter': sample_from(lambda spec: random.choice([10, 20, 30])),
         'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 512, 2048])),
