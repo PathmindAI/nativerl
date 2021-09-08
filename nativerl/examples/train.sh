@@ -175,6 +175,10 @@ else
     NUM_REWARD_TERMS=$(echo "$REWARD_SNIPPET" | wc -l)
 fi
 
+REWARD_BALANCE_PERIOD_PARAM=""
+if [[ ! -z "$REWARD_BALANCE_PERIOD" ]]; then
+    REWARD_BALANCE_PERIOD_PARAM="--reward_balance_period $REWARD_BALANCE_PERIOD"
+fi
 
 export OUTPUT_DIR=$(pwd)
 
@@ -258,4 +262,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $NUM_HIDDEN_NODES_PARAM \
     $GAMMA_PARAM \
     $REWARD_TERMS_WEIGHTS_PARAM \
-    --num_reward_terms $NUM_REWARD_TERMS
+    --num_reward_terms $NUM_REWARD_TERMS \
+    $REWARD_BALANCE_PERIOD_PARAM
