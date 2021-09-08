@@ -53,7 +53,8 @@ def main(environment: str,
          random_seed: Optional[int] = None,
          custom_callback: Optional[str] = None,
          gamma: float = 0.99,
-         train_batch_model: str = 'complete_episodes',
+         train_batch_mode: str = 'complete_episodes',
+         train_batch_size: Optional[int] = None,
          rollout_fragment_length: int = 200
          ):
     """
@@ -98,7 +99,8 @@ def main(environment: str,
     :param custom_callback: Optional name of a custom Python function returning a callback implementation
         of Ray's "DefaultCallbacks", e.g. "tests.custom_callback.get_callback"
     :param gamma: gamma value
-    :param train_batch_model: Train Batch Mode [truncate_episodes, complete_episodes]
+    :param train_batch_mode: Train Batch Mode [truncate_episodes, complete_episodes]
+    :param train_batch_size: Optional train batch size
     :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
 
     :return: runs training for the given environment, with nativerl
@@ -155,7 +157,7 @@ def main(environment: str,
         callbacks = get_callbacks(debug_metrics, is_gym)
 
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
-    scheduler_instance = get_scheduler(scheduler_name=scheduler)
+    scheduler_instance = get_scheduler(scheduler_name=scheduler, train_batch_size=train_batch_size)
     loggers = get_loggers()
 
     config = {
@@ -175,9 +177,9 @@ def main(environment: str,
         'entropy_coeff': 0.0,
         'num_sgd_iter': sample_from(lambda spec: random.choice([10, 20, 30])),
         'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 512, 2048])),
-        'train_batch_size': sample_from(lambda spec: random.choice([4000, 8000, 12000])),
+        'train_batch_size': train_batch_size if train_batch_size else sample_from(lambda spec: random.choice([4000, 8000, 12000])),
         'rollout_fragment_length': rollout_fragment_length,
-        'batch_mode': train_batch_model,  # Set rollout samples to episode length
+        'batch_mode': train_batch_mode,  # Set rollout samples to episode length
         'horizon': env_instance.max_steps, # Set max steps per episode
         'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
     }
