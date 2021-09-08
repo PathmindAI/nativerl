@@ -166,7 +166,7 @@ fi
 
 TRAIN_BATCH_MODE_PARAM=""
 if [[ ! -z "$TRAIN_BATCH_MODE" ]]; then
-    TRAIN_BATCH_MODE_PARAM="--train_batch_model $TRAIN_BATCH_MODE"
+    TRAIN_BATCH_MODE_PARAM="--train_batch_mode $TRAIN_BATCH_MODE"
 fi
 
 ROLLOUT_FRAGMENT_LENGTH_PARAM=""
