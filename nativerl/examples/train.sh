@@ -164,10 +164,17 @@ if [[ ! -z "$GAMMA" ]]; then
     GAMMA_PARAM="--gamma $GAMMA"
 fi
 
-REWARD_TERM_WEIGHTS_PARAM=""
-if [[ ! -z "$REWARD_TERM_WEIGHTS" ]]; then
-    REWARD_TERM_WEIGHTS_PARAM="--alphas $REWARD_TERM_WEIGHTS"
+REWARD_TERMS_WEIGHTS_PARAM=""
+if [[ ! -z "$REWARD_TERMS_WEIGHTS" ]]; then
+    REWARD_TERMS_WEIGHTS_PARAM="--alphas $REWARD_TERMS_WEIGHTS"
 fi
+
+if [[ ! -z "$REWARD_TERMS_SNIPPET" ]]; then
+    NUM_REWARD_TERMS=$(echo "$REWARD_TERMS_SNIPPET" | wc -l)
+else
+    NUM_REWARD_TERMS=$(echo "$REWARD_SNIPPET" | wc -l)
+fi
+
 
 export OUTPUT_DIR=$(pwd)
 
@@ -198,6 +205,7 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
         --reward-snippet "$REWARD_SNIPPET" \
+        --reward-terms-snippet "$REWARD_TERMS_SNIPPET" \
         --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \
         --metrics-snippet "$METRICS_SNIPPET" \
@@ -249,4 +257,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $NUM_HIDDEN_LAYERS_PARAM \
     $NUM_HIDDEN_NODES_PARAM \
     $GAMMA_PARAM \
-    $REWARD_TERM_WEIGHTS_PARAM
+    $REWARD_TERMS_WEIGHTS_PARAM \
+    --num_reward_terms $NUM_REWARD_TERMS

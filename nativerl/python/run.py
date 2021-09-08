@@ -117,10 +117,8 @@ def main(environment: str,
 
     env_config = {
         'reward_balance_period': reward_balance_period,
-        #'num_reward_terms': num_reward_terms,
-        'num_reward_terms': 7,
-        #'alphas': [float(item) for item in i.split(".") for i in alphas.split(" ")]
-        'alphas': [5.0, 2.0, 4.0, 2.0, 2.0, 1.0, 1.5]
+        'num_reward_terms': num_reward_terms,
+        'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms)
     }
 
     if is_gym:

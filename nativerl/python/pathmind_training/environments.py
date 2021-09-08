@@ -93,7 +93,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 self.unwrapped.spec = self
 
             self.num_reward_terms = env_config["num_reward_terms"]
-            self.alphas = np.array(env_config["alphas"])
+            self.alphas = env_config["alphas"]
             self.betas = np.ones(self.num_reward_terms)
 
             self.term_contributions_dict = {}
