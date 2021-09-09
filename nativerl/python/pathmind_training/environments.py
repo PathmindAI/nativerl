@@ -92,6 +92,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
+            self.use_reward_terms = env_config["use_reward_terms"]
             self.num_reward_terms = env_config["num_reward_terms"]
             self.alphas = env_config["alphas"]
             self.betas = np.ones(self.num_reward_terms)
@@ -186,17 +187,20 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                             "real_obs": obs
                         }
                     obs_dict[str(i)] = obs
-#                    reward_dict[str(i)] = self.nativeEnv.getReward(i)
-                    reward_array = np.array(self.nativeEnv.getRewardTerms(i))
-                    reward_dict[str(i)] = np.sum(reward_array * self.alphas * self.betas)
-                    done_dict[str(i)] = self.nativeEnv.isDone(i)
+                    if self.use_reward_terms:
+                        reward_array = np.array(self.nativeEnv.getRewardTerms(i))
+                        reward_dict[str(i)] = np.sum(reward_array * self.alphas * self.betas)
+                        done_dict[str(i)] = self.nativeEnv.isDone(i)
 
-                    if str(i) not in self.term_contributions_dict:
-                        self.term_contributions_dict[str(i)] = reward_array
+                        if str(i) not in self.term_contributions_dict:
+                            self.term_contributions_dict[str(i)] = reward_array
+                        else:
+                            self.term_contributions_dict[str(i)] += reward_array
                     else:
-                        self.term_contributions_dict[str(i)] += reward_array
+                       reward_dict[str(i)] = self.nativeEnv.getReward(i)
 
-                self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
+                if self.use_reward_terms:
+                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
 
                 done_dict['__all__'] = all(done_dict.values())
                 return obs_dict, reward_dict, done_dict, {}
@@ -212,13 +216,18 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     action_array = action.astype(np.float32)
                 self.nativeEnv.setNextAction(nativerl.Array(action_array))
                 self.nativeEnv.step()
- #               reward = self.nativeEnv.getReward()
-                reward_array = np.array(self.nativeEnv.getRewardTerms())
-                reward = np.sum(reward_array * self.alphas * self.betas)
+
+                if self.use_reward_terms:
+                    reward_array = np.array(self.nativeEnv.getRewardTerms())
+                    reward = np.sum(reward_array * self.alphas * self.betas)
+                else:
+                    reward = self.nativeEnv.getReward()
+
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
 
-                self.term_contributions += reward_array
+                if self.use_reward_terms:
+                    self.term_contributions += reward_array
 
                 if isinstance(self.observation_space, gym.spaces.Dict):
                     obs = {"action_mask": np.array(self.nativeEnv.getActionMask()), "real_obs": obs}
@@ -238,10 +247,12 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 return np.array(self.nativeEnv.getMetrics(0))
 
         def updateBetas(self, betas):
-            self.betas = betas
+            if self.use_reward_terms:
+                self.betas = betas
 
         def getRewardTermContributions(self):
-            return self.term_contributions
+            if self.use_reward_terms:
+                return self.term_contributions
 
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name

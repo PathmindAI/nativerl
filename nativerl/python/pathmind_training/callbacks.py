@@ -31,33 +31,33 @@ def get_callbacks(debug_metrics, is_gym):
                            policies: Dict[str, Policy], episode: MultiAgentEpisode, **kwargs):
             if not is_gym:
                 metrics = worker.env.getMetrics().tolist()
-                term_contributions = worker.env.getRewardTermContributions().tolist()
-
                 if debug_metrics:
                     episode.hist_data["metrics_raw"] = metrics
 
                 for i, val in enumerate(metrics):
-                    episode.custom_metrics["metrics_" + str(i)] = metrics[i]
+                    episode.custom_metrics[f"metrics_{str(i)}"] = metrics[i]
 
+                term_contributions = worker.env.getRewardTermContributions().tolist()
                 for i, val in enumerate(term_contributions):
-                    episode.custom_metrics["metrics_term_" + str(i)] = term_contributions[i]
+                    episode.custom_metrics[f"metrics_term_{str(i)}"] = term_contributions[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-                period = trainer.config["env_config"]["reward_balance_period"]
-                num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
-                
-                if result["training_iteration"] == 1 or result["training_iteration"] % period == 0:
-                    # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
-                    betas = [1.0 / result["custom_metrics"]["metrics_term_" + str(i) + "_mean"]
-                             if result["custom_metrics"]["metrics_term_" + str(i) + "_mean"] != 0.0
-                             else 1.0
-                             for i in range(num_reward_terms)]
-                    for w in trainer.workers.remote_workers():
-                        w.apply.remote(lambda worker: worker.env.updateBetas(betas))
+                if trainer.config["env_config"]["use_reward_terms"]:
+                    period = trainer.config["env_config"]["reward_balance_period"]
+                    num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
+
+                    if result["training_iteration"] == 1 or result["training_iteration"] % period == 0:
+                        # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
+                        betas = [1.0 / result["custom_metrics"][f"metrics_term_{str(i)}_mean"]
+                                 if result["custom_metrics"][f"metrics_term_{str(i)}_mean"] != 0.0
+                                 else 1.0
+                                 for i in range(num_reward_terms)]
+                        for w in trainer.workers.remote_workers():
+                            w.apply.remote(lambda worker: worker.env.updateBetas(betas))
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 

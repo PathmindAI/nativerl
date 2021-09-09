@@ -116,10 +116,15 @@ def main(environment: str,
     modify_anylogic_db_properties()
 
     env_config = {
+        'use_reward_terms': alphas is not None,
         'reward_balance_period': reward_balance_period,
         'num_reward_terms': num_reward_terms,
         'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms)
     }
+
+    if env_config['use_reward_terms']:
+        assert env_config['alphas'].size == env_config['num_reward_terms'],
+        f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
 
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
