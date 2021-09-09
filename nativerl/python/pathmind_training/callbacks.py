@@ -19,7 +19,7 @@ def get_callback_function(callback_function_name):
     return getattr(lib, class_name)
 
 
-def get_callbacks(debug_metrics, is_gym):
+def get_callbacks(debug_metrics, use_reward_terms, is_gym):
 
     class Callbacks(DefaultCallbacks):
         def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
@@ -37,16 +37,17 @@ def get_callbacks(debug_metrics, is_gym):
                 for i, val in enumerate(metrics):
                     episode.custom_metrics[f"metrics_{str(i)}"] = metrics[i]
 
-                term_contributions = worker.env.getRewardTermContributions().tolist()
-                for i, val in enumerate(term_contributions):
-                    episode.custom_metrics[f"metrics_term_{str(i)}"] = term_contributions[i]
+                if use_reward_terms:
+                    term_contributions = worker.env.getRewardTermContributions().tolist()
+                    for i, val in enumerate(term_contributions):
+                        episode.custom_metrics[f"metrics_term_{str(i)}"] = term_contributions[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-                if trainer.config["env_config"]["use_reward_terms"]:
+                if use_reward_terms:
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 

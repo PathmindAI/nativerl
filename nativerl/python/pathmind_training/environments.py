@@ -190,14 +190,15 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                     if self.use_reward_terms:
                         reward_array = np.array(self.nativeEnv.getRewardTerms(i))
                         reward_dict[str(i)] = np.sum(reward_array * self.alphas * self.betas)
-                        done_dict[str(i)] = self.nativeEnv.isDone(i)
 
                         if str(i) not in self.term_contributions_dict:
                             self.term_contributions_dict[str(i)] = reward_array
                         else:
                             self.term_contributions_dict[str(i)] += reward_array
                     else:
-                       reward_dict[str(i)] = self.nativeEnv.getReward(i)
+                        reward_dict[str(i)] = self.nativeEnv.getReward(i)
+
+                    done_dict[str(i)] = self.nativeEnv.isDone(i)
 
                 if self.use_reward_terms:
                     self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)

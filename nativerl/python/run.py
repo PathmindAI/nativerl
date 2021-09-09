@@ -123,7 +123,7 @@ def main(environment: str,
     }
 
     if env_config['use_reward_terms']:
-        assert env_config['alphas'].size == env_config['num_reward_terms'],
+        assert env_config['alphas'].size == env_config['num_reward_terms'], \
         f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
 
     if is_gym:
@@ -165,7 +165,7 @@ def main(environment: str,
         # from tests.custom_callback import get_callback as foo
         callbacks = get_callback_function(custom_callback)()
     else:
-        callbacks = get_callbacks(debug_metrics, is_gym)
+        callbacks = get_callbacks(debug_metrics, env_config['use_reward_terms'], is_gym)
 
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(scheduler_name=scheduler)
