@@ -34,8 +34,8 @@ Build Instructions
         - Making sure the `MSYS2_PATH_TYPE=inherit` line is *not* commented out in `mingw64.ini` or `mingw32.ini`.
  2. Run `mvn clean install -Djavacpp.platform.custom -Djavacpp.platform.linux-x86_64 -Djavacpp.platform.macosx-x86_64 -Djavacpp.platform.windows-x86_64`
     * To build for TensorFlow 1.x, append `-Dtfv2=false` to that command.
- 3. Find all output files inside the `nativerl/target/nativerl-1.7.1-SNAPSHOT-bin.zip` archive
-    * This also produces `nativerl-policy/target/nativerl-policy-1.7.1-SNAPSHOT.jar` (~231mb) for the PathmindHelper
+ 3. Find all output files inside the `nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip` archive
+    * This also produces `nativerl-policy/target/nativerl-policy-1.7.2-SNAPSHOT.jar` (~231mb) for the PathmindHelper
 
 ### Building with Docker
 
@@ -87,7 +87,7 @@ source bin/activate
 conda-unpack
 
 cd /path/to/anylogic_model/
-unzip -j nativerl-1.7.1-SNAPSHOT-bin.zip
+unzip -j nativerl-1.7.2-SNAPSHOT-bin.zip
 ```
 
 
@@ -116,7 +116,7 @@ Example Using RLlib and PathmindHelper for Traffic Light Phases
     2. Create a new "Simulation" and adjust anything required
     3. Export the "Simulation" experiment to a "Standalone Java application" into some directory
 
- 3. Extract the native libraries from `nativerl-1.7.1-SNAPSHOT-bin.zip` inside that directory
+ 3. Extract the native libraries from `nativerl-1.7.2-SNAPSHOT-bin.zip` inside that directory
  4. Copy as well [`nativerl/examples/traintraffic.sh`](nativerl/examples/traintraffic.sh) into that directory
  5. Execute `bash traintraffic.sh` inside the directory and wait for training to complete
     * For a manually managed cluster, the sequence of operation is:
@@ -131,7 +131,7 @@ Example Using RLlib and PathmindHelper for Traffic Light Phases
 Example Using RLlib and Cartpole in Python
 ------------------------------------------
 
- 1. Extract the native libraries from `nativerl-1.7.1-SNAPSHOT-bin.zip` somewhere
+ 1. Extract the native libraries from `nativerl-1.7.2-SNAPSHOT-bin.zip` somewhere
  2. Copy as well [`nativerl/examples/traincartpole.sh`](nativerl/examples/traincartpole.sh) into that directory
  3. Execute `bash traincartpole.sh` inside the directory and wait for training to complete
     * The script outputs the `cartpole.py` file that should actually be generated via some helper...
