@@ -51,7 +51,7 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
-                    if result["training_iteration"] == 1 or result["training_iteration"] % period == 0:
+                    if result["training_iteration"] % period == 0:
                         # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
                         betas = [1.0 / result["custom_metrics"][f"metrics_term_{str(i)}_mean"]
                                  if result["custom_metrics"][f"metrics_term_{str(i)}_mean"] != 0.0
