@@ -200,10 +200,10 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
 
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
-                if self.use_reward_terms:
-                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
-
                 done_dict['__all__'] = all(done_dict.values())
+
+                if self.use_reward_terms and done_dict['__all__']:
+                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
                 return obs_dict, reward_dict, done_dict, {}
 
             else:
