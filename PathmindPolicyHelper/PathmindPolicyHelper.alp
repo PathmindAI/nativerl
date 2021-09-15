@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.3.202103181411" AlpVersion="8.7.1">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.6.202107211618" AlpVersion="8.7.2">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -18,7 +18,9 @@
 			<Name><![CDATA[PathmindHelper]]></Name>
 			<ClientAreaTopLeft><X>0</X><Y>0</Y></ClientAreaTopLeft>
 			<Import><![CDATA[import ai.skymind.nativerl.PolicyHelper;
-import java.util.stream.DoubleStream;]]></Import>
+import java.util.stream.DoubleStream;
+import ai.skymind.nativerl.ServerPolicyHelper;
+import ai.skymind.nativerl.exception.PathmindInvalidResponseException;]]></Import>
 			<ExtendsReference>
 				<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
 				<ClassName><![CDATA[AbstractPathmindHelper]]></ClassName>
@@ -28,8 +30,19 @@ import java.util.stream.DoubleStream;]]></Import>
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
-   policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
-   observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
+	if (usePolicy) {    
+		policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
+		observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
+	} /* else {
+		if (policyServer == null || policyServer.isEmpty()) {
+			throw new RuntimeException("Policy Server URL cannot be blank.");
+		}
+		if (token == null || token.isEmpty()) {
+			throw new RuntimeException("Policy Server token cannot be blank.");
+		}
+		
+		policyHelper = new ServerPolicyHelper();	
+	} */
 }
 
 if (numberOfAgents <= 0) {
@@ -135,7 +148,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="PlainVariable">
 					<Id>1563529489111</Id>
 					<Name><![CDATA[policyHelper]]></Name>
-					<X>440</X><Y>70</Y>
+					<X>50</X><Y>230</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -150,7 +163,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="PlainVariable">
 					<Id>1566466833512</Id>
 					<Name><![CDATA[isTraining]]></Name>
-					<X>440</X><Y>100</Y>
+					<X>50</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -165,7 +178,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="PlainVariable">
 					<Id>1566467201295</Id>
 					<Name><![CDATA[engine]]></Name>
-					<X>440</X><Y>130</Y>
+					<X>50</X><Y>270</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -180,7 +193,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="PlainVariable">
 					<Id>1566468010477</Id>
 					<Name><![CDATA[action]]></Name>
-					<X>290</X><Y>70</Y>
+					<X>50</X><Y>180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -195,7 +208,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="PlainVariable">
 					<Id>1578425082743</Id>
 					<Name><![CDATA[steps]]></Name>
-					<X>290</X><Y>100</Y>
+					<X>50</X><Y>200</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -210,7 +223,7 @@ if (numberOfAgents <= 0) {
 				<Variable Class="Parameter">
 					<Id>1563523942388</Id>
 					<Name><![CDATA[isEnabled]]></Name>
-					<X>20</X><Y>70</Y>
+					<X>50</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -240,7 +253,7 @@ if (numberOfAgents <= 0) {
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode" target="_blank">https://help.pathmind.com/en/articles/3631367-7-pathmind-helper-debug-mode</a>]]></Description>
-					<X>20</X><Y>100</Y>
+					<X>50</X><Y>130</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -269,7 +282,7 @@ if (numberOfAgents <= 0) {
 <p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy specified in <b>Policy File</b> to predict the next best action.</p>
 <p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly and to confirm that there are no logical issues in your AnyLogic simulation.</p>
 ]]></Description>
-					<X>20</X><Y>160</Y>
+					<X>620</X><Y>120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -314,9 +327,69 @@ if (numberOfAgents <= 0) {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
+					<Id>1626371580469</Id>
+					<Name><![CDATA[usePolicyFile]]></Name>
+					<Description><![CDATA[<h3>Mode</h3>
+<p><b>Use Policy</b> will execute your simulation using the trained policy obtained from Pathmind. When <b>Use Policy</b> is selected, the Pathmind Helper will query the policy specified in <b>Policy File</b> to predict the next best action.</p>
+<p><b>Use Random Actions</b> tells Pathmind to select actions at random. This option is used to confirm that your actions are set up correctly and to confirm that there are no logical issues in your AnyLogic simulation.</p>
+]]></Description>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>620</X><Y>140</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1626371580467</Id>
+							<Label><![CDATA[Policy Source]]></Label>
+							<EditorContolType>RADIO_BUTTONS</EditorContolType>
+							<HideCondition>
+								<Id>1626371580464</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<PredefParamValue>
+								<Id>1626371580465</Id>
+								<Name><![CDATA[Use Policy File]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</PredefParamValue>
+							<PredefParamValue>
+								<Id>1626371580466</Id>
+								<Name><![CDATA[Use Policy Server]]></Name>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</PredefParamValue>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
 					<Id>1563524634306</Id>
 					<Name><![CDATA[policyFile]]></Name>
-					<X>20</X><Y>130</Y>
+					<X>620</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -345,6 +418,114 @@ if (numberOfAgents <= 0) {
 									<Code><![CDATA[true]]></Code>
 								</Value>
 							</HideCondition>
+							<HideCondition>
+								<Id>0</Id>
+								<ParameterId>1626371580469</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1626372352837</Id>
+					<Name><![CDATA[policyServer]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>620</X><Y>160</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA["PASTE_SERVER_URL"]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1626372352835</Id>
+							<Label><![CDATA[Policy Server URL]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>1626372352832</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>1626372352833</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>1626372352834</Id>
+								<ParameterId>1626371580469</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1626824497381</Id>
+					<Name><![CDATA[token]]></Name>
+					<ExcludeFromBuild>true</ExcludeFromBuild>
+					<X>620</X><Y>180</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[String]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA["PASTE_TOKEN_HERE"]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1626824497379</Id>
+							<Label><![CDATA[Policy Server Token]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<HideCondition>
+								<Id>1626824497376</Id>
+								<ParameterId>1563523942388</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>1626824497377</Id>
+								<ParameterId>1566825558177</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[true]]></Code>
+								</Value>
+							</HideCondition>
+							<HideCondition>
+								<Id>1626824497378</Id>
+								<ParameterId>1626371580469</ParameterId>
+								<Operation>NOT_EQUALS</Operation>
+								<Value Class="CodeValue">
+									<Code><![CDATA[false]]></Code>
+								</Value>
+							</HideCondition>
 							<MinSliderValue><![CDATA[0]]></MinSliderValue>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
@@ -363,7 +544,7 @@ if (numberOfAgents <= 0) {
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents" target="_blank">https://help.pathmind.com/en/articles/4436169-15-using-multiple-agents</a>]]></Description>
-					<X>140</X><Y>70</Y>
+					<X>245</X><Y>109</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -409,7 +590,7 @@ class Observations {<br>
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3631436-2-build-observation-space" target="_blank">https://help.pathmind.com/en/articles/3631436-2-build-observation-space</a>
 <a href="https://help.pathmind.com/en/articles/4436330-observation-selection" target="_blank">https://help.pathmind.com/en/articles/4436330-observation-selection</a>]]></Description>
-					<X>20</X><Y>190</Y>
+					<X>245</X><Y>129</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -461,7 +642,7 @@ class Metrics {<br>
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3640175-5-defining-metrics" target="_blank">https://help.pathmind.com/en/articles/3640175-5-defining-metrics</a><br>
 <a href=https://help.pathmind.com/en/articles/4436328-defining-metric-names" target="_blank">https://help.pathmind.com/en/articles/4436328-defining-metric-names</a>]]></Description>
-					<X>20</X><Y>220</Y>
+					<X>245</X><Y>149</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -535,7 +716,7 @@ class Actions {<br>
 <a href="https://help.pathmind.com/en/articles/3640124-3-build-action-space" target="_blank">https://help.pathmind.com/en/articles/3640124-3-build-action-space</a><br>
 <a href="https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436529-12-continuous-action-spaces</a><br>
 <a href="https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces" target="_blank">https://help.pathmind.com/en/articles/4436530-13-mixed-tuple-action-spaces</a><br>]]></Description>
-					<X>20</X><Y>250</Y>
+					<X>245</X><Y>169</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -570,7 +751,7 @@ class Actions {<br>
 					<Name><![CDATA[actionMasks]]></Name>
 					<Description><![CDATA[<h3>Action Masking</h3>
 
-<b>Please note that action masking only applies to discrete actions (@Discrete where size = 1 only).</b><br>
+<b>Please note that a Pathmind subscription is required to use action masking.</b><br>
 
 <p>An action mask allows you to tell the policy whether or not a selected action is valid at any given moment in time. By ignoring invalid actions, the policy can better filter out noise and useless information.</p>
 
@@ -578,7 +759,7 @@ class Actions {<br>
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/4436170-14-action-masking" target="_blank">https://help.pathmind.com/en/articles/4436170-14-action-masking</a><br>]]></Description>
-					<X>20</X><Y>280</Y>
+					<X>245</X><Y>189</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -615,7 +796,7 @@ class ActionMasks {
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/4436002-16-define-skip-condition" target="_blank">https://help.pathmind.com/en/articles/4436002-16-define-skip-condition</a>]]></Description>
-					<X>140</X><Y>100</Y>
+					<X>245</X><Y>227</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -651,40 +832,9 @@ class ActionMasks {
 					</Properties>                 
 				</Variable>
 				<Variable Class="Parameter">
-					<Id>1566471148671</Id>
-					<Name><![CDATA[isDone]]></Name>
-					<ExcludeFromBuild>true</ExcludeFromBuild>
-					<X>20</X><Y>430</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Properties SaveInSnapshot="true" ModificatorType="DYNAMIC">
-						<Type><![CDATA[boolean]]></Type>
-						<UnitType><![CDATA[NONE]]></UnitType>
-						<SdArray>false</SdArray>
-						<DefaultValue Class="CodeValue">
-							<Code><![CDATA[getEngine().getState() == Engine.State.FINISHED
-/* https://help.pathmind.com/en/articles/3644763-5-define-done-condition */]]></Code>
-						</DefaultValue>
-						<MethodArgument>
-							<Name><![CDATA[agentId]]></Name>
-							<Type><![CDATA[int]]></Type>
-						</MethodArgument>
-						<ParameterEditor>
-							<Id>1566471148669</Id>
-							<Label><![CDATA[Done]]></Label>
-							<EditorContolType>TEXT_BOX</EditorContolType>
-							<MinSliderValue><![CDATA[0]]></MinSliderValue>
-							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
-							<DelimeterType>NO_DELIMETER</DelimeterType>
-						</ParameterEditor>
-					</Properties>                 
-				</Variable>
-				<Variable Class="Parameter">
 					<Id>1573849287879</Id>
 					<Name><![CDATA[useEventTrigger]]></Name>
-					<X>20</X><Y>310</Y>
+					<X>430</X><Y>100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -712,7 +862,7 @@ class ActionMasks {
 					<Name><![CDATA[firstOccurrence]]></Name>
 					<Description><![CDATA[<h3>First Occurrence</h3>
 <p>Sets the time in which the first trigger should occur. By default, the first trigger event occurs at time 0.</p>]]></Description>
-					<X>20</X><Y>340</Y>
+					<X>430</X><Y>120</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -749,7 +899,7 @@ class ActionMasks {
 					<Name><![CDATA[recurrence]]></Name>
 					<Description><![CDATA[<h3>Recurrence</h3>
 <p>The frequency in which the event condition is checked. Once per second is the default but this should be updated depending on how your simulation works.</p>]]></Description>
-					<X>20</X><Y>370</Y>
+					<X>430</X><Y>140</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -789,7 +939,7 @@ class ActionMasks {
 
 <b>Learn More</b><br>
 <a href="https://help.pathmind.com/en/articles/3634254-4-triggering-actions" target="_blank">https://help.pathmind.com/en/articles/3634254-4-triggering-actions</a>]]></Description>
-					<X>20</X><Y>400</Y>
+					<X>430</X><Y>160</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -829,7 +979,7 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 				<Event>
 					<Id>1573748399465</Id>
 					<Name><![CDATA[internalEventTrigger]]></Name>
-					<X>570</X><Y>100</Y>
+					<X>430</X><Y>210</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -869,7 +1019,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 				<DynamicEventClass>
 					<Id>1614025531741</Id>
 					<Name><![CDATA[DE_executeStep]]></Name>
-					<X>570</X><Y>130</Y>
+					<X>430</X><Y>230</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -878,7 +1028,7 @@ if (isEnabled && useEventTrigger && eventCondition()) {
 for (int i = 0; i < numberOfAgents; i++) {
 	if (!isSkip(i)) {
 		// Be sure to call those here allowing users to fix errors before training
-		double[] training = observationForTraining(i);
+		double[] training = observationForTrainingWithActionMask(i);
 		double[] reward = observationForReward(i);
 		// Throw error if infinity or NaN detected in observations or rewards array
 		if (DoubleStream.of(training).anyMatch(x -> x == infinity || Double.isNaN(x))) {
@@ -889,7 +1039,16 @@ for (int i = 0; i < numberOfAgents; i++) {
 		}
 		
 		if (usePolicy && policyHelper != null) {
-			action[i] = policyHelper.computeActions(training);
+			if (usePolicy) {
+				action[i] = policyHelper.computeActions(training);
+			} /* else {
+				try {
+					action[i] = policyHelper.computeActions(policyServer, token, observationJson());
+				} catch (PathmindInvalidResponseException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e.getMessage(), e);
+				}
+			} */
 		} else if (!usePolicy) {
 			action[i] = getActionRandom(getEngine().getDefaultRandomGenerator(), i);
 		}
@@ -922,7 +1081,7 @@ steps++;]]></Action>
 					<Id>1566466772537</Id>
 					<Name><![CDATA[triggerNextAction]]></Name>
 					<Description><![CDATA[You may optionally trigger actions directly in your simulation. This could be triggered within a block, a state, an event, on startup of an agent, or anything else.]]></Description>
-					<X>570</X><Y>70</Y>
+					<X>430</X><Y>190</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -969,7 +1128,7 @@ if (!isTraining && steps == 1) {
 					<ReturnType><![CDATA[boolean]]></ReturnType>
 					<Id>1604359131653</Id>
 					<Name><![CDATA[isSkip]]></Name>
-					<X>140</X><Y>130</Y>
+					<X>245</X><Y>250</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -985,7 +1144,7 @@ if (!isTraining && steps == 1) {
 					<ReturnType><![CDATA[String]]></ReturnType>
 					<Id>1605145082653</Id>
 					<Name><![CDATA[printDebug]]></Name>
-					<X>290</X><Y>140</Y>
+					<X>50</X><Y>150</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>false</PresentationFlag>
@@ -1126,11 +1285,183 @@ try {
 					<ImageFiles>
 						<ImageResourceReference>
 							<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-							<ClassName><![CDATA[Assets/pathmind-single-original.png]]></ClassName>
+							<ClassName><![CDATA[pathmind-single-original.png]]></ClassName>
 						</ImageResourceReference>
 					</ImageFiles>
 					<OriginalSize>true</OriginalSize>
 				</Image>
+				<Rectangle>
+					<Id>1628197430821</Id>
+					<Name><![CDATA[rectangle]]></Name>
+					<X>410</X><Y>60</Y>
+					<Label><X>10</X><Y>10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<Width>180</Width>
+					<Height>230</Height>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillMaterial>null</FillMaterial>
+				</Rectangle>
+				<Text>
+					<Id>1628197445590</Id>
+					<Name><![CDATA[text]]></Name>
+					<X>420</X><Y>70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Action Trigger]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>14</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Rectangle>
+					<Id>1628197479932</Id>
+					<Name><![CDATA[rectangle1]]></Name>
+					<X>30</X><Y>60</Y>
+					<Label><X>10</X><Y>10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<Width>180</Width>
+					<Height>230</Height>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillMaterial>null</FillMaterial>
+				</Rectangle>
+				<Text>
+					<Id>1628197479942</Id>
+					<Name><![CDATA[text1]]></Name>
+					<X>40</X><Y>70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Settings]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>14</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Rectangle>
+					<Id>1628197529841</Id>
+					<Name><![CDATA[rectangle2]]></Name>
+					<X>220</X><Y>60</Y>
+					<Label><X>10</X><Y>10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<Width>180</Width>
+					<Height>230</Height>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillMaterial>null</FillMaterial>
+				</Rectangle>
+				<Text>
+					<Id>1628197529843</Id>
+					<Name><![CDATA[text2]]></Name>
+					<X>230</X><Y>70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[RL Values Fields]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>14</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
+				<Rectangle>
+					<Id>1628197698906</Id>
+					<Name><![CDATA[rectangle3]]></Name>
+					<X>600</X><Y>60</Y>
+					<Label><X>10</X><Y>10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<ZHeight>10</ZHeight>
+					<LineWidth>1</LineWidth>
+					<LineColor>-16777216</LineColor>
+					<LineMaterial>null</LineMaterial>
+					<LineStyle>SOLID</LineStyle>
+					<Width>180</Width>
+					<Height>230</Height>
+					<Rotation>0.0</Rotation>
+					<FillColor>-1</FillColor>
+					<FillMaterial>null</FillMaterial>
+				</Rectangle>
+				<Text>
+					<Id>1628197698925</Id>
+					<Name><![CDATA[text3]]></Name>
+					<X>610</X><Y>70</Y>
+					<Label><X>0</X><Y>-10</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<Color>-16777216</Color>
+					<Text><![CDATA[Policy Serving]]></Text>
+					<Font>
+						<Name>SansSerif</Name>
+						<Size>14</Size>
+						<Style>1</Style>
+					</Font>
+					<Alignment>LEFT</Alignment>
+				</Text>
 			</Presentation>
 
 				</Level>
@@ -1200,7 +1531,7 @@ try {
 
 			<Presentation>
 				<Text>
-					<Id>0</Id>
+					<Id>1626821943955</Id>
 					<Name><![CDATA[text]]></Name>
 					<X>50</X><Y>30</Y>
 					<Label><X>10</X><Y>0</Y></Label>
@@ -1236,7 +1567,16 @@ try {
 					</ParameterValue>
 				</Parameter>
 				<Parameter>
+					<ParameterName><![CDATA[usePolicyFile]]></ParameterName>
+				</Parameter>
+				<Parameter>
 					<ParameterName><![CDATA[policyFile]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[policyServer]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[token]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[numberOfAgents]]></ParameterName>
@@ -1259,9 +1599,6 @@ try {
 						<Code><![CDATA[false
 /* http://help.pathmind.com/en/articles/4436002-define-skip-condition */]]></Code>
 					</ParameterValue>
-				</Parameter>
-				<Parameter>
-					<ParameterName><![CDATA[isDone]]></ParameterName>
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[useEventTrigger]]></ParameterName>
@@ -1699,6 +2036,8 @@ public class AbstractPathmindHelper extends Agent {
 
 	protected int possibleActionCount;
 	protected int actionTupleSize;
+	
+	private boolean actionMaskLengthVerified = false;
 
 	public AbstractPathmindHelper() {
 	}
@@ -1718,16 +2057,17 @@ public class AbstractPathmindHelper extends Agent {
 			} catch (ClassNotFoundException e) {
 				actionMaskProcessor = null;
 			}
+			
 			observationProcessor = new ObservationProcessor(getOwner().getClass());
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
-			possibleActionCount = 1;
+			possibleActionCount = 0;
 			actionTupleSize = 0;
 			AnnotationProcessor[] actionSpaces = actionProcessor.getActionSpaces();
 			for (int i = 0; i < actionSpaces.length; i++) {
 				if (actionSpaces[i].discrete) {
 					AnnotationProcessor d = actionSpaces[i];
-					possibleActionCount *= (int)d.n;
+					possibleActionCount += (int)d.n * (int)d.size;
 					actionTupleSize += (int)d.size;
 				} else if (actionSpaces[i].continuous) {
 					AnnotationProcessor c = actionSpaces[i];
@@ -1789,11 +2129,26 @@ public class AbstractPathmindHelper extends Agent {
 			if (observationProcessor == null) {
 				init();
 			}
-			return actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
+			boolean[] actMasks = actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
+			if (actMasks != null && actMasks.length > 0 && isAllFalse(actMasks)) {
+				throw new RuntimeException("Action masks should not be all false. \n");
+			}
+			if (!actionMaskLengthVerified) {
+				if (actionMaskProcessor != null && actMasks.length > 0 && possibleActionCount != actMasks.length) {
+					throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : " 
+									+ actMasks.length + " != " +  possibleActionCount + "\n");
+				}
+				actionMaskLengthVerified = true;
+			}
+			return actMasks;
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get action masks.", e);
 		}
+	}
+	private boolean isAllFalse(boolean[] array) {
+		for (boolean b : array) if (b) return false;
+		return true;
 	}
 
 	public double[] observationForTraining() {
@@ -1801,6 +2156,24 @@ public class AbstractPathmindHelper extends Agent {
 	}
 	public double[] observationForTraining(int agentId) {
 		return observationToDoubles(getObservationObject(agentId));
+	}
+	public double[] observationForTrainingWithActionMask(int agentId) {
+		double[] observations = observationForTraining(agentId);
+		if (actionMaskProcessor == null) {
+			return observations;
+		} else {
+			boolean[] actMasks = actionMask(agentId);
+			double[] concat = new double[actMasks.length + observations.length];
+
+			int k = 0;
+			for (boolean actMask : actMasks) {
+				concat[k++] = actMask ? 1.0 : 0.0;
+			}
+			for (double obs : observations) {
+				concat[k++] = obs;
+			}
+			return concat;
+		}
 	}
 	public <O> O getObservationObject(int agentId) {
 		try {
@@ -1819,6 +2192,19 @@ public class AbstractPathmindHelper extends Agent {
 		} catch (ReflectiveOperationException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not get observation doubles.", e);
+		}
+	}
+	
+	public String observationJson() {
+		return observationJson(0);
+	}
+	
+	public String observationJson(int agentId) {
+		try {
+			return observationProcessor.toJsonString(getObservationObject(agentId), actionMask(agentId));
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Could not get observation json.", e);
 		}
 	}
 
@@ -1959,7 +2345,7 @@ public @interface Continuous {
 				<ClassName><![CDATA[Assets/pathmind-single-16x16.png]]></ClassName>
 			</IconResourceReference>
 			<VersionMajor>1</VersionMajor>
-			<VersionMinor>5</VersionMinor>
+			<VersionMinor>7</VersionMinor>
 			<VersionBuild>0</VersionBuild>
 			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
 		</Library>
@@ -1974,11 +2360,15 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[Assets/pathmind-single-original.png]]></Path>
+			<Path><![CDATA[nativerl-policy-1.7.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.2-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[pathmind-single-original.png]]></Path>
+			<ReferencedFromUserCode>false</ReferencedFromUserCode>
+		</Resource>
+		<Resource>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -1991,7 +2381,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.6.2-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>

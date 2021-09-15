@@ -62,6 +62,10 @@ public class AnyLogicHelper {
     @Builder.Default
     String resetSnippet = "";
 
+    /** Arbitrary code to add to the reset() method of the generated class for simulation parameters. */
+    @Builder.Default
+    String simulationParameterSnippet = "";
+
     /** Arbitrary code to add to the getObservation() method of the generated class to filter the observations. */
     @Builder.Default
     String observationSnippet = "";
@@ -127,6 +131,7 @@ public class AnyLogicHelper {
         ObservationProcessor op = new ObservationProcessor(agentClassName);
         RewardProcessor rp = new RewardProcessor(agentClassName);
         setObservationSnippet();
+        setSimulationParameterSnippet();
 
         this.setClassName(className);
         this.setPackageName(packageName);
@@ -177,6 +182,25 @@ public class AnyLogicHelper {
         }
     }
 
+    /** Handle simulation parameter snippet. */
+    public void setSimulationParameterSnippet() throws IOException {
+        String simulationParameterSnippet = this.getSimulationParameterSnippet();
+
+        if (simulationParameterSnippet.startsWith("file:")) {
+            File file = new File(simulationParameterSnippet.split(":")[1]);
+            if (!file.exists()) {
+                throw new RuntimeException("simulationParameterSnippet file doesn't exist!");
+            }
+
+            byte[] bytes = Files.readAllBytes(Paths.get(file.getPath()));
+            if (bytes != null && bytes.length > 0) {
+                this.simulationParameterSnippet = new String(bytes);
+            } else {
+                this.simulationParameterSnippet = "";
+            }
+        }
+    }
+
     /** The command line interface of this helper. */
     public static void main(String[] args) throws Exception {
         AnyLogicHelper.AnyLogicHelperBuilder helper = AnyLogicHelper.builder();
@@ -193,6 +217,7 @@ public class AnyLogicHelper {
                 System.out.println("    --experiment-type");
                 System.out.println("    --class-snippet");
                 System.out.println("    --reset-snippet");
+                System.out.println("    --simulation-parameter-snippet");
                 System.out.println("    --observation-snippet");
                 System.out.println("    --reward-snippet");
                 System.out.println("    --metrics-snippet");
@@ -217,6 +242,8 @@ public class AnyLogicHelper {
                 helper.outputDir(new File(args[++i]));
             } else if ("--reset-snippet".equals(args[i])) {
                 helper.resetSnippet(args[++i]);
+            } else if ("--simulation-parameter-snippet".equals(args[i])) {
+                helper.simulationParameterSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
                 helper.observationSnippet(args[++i]);
             } else if ("--reward-snippet".equals(args[i])) {

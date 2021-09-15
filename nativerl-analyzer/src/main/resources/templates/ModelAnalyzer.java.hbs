@@ -2,8 +2,14 @@
 import com.anylogic.engine.Engine;
 import pathmind.policyhelper.PathmindHelper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.*;
+
+import io.skymind.pathmind.analyzer.api.dto.SimulationParameter;
 {{#if simulationClassName}}import {{simulationClassName}};{{/if}}
 
 public class ModelAnalyzer {
@@ -12,6 +18,10 @@ public class ModelAnalyzer {
     }
     public static void main(String[] args) throws Throwable {
         System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
         List<String> failedSteps = new ArrayList<>();
         Engine engine;
         {{agentClassName}} agent;
@@ -41,6 +51,20 @@ public class ModelAnalyzer {
         }
 
         agent.setParametersToDefaultValues();
+
+        AtomicInteger index = new AtomicInteger();
+        List<SimulationParameter> simulationParameters = Arrays.stream(agent.getParameterNames())
+                .map(p -> {
+                    String key = p;
+                    Object value = agent.getParameter(p);
+                    Integer type = getType(value);
+                    return new SimulationParameter(index.getAndIncrement(), key, value == null ? "NULL_VALUE" : value.toString(), type);
+                })
+                .collect(Collectors.toList());
+
+        if (!simulationParameters.isEmpty()) {
+            System.out.println("agentParams:" + objectMapper.writeValueAsString(simulationParameters));
+        }
 
         try {
             engine.start(agent);
@@ -94,5 +118,24 @@ public class ModelAnalyzer {
         System.out.println("failedSteps:" + String.join(",", failedSteps));
 
         System.exit(0);
+    }
+
+    private static Integer getType(Object value) {
+        Integer type = 4;
+        if (value != null) {
+            Class klass = value.getClass();
+            if (klass == java.lang.Boolean.class) {
+                type = 0;
+            } else if (klass == java.lang.Integer.class) {
+                type = 1;
+            } else if (klass == java.lang.Double.class) {
+                type = 2;
+            } else if (klass == java.lang.String.class) {
+                type = 3;
+            } else if (klass == java.util.Date.class) {
+                type = 5;
+            }
+        }
+        return type;
     }
 }

@@ -25,11 +25,11 @@ RUN bash /bin/download_lib.sh ${S3BUCKET} rllibpack.tar.gz rllibpack.tar.gz
 
 WORKDIR /lib/pathmind
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.6.1-SNAPSHOT.jar
+RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.7.1-SNAPSHOT.jar
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.6.2-SNAPSHOT-bin.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.7.1-SNAPSHOT-bin.zip
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.5.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.6.zip
 
 WORKDIR /
 
@@ -37,6 +37,8 @@ WORKDIR /
 COPY . .
 RUN mvn clean install \
   && cp target/pathmind-model-analyzer.jar ./
+
+RUN unzip target/pathmind-model-analyzer.jar -d /lib/ma
 
 ARG CHECK_MODEL_SCRIPT=src/main/resources/scripts/check_model.sh
 COPY ${CHECK_MODEL_SCRIPT} bin
