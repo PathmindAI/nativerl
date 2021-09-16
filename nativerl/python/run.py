@@ -56,7 +56,6 @@ def main(environment: str,
          train_batch_mode: str = 'complete_episodes',
          train_batch_size: Optional[int] = None,
          rollout_fragment_length: int = 200,
-#         reward_balance_period: int = 50,
          reward_balance_period: int = 1,
          num_reward_terms: int = None,
          alphas: str = None

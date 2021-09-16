@@ -53,9 +53,8 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
 
                     if result["training_iteration"] % period == 0:
                         # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
-                        betas = [1.0 / result["custom_metrics"][f"metrics_term_{str(i)}_mean"]
+                        betas = [1.0 / abs(result["custom_metrics"][f"metrics_term_{str(i)}_mean"])
                                  if result["custom_metrics"][f"metrics_term_{str(i)}_mean"] != 0.0
-#                                 else 1.0
                                  else 0.0
                                  for i in range(num_reward_terms)]
                         for w in trainer.workers.remote_workers():
