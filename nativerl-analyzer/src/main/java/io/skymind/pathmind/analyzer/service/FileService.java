@@ -77,10 +77,10 @@ public class FileService {
             List<String> result = readResult(proc.getInputStream());
             log.info("Bash script finished");
 
-            if (returnCode != 0) {
+//            if (returnCode != 0) {
                 List<String> err = readResult(proc.getErrorStream());
                 log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
-            }
+//            }
             return result;
         } else {
             // todo need to get is_gym or not?
