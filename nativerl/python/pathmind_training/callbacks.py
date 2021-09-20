@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 import importlib
@@ -9,7 +10,7 @@ from ray.rllib.agents.callbacks import DefaultCallbacks
 
 import ipdb
 
-from exports import export_policy_from_checkpoint
+from pathmind_training.exports import export_policy_from_checkpoint
 
 
 def get_callback_function(callback_function_name):
@@ -51,9 +52,15 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
+                env_config = trainer.config["env_config"]
+                if result["training_iteration"] % env_config["checkpoint_freq"] + 1 == 0 \
+                             and result["training_iteration"] > 1:
+                    experiment_dir = os.path.join(trainer.logdir, os.pardir)
+                    export_policy_from_checkpoint(experiment_dir, trainer)
+
                 if use_reward_terms:
-                    period = trainer.config["env_config"]["reward_balance_period"]
-                    num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
+                    period = env_config["reward_balance_period"]
+                    num_reward_terms = env_config["num_reward_terms"]
 
                     if result["training_iteration"] % period == 0:
                         # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
@@ -64,11 +71,6 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                         for w in trainer.workers.remote_workers():
                             w.apply.remote(lambda worker: worker.env.updateBetas(betas))
                     
-                    if result["training_iteration"] % result["checkpoint_freq"] == 0:
-                        ipdb.set_trace(context=20) 
-                        experiment_dir = os.path.join(os.getcwd(), "PPO")
-                        env = result["env"]
-                        export_policy_from_checkpoint(outdir, env)
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
