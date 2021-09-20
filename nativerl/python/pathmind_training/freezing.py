@@ -100,7 +100,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
+            config['model'].update({'custom_action_dist': temp})
 
         mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
             mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, loggers, output_dir, config,
@@ -117,7 +117,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
+            config['model'].update({'custom_action_dist': temp})
         trainer_class = get_agent_class(algorithm)
         agent = trainer_class(env=config['env'], config=config)
         agent.restore(checkpoint_path)

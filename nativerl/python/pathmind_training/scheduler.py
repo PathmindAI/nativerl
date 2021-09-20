@@ -1,7 +1,7 @@
 from ray.tune.schedulers import PopulationBasedTraining
 import numpy as np
 
-def get_scheduler(scheduler_name):
+def get_scheduler(scheduler_name, train_batch_size=None):
     if scheduler_name == "PBT":
         return PopulationBasedTraining(
             time_attr='training_iteration',
@@ -18,7 +18,7 @@ def get_scheduler(scheduler_name):
                 'lr': [1e-3, 5e-4, 1e-4, 5e-5, 1e-5],
                 'num_sgd_iter': [5, 10, 15, 20, 30],
                 'sgd_minibatch_size': [128, 256, 512, 1024, 2048],
-                'train_batch_size': [4000, 6000, 8000, 10000, 12000]
+                'train_batch_size': [train_batch_size] if train_batch_size else [4000, 6000, 8000, 10000, 12000]
             }
         )
     elif scheduler_name == "PB2":
@@ -37,7 +37,7 @@ def get_scheduler(scheduler_name):
                 "lr": [1e-3, 1e-5],
                 'num_sgd_iter': [5, 30],
                 'sgd_minibatch_size': [128, 2048],
-                "train_batch_size": [4000, 12000],
+                "train_batch_size": [train_batch_size] if train_batch_size else [4000, 12000],
             }
         )
     else:
