@@ -7,6 +7,10 @@ from ray.rllib.policy import Policy
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
 
+import ipdb
+
+from exports import export_policy_from_checkpoint
+
 
 def get_callback_function(callback_function_name):
     """Get callback function from a string interpreted as Python module
@@ -59,6 +63,12 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                                  for i in range(num_reward_terms)]
                         for w in trainer.workers.remote_workers():
                             w.apply.remote(lambda worker: worker.env.updateBetas(betas))
+                    
+                    if result["training_iteration"] % result["checkpoint_freq"] == 0:
+                        ipdb.set_trace(context=20) 
+                        experiment_dir = os.path.join(os.getcwd(), "PPO")
+                        env = result["env"]
+                        export_policy_from_checkpoint(outdir, env)
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 

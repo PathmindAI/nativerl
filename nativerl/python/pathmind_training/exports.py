@@ -1,7 +1,10 @@
 from ray.rllib.agents.ppo import PPOTrainer
 from ray.tune import Analysis
 
+import ipdb
+
 def export_policy_from_checkpoint(experiment_dir: str, env: str)
+    ipdb.set_trace(context=20) 
     analysis = Analysis(exp_dir)
     agent = PPOTrainer(env)
     for trial in analysis.trials:
