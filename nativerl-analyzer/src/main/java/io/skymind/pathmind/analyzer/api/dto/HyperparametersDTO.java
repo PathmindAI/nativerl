@@ -7,12 +7,13 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.io.FileUtils;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -102,32 +103,22 @@ public class HyperparametersDTO {
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
         Map<String, String> parametersMap = hyperparametersList.stream()
+                .filter(s -> s.startsWith("DTOPath"))
                 .map(String::strip)
                 .map(l -> l.split(":", 2))
-                .filter(p -> HyperparametersDTO.isHyperparameters(p[0]))
                 .collect(Collectors.toMap(p -> p[0], p -> p[1].strip()));
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        if (parametersMap.getOrDefault("oldVersionFound", "false").equals("true")) {
-            HyperparametersDTO hyperparametersDTO = new HyperparametersDTO();
-            hyperparametersDTO.setOldVersionFound(true);
-            return hyperparametersDTO;
-        } else {
-            return new HyperparametersDTO(
-                    parametersMap.getOrDefault("isEnabled", "false").equals("true"),
-                    false,
-                    HyperparametersDTO.asParamList(parametersMap.getOrDefault("agentParams", "")),
-                    parametersMap.get("observations"),
-                    filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationNames", "").split("\\|"))),
-                    filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("observationTypes", "").split("\\|"))),
-                    parametersMap.get("actions"),
-                    parametersMap.getOrDefault("isActionMask", "false").equals("true"),
-                    parametersMap.get("rewardVariablesCount"),
-                    filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("rewardVariableNames", "").split("\\|"))),
-                    filterOutEmpty(Arrays.asList(parametersMap.getOrDefault("rewardVariableTypes", "").split("\\|"))),
-                    parametersMap.get("reward"),
-                    parametersMap.get("failedSteps"),
-                    parametersMap.get("agents"),
-                    parametersMap.get("model-analyzer-mode"));
+        String dtoFilePath = parametersMap.getOrDefault("DTOPath", "");
+        try {
+            String json = FileUtils.readFileToString(new File(dtoFilePath), Charset.defaultCharset());
+            return objectMapper.readValue(json, HyperparametersDTO.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
