@@ -8,8 +8,6 @@ from ray.rllib.policy import Policy
 from ray.rllib.evaluation import MultiAgentEpisode, RolloutWorker
 from ray.rllib.agents.callbacks import DefaultCallbacks
 
-import ipdb
-
 from pathmind_training.exports import export_policy_from_checkpoint
 
 
@@ -53,7 +51,7 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
                 env_config = trainer.config["env_config"]
-                if result["training_iteration"] % env_config["checkpoint_freq"] + 1 == 0 \
+                if result["training_iteration"] % (env_config["checkpoint_freq"] + 1) == 0 \
                              and result["training_iteration"] > 1:
                     experiment_dir = os.path.join(trainer.logdir, os.pardir)
                     export_policy_from_checkpoint(experiment_dir, trainer)
