@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 *************************************************
-	         AnyLogic Project File 
-*************************************************	         
+	         AnyLogic Project File
+*************************************************
 -->
 <AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.6.202107211618" AlpVersion="8.7.2">
 <Model>
@@ -30,7 +30,7 @@ import ai.skymind.nativerl.exception.PathmindInvalidResponseException;]]></Impor
 isTraining = Boolean.getBoolean("ai.skymind.nativerl.disablePolicyHelper");
 disconnectFromAll();
 if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
-	if (usePolicy) {    
+	if (usePolicy) {
 		policyHelper = PathmindHelperRegistry.loadPolicy(policyFile);
 		observationFilter = PathmindHelperRegistry.loadFilter(policyFile);
 	} /* else {
@@ -40,8 +40,8 @@ if (isEnabled && policyHelper == null && !isTraining && usePolicy) {
 		if (token == null || token.isEmpty()) {
 			throw new RuntimeException("Policy Server token cannot be blank.");
 		}
-		
-		policyHelper = new ServerPolicyHelper();	
+
+		policyHelper = new ServerPolicyHelper();
 	} */
 }
 
@@ -69,7 +69,7 @@ if (numberOfAgents <= 0) {
 			<SceneBackgroundColor/>
 			<SceneSkybox>null</SceneSkybox>
 			<AgentProperties>
-	 			<SpaceType>CONTINUOUS</SpaceType>			
+	 			<SpaceType>CONTINUOUS</SpaceType>
 				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
 				<RotateAnimationTowardsMovement>false</RotateAnimationTowardsMovement>
 				<RotateAnimationVertically>false</RotateAnimationVertically>
@@ -154,7 +154,7 @@ if (numberOfAgents <= 0) {
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[PolicyHelper]]></Type>        
+						<Type><![CDATA[PolicyHelper]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[null]]></Code>
 						</InitialValue>
@@ -169,7 +169,7 @@ if (numberOfAgents <= 0) {
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
+						<Type><![CDATA[boolean]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
 						</InitialValue>
@@ -184,7 +184,7 @@ if (numberOfAgents <= 0) {
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="private" StaticVariable="false">
-						<Type><![CDATA[Engine]]></Type>        
+						<Type><![CDATA[Engine]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[getEngine()]]></Code>
 						</InitialValue>
@@ -199,7 +199,7 @@ if (numberOfAgents <= 0) {
 					<PresentationFlag>false</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double[][]]]></Type>        
+						<Type><![CDATA[double[][]]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[new double[numberOfAgents][]]]></Code>
 						</InitialValue>
@@ -214,7 +214,7 @@ if (numberOfAgents <= 0) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[int]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[0]]></Code>
 						</InitialValue>
@@ -243,7 +243,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1579541084520</Id>
@@ -273,7 +273,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1566825558177</Id>
@@ -324,7 +324,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1626371580469</Id>
@@ -384,7 +384,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563524634306</Id>
@@ -430,7 +430,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1626372352837</Id>
@@ -480,7 +480,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1626824497381</Id>
@@ -530,7 +530,7 @@ if (numberOfAgents <= 0) {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1595822201340</Id>
@@ -565,7 +565,7 @@ if (numberOfAgents <= 0) {
 							<DelimeterType>SEPARATE_SECTION</DelimeterType>
 							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563523991195</Id>
@@ -618,7 +618,7 @@ class Observations {<br>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1566471864343</Id>
@@ -670,7 +670,7 @@ class Metrics {<br>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 							<StartSection><![CDATA[Reinforcement Learning Values]]></StartSection>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1563524030804</Id>
@@ -744,7 +744,7 @@ class Actions {<br>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1595219001770</Id>
@@ -786,7 +786,7 @@ class ActionMasks {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1598081984891</Id>
@@ -829,7 +829,7 @@ class ActionMasks {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1573849287879</Id>
@@ -855,7 +855,7 @@ class ActionMasks {
 							<DelimeterType>SEPARATE_SECTION</DelimeterType>
 							<StartSection><![CDATA[Event Trigger]]></StartSection>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1607719252648</Id>
@@ -892,7 +892,7 @@ class ActionMasks {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1573833451402</Id>
@@ -929,7 +929,7 @@ class ActionMasks {
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1573833780188</Id>
@@ -972,7 +972,7 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 			</Variables>
 			<Events>
@@ -1037,7 +1037,7 @@ for (int i = 0; i < numberOfAgents; i++) {
 		if (DoubleStream.of(reward).anyMatch(x -> x == infinity || Double.isNaN(x))) {
 			throw new RuntimeException("Invalid input. Reward cannot contain a value of infinity or NaN.");
 		}
-		
+
 		if (usePolicy && policyHelper != null) {
 			if (usePolicy) {
 				action[i] = policyHelper.computeActions(training);
@@ -1062,7 +1062,7 @@ if(debugMode)
 // execute actions
 for (int i = 0; i < numberOfAgents; i++) {
 	if (!isSkip(i)) {
-		
+
 		if (usePolicy && policyHelper != null) {
 			doAction(action[i], true, i);
 		} else if (!usePolicy) {
@@ -1088,7 +1088,7 @@ steps++;]]></Action>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[// see if at least one agent is not skipped
 boolean flag = true;
-for (int i = 0; i < numberOfAgents; i++) 
+for (int i = 0; i < numberOfAgents; i++)
 	if (!isSkip(i)) {
 		flag = false;
 		break;
@@ -1100,13 +1100,13 @@ if(flag)
 if (isTraining) {
 	engine.pause(); // Unlock thread to allow PathmindEnvironment.java to execute
 	steps++;
-} else if (isEnabled) {	
+} else if (isEnabled) {
 	// Only check at step 1
 	if (steps == 1) {
 		if (observationForTraining(0).length == 0) {
 			throw new RuntimeException("No observations detected.");
 		}
-		
+
 		if (observationForReward(0).length == 0) {
 			throw new RuntimeException("No metrics detected.");
 		}
@@ -1114,7 +1114,7 @@ if (isTraining) {
 	// Notify users if step count exceeds horizon set in NativeRL
 	if (!usePolicy && steps > 20000) {
 		throw new RuntimeException("Maximum steps exceeded.");
-	}	
+	}
 	create_DE_executeStep(0);
 }
 /*
@@ -1178,7 +1178,7 @@ try {
 				    + "    Array: " + rewardDict + "\n"
 				    + "    Number of Metrics: " + rewardArray.length + "\n"
 				    + "  Last Action: " + Arrays.toString(action[0]) + "\n"
-				    + "  Action Mask: " + Arrays.toString(actionMask(0));				    
+				    + "  Action Mask: " + Arrays.toString(actionMask(0));
 			traceln(output);
 		} else {
 			String header = "Pathmind:\n"
@@ -1192,14 +1192,14 @@ try {
 					for (int j = 0; j < observationArray.length; j++) {
 	  					observationDict.put(observationNames[j], observationArray[j]);
 					}
-	
+
 					String[] rewardNames = rewardProcessor.getVariableNames(getOwner(), i);
 					double[] rewardArray = observationForReward(i);
 					Map<String, Double> rewardDict = new LinkedHashMap<String, Double>();
 					for (int j = 0; j < rewardArray.length; j++) {
 	  					rewardDict.put(rewardNames[j], rewardArray[j]);
 					}
-					
+
 					traceln(AgentIdColor, "  Agent ID: " + i);
 					String output_agentId = "    Observations:\n"
 					    	+ "      Array: " + observationDict + "\n"
@@ -1210,12 +1210,12 @@ try {
 						    + "    Last Action: " + Arrays.toString(action[i]) + "\n"
 						    + "    Action Mask: " + Arrays.toString(actionMask(i));
 						    //+ "    Skip: " + isSkip(i);
-						    
+
 					traceln(output_agentId);
 				} else {
 					traceln(silver, "  Agent ID: " + i + "    Skipped");
 				}
-				
+
 			}
 		}
 	} else if (isDone(-1)) {
@@ -1468,7 +1468,7 @@ try {
 			</Presentation>
 
 		</ActiveObjectClass>
-	</ActiveObjectClasses>	
+	</ActiveObjectClasses>
 	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
 	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
 	<AlgebraicEquationsMethod>MODIFIED_NEWTON</AlgebraicEquationsMethod>
@@ -1489,17 +1489,17 @@ try {
 		<ExportSettings>
 		</ExportSettings>
 	</Database>
-	
+
 	<RunConfiguration ActiveObjectClassId="1563523926930">
 		<Id>1563523926934</Id>
 		<Name><![CDATA[RunConfiguration]]></Name>
 		<MaximumMemory>512</MaximumMemory>
 		<ModelTimeProperties>
 			<StopOption><![CDATA[Stop at specified time]]></StopOption>
-			<InitialDate><![CDATA[1563494400000]]></InitialDate>	
-			<InitialTime><![CDATA[0.0]]></InitialTime>	
-			<FinalDate><![CDATA[1566172800000]]></FinalDate>	
-			<FinalTime><![CDATA[100.0]]></FinalTime>	
+			<InitialDate><![CDATA[1563494400000]]></InitialDate>
+			<InitialTime><![CDATA[0.0]]></InitialTime>
+			<FinalDate><![CDATA[1566172800000]]></FinalDate>
+			<FinalTime><![CDATA[100.0]]></FinalTime>
 		</ModelTimeProperties>
 		<AnimationProperties>
 			<StopNever>true</StopNever>
@@ -1509,12 +1509,12 @@ try {
 			<EnableDeveloperPanel>false</EnableDeveloperPanel>
 			<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 		</AnimationProperties>
-		<Inputs>		
+		<Inputs>
 		</Inputs>
 		<Outputs>
 		</Outputs>
 	</RunConfiguration>
-	<Experiments>	
+	<Experiments>
 		<!--   =========   Simulation Experiment   ========  -->
 		<SimulationExperiment ActiveObjectClassId="1563523926930">
 			<Id>1563523926933</Id>
@@ -1553,7 +1553,7 @@ try {
 				</Text>
 			</Presentation>
 
-			<Parameters>			
+			<Parameters>
 				<Parameter>
 					<ParameterName><![CDATA[isEnabled]]></ParameterName>
 				</Parameter>
@@ -1612,24 +1612,24 @@ try {
 				<Parameter>
 					<ParameterName><![CDATA[eventCondition]]></ParameterName>
 				</Parameter>
-			</Parameters>			
+			</Parameters>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
 				<ExecutionMode><![CDATA[realTimeScaled]]></ExecutionMode>
-				<Title><![CDATA[PathmindPolicyHelper : Simulation]]></Title>	
+				<Title><![CDATA[PathmindPolicyHelper : Simulation]]></Title>
 				<EnableDeveloperPanel>true</EnableDeveloperPanel>
 				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 				<RealTimeScale>1.0</RealTimeScale>
 			</PresentationProperties>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Never]]></StopOption>
-				<InitialDate><![CDATA[1563494400000]]></InitialDate>	
-				<InitialTime><![CDATA[0.0]]></InitialTime>	
-				<FinalDate><![CDATA[1566172800000]]></FinalDate>	
-				<FinalTime><![CDATA[100.0]]></FinalTime>	
+				<InitialDate><![CDATA[1563494400000]]></InitialDate>
+				<InitialTime><![CDATA[0.0]]></InitialTime>
+				<FinalDate><![CDATA[1566172800000]]></FinalDate>
+				<FinalTime><![CDATA[100.0]]></FinalTime>
 			</ModelTimeProperties>
 			<BypassInitialScreen>false</BypassInitialScreen>
-		</SimulationExperiment>	
+		</SimulationExperiment>
 	</Experiments>
 	<JavaClasses>
 		<!--   =========   Java Class   ========  -->
@@ -2036,7 +2036,7 @@ public class AbstractPathmindHelper extends Agent {
 
 	protected int possibleActionCount;
 	protected int actionTupleSize;
-	
+
 	private boolean actionMaskLengthVerified = false;
 
 	public AbstractPathmindHelper() {
@@ -2057,7 +2057,7 @@ public class AbstractPathmindHelper extends Agent {
 			} catch (ClassNotFoundException e) {
 				actionMaskProcessor = null;
 			}
-			
+
 			observationProcessor = new ObservationProcessor(getOwner().getClass());
 			rewardProcessor = new RewardProcessor(getOwner().getClass());
 
@@ -2135,7 +2135,7 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			if (!actionMaskLengthVerified) {
 				if (actionMaskProcessor != null && actMasks.length > 0 && possibleActionCount != actMasks.length) {
-					throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : " 
+					throw new RuntimeException("The length of Action Mask is not equal to the number of possible actions : "
 									+ actMasks.length + " != " +  possibleActionCount + "\n");
 				}
 				actionMaskLengthVerified = true;
@@ -2194,11 +2194,11 @@ public class AbstractPathmindHelper extends Agent {
 			throw new RuntimeException("Could not get observation doubles.", e);
 		}
 	}
-	
+
 	public String observationJson() {
 		return observationJson(0);
 	}
-	
+
 	public String observationJson(int agentId) {
 		try {
 			return observationProcessor.toJsonString(getObservationObject(agentId), actionMask(agentId));
@@ -2347,7 +2347,7 @@ public @interface Continuous {
 			<VersionMajor>1</VersionMajor>
 			<VersionMinor>7</VersionMinor>
 			<VersionBuild>0</VersionBuild>
-			<Provider><![CDATA[Pathmind Inc.]]></Provider>    
+			<Provider><![CDATA[Pathmind Inc.]]></Provider>
 		</Library>
 	</Libraries>
 	<ModelResources>

@@ -1,5 +1,6 @@
 import typing
-from pathmind.simulation import Simulation, Discrete, Continuous
+
+from pathmind.simulation import Continuous, Discrete, Simulation
 
 
 class MouseAndCheese(Simulation):
@@ -37,19 +38,14 @@ class MouseAndCheese(Simulation):
 
     def get_observation(self, agent_id) -> typing.Dict[str, float]:
         return {
-            "mouse_row":  float(self.mouse[0]) / 5.0,
+            "mouse_row": float(self.mouse[0]) / 5.0,
             "mouse_col": float(self.mouse[1]) / 5.0,
             "mouse_row_dist": abs(self.cheese[0] - self.mouse[0]) / 5.0,
             "mouse_col_dist": abs(self.cheese[1] - self.mouse[1]) / 5.0,
         }
 
     def get_reward(self, agent_id) -> typing.Dict[str, float]:
-        return {
-            "found_cheese": 1 if self.mouse == self.cheese else 0
-        }
+        return {"found_cheese": 1 if self.mouse == self.cheese else 0}
 
     def is_done(self, agent_id) -> bool:
         return self.mouse == self.cheese
-
-
-

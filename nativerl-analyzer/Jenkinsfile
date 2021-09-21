@@ -27,7 +27,7 @@ def buildDockerImage(image_name, image_id,docker_tag) {
 def publishDockerImage(image_name,DOCKER_TAG) {
 	echo "Logging to aws ecr"
 	sh "aws ecr get-login --no-include-email --region us-east-1 | sh"
-	echo "Tagging and pushing the pathmind Docker Image"                
+	echo "Tagging and pushing the pathmind Docker Image"
 	sh "docker tag ${image_name} ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 	sh "docker push ${DOCKER_REG}/${image_name}:${DOCKER_TAG}"
 }
@@ -135,7 +135,7 @@ pipeline {
 				}
 			}
 		}
-        } 
+        }
 
 	////////// Step 4 //////////
 	stage('Deploying helm chart') {
@@ -200,4 +200,3 @@ pipeline {
 
    }
 }
-

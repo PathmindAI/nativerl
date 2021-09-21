@@ -1,6 +1,6 @@
+import numpy as np
 from pathmind.simulation import PolicyServer
 from tests.mouse.multi_mouse_env_pathmind import MultiMouseAndCheese
-import numpy as np
 
 
 def test_policy_predictions():
@@ -16,4 +16,3 @@ def test_policy_predictions():
         action = server.get_action(simulation)
         simulation.set_action(action)
         simulation.step()
-
