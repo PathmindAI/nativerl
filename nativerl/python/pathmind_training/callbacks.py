@@ -22,7 +22,7 @@ def get_callback_function(callback_function_name):
     return getattr(lib, class_name)
 
 
-def get_callbacks(debug_metrics, is_gym):
+def get_callbacks(debug_metrics, is_gym, checkpoint_frequency):
 
     class Callbacks(DefaultCallbacks):
         def on_episode_start(self, worker: RolloutWorker, base_env: BaseEnv,
@@ -47,9 +47,9 @@ def get_callbacks(debug_metrics, is_gym):
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
                 env_config = trainer.config["env_config"]
-                if result["training_iteration"] % (env_config["checkpoint_freq"] + 1) == 0 \
-                             and result["training_iteration"] > 1:
-                    experiment_dir = os.path.join(trainer.logdir, os.pardir)
+                if result["training_iteration"] % (checkpoint_frequency + 1) == 0 and result["training_iteration"] > 1:
+                    # Get Experiment Root Directory
+                    experiment_dir = os.pardir
                     export_policy_from_checkpoint(experiment_dir, trainer)
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
