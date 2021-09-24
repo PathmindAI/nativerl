@@ -15,7 +15,7 @@ def export_policy_from_checkpoint(experiment_dir: str, trainer):
         shutil.rmtree(export_dir)
     # Generate policy
     trainer.export_policy_model(export_dir)
-    # Move best policy to experiment root directory
+    # Move best policy from trial directory to experiment root directory
     checkpoint_model_dir = os.path.join(os.pardir, "checkpoint_model")
     if os.path.exists(checkpoint_model_dir):
         shutil.rmtree(checkpoint_model_dir)
