@@ -74,8 +74,9 @@ public class FileService {
             final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
             final Process proc = Runtime.getRuntime().exec(cmd);
             int returnCode = proc.waitFor();
+            log.info("Bash script finished: {}", java.util.Arrays.toString(cmd));
             List<String> result = readResult(proc.getInputStream());
-            log.info("Bash script finished");
+
 
             if (returnCode != 0) {
                 List<String> err = readResult(proc.getErrorStream());
