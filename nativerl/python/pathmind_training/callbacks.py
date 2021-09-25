@@ -46,11 +46,8 @@ def get_callbacks(debug_metrics, is_gym, checkpoint_frequency):
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-                env_config = trainer.config["env_config"]
                 if result["training_iteration"] % checkpoint_frequency == 0 and result["training_iteration"] > 1:
-                    # Get Experiment Root Directory
-                    experiment_dir = os.pardir
-                    export_policy_from_checkpoint(experiment_dir, trainer)
+                    export_policy_from_checkpoint(trainer)
 
                 result["last_metrics"] = results[0].tolist() if results is not None and len(results) > 0 else -1
 
