@@ -184,10 +184,9 @@ if [[ ! -z "$REWARD_TERMS_WEIGHTS" ]]; then
     REWARD_TERMS_WEIGHTS_PARAM="--alphas $REWARD_TERMS_WEIGHTS"
 fi
 
-if [[ ! -z "$REWARD_TERMS_SNIPPET" ]]; then
-    NUM_REWARD_TERMS=$(echo "$REWARD_TERMS_SNIPPET" | wc -l)
-else
-    NUM_REWARD_TERMS=$(echo "$REWARD_SNIPPET" | wc -l)
+NUM_REWARD_TERMS_PARAM=""
+if [[ ! -z "$NUM_REWARD_TERMS" ]]; then
+    NUM_REWARD_TERMS_PARAM="--num_reward_terms  $NUM_REWARD_TERMS"
 fi
 
 REWARD_BALANCE_PERIOD_PARAM=""
@@ -280,5 +279,5 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $ROLLOUT_FRAGMENT_LENGTH_PARAM \
     $TRAIN_BATCH_SIZE_PARAM \
     $REWARD_TERMS_WEIGHTS_PARAM \
-    --num_reward_terms $NUM_REWARD_TERMS \
+    $NUM_REWARD_TERMS_PARAM \
     $REWARD_BALANCE_PERIOD_PARAM
