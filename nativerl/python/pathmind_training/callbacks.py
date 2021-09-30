@@ -51,11 +51,18 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym):
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
+                    if result["training_iteration"] > 500:
+                        period *= 50
+                    elif result["training_iteration"] > 300:
+                        period *= 25
+                    elif result["training_iteration"] > 200:
+                        period *= 10
+
                     if result["training_iteration"] % period == 0:
-                        # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
-                        betas = [1.0 / abs(result["custom_metrics"][f"metrics_term_{str(i)}_mean"])
-                                 if result["custom_metrics"][f"metrics_term_{str(i)}_mean"] != 0.0
-                                 else 0.0
+                        divisor = max(abs(result["custom_metrics"][f"metrics_term_{str(i)}_min"]), abs(result["custom_metrics"][f"metrics_term_{str(i)}_max"]))
+                        betas = [1.0 / divisor
+                                 if divisor != 0.0
+                                 else 1.0 # Q: better than 0.0 considering moving average update to betas?
                                  for i in range(num_reward_terms)]
                         for w in trainer.workers.remote_workers():
                             w.apply.remote(lambda worker: worker.env.updateBetas(betas))

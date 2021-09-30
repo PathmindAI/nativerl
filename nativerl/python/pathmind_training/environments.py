@@ -203,7 +203,9 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 done_dict['__all__'] = all(done_dict.values())
 
                 if self.use_reward_terms and done_dict['__all__']:
-                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
+#                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
+                    # get highest contribution over agents
+                    self.term_contributions += max(abs(self.term_contributions_dict.values()))
                 return obs_dict, reward_dict, done_dict, {}
 
             else:
@@ -247,9 +249,11 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
-        def updateBetas(self, betas):
+        def updateBetas(self, betas, lr=0.2):
             if self.use_reward_terms:
-                self.betas = betas
+#                self.betas = betas
+                # update moving average of beta
+                self.betas = self.betas + lr*(betas - self.betas) 
 
         def getRewardTermContributions(self):
             if self.use_reward_terms:
