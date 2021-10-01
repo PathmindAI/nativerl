@@ -59,13 +59,15 @@ on Unix machines, on Windows you'll likely have to use `${PWD}` instead of `$(pw
 ```bash
 sudo yum update
 sudo yum install centos-release-scl
-sudo yum install gcc-c++ cmake3 make java-1.8.0-openjdk-devel git wget devtoolset-7 rh-maven35
-sudo ln -s /usr/bin/cmake3 /usr/bin/cmake
+sudo yum install gcc-c++ make java-1.8.0-openjdk-devel git wget devtoolset-7 rh-maven35
+
+sudo wget https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3-linux-x86_64.sh
+sudo bash cmake-3.21.3-linux-x86_64.sh --prefix=/usr/local --exclude-subdir --skip-license
 
 wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh
 bash Anaconda3-2019.03-Linux-x86_64.sh
-conda install tensorflow
-pip install ray[rllib]
+conda install pybind11 tensorflow
+pip install ray[rllib]==1.3.0
 
 scl enable devtoolset-7 rh-maven35 bash
 mvn clean install -Djavacpp.platform=linux-x86_64
