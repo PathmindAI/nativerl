@@ -70,6 +70,7 @@ public class AnyLogicHelper {
     String observationSnippet = "";
 
     /** Arbitrary code to add to the getReward() method of the generated class to calculate the reward. */
+    @Deprecated // TODO: to be replaced with rewardTermsSnippet
     @Builder.Default
     String rewardSnippet = "";
 
@@ -131,34 +132,9 @@ public class AnyLogicHelper {
 
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() throws IOException, ReflectiveOperationException {
-        // to support backward compatibility
-        // if rewardSnippet is old style(reward += ...), it will be converted to reward term style
-        if (rewardTermsSnippet == null || rewardTermsSnippet.isEmpty()) {
-            Set<Integer> rewardTermsIndexes = rewardTermsIndexSet(rewardSnippet);
-            if (rewardTermsIndexes.isEmpty()) {
-                List<String> processedRewardTerms = Arrays.stream(rewardSnippet.split("\n"))
-                        .map(t -> {
-                            if (t.trim().startsWith("reward += ")) {
-                                t = t.replaceFirst("reward \\+= ", "");
-                            } else if (t.trim().startsWith("reward -= ")) {
-                                t = t.replaceFirst("reward \\-= ", "");
-                                int index = t.lastIndexOf(";");
-                                t = "- ( " + t.substring(0, index) + " ) " + t.substring(index);
-                            }
-                            return t;
-                        })
-                        .collect(Collectors.toList());
 
-                List<String> tempRewardTermsSnippet = new ArrayList<>();
-                for (int i = 0; i < processedRewardTerms.size(); i++) {
-                    tempRewardTermsSnippet.add("rewardTermsRaw[" + i + "] = " + processedRewardTerms.get(i));
-                }
-                rewardTermsSnippet = String.join("\n", tempRewardTermsSnippet);
-            } else {
-                rewardTermsSnippet = rewardSnippet;
-                this.setNumRewardTerms(rewardTermsIndexes.size());
-            }
-        }
+        Set<Integer> rewardTermsIndexes = rewardTermsIndexSet(rewardSnippet);
+        this.setNumRewardTerms(rewardTermsIndexes.size());
 
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
@@ -174,10 +150,6 @@ public class AnyLogicHelper {
         this.setRewardClassName(rp.getRewardClass().getName().substring(packageName.length() + 1));
         this.setRLExperiment(experimentType.equals("RLExperiment"));
         this.isPLE = true;
-
-        if (this.getNumRewardTerms() == 0) {
-            this.setNumRewardTerms(rewardTermsSnippet.split("\n").length);
-        }
 
         TemplateLoader loader = new ClassPathTemplateLoader("/ai/skymind/nativerl", ".hbs");
         Handlebars handlebars = new Handlebars(loader);
