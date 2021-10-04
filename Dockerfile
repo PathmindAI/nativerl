@@ -27,4 +27,4 @@ RUN mkdir -p app
 WORKDIR app
 
 # Set entry point
-CMD ["mvn", "clean", "install"]
+CMD ["mvn", "clean", "install", "-Djavacpp.platform=linux-x86_64"]

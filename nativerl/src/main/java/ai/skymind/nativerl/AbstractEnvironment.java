@@ -37,6 +37,8 @@ public abstract class AbstractEnvironment extends Environment {
     protected Array observation;
     /** The Array returned by the getMetrics() method. */
     protected Array metrics;
+    /** The Array returned by the getRewardTerms() method. */
+    protected Array rewardTerms;
 
     /** Initializes all (protected) fields based on discreteActions and continuousObservations. */
     protected AbstractEnvironment(long discreteActions, long continuousObservations) {
@@ -46,6 +48,7 @@ public abstract class AbstractEnvironment extends Environment {
         actionMask = new Array(new SSizeTVector().put(discreteActions));
         observation = new Array(new SSizeTVector().put(continuousObservations));
         metrics = null;
+        rewardTerms = null;
     }
 
     /** Initializes all (protected) fields to null. */
@@ -93,6 +96,8 @@ public abstract class AbstractEnvironment extends Environment {
 
         metrics = getMetrics();
         metricsSpace = getContinuousSpace(metrics.length());
+	
+        rewardTerms = getRewardTerms();
     }
 
     /** Returns {@link #actionSpace}. */
@@ -146,6 +151,15 @@ public abstract class AbstractEnvironment extends Environment {
 
     @Override public Array getMetrics(long agentId) {
         return metrics;
+    }
+
+    /** Returns {@code getRewardTerms(0)}. */
+    public Array getRewardTerms() {
+        return getRewardTerms(0);
+    }
+
+    @Override public Array getRewardTerms(long agentId) {
+        return rewardTerms;
     }
 
     /** Returns {@code isDone(-1)}, that is for all agents. */
