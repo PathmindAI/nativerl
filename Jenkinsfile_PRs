@@ -85,7 +85,7 @@ pipeline {
                     steps {
                         script{
                             sh "aws sqs send-message --queue-url https://queue.amazonaws.com/839270835622/dev-training-queue.fifo --message-body \"{\\\"S3Bucket\\\": \\\"nativerl-training-dynamic-files.pathmind.com\\\",\\\"S3Path\\\":\\\"id${env.BUILD_NUMBER}\\\"}\" --message-group-id training"
-                            echo "Waiting for thetraining to start"
+                            echo "Waiting for the training to start"
                             sh "timeout 900 bash -c 'while ! kubectl get pods -n dev | grep '^id${env.BUILD_NUMBER}-'; do sleep 60; done'"
                             echo "Waiting for the training to finish"
                             sh "bash -c 'while kubectl get pods -n dev | grep '^id${env.BUILD_NUMBER}-'; do sleep 60; done'"
