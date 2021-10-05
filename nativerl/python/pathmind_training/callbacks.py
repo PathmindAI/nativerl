@@ -51,17 +51,32 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
                 if use_reward_terms:
+                    use_auto_norm = trainer.config["env_config"]["use_auto_norm"]
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
-                    if result["training_iteration"] % period == 0:
-                        # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
-                        betas = [1.0 / abs(result["custom_metrics"][f"metrics_term_{str(i)}_mean"])
-                                 if result["custom_metrics"][f"metrics_term_{str(i)}_mean"] != 0.0
-                                 else 0.0
+                    if use_auto_norm and (result["training_iteration"] % period == 0 or result["training_iteration"] == 1):
+
+                        if result["training_iteration"] == 1:
+                            lr = 1.0
+                        elif result["training_iteration"] > 400:
+                            lr = 0.025
+                        elif result["training_iteration"] > 300:
+                            lr = 0.05
+                        elif result["training_iteration"] > 200:
+                            lr = 0.1
+                        elif result["training_iteration"] > 100:
+                            lr = 0.2
+                        else:
+                            lr = 0.4
+
+                        betas = [1.0 / max(abs(result["custom_metrics"][f"metrics_term_{str(i)}_min"]), abs(result["custom_metrics"][f"metrics_term_{str(i)}_max"]))
+                                 if max(abs(result["custom_metrics"][f"metrics_term_{str(i)}_min"]), abs(result["custom_metrics"][f"metrics_term_{str(i)}_max"])) != 0.0
+                                 else 1.0
                                  for i in range(num_reward_terms)]
+
                         for w in trainer.workers.remote_workers():
-                            w.apply.remote(lambda worker: worker.env.updateBetas(betas))
+                            w.apply.remote(lambda worker: worker.env.updateBetas(betas, lr=lr))
                       
                 if result["training_iteration"] % checkpoint_frequency == 0 and result["training_iteration"] > 1:
                     export_policy_from_checkpoint(trainer)
