@@ -58,7 +58,8 @@ def main(environment: str,
          rollout_fragment_length: int = 200,
          reward_balance_period: int = 1,
          num_reward_terms: int = None,
-         alphas: str = None
+         alphas: str = None,
+         use_auto_norm: bool = True 
          ):
     """
 
@@ -108,6 +109,7 @@ def main(environment: str,
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
     :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
     :param alphas: User defined importance weights on conceptual chunks (reward terms)
+    :param use_auto_norm: Whether or not to call updateBeta
 
     :return: runs training for the given environment, with nativerl
     """
@@ -125,7 +127,8 @@ def main(environment: str,
         'use_reward_terms': alphas is not None,
         'reward_balance_period': reward_balance_period,
         'num_reward_terms': num_reward_terms,
-        'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms)
+        'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms),
+        'use_auto_norm': use_auto_norm
     }
 
     if env_config['use_reward_terms']:
@@ -190,7 +193,7 @@ def main(environment: str,
         'vf_clip_param': np.inf,
         'lambda': 0.95,
         'clip_param': 0.2,
-        'lr': 1e-4,
+        'lr': 0.0,
         'gamma': gamma,
         'entropy_coeff': 0.0,
         'num_sgd_iter': sample_from(lambda spec: random.choice([10, 20, 30])),
