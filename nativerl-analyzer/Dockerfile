@@ -29,7 +29,7 @@ RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.7.
 
 RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.7.2-SNAPSHOT-bin.zip
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.6.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.7.zip
 
 WORKDIR /
 
