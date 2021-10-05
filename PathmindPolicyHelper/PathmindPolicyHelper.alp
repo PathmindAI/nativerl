@@ -4,7 +4,7 @@
 	         AnyLogic Project File 
 *************************************************	         
 -->
-<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.6.202107211618" AlpVersion="8.7.2">
+<AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.7.7.202109242224" AlpVersion="8.7.2">
 <Model>
 	<Id>1563523926925</Id>
 	<Name><![CDATA[PathmindPolicyHelper]]></Name>
@@ -974,6 +974,37 @@ https://help.pathmind.com/en/articles/3634254-4-triggering-actions
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1633463504388</Id>
+					<Name><![CDATA[policyServing]]></Name>
+					<Description><![CDATA[<h3>Policy Serving</h3>
+<p>To integrate RL in real-world applications, please contact support@pathmind.com to discuss deployment options. Pathmind provides several tools to easily deploy an RL policy.</p>
+
+<b>Learn More</b><br>
+<a href="https://help.pathmind.com/en/collections/3129167-integrating-reinforcement-learning-policies-in-the-real-world-applications" target="_blank">https://help.pathmind.com/en/collections/3129167-integrating-reinforcement-learning-policies-in-the-real-world-applications</a>]]></Description>
+					<X>620</X><Y>200</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>false</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[boolean]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<DefaultValue Class="CodeValue">
+							<Code><![CDATA[true]]></Code>
+						</DefaultValue>
+						<ParameterEditor>
+							<Id>1633463504386</Id>
+							<Label><![CDATA[Enable Policy Serving]]></Label>
+							<EditorContolType>CHECK_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[Policy Serving]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 			</Variables>
 			<Events>
 				<Event>
@@ -1288,7 +1319,7 @@ try {
 							<ClassName><![CDATA[pathmind-single-original.png]]></ClassName>
 						</ImageResourceReference>
 					</ImageFiles>
-					<OriginalSize>true</OriginalSize>
+					<OriginalSize>false</OriginalSize>
 				</Image>
 				<Rectangle>
 					<Id>1628197430821</Id>
@@ -1555,9 +1586,6 @@ try {
 
 			<Parameters>			
 				<Parameter>
-					<ParameterName><![CDATA[isEnabled]]></ParameterName>
-				</Parameter>
-				<Parameter>
 					<ParameterName><![CDATA[debugMode]]></ParameterName>
 				</Parameter>
 				<Parameter>
@@ -1611,6 +1639,12 @@ try {
 				</Parameter>
 				<Parameter>
 					<ParameterName><![CDATA[eventCondition]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[isEnabled]]></ParameterName>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[policyServing]]></ParameterName>
 				</Parameter>
 			</Parameters>			
 			<PresentationProperties>
@@ -2131,7 +2165,8 @@ public class AbstractPathmindHelper extends Agent {
 			}
 			boolean[] actMasks = actionMaskProcessor != null ? actionMaskProcessor.getActionMasks(getOwner(), agentId) : null;
 			if (actMasks != null && actMasks.length > 0 && isAllFalse(actMasks)) {
-				throw new RuntimeException("Action masks should not be all false. \n");
+				System.out.println("WARNING: Action masks should not be all false. \n");
+				//throw new RuntimeException("Action masks should not be all false. \n");
 			}
 			if (!actionMaskLengthVerified) {
 				if (actionMaskProcessor != null && actMasks.length > 0 && possibleActionCount != actMasks.length) {
@@ -2360,15 +2395,11 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[nativerl-policy-1.7.2-SNAPSHOT.jar]]></Path>
-			<ReferencedFromUserCode>false</ReferencedFromUserCode>
-		</Resource>
-		<Resource>
 			<Path><![CDATA[pathmind-single-original.png]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.2-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[nativerl-policy-1.7.0-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -2381,9 +2412,9 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.2-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[nativerl-policy-1.7.0-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
-		<Imported>false</Imported>
+		<Imported>true</Imported>
 		<Folder>false</Folder>
 	</ClassPathEntry>
 </Model>
