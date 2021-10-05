@@ -206,8 +206,8 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 if self.use_reward_terms and done_dict['__all__']:
                     max_array = np.zeros(len(reward_array))
                     for key, val in term_contributions_dict.items():
-                        max_array = [max(max_array[i], abs(val[i])) for i in range(len(reward_array))]
-                    self.term_contributions = max_array 
+                        max_array = np.array([max(max_array[i], abs(val[i])) for i in range(len(reward_array))])
+                    self.term_contributions = max_array
 
                 return obs_dict, reward_dict, done_dict, {}
 
@@ -253,7 +253,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 return np.array(self.nativeEnv.getMetrics(0))
 
         def updateBetas(self, target_betas, lr):
-            if self.use_reward_terms and self.use_auto_norm:
+            if self.use_auto_norm:
                 self.betas = self.betas - lr*(target_betas - self.betas)
 
         def getRewardTermContributions(self):

@@ -50,12 +50,13 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                 results = ray.get(
                     [w.apply.remote(lambda worker: worker.env.getMetrics()) for w in trainer.workers.remote_workers()])
 
-                if use_reward_terms:
-                    use_auto_norm = trainer.config["env_config"]["use_auto_norm"]
+                use_auto_norm = trainer.config["env_config"]["use_auto_norm"]
+
+                if use_auto_norm:
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
-                    if use_auto_norm and (result["training_iteration"] % period == 0 or result["training_iteration"] == 1):
+                    if result["training_iteration"] % period == 0 or result["training_iteration"] == 1:
 
                         if result["training_iteration"] == 1:
                             lr = 1.0
