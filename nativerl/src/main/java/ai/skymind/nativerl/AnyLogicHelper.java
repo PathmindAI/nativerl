@@ -69,11 +69,6 @@ public class AnyLogicHelper {
     @Builder.Default
     String observationSnippet = "";
 
-    /** Arbitrary code to add to the getReward() method of the generated class to calculate the reward. */
-    @Deprecated // TODO: to be replaced with rewardTermsSnippet
-    @Builder.Default
-    String rewardSnippet = "";
-
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
@@ -133,7 +128,7 @@ public class AnyLogicHelper {
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() throws IOException, ReflectiveOperationException {
 
-        Set<Integer> rewardTermsIndexes = rewardTermsIndexSet(rewardSnippet);
+        Set<Integer> rewardTermsIndexes = rewardTermsIndexSet(rewardTermsSnippet);
         this.setNumRewardTerms(rewardTermsIndexes.size());
 
         int n = environmentClassName.lastIndexOf(".");
@@ -230,7 +225,6 @@ public class AnyLogicHelper {
                 System.out.println("    --reset-snippet");
                 System.out.println("    --simulation-parameter-snippet");
                 System.out.println("    --observation-snippet");
-                System.out.println("    --reward-snippet");
                 System.out.println("    --metrics-snippet");
                 System.out.println("    --reward-terms-snippet");
                 System.out.println("    --policy-helper");
@@ -258,8 +252,6 @@ public class AnyLogicHelper {
                 helper.simulationParameterSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
                 helper.observationSnippet(args[++i]);
-            } else if ("--reward-snippet".equals(args[i])) {
-                helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
                 helper.metricsSnippet(args[++i]);
             } else if ("--reward-terms-snippet".equals(args[i])) {
