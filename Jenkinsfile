@@ -20,7 +20,8 @@ def buildNativerl(image_name) {
         docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl
     """
     sh "docker run --mount \"src=${WORKSPACE}/nativerl/,target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/test1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://staging-training-static-files.pathmind.com/nativerl/${env.BRANCH_NAME}1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"
+    /*sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/test1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"*/
 }
 
 def boolean isVersionTag(String tag) {
@@ -71,6 +72,7 @@ pipeline {
                     environment name: 'GIT_BRANCH', value: 'test'
                     environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
+                    environment name: 'GIT_BRANCH', value: 'sl/deploy'
                 }
             }
             steps {
@@ -93,6 +95,7 @@ pipeline {
 			    environment name: 'GIT_BRANCH', value: 'test'
 			    environment name: 'GIT_BRANCH', value: 'staging'
 			    environment name: 'GIT_BRANCH', value: 'prod'
+			    environment name: 'GIT_BRANCH', value: 'sl/deploy'
 			}
 		    }
                     steps {
