@@ -13,17 +13,14 @@ def icon = ":heavy_check_mark:"
 */
 def buildNativerl(image_name) {
     def tag = readCurrentTag()
-    echo "Building the nativerl Docker Image for tag ${tag}"
+    echo "Building the nativerl Docker Image for branch ${env.BRANCH_NAME}"
     sh """
         set +x
         docker image ls | grep nativerl | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl
     """
     sh "docker run --mount \"src=${WORKSPACE}/nativerl/,target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://test-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.7.2-SNAPSHOT-bin.zip"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.7.2-SNAPSHOT-bin.zip"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://staging-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.7.2-SNAPSHOT-bin.zip"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://prod-training-static-files.pathmind.com/nativerl/${tag}/nativerl-1.7.2-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/test1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"
 }
 
 def boolean isVersionTag(String tag) {
@@ -69,8 +66,11 @@ pipeline {
     stages {
         stage('Git clone and setup') {
             when {
-                expression {
-                    return !isVersionTag(readCurrentTag())
+                anyOf {
+                    environment name: 'GIT_BRANCH', value: 'dev'
+                    environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
+                    environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
             steps {
@@ -85,13 +85,16 @@ pipeline {
         }
 
         stage('Build Docker Images') {
-            when {
-                expression {
-                    return !isVersionTag(readCurrentTag())
-                }
-            }
             parallel {
                 stage('Build nativerl image') {
+		    when {
+			anyOf {
+			    environment name: 'GIT_BRANCH', value: 'dev'
+			    environment name: 'GIT_BRANCH', value: 'test'
+			    environment name: 'GIT_BRANCH', value: 'staging'
+			    environment name: 'GIT_BRANCH', value: 'prod'
+			}
+		    }
                     steps {
                         buildNativerl("${IMAGE_NAME}")
                     }
