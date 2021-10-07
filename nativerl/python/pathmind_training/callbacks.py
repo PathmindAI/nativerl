@@ -60,16 +60,8 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
 
                         if result["training_iteration"] == 1:
                             lr = 1.0
-                        elif result["training_iteration"] > 400:
-                            lr = 0.025
-                        elif result["training_iteration"] > 300:
-                            lr = 0.05
-                        elif result["training_iteration"] > 200:
-                            lr = 0.1
-                        elif result["training_iteration"] > 100:
-                            lr = 0.2
                         else:
-                            lr = 0.4
+                            lr = max(0.025, min(0.4, 20*round(period/result["training_iteration"], 4)))
 
                         betas = [1.0 / max(abs(result["custom_metrics"][f"metrics_term_{str(i)}_min"]), abs(result["custom_metrics"][f"metrics_term_{str(i)}_max"]))
                                  if max(abs(result["custom_metrics"][f"metrics_term_{str(i)}_min"]), abs(result["custom_metrics"][f"metrics_term_{str(i)}_max"])) != 0.0
