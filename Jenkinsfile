@@ -12,7 +12,6 @@ def icon = ":heavy_check_mark:"
     Build a docker image
 */
 def buildNativerl(image_name) {
-    def tag = readCurrentTag()
     echo "Building the nativerl Docker Image for branch ${env.BRANCH_NAME}"
     sh """
         set +x
@@ -20,27 +19,8 @@ def buildNativerl(image_name) {
         docker build -t ${image_name} -f ${WORKSPACE}/nativerl/Dockerfile ${WORKSPACE}/nativerl
     """
     sh "docker run --mount \"src=${WORKSPACE}/nativerl/,target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://staging-training-static-files.pathmind.com/nativerl/${env.BRANCH_NAME}1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/${env.BRANCH_NAME}1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"
     /*sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/test1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip"*/
-}
-
-def boolean isVersionTag(String tag) {
-    echo "checking version tag $tag"
-
-    if (tag == null) {
-        return false
-    }
-
-    // use your preferred pattern
-    def tagMatcher = tag = ~ /\d+\.\d+\.\d+/
-
-    return tagMatcher.matches()
-}
-
-// workaround https://issues.jenkins-ci.org/browse/JENKINS-55987
-def String readCurrentTag() {
-
-    return sh(returnStdout: true, script: "git tag --contains | head -1").trim()
 }
 
 /*
@@ -77,10 +57,7 @@ pipeline {
             }
             steps {
                 echo "Notifying slack"
-                script {
-                    tag = readCurrentTag()
-                }
-                sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nTag: ${tag}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
+                sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\":building_construction: Starting Jenkins Job\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\"}' ${SLACK_URL}"
                 echo "Check out code"
                 checkout scm
             }
@@ -112,10 +89,9 @@ pipeline {
                 if (currentBuild.result != "SUCCESS") {
                     icon = ":x:"
                 }
-                tag = readCurrentTag()
             }
             echo "Notifying slack"
-            sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nTag: ${tag}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
+            sh "set +x; curl -X POST -H 'Content-type: application/json' --data '{\"text\":\"${icon} Jenkins Job Finished\nBranch: ${env.BRANCH_NAME}\nUrl: ${env.RUN_DISPLAY_URL}\nStatus: ${currentBuild.result}\"}' ${SLACK_URL}"
         }
     }
 }
