@@ -128,6 +128,7 @@ def main(environment: str,
         'reward_balance_period': reward_balance_period,
         'num_reward_terms': num_reward_terms,
         'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms),
+        'betas': np.ones(num_reward_terms)
         'use_auto_norm': use_auto_norm
     }
 
@@ -222,8 +223,14 @@ def main(environment: str,
         queue_trials=True
     )
 
+    analysis = Analyisis(outdir, default_metric="episode_reward_mean", default_mode="max")
+    trial = analysis.get_best_logdir()
+    df = analysis.get_trial_dataframes[os.path.join(outdir,trial)]
+    betas = df.iloc[-1][f"custom_metrics/betas"]
+    env_config["betas"] = np.array(betas)
+
     if freezing:
-        best_freezing_log_dir = freeze_trained_policy(env=env_instance, env_name=env_name, callbacks=callbacks, trials=trials, loggers=loggers,
+        best_freezing_log_dir = freeze_trained_policy(env=env_instance, env_name=env_name, env_config=env_config, callbacks=callbacks, trials=trials, loggers=loggers,
                               algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete, multi_agent=multi_agent)
         write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm, best_freezing_log_dir=best_freezing_log_dir)
     else:
