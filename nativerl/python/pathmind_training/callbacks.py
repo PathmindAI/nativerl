@@ -42,8 +42,10 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
 
                 if use_reward_terms:
                     term_contributions = worker.env.getRewardTermContributions().tolist()
+                    betas = worker.env.betas
                     for i, val in enumerate(term_contributions):
                         episode.custom_metrics[f"metrics_term_{str(i)}"] = term_contributions[i]
+                        episode.custom_metrics["betas"] = betas
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
@@ -70,7 +72,7 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
 
                         for w in trainer.workers.remote_workers():
                             w.apply.remote(lambda worker: worker.env.updateBetas(betas, lr=lr))
-                      
+
                 if result["training_iteration"] % checkpoint_frequency == 0 and result["training_iteration"] > 1:
                     export_policy_from_checkpoint(trainer)
 
