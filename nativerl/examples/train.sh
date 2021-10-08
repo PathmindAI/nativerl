@@ -194,7 +194,7 @@ if [[ ! -z "$REWARD_BALANCE_PERIOD" ]]; then
     REWARD_BALANCE_PERIOD_PARAM="--reward_balance_period $REWARD_BALANCE_PERIOD"
 fi
 
-USE_AUTO_NORM=""
+USE_AUTO_NORM_PARAM=""
 if [[ ! -z "$USE_AUTO_NORM" ]]; then
     USE_AUTO_NORM_PARAM="--use_auto_norm $USE_AUTO_NORM"
 fi
