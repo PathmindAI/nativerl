@@ -15,6 +15,7 @@ def buildNativerl(image_name) {
     echo "Building the nativerl Docker Image for branch ${env.BRANCH_NAME}"
     sh """
         set +x
+	docker image ls | grep base | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker image ls | grep nativerl | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}
     """
