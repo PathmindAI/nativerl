@@ -25,21 +25,8 @@ import java.util.stream.Collectors;
 public class HyperparametersDTO {
 
     private final static Set<String> KNOWN_OUTPUT = Set.of(
-            "isEnabled",
-            "agentParams",
-            "observations",
-            "observationNames",
-            "observationTypes",
-            "actions",
-            "isActionMask",
-            "rewardVariablesCount",
-            "rewardVariableNames",
-            "rewardVariableTypes",
-            "reward",
-            "failedSteps",
-            "agents",
             "model-analyzer-mode",
-            "oldVersionFound"
+            "DTOPath"
             );
 
     @ApiModelProperty(value = "Whether the pathmind helper is enabled or not", example = "true")
@@ -103,9 +90,9 @@ public class HyperparametersDTO {
 
     public static HyperparametersDTO of(@NotEmpty List<String> hyperparametersList) {
         Map<String, String> parametersMap = hyperparametersList.stream()
-                .filter(s -> s.startsWith("DTOPath"))
                 .map(String::strip)
                 .map(l -> l.split(":", 2))
+                .filter(p -> HyperparametersDTO.isHyperparameters(p[0]))
                 .collect(Collectors.toMap(p -> p[0], p -> p[1].strip()));
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -117,6 +104,12 @@ public class HyperparametersDTO {
             e.printStackTrace();
             return null;
         } catch (IOException e) {
+            String maMode = parametersMap.get("model-analyzer-mode");
+            if (maMode != null && !maMode.isEmpty() && maMode.startsWith("py_")) {
+                HyperparametersDTO dto = new HyperparametersDTO();
+                dto.setMode(maMode);
+                return dto;
+            }
             e.printStackTrace();
             return null;
         }
