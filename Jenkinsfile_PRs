@@ -88,6 +88,10 @@ pipeline {
                 stage('Build nativerl image') {
                     steps {
                         buildNativerl("${IMAGE_NAME}")
+                    }
+                }
+                stage('Build Model Analyzer image') {
+                    steps {
                         buildMADockerImage("${IMAGE_NAME}-ma", "dev")
                     }
                 }
