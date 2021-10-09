@@ -71,7 +71,16 @@ public class FileService {
 
     private List<String> runExtractorScript(final Path unzippedPath, File newFile, AnalyzeRequestDTO request) throws IOException, InterruptedException {
         if (request.getType().equals(AnalyzeRequestDTO.ModelType.ANY_LOGIC)) {
-            final String[] cmd = new String[]{"bash", newFile.getAbsolutePath(), newFile.getParentFile().getAbsolutePath(), request.getMainAgent(), request.getExperimentClass(), request.getExperimentType(), request.getPathmindHelperClass()};
+            final String[] cmd = new String[]{
+                    "bash",
+                    newFile.getAbsolutePath(),
+                    newFile.getParentFile().getAbsolutePath(),
+                    request.getMainAgent(),
+                    request.getExperimentClass(),
+                    request.getExperimentType(),
+                    request.getPathmindHelperClass()
+            };
+
             final Process proc = Runtime.getRuntime().exec(cmd);
             int returnCode = proc.waitFor();
             log.info("Bash script finished: {}", java.util.Arrays.toString(cmd));
@@ -85,8 +94,14 @@ public class FileService {
             return result;
         } else {
             // todo need to get is_gym or not?
-            final String[] cmd = new String[]{"/lib/pathmind/conda/bin/python", "/lib/pathmind/nativerl-bin/python/run.py",
-                    "test", request.getEnvironment(), "--is_gym", "--module_path=" + newFile.getParentFile().getAbsolutePath()};
+            final String[] cmd = new String[]{
+                    "/lib/pathmind/conda/bin/python",
+                    "/lib/pathmind/nativerl-bin/python/run.py",
+                    "test",
+                    request.getEnvironment(),
+                    "--is_gym",
+                    "--module_path=" + newFile.getParentFile().getAbsolutePath()
+            };
             final String[] envp = {"USE_PY_NATIVERL=True"};
             final Process proc = Runtime.getRuntime().exec(cmd, envp);
             int returnCode = proc.waitFor();

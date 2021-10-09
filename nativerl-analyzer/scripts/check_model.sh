@@ -22,10 +22,10 @@ fi
 
 cd ${workDir}
 
-export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -printf '%p:')
-export CLASSPATH=$(find $PWD/lib -iname '*.jar' -printf '%p:'):${CLASSPATH}
-export CLASSPATH=$PWD:$PWD/model.jar:${CLASSPATH}:/ma-common.jar
-export CLASSPATH=$PWD:/ma-common.jar:${CLASSPATH}
+export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -print0 | sort -z | xargs --null -i printf "{}:")
+export CLASSPATH=$(find $PWD/lib -iname '*.jar' -print0 | sort -z | xargs --null -i printf "{}:"):${CLASSPATH}
+export CLASSPATH=$PWD:$PWD/model.jar:${CLASSPATH}
+export CLASSPATH=/ma-common.jar:${CLASSPATH}
 
 export MODEL_PACKAGE=$(for m in $(ls model.jar lib/model*.jar 2> /dev/null) ; do unzip -l $m | grep /${mainAgent}.class; done | awk '{print $4}' | xargs dirname)
 export MODEL_PACKAGE_NAME=$(echo ${MODEL_PACKAGE} | sed 's/\//\./g')

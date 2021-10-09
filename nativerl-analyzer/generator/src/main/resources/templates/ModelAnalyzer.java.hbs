@@ -120,7 +120,7 @@ public class ModelAnalyzer {
 
         try {
             File f = new File("HyperparametersDTO");
-            FileUtils.writeStringToFile(f, objectMapper.writeValueAsString(dto), Charset.defaultCharset());
+            FileUtils.writeStringToFile(f, objectMapper.writeValueAsString(dto));
             System.out.println("DTOPath:" + f.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
