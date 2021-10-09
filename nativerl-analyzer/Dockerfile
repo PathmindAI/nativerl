@@ -21,15 +21,15 @@ COPY ${DOWNLOAD_LIB_SCRIPT} /bin/
 
 WORKDIR /lib/pathmind/conda
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} rllibpack.tar.gz rllibpack.tar.gz
+RUN bash /bin/download_lib.sh ${S3BUCKET} conda/1_3_0/rllibpack.tar.gz rllibpack.tar.gz
 
 WORKDIR /lib/pathmind
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} PathmindPolicy.jar PathmindPolicy-1.7.0-SNAPSHOT.jar
+RUN bash /bin/download_lib.sh ${S3BUCKET} pathmindhelper/1_7_0/PathmindPolicy.jar PathmindPolicy-1.7.0-SNAPSHOT.jar
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl-bin.zip nativerl-1.7.2-SNAPSHOT-bin.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} nativerl/1_7_2/nativerl-1.7.2-SNAPSHOT-bin.zip nativerl/1_7_2/nativerl-bin.zip
 
-RUN bash /bin/download_lib.sh ${S3BUCKET} baseEnv.zip baseEnv-8.7.7.zip
+RUN bash /bin/download_lib.sh ${S3BUCKET} anylogic/8_7_7/baseEnv.zip baseEnv-8.7.7.zip
 
 WORKDIR /
 
