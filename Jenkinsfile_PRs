@@ -15,12 +15,26 @@ def buildNativerl(image_name) {
     echo "Building the nativerl Docker Image"
     sh """
         set +x
-        docker image ls | grep nativerl | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+        docker image ls | grep ${image_name} | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}/
     """
+    echo "Building nativerl"
     sh "docker run --mount \"src=${WORKSPACE},target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
     sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.7.2-SNAPSHOT-bin.zip s3://dev-training-static-files.pathmind.com/nativerl/pr_test/nativerl-1.7.2-SNAPSHOT-bin.zip"
     sh "aws s3 sync ${WORKSPACE}/nativerl/pr_test/ s3://nativerl-training-dynamic-files.pathmind.com/id${env.BUILD_NUMBER}/"
+}
+
+/*
+    Build MA docker image
+*/
+def buildMADockerImage(image_name, docker_tag) {
+        echo "Building the Model Analyzer Docker Image"
+        //Dont quit if there is an error
+        sh """
+            set +x
+            docker image ls | grep ${image_name} | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+            docker build -t ${image_name} -f ${WORKSPACE}/nativerl-analyzer/Dockerfile --build-arg S3BUCKET='${docker_tag}-training-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/nativerl-analyzer/
+        """
 }
 
 /*
@@ -74,6 +88,7 @@ pipeline {
                 stage('Build nativerl image') {
                     steps {
                         buildNativerl("${IMAGE_NAME}")
+                        buildMADockerImage("${IMAGE_NAME}-ma", "dev")
                     }
                 }
             }
