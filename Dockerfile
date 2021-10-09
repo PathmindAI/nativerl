@@ -1,9 +1,9 @@
 FROM centos:7
 
 # Update centos and install basic dependencies
-RUN yum update -y \
-  && yum install \
-    centos-release-scl \
+RUN yum update -y
+RUN yum install centos-release-scl -y
+RUN yum install \
     gcc-c++ \
     java-1.8.0-openjdk-devel \
     git \
@@ -11,8 +11,8 @@ RUN yum update -y \
     devtoolset-7 \
     bzip2 \
     maven \
-    -y \
-   && scl enable devtoolset-7 bash
+    -y
+RUN scl enable devtoolset-7 bash
 
 # Install cmake3
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.21.3/cmake-3.21.3-linux-x86_64.sh \
