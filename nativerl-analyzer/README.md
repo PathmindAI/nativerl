@@ -19,7 +19,7 @@ It requires one input `file` which has to be a valid ZIP file. Server will retur
 
 ## Setting up local env
 ### Docker container
-Install `pathmind-model-analyzer` docker image using [GitHub package](https://github.com/SkymindIO/pathmind-model-analyzer/packages/63675).<br/>
+Build the`pathmind-model-analyzer` docker image using [these instructions](https://github.com/SkymindIO/nativerl/tree/dev/nativerl-analyzer#building-docker-image).<br/>
 To run a service into docker container run:
 ```bash
 $ docker run -p <HOST_PORT>:8080 pathmind-model-analyzer
@@ -52,4 +52,11 @@ You can also manually modify hardcoded paths in scripts, `FileService#CHECK_MODE
 
 ### Building docker image
 
-* At `Dockerfile` directory level run `$ docker build -t <image_name> --build-arg S3BUCKET='<s3_bucket>' --build-arg AWS_ACCESS_KEY_ID='<key_id>' --build-arg AWS_SECRET_ACCESS_KEY='<accesss_key>' .`
+* At `Dockerfile` directory level run 
+  ```
+  $ docker build -t <image_name> \ 
+   --build-arg S3BUCKET='<s3_bucket>' \
+   --build-arg AWS_ACCESS_KEY_ID='<key_id>' \
+   --build-arg AWS_SECRET_ACCESS_KEY='<access_key>' \
+   .
+  ```
