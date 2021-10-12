@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
   && pip install awscli \
   && rm -rf /var/lib/apt/lists/*
 
-ARG DOWNLOAD_LIB_SCRIPT=src/main/resources/scripts/download_lib.sh
+ARG DOWNLOAD_LIB_SCRIPT=scripts/download_lib.sh
 COPY ${DOWNLOAD_LIB_SCRIPT} /bin/
 
 WORKDIR /lib/pathmind/conda
@@ -33,13 +33,15 @@ WORKDIR /
 
 #Build pathmind-model-analyzer.jar
 COPY . .
-RUN mvn clean install \
-  && cp target/pathmind-model-analyzer.jar ./ \
-  && unzip target/pathmind-model-analyzer.jar -d /lib/ma
 
-ARG CHECK_MODEL_SCRIPT=src/main/resources/scripts/check_model.sh
+RUN mvn clean install \
+  && cp common/target/ma-common.jar ./ \
+  && cp api/target/pathmind-ma-api-spring-boot.jar ./ \
+  && cp generator/target/pathmind-ma-code-generator-jar-with-dependencies.jar ./
+
+ARG CHECK_MODEL_SCRIPT=scripts/check_model.sh
 COPY ${CHECK_MODEL_SCRIPT} bin
 
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/pathmind-model-analyzer.jar"]
+ENTRYPOINT ["java","-jar","/pathmind-ma-api-spring-boot.jar"]
 
