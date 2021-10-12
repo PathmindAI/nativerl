@@ -12,13 +12,13 @@ else
 fi
 
 aws s3 cp s3://${S3BUCKET}/${folder}/${file} ./
-ext="${file#*.}"
-if [ ${ext} = "tar.gz" ]; then
+
+if [[ $file == *.tar.gz ]]; then
     tar -xzf ${file}
     rm ${file}
 fi
 
-if [ ${ext} = "zip" ]; then
+if [[ $file == *.zip ]]; then
     unzip ${file}
     rm ${file}
 fi
