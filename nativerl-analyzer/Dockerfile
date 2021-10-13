@@ -6,6 +6,7 @@ FROM azul/zulu-openjdk:11.0.3
 ARG S3BUCKET
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
+ARG NATIVERL_FOLDER
 
 # Install all required tools and dependencies
 RUN apt-get update && apt-get install -y \
@@ -26,7 +27,7 @@ RUN bash /bin/download_lib.sh ${S3BUCKET} "conda/1_3_0" rllibpack.tar.gz rllibpa
 WORKDIR /lib/pathmind
 
 RUN bash /bin/download_lib.sh ${S3BUCKET} "pathmindhelper/1_7_0" PathmindPolicy.jar PathmindPolicy-1.7.0-SNAPSHOT.jar \
-  && bash /bin/download_lib.sh ${S3BUCKET} "nativerl/1_8_0" nativerl-1.8.0-SNAPSHOT-bin.zip nativerl-bin.zip \
+  && bash /bin/download_lib.sh ${S3BUCKET} ${NATIVERL_FOLDER} nativerl-1.8.0-SNAPSHOT-bin.zip nativerl-bin.zip \
   && bash /bin/download_lib.sh ${S3BUCKET} "anylogic/8_7_7" baseEnv.zip baseEnv-8.7.7.zip
 
 WORKDIR /
