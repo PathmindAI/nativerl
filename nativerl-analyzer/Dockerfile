@@ -26,7 +26,7 @@ RUN bash /bin/download_lib.sh ${S3BUCKET} "conda/1_3_0" rllibpack.tar.gz rllibpa
 WORKDIR /lib/pathmind
 
 RUN bash /bin/download_lib.sh ${S3BUCKET} "pathmindhelper/1_7_0" PathmindPolicy.jar PathmindPolicy-1.7.0-SNAPSHOT.jar \
-  && bash /bin/download_lib.sh ${S3BUCKET} "nativerl/1_7_2" nativerl-1.7.2-SNAPSHOT-bin.zip nativerl-bin.zip \
+  && bash /bin/download_lib.sh ${S3BUCKET} "nativerl/1_8_0" nativerl-1.8.0-SNAPSHOT-bin.zip nativerl-bin.zip \
   && bash /bin/download_lib.sh ${S3BUCKET} "anylogic/8_7_7" baseEnv.zip baseEnv-8.7.7.zip
 
 WORKDIR /
