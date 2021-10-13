@@ -311,7 +311,7 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
 
             # Flatten all observations here, e.g. [1, 2, [3, 4], 5] => [1, 2, 3, 4, 5]
             lists = [[obs_dict[obs]] if not isinstance(obs_dict[obs], typing.List) else obs_dict[obs]
-                     for obs in obs_names]
+                     for obs in self.obs_names]
             flat_obs = list(itertools.chain(*lists))
 
             return nativerl.Array(flat_obs)
@@ -349,5 +349,8 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
         def getMetricsSpace(self) -> Continuous:
             num_metrics = len(self.getMetrics())
             return nativerl.Continuous(low=[-math.inf], high=[math.inf], shape=[num_metrics])
+
+        def getRewardTerms(self, agent_id: int = 0) -> np.array:
+                return NotImplemented
 
     return PathmindEnv()
