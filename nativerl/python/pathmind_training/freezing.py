@@ -19,7 +19,7 @@ def find(key, value):
                     yield result
 
 
-def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, output_dir, input_config,
+def mc_rollout(steps, checkpoint, environment, env_name, env_config, callbacks, loggers, output_dir, input_config,
                step_tolerance=1000000, algorithm='PPO', multi_agent=False):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
@@ -27,6 +27,7 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
 
     config = {
         'env': env_name,
+        'env_config': env_config,
         'callbacks': callbacks,
         'num_gpus': 0,
         'num_workers': 6,
@@ -61,13 +62,14 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
     return mean_reward, range_of_rewards, trials.get_best_logdir(metric="episode_reward_mean", mode="max")
 
 
-def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
+def freeze_trained_policy(env, env_name, env_config, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
                           filter_tolerance: float = 0.85, mc_steps: int = 10000,
                           step_tolerance: int = 100_000_000, multi_agent: bool = False):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
     :param env: nativerl.Environment instance
     :param env_name: name of the env (str)
+    :param env_config: holds custom training parameters
     :param callbacks: ray Callbacks class
     :param trials: The trials returned from a ray tune run.
     :param loggers: loggers for mc_rollout
@@ -103,7 +105,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
             config['model'].update({'custom_action_dist': temp})
 
         mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
-            mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, loggers, output_dir, config,
+            mc_rollout(mc_steps, checkpoint_path, env, env_name, env_config, callbacks, loggers, output_dir, config,
                        step_tolerance, algorithm, multi_agent)
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward

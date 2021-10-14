@@ -93,12 +93,14 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 self.unwrapped.spec = self
 
             self.use_reward_terms = env_config["use_reward_terms"]
+            self.use_auto_norm = env_config["use_auto_norm"]
             self.num_reward_terms = env_config["num_reward_terms"]
             self.alphas = env_config["alphas"]
-            self.betas = np.ones(self.num_reward_terms)
+            self.betas = env_config["betas"] if env_config["betas"] not None else np.ones(self.num_reward_terms)
 
             self.term_contributions_dict = {}
             self.term_contributions = np.zeros(self.num_reward_terms)
+
 
         def define_action_space(self):
             i = 0
@@ -203,7 +205,11 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
                 done_dict['__all__'] = all(done_dict.values())
 
                 if self.use_reward_terms and done_dict['__all__']:
-                    self.term_contributions += sum(self.term_contributions_dict.values()) / len(self.term_contributions_dict)
+                    max_array = np.zeros(len(reward_array))
+                    for key, val in term_contributions_dict.items():
+                        max_array = np.array([max(max_array[i], abs(val[i])) for i in range(len(reward_array))])
+                    self.term_contributions = max_array
+
                 return obs_dict, reward_dict, done_dict, {}
 
             else:
@@ -247,9 +253,9 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
-        def updateBetas(self, betas):
-            if self.use_reward_terms:
-                self.betas = betas
+        def updateBetas(self, target_betas, lr):
+            if self.use_auto_norm:
+                self.betas = self.betas - lr*(target_betas - self.betas)
 
         def getRewardTermContributions(self):
             if self.use_reward_terms:
