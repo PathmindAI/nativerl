@@ -17,7 +17,7 @@ def buildDockerImage(image_name, image_id,docker_tag) {
         sh """
             set +x
             docker image ls | grep pathmind-ma | awk '{print \$3}' | xargs -I {} docker rmi {} -f
-            docker build -t ${image_name} -f ${WORKSPACE}/nativerl-analyzer/Dockerfile --build-arg S3BUCKET='${docker_tag}-model-analyzer-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/nativerl-analyzer/
+            docker build -t ${image_name} -f ${WORKSPACE}/nativerl-analyzer/Dockerfile --build-arg S3BUCKET='${docker_tag}-training-static-files.pathmind.com' --build-arg AWS_ACCESS_KEY_ID=`kubectl get secret awsaccesskey -o=jsonpath='{.data.AWS_ACCESS_KEY_ID}' | base64 --decode` --build-arg AWS_SECRET_ACCESS_KEY=`kubectl get secret awssecretaccesskey -o=jsonpath='{.data.AWS_SECRET_ACCESS_KEY}' | base64 --decode` ${WORKSPACE}/nativerl-analyzer/
         """
 }
 
@@ -67,6 +67,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -81,6 +82,9 @@ pipeline {
 		        }
 		        if(env.BRANCH_NAME == 'test'){
 		                DOCKER_TAG = "test"
+		        }
+		        if(env.BRANCH_NAME == 'staging'){
+		                DOCKER_TAG = "staging"
 		        }
 		}
                 echo "Check out code"
@@ -107,6 +111,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -125,6 +130,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                     environment name: 'GIT_BRANCH', value: 'prod'
                 }
             }
@@ -143,6 +149,7 @@ pipeline {
                 anyOf {
                     environment name: 'GIT_BRANCH', value: 'dev'
                     environment name: 'GIT_BRANCH', value: 'test'
+                    environment name: 'GIT_BRANCH', value: 'staging'
                 }
             }
             steps {
