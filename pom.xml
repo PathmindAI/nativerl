@@ -5,7 +5,7 @@
 
     <groupId>ai.skymind</groupId>
     <artifactId>nativerl-parent</artifactId>
-    <version>1.8.0-SNAPSHOT</version>
+    <version>1.8.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>NativeRL Parent</name>

@@ -19,7 +19,7 @@ def buildNativerl(image_name) {
         docker build -t ${image_name} -f ${WORKSPACE}/Dockerfile ${WORKSPACE}
     """
     sh "docker run --mount \"src=${WORKSPACE}/,target=/app,type=bind\" nativerl mvn clean install -Djavacpp.platform=linux-x86_64"
-    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.8.0-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/1_8_0/nativerl-1.8.0-SNAPSHOT-bin.zip"
+    sh "aws s3 cp ${WORKSPACE}/nativerl/target/nativerl-1.8.1-SNAPSHOT-bin.zip s3://${env.BRANCH_NAME}-training-static-files.pathmind.com/nativerl/1_8_1/nativerl-1.8.1-SNAPSHOT-bin.zip"
 }
 
 /*
