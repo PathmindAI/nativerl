@@ -93,7 +93,8 @@ def test_pynativerl():
 
 
 def test_scheduler():
-    get_scheduler()
+    get_scheduler("PBT")
+    get_scheduler("PB2")
 
 
 def test_stopper():
