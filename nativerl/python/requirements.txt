@@ -1,3 +1,4 @@
+aioredis<2
 numpy==1.19.4
 gym==0.17.3
 or_gym==0.1.5
