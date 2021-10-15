@@ -194,11 +194,6 @@ if [[ ! -z "$REWARD_BALANCE_PERIOD" ]]; then
     REWARD_BALANCE_PERIOD_PARAM="--reward_balance_period $REWARD_BALANCE_PERIOD"
 fi
 
-USE_AUTO_NORM_PARAM=""
-if [[ ! -z "$USE_AUTO_NORM" ]]; then
-    USE_AUTO_NORM_PARAM="--use_auto_norm $USE_AUTO_NORM"
-fi
-
 export OUTPUT_DIR=$(pwd)
 
 if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
@@ -284,5 +279,4 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $TRAIN_BATCH_SIZE_PARAM \
     $REWARD_TERMS_WEIGHTS_PARAM \
     $NUM_REWARD_TERMS_PARAM \
-    $REWARD_BALANCE_PERIOD_PARAM \
-    $USE_AUTO_NORM_PARAM
+    $REWARD_BALANCE_PERIOD_PARAM
