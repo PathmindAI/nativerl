@@ -55,7 +55,10 @@ def main(environment: str,
          gamma: float = 0.99,
          train_batch_mode: str = 'complete_episodes',
          train_batch_size: Optional[int] = None,
-         rollout_fragment_length: int = 200
+         rollout_fragment_length: int = 200,
+         reward_balance_period: int = 1,
+         num_reward_terms: int = None,
+         alphas: str = None
          ):
     """
 
@@ -102,6 +105,9 @@ def main(environment: str,
     :param train_batch_mode: Train Batch Mode [truncate_episodes, complete_episodes]
     :param train_batch_size: Optional train batch size
     :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
+    :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
+    :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
+    :param alphas: User defined importance weights on conceptual chunks (reward terms)
 
     :return: runs training for the given environment, with nativerl
     """
@@ -114,6 +120,17 @@ def main(environment: str,
     os.chdir(jar_dir)
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
+
+    env_config = {
+        'use_reward_terms': alphas is not None,
+        'reward_balance_period': reward_balance_period,
+        'num_reward_terms': num_reward_terms,
+        'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms)
+    }
+
+    if env_config['use_reward_terms']:
+        assert env_config['alphas'].size == env_config['num_reward_terms'], \
+        f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
 
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
@@ -129,7 +146,7 @@ def main(environment: str,
         )
         env_creator = env_name
 
-    env_instance = env_creator(env_config={})
+    env_instance = env_creator(env_config=env_config)
     env_instance.max_steps = env_instance._max_episode_steps if hasattr(env_instance, "_max_episode_steps") \
         else 20000
 
@@ -154,7 +171,7 @@ def main(environment: str,
         # from tests.custom_callback import get_callback as foo
         callbacks = get_callback_function(custom_callback)()
     else:
-        callbacks = get_callbacks(debug_metrics, is_gym)
+        callbacks = get_callbacks(debug_metrics, env_config['use_reward_terms'], is_gym, checkpoint_frequency)
 
     assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(scheduler_name=scheduler, train_batch_size=train_batch_size)
@@ -162,6 +179,7 @@ def main(environment: str,
 
     config = {
         'env': env_name,
+        'env_config': env_config,
         'callbacks': callbacks,
         'num_gpus': num_gpus,
         'num_workers': num_workers,
