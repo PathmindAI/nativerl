@@ -47,7 +47,8 @@ class Game2048:
             self.matrix = logic.add_two(self.matrix)
         else:
             self.rew -= 10
-        if (state := logic.game_state(self.matrix)) == 'win':
+        state = logic.game_state(self.matrix)
+        if state == 'win':
             self.rew += 10000
         elif state == 'lose':
             self.rew -= 1000
