@@ -1,0 +1,4 @@
+# Install everything the developer needs in addition to prod requirements
+-r requirements.txt
+
+pre-commit
