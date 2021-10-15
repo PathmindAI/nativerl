@@ -128,7 +128,7 @@ def main(environment: str,
         'reward_balance_period': reward_balance_period,
         'num_reward_terms': num_reward_terms,
         'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms),
-        'betas': np.ones(num_reward_terms)
+        'betas': np.ones(num_reward_terms),
         'use_auto_norm': use_auto_norm
     }
 
