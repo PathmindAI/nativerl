@@ -25,7 +25,7 @@ OBSERVATION_SNIPPET='
     out = in.obs;
 '
 
-REWARD_SNIPPET='
+$REWARD_TERMS_SNIPPET='
     if (before == null) return 0;
     double[] s0 = before.vars, s1 = after.vars;
     // change in forward + intersection delay
@@ -33,7 +33,7 @@ REWARD_SNIPPET='
     double delay1 = s1[0] + s1[2] + s1[4] + s1[6] + s1[8];
     reward = delay0 - delay1;
     if (delay0 > 0 || delay1 > 0) {
-        reward /= Math.max(delay0, delay1);
+        rewardTermsRaw[0] /= Math.max(delay0, delay1);
     }
 '
 
@@ -57,7 +57,7 @@ java ai.skymind.nativerl.AnyLogicHelper \
     --class-snippet "$CLASS_SNIPPET" \
     --reset-snippet "$RESET_SNIPPET" \
     --observation-snippet "$OBSERVATION_SNIPPET" \
-    --reward-snippet "$REWARD_SNIPPET" \
+    --reward-terms-snippet "$REWARD_TERMS_SNIPPET" \
     --metrics-snippet "$METRICS_SNIPPET" \
     --policy-helper RLlibPolicyHelper \
     --multi-agent \
