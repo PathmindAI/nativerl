@@ -117,6 +117,9 @@ class PathmindEnvironment(nativerl.Environment):
             reward = 0.0
         return reward
 
+    def getRewardTerms(self):
+        return
+
     def getMetrics(self, agent_id=0):
         return (
             np.asarray([self.steps_beyond_done])
