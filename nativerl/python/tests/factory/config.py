@@ -14,8 +14,14 @@ OBS_KEY = "observations"
 
 
 def get_observation_names():
-    return [k for k, v in SIMULATION_CONFIG.items() if k.startswith('obs_') and v is True]
+    return [
+        k for k, v in SIMULATION_CONFIG.items() if k.startswith("obs_") and v is True
+    ]
 
 
 def get_reward_names_and_weights():
-    return {k: v.get("weight") for k, v in SIMULATION_CONFIG.items() if k.startswith('rew_') and v.get("value") is True}
+    return {
+        k: v.get("weight")
+        for k, v in SIMULATION_CONFIG.items()
+        if k.startswith("rew_") and v.get("value") is True
+    }

@@ -18,13 +18,16 @@ OBS = schema.get("observations")
 
 
 class Game2048Env(nativerl.Environment):
-
     def __init__(self, simulation=Game2048()):
         nativerl.Environment.__init__(self)
         self.simulation = simulation
 
     def getActionSpace(self, agent_id=0):
-        return nativerl.Discrete(self.simulation.number_of_actions) if agent_id == 0 else None
+        return (
+            nativerl.Discrete(self.simulation.number_of_actions)
+            if agent_id == 0
+            else None
+        )
 
     def getObservationSpace(self):
         obs_shape = [self.simulation.number_of_observations]
@@ -42,7 +45,12 @@ class Game2048Env(nativerl.Environment):
     def getObservation(self, agent_id=0):
         obs_dict = self.simulation.get_observation()
 
-        lists = [[obs_dict[obs]] if not isinstance(obs_dict[obs], typing.List) else obs_dict[obs] for obs in OBS]
+        lists = [
+            [obs_dict[obs]]
+            if not isinstance(obs_dict[obs], typing.List)
+            else obs_dict[obs]
+            for obs in OBS
+        ]
         observations = list(itertools.chain(*lists))
 
         return nativerl.Array(observations)
@@ -75,4 +83,6 @@ class Game2048Env(nativerl.Environment):
 
     def getMetricsSpace(self) -> Continuous:
         num_metrics = len(self.getMetrics())
-        return nativerl.Continuous(low=[-math.inf], high=[math.inf], shape=[num_metrics])
+        return nativerl.Continuous(
+            low=[-math.inf], high=[math.inf], shape=[num_metrics]
+        )

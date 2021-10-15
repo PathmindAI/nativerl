@@ -33,8 +33,12 @@ class Game2048:
         self.human = human
         self.matrix = logic.new_game(c.GRID_LEN)
 
-        self.commands = {'0': logic.up, '1': logic.down,
-                         '2': logic.left, '3': logic.right}
+        self.commands = {
+            "0": logic.up,
+            "1": logic.down,
+            "2": logic.left,
+            "3": logic.right,
+        }
 
         self.done = False
         self.obs = self.get_observation()
@@ -60,19 +64,21 @@ class Game2048:
             print(f'Action: {["up", "down", "left", "right"][action]}')
         self.matrix, valid, rew = self.commands[str(action)](self.matrix)
 
-        self.reward_terms["log_game_score"] = (math.log(rew, 2) if rew > 0 else 0) - self.prev_rew_terms["log_game_score"]
+        self.reward_terms["log_game_score"] = (
+            math.log(rew, 2) if rew > 0 else 0
+        ) - self.prev_rew_terms["log_game_score"]
         if valid:
             self.matrix = logic.add_two(self.matrix)
         else:
             self.reward_terms["invalid_move"] = -1 - self.prev_rew_terms["invalid_move"]
 
-
-
         self.total_reward += sum(self.reward_terms.values())
 
     def get_observation(self) -> typing.Dict:
         for score in self.scores:
-            self.obs[score] = [1 if value == score else 0 for row in self.matrix for value in row]
+            self.obs[score] = [
+                1 if value == score else 0 for row in self.matrix for value in row
+            ]
 
         return self.obs
 
@@ -80,7 +86,7 @@ class Game2048:
         return self.reward_terms
 
     def is_done(self) -> bool:
-        return logic.game_state(self.matrix) in ['win', 'lose']
+        return logic.game_state(self.matrix) in ["win", "lose"]
 
     def get_metrics(self) -> typing.List[float]:
         return [float(self.steps), float(self.total_reward)]

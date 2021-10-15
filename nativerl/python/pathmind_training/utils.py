@@ -3,6 +3,7 @@ import os
 import gym
 import math
 import numpy as np
+
 if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
 else:
@@ -15,34 +16,56 @@ def write_file(messages, file_name, output_dir, algorithm, mode="a"):
             out.write(f"{msg}\n")
 
 
-def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir = None):
+def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir=None):
     # Write to file for Pathmind webapp
-    best_trial = "Best Trial: " + str(trials.get_best_trial(metric="episode_reward_mean", mode="max"))
+    best_trial = "Best Trial: " + str(
+        trials.get_best_trial(metric="episode_reward_mean", mode="max")
+    )
     max_log_dir = trials.get_best_logdir(metric="episode_reward_mean", mode="max")
     best_trial_dir = f"Best Trial Directory: {max_log_dir}"
     best_policy = f"Best Policy: {max_log_dir}/model"
-    max_checkpoint = trials.get_best_checkpoint(trial=max_log_dir, metric="episode_reward_mean", mode="max")
+    max_checkpoint = trials.get_best_checkpoint(
+        trial=max_log_dir, metric="episode_reward_mean", mode="max"
+    )
     best_checkpoint = f"Best Checkpoint: {max_checkpoint}"
     if best_freezing_log_dir:
         best_freezing_dir = f"Best Freezing: {best_freezing_log_dir}"
-        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint, best_freezing_dir], "ExperimentCompletionReport.txt",
-                       output_dir, algorithm)
+        write_file(
+            [
+                best_trial,
+                best_trial_dir,
+                best_policy,
+                best_checkpoint,
+                best_freezing_dir,
+            ],
+            "ExperimentCompletionReport.txt",
+            output_dir,
+            algorithm,
+        )
     else:
-        write_file([best_trial, best_trial_dir, best_policy, best_checkpoint], "ExperimentCompletionReport.txt",
-               output_dir, algorithm)
+        write_file(
+            [best_trial, best_trial_dir, best_policy, best_checkpoint],
+            "ExperimentCompletionReport.txt",
+            output_dir,
+            algorithm,
+        )
 
     if trials:
-        write_file(["Success: Training completed successfully"], "ExperimentCompletionReport.txt",
-                   output_dir, algorithm)
+        write_file(
+            ["Success: Training completed successfully"],
+            "ExperimentCompletionReport.txt",
+            output_dir,
+            algorithm,
+        )
         print("Training completed successfully")
 
 
 def modify_anylogic_db_properties():
     # Make sure multiple processes can read the database from AnyLogic
-    db_props = 'database/db.properties'
-    db_lock_line = 'hsqldb.lock_file=false\n'
+    db_props = "database/db.properties"
+    db_lock_line = "hsqldb.lock_file=false\n"
     if os.path.isfile(db_props):
-        with open(db_props, 'r+') as f:
+        with open(db_props, "r+") as f:
             lines = f.readlines()
             if db_lock_line not in lines:
                 f.write(db_lock_line)
@@ -67,7 +90,7 @@ def get_mock_env(env):
             done = False
             return obs, reward, done, {}
 
-        def render(self, mode='human'):
+        def render(self, mode="human"):
             pass
 
     return MockEnvironment
@@ -77,16 +100,21 @@ def get_py_nativerl_from_gym_env(env_name: str):
     """Creates a Pathmind Environment from a simple gym.Env with discrete actions and 'Box' observations."""
 
     env: gym.Env = createEnvironment(env_name)
-    assert isinstance(env, gym.Env), f"Provided environment {env_name} is not a gym environment."
+    assert isinstance(
+        env, gym.Env
+    ), f"Provided environment {env_name} is not a gym environment."
 
-    assert isinstance(env.action_space, gym.spaces.Discrete), "Only works with discrete actions"
-    assert isinstance(env.observation_space, gym.spaces.Box), "Only works with simple 'Box' observations."
+    assert isinstance(
+        env.action_space, gym.spaces.Discrete
+    ), "Only works with discrete actions"
+    assert isinstance(
+        env.observation_space, gym.spaces.Box
+    ), "Only works with simple 'Box' observations."
 
     n = env.action_space.n
     num_obs = len(env.observation_space.sample())
 
     class PathmindEnv(nativerl.Environment):
-
         def __init__(self, env_config):
             nativerl.Environment.__init__(self)
             self.env = env
@@ -146,8 +174,8 @@ def get_class_from_string(class_string: str):
     :param class_string:
     :return:
     """
-    class_name = class_string.split('.')[-1]
-    module = class_string.replace(f'.{class_name}', '')
+    class_name = class_string.split(".")[-1]
+    module = class_string.replace(f".{class_name}", "")
     lib = importlib.import_module(module)
     return getattr(lib, class_name)
 
