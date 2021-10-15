@@ -11,12 +11,13 @@ import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 @Getter
 @Builder
 public class AnyLogicHelper {
-    private static Pattern p = Pattern.compile("rewardTermsRaw\\[\\d+\\]");
+
     /** The name of the class to generate. */
     @Builder.Default
     String environmentClassName = "AnyLogicEnvironment";
@@ -69,13 +70,13 @@ public class AnyLogicHelper {
     @Builder.Default
     String observationSnippet = "";
 
+    /** Arbitrary code to add to the getReward() method of the generated class to calculate the reward. */
+    @Builder.Default
+    String rewardSnippet = "";
+
     /** Arbitrary code to add to the test() method of the generated class to compute custom metrics. */
     @Builder.Default
     String metricsSnippet = "";
-
-    /** Arbitrary code to add to the test() method of the generated class to compute reward terms. */
-    @Builder.Default
-    String rewardTermsSnippet = "";
 
     /** The name of the PolicyHelper, such as RLlibPolicyHelper, to run the metrics code as part of the main() method. */
     @Builder.Default
@@ -105,9 +106,6 @@ public class AnyLogicHelper {
     @Setter
     List<String> setObs;
 
-    @Setter
-    int numRewardTerms;
-
     public boolean getIsRLExperiment() {
         return isRLExperiment;
     }
@@ -127,10 +125,6 @@ public class AnyLogicHelper {
 
     /** Takes the parameters from an instance of this class, and returns a Java class that extends AbstractEnvironment. */
     public String generateEnvironment() throws IOException, ReflectiveOperationException {
-
-        Set<Integer> rewardTermsIndexes = rewardTermsIndexSet(rewardTermsSnippet);
-        this.setNumRewardTerms(rewardTermsIndexes.size());
-
         int n = environmentClassName.lastIndexOf(".");
         String className = environmentClassName.substring(n + 1);
         String packageName = n > 0 ? environmentClassName.substring(0, n) : null;
@@ -225,8 +219,8 @@ public class AnyLogicHelper {
                 System.out.println("    --reset-snippet");
                 System.out.println("    --simulation-parameter-snippet");
                 System.out.println("    --observation-snippet");
+                System.out.println("    --reward-snippet");
                 System.out.println("    --metrics-snippet");
-                System.out.println("    --reward-terms-snippet");
                 System.out.println("    --policy-helper");
                 System.out.println("    --test-iterations");
                 System.out.println("    --multi-agent");
@@ -252,10 +246,10 @@ public class AnyLogicHelper {
                 helper.simulationParameterSnippet(args[++i]);
             } else if ("--observation-snippet".equals(args[i])) {
                 helper.observationSnippet(args[++i]);
+            } else if ("--reward-snippet".equals(args[i])) {
+                helper.rewardSnippet(args[++i]);
             } else if ("--metrics-snippet".equals(args[i])) {
                 helper.metricsSnippet(args[++i]);
-            } else if ("--reward-terms-snippet".equals(args[i])) {
-                helper.rewardTermsSnippet(args[++i]);
             } else if ("--policy-helper".equals(args[i])) {
                 helper.policyHelper(args[++i]);
             } else if ("--test-iterations".equals(args[i])) {
@@ -273,14 +267,5 @@ public class AnyLogicHelper {
             output = new File(anyLogicHelper.getEnvironmentClassName().replace('.', '/') + ".java");
         }
         anyLogicHelper.generateEnvironment(output);
-    }
-
-    private static Set<Integer> rewardTermsIndexSet(String snippet) {
-        Matcher matcher = p.matcher(snippet);
-        Set<Integer> indexes = new HashSet<>();
-        while(matcher.find()) {
-            indexes.add(Integer.valueOf(matcher.group().replaceAll("\\D*", "")));
-        }
-        return indexes;
     }
 }

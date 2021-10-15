@@ -149,8 +149,6 @@ public:
     virtual float getReward(ssize_t agentId = 0) = 0;
     /** Returns the last values of observationForReward() */
     virtual const Array& getMetrics(ssize_t agentId = 0) = 0;
-    /** Returns the reward terms */
-    virtual const Array& getRewardTerms(ssize_t agentId = 0) = 0;
 };
 
 #ifdef _WIN32

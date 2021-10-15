@@ -2360,7 +2360,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[nativerl-policy-1.8.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[nativerl-policy-1.7.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
@@ -2368,7 +2368,7 @@ public @interface Continuous {
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 		<Resource>
-			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.8.0-SNAPSHOT.jar]]></Path>
+			<Path><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.1-SNAPSHOT.jar]]></Path>
 			<ReferencedFromUserCode>false</ReferencedFromUserCode>
 		</Resource>
 	</ModelResources>
@@ -2381,7 +2381,7 @@ public @interface Continuous {
 	<ClassPathEntry>
 		<ResourceReference>
 			<PackageName><![CDATA[pathmind.policyhelper]]></PackageName>
-			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.8.0-SNAPSHOT.jar]]></ClassName>
+			<ClassName><![CDATA[../nativerl-policy/target/nativerl-policy-1.7.1-SNAPSHOT.jar]]></ClassName>
 		</ResourceReference>
 		<Imported>false</Imported>
 		<Folder>false</Folder>
