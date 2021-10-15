@@ -108,5 +108,6 @@ def test_stopper():
         entropy_slope_th=0.1,
         vf_loss_range_th=0.1,
         value_pred_th=0.1,
+        convergence_check_start_iteration=1,
     )
     assert hasattr(stopper, "stop")
