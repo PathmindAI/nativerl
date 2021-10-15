@@ -1,18 +1,17 @@
-import pytest
 import os
 
-from pathmind_training.environments import (
-    make_env,
-    get_environment,
-    get_gym_environment,
-)
 from pathmind_training.callbacks import get_callbacks
 from pathmind_training.distributions import register_freezing_distributions
+from pathmind_training.environments import (
+    get_environment,
+    get_gym_environment,
+    make_env,
+)
 from pathmind_training.loggers import get_loggers
 from pathmind_training.models import get_action_masking_model, get_custom_model
-from pathmind_training.utils import get_class_from_string, createEnvironment
 from pathmind_training.scheduler import get_scheduler
 from pathmind_training.stopper import Stopper
+from pathmind_training.utils import createEnvironment, get_class_from_string
 
 
 def test_make_envs():

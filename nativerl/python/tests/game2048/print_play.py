@@ -1,5 +1,5 @@
-from base import Game2048
 import logic
+from base import Game2048
 
 
 def render(matrix):

@@ -1,13 +1,13 @@
-import gym
-from gym.spaces import Discrete, Tuple
 import argparse
 import random
 
+import gym
 import ray
+from gym.spaces import Discrete, Tuple
 from ray import tune
 from ray.rllib.models import ModelCatalog
-from ray.rllib.models.tf.tf_action_dist import Categorical, ActionDistribution
 from ray.rllib.models.tf.misc import normc_initializer
+from ray.rllib.models.tf.tf_action_dist import ActionDistribution, Categorical
 from ray.rllib.models.tf.tf_modelv2 import TFModelV2
 from ray.rllib.utils import try_import_tf
 

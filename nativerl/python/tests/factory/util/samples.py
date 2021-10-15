@@ -1,8 +1,10 @@
-from ..models import Node, Direction, Rail, Table, Core, Phase
-from ..simulation import Factory
-from ..config import SIMULATION_CONFIG
 import random
+
 import numpy as np
+
+from ..config import SIMULATION_CONFIG
+from ..models import Core, Direction, Node, Phase, Rail, Table
+from ..simulation import Factory
 
 
 def factory_from_config(config):

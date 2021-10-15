@@ -1,5 +1,6 @@
 import typing
-from pathmind.simulation import Simulation, Discrete, Continuous
+
+from pathmind.simulation import Continuous, Discrete, Simulation
 
 
 class MouseAndCheese(Simulation):

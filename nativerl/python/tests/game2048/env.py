@@ -1,15 +1,14 @@
-import math
-import typing
 import itertools
-import yaml
-import numpy as np
+import math
+import os
+import typing
 from collections import OrderedDict
 
+import yaml
 from pathmind_training import pynativerl as nativerl
 from pathmind_training.pynativerl import Continuous
-from .base import Game2048
 
-import os
+from .base import Game2048
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(dir_path, "obs.yaml"), "r") as f:

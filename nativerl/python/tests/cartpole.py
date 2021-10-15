@@ -7,8 +7,10 @@ if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
 else:
     import nativerl
+
 import math
 import random
+
 import numpy as np
 
 

@@ -1,8 +1,8 @@
-from tkinter import Frame, Label, CENTER
 import random
+from tkinter import CENTER, Frame, Label
 
-import logic
 import constants as c
+import logic
 
 
 def gen():
