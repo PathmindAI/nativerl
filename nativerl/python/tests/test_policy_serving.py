@@ -16,4 +16,3 @@ def test_policy_predictions():
         action = server.get_action(simulation)
         simulation.set_action(action)
         simulation.step()
-

@@ -5,7 +5,7 @@ import logic
 def render(matrix):
     for row in matrix:
         print(row)
-    print(f'{game.total_reward=} {game.steps=} {game.rew=}')
+    print(f"Total reward: {game.total_reward}, steps: {game.steps}")
 
 
 game = Game2048(random_movements=True, human=True)
@@ -17,8 +17,8 @@ while not game.is_done():
         game.action = input("\nMake a move: Up: 0, Down: 1, Left: 2, Right: 3\n")
     game.step()
 
-if logic.game_state(game.matrix) == 'win':
+if logic.game_state(game.matrix) == "win":
     print("You win!")
 else:
     print("You lose :(")
-print(f'{game.total_reward=} {game.steps=} {game.rew=}')
+print(f"Total reward: {game.total_reward}, steps: {game.steps}")

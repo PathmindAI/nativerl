@@ -30,7 +30,6 @@ def Array(arr: Union[np.array, List]):
 
 
 class Environment(ABC):
-
     @abstractmethod
     def getActionSpace(self, agent_id: int = 0) -> Optional[Space]:
         return NotImplemented
@@ -92,4 +91,3 @@ class Environment(ABC):
     @abstractmethod
     def getRewardTerms(self, agent_id: int = 0) -> np.array:
         return NotImplemented
-
