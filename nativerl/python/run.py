@@ -1,24 +1,23 @@
-import random
 import os
-import fire
+import random
 from typing import Optional
 
+import fire
 import numpy as np
-import gym
 import ray
-from ray.tune import run, sample_from
 
 from pathmind_training import (
-    get_loggers,
-    write_completion_report,
     Stopper,
+    get_loggers,
     get_scheduler,
     modify_anylogic_db_properties,
+    write_completion_report,
 )
+from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
-from pathmind_training.models import get_custom_model
-from pathmind_training.callbacks import get_callbacks, get_callback_function
 from pathmind_training.freezing import freeze_trained_policy
+from pathmind_training.models import get_custom_model
+from ray.tune import run, sample_from
 
 
 def main(

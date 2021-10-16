@@ -1,5 +1,6 @@
-from ray.tune.schedulers import PopulationBasedTraining
 import numpy as np
+from ray.tune.schedulers import PopulationBasedTraining
+
 
 
 def get_scheduler(scheduler_name, train_batch_size=None):

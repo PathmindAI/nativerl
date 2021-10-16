@@ -4,10 +4,11 @@ Copied from http://incompleteideas.net/sutton/book/code/pole.c
 permalink: https://perma.cc/C9ZM-652R
 """
 import math
+
 import gym
-from gym import spaces, logger
-from gym.utils import seeding
 import numpy as np
+from gym import logger, spaces
+from gym.utils import seeding
 
 
 class CartPoleEnv(gym.Env):

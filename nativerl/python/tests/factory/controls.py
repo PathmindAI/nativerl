@@ -2,7 +2,7 @@
 import enum
 import random
 
-from .models import Table, Direction, Node, Rail, ActionResult
+from .models import ActionResult, Direction, Node, Rail, Table
 from .simulation import Factory
 
 

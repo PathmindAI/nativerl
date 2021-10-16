@@ -1,11 +1,11 @@
-from base import Game2048
 import logic
+from base import Game2048
 
 
 def render(matrix):
     for row in matrix:
         print(row)
-    print(f"Total reward: {game.total_reward}, steps: {game.steps=}")
+    print(f"Total reward: {game.total_reward}, steps: {game.steps}")
 
 
 game = Game2048(random_movements=True, human=True)
@@ -21,4 +21,4 @@ if logic.game_state(game.matrix) == "win":
     print("You win!")
 else:
     print("You lose :(")
-print(f"Total reward: {game.total_reward}, steps: {game.steps=}")
+print(f"Total reward: {game.total_reward}, steps: {game.steps}")

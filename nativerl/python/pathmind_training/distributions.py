@@ -1,15 +1,14 @@
-import tree
 import functools
-import numpy as np
+
 import gym
-
-from ray.rllib.models.tf.tf_action_dist import Categorical, TFActionDistribution
-from ray.rllib.models.action_dist import ActionDistribution
-from ray.rllib.utils.spaces.space_utils import get_base_struct_from_space
+import numpy as np
+import tree
 from ray.rllib.models import ModelCatalog
+from ray.rllib.models.action_dist import ActionDistribution
+from ray.rllib.models.tf.tf_action_dist import Categorical, TFActionDistribution
 from ray.rllib.utils.annotations import override
-
 from ray.rllib.utils.framework import try_import_tf, try_import_tfp
+from ray.rllib.utils.spaces.space_utils import get_base_struct_from_space
 
 tf1, tf, tfv = try_import_tf()
 tfp = try_import_tfp()

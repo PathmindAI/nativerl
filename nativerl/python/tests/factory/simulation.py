@@ -1,8 +1,9 @@
-from typing import Optional, List, Dict, TypeVar
 import os
+import pprint
 from collections import Counter
 from csv import writer
-import pprint
+from typing import Dict, List, Optional, TypeVar
+
 from .models import *
 
 PRINTER = pprint.PrettyPrinter(indent=2)

@@ -45,3 +45,6 @@ build/
 ### VS Code ###
 .vscode/
 pathmind-lib
+
+.venv
+.pyenv

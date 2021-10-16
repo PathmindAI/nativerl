@@ -1,8 +1,7 @@
 """Models specify the basic building blocks for this project (what).
 They model what objects are and how to interact with them."""
 import enum
-from typing import Optional, Tuple, TypeVar, List, Dict
-
+from typing import Dict, List, Optional, Tuple, TypeVar
 
 __all__ = ["Direction", "Node", "Rail", "Table", "Phase", "Core", "ActionResult"]
 N = TypeVar("N", bound="Node")

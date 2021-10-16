@@ -1,6 +1,6 @@
 import os
-import yaml
 
+import yaml
 
 full_dir_name = os.path.dirname(os.path.realpath(__file__))
 config_file_path = os.path.join(full_dir_name, "./config.yml")
