@@ -1,6 +1,6 @@
 import os
 
-from ray.tune.logger import CSVLogger, DEFAULT_LOGGERS
+from ray.tune.logger import DEFAULT_LOGGERS, CSVLogger
 from ray.tune.result import EXPR_PROGRESS_FILE
 
 

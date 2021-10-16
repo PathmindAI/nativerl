@@ -1,10 +1,11 @@
-from ..config import SIMULATION_CONFIG, MASK_KEY, OBS_KEY
-from ..util.samples import factory_from_config
-from ..features import get_observations
-from ray.rllib.models.tf.fcnet_v2 import FullyConnectedNetwork
-from ray.rllib.agents.dqn.distributional_q_tf_model import DistributionalQTFModel
-from ray.rllib.utils.framework import try_import_tf
 from gym.spaces import Box
+from ray.rllib.agents.dqn.distributional_q_tf_model import DistributionalQTFModel
+from ray.rllib.models.tf.fcnet_v2 import FullyConnectedNetwork
+from ray.rllib.utils.framework import try_import_tf
+
+from ..config import MASK_KEY, OBS_KEY, SIMULATION_CONFIG
+from ..features import get_observations
+from ..util.samples import factory_from_config
 
 tf = try_import_tf()
 

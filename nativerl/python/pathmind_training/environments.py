@@ -1,15 +1,15 @@
 import glob
+import itertools
+import math
 import os
+import typing
+from collections import OrderedDict
+
 import gym
 import numpy as np
+import yaml
 from ray.rllib.env import MultiAgentEnv
 from ray.tune.registry import register_env
-
-import math
-import typing
-import itertools
-import yaml
-from collections import OrderedDict
 
 if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
@@ -19,7 +19,6 @@ else:
 import pathmind_training.utils
 from pathmind_training.pynativerl import Continuous
 from pathmind_training.utils import get_class_from_string
-
 
 OR_GYM_ENVS = [
     "Knapsack-v0",
@@ -328,7 +327,10 @@ def get_environment(
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
                     metrics = (
-                        agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
+                        agent_metrics
+                        if i == 0
+                        else np.vstack((metrics, agent_metrics))  # noqa
+                        # TODO https://github.com/SkymindIO/nativerl/issues/441
                     )
                 return np.mean(metrics, axis=0)
             else:

@@ -1,9 +1,9 @@
 import logging
-from ray.rllib.agents.registry import get_agent_class
-from ray.tune import run
 
 from pathmind_training.distributions import register_freezing_distributions
 from pathmind_training.utils import write_file
+from ray.rllib.agents.registry import get_agent_class
+from ray.tune import run
 
 
 def find(key, value):

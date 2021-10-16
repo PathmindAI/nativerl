@@ -119,6 +119,3 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     --num-workers 4 \
     --max-iterations 10 \
     --multi-agent
-
-
-

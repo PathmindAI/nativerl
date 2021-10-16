@@ -1,7 +1,11 @@
-from ..models import Node
-from ..simulation import Factory
+# flake8: noqa
+# TODO https://github.com/SkymindIO/nativerl/issues/442
+
 import cv2
 import numpy as np
+
+from ..models import Node
+from ..simulation import Factory
 
 SCALE_X, SCALE_Y = 4, 2
 

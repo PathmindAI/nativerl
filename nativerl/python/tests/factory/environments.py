@@ -1,13 +1,14 @@
 """In which environment are things happening? (where)
 The environment specifies what agents can observe and how
 they are rewarded for actions."""
-from .controls import Action, do_action
-from .models import Direction
-from .util import print_factory, factory_string
-from .features import *
-from .config import SIMULATION_CONFIG, MASK_KEY, OBS_KEY
-from .util.samples import factory_from_config
 import pprint
+
+from .config import MASK_KEY, OBS_KEY, SIMULATION_CONFIG
+from .controls import Action, do_action
+from .features import *
+from .models import Direction
+from .util import factory_string, print_factory
+from .util.samples import factory_from_config
 
 PRINTER = pprint.PrettyPrinter(indent=2)
 
@@ -16,11 +17,10 @@ from copy import deepcopy
 from typing import Dict
 
 import gym
-from gym import spaces
-import ray
-from ray import rllib
 import numpy as np
-
+import ray
+from gym import spaces
+from ray import rllib
 
 __all__ = [
     "FactoryEnv",

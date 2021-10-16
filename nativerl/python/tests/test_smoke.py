@@ -1,18 +1,17 @@
-import pytest
 import os
 
-from pathmind_training.environments import (
-    make_env,
-    get_environment,
-    get_gym_environment,
-)
 from pathmind_training.callbacks import get_callbacks
 from pathmind_training.distributions import register_freezing_distributions
+from pathmind_training.environments import (
+    get_environment,
+    get_gym_environment,
+    make_env,
+)
 from pathmind_training.loggers import get_loggers
 from pathmind_training.models import get_action_masking_model, get_custom_model
-from pathmind_training.utils import get_class_from_string, createEnvironment
 from pathmind_training.scheduler import get_scheduler
 from pathmind_training.stopper import Stopper
+from pathmind_training.utils import createEnvironment, get_class_from_string
 
 
 def test_make_envs():
@@ -35,10 +34,33 @@ def test_get_pathmind_env():
 
 
 def test_callbacks():
-    get_callbacks(debug_metrics=False, is_gym=True)
-    get_callbacks(debug_metrics=True, is_gym=False)
-    get_callbacks(debug_metrics=False, is_gym=False)
-    get_callbacks(debug_metrics=True, is_gym=True)
+    get_callbacks(
+        debug_metrics=False, is_gym=True, use_reward_terms=False, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=True, is_gym=False, use_reward_terms=False, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=False,
+        is_gym=False,
+        use_reward_terms=False,
+        checkpoint_frequency=1,
+    )
+    get_callbacks(
+        debug_metrics=True, is_gym=True, use_reward_terms=False, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=False, is_gym=True, use_reward_terms=True, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=True, is_gym=False, use_reward_terms=True, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=False, is_gym=False, use_reward_terms=True, checkpoint_frequency=1
+    )
+    get_callbacks(
+        debug_metrics=True, is_gym=True, use_reward_terms=True, checkpoint_frequency=1
+    )
 
 
 def test_distributions():
@@ -71,7 +93,8 @@ def test_pynativerl():
 
 
 def test_scheduler():
-    get_scheduler()
+    get_scheduler("PBT")
+    get_scheduler("PB2")
 
 
 def test_stopper():
@@ -85,5 +108,6 @@ def test_stopper():
         entropy_slope_th=0.1,
         vf_loss_range_th=0.1,
         value_pred_th=0.1,
+        convergence_check_start_iteration=1,
     )
     assert hasattr(stopper, "stop")

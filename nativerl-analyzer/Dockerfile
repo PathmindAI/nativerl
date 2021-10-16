@@ -45,4 +45,3 @@ COPY ${CHECK_MODEL_SCRIPT} bin
 
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/pathmind-ma-api-spring-boot.jar"]
-

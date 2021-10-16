@@ -7,8 +7,10 @@ if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
 else:
     import nativerl
+
 import math
 import random
+
 import numpy as np
 
 
@@ -114,6 +116,9 @@ class PathmindEnvironment(nativerl.Environment):
             self.steps_beyond_done += 1
             reward = 0.0
         return reward
+
+    def getRewardTerms(self):
+        return
 
     def getMetrics(self, agent_id=0):
         return (

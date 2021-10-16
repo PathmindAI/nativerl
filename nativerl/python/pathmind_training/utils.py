@@ -1,7 +1,8 @@
 import importlib
-import os
-import gym
 import math
+import os
+
+import gym
 import numpy as np
 
 if os.environ.get("USE_PY_NATIVERL"):

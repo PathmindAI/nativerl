@@ -1,10 +1,10 @@
-import typing
+import math
 import random
 import time
-import math
+import typing
 
-from . import logic
 from . import constants as c
+from . import logic
 
 
 class Game2048:
