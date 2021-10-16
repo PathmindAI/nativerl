@@ -38,6 +38,7 @@ def test_pathmind_env_module():
     run.main(
         environment="tests.cartpole.PathmindEnvironment",
         max_episodes=1,
+        is_pathmind_simulation=True,
         output_dir=output_dir,
     )
 
