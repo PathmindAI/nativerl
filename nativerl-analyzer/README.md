@@ -58,5 +58,6 @@ You can also manually modify hardcoded paths in scripts, `FileService#CHECK_MODE
    --build-arg S3BUCKET='<s3_bucket>' \
    --build-arg AWS_ACCESS_KEY_ID='<key_id>' \
    --build-arg AWS_SECRET_ACCESS_KEY='<access_key>' \
+   --build-arg NATIVERL_FOLDER='nativerl/1_8_1' \
    .
   ```
