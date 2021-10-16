@@ -18,7 +18,9 @@ It defines an intermediary C++ interface via the classes in `nativerl.h`, which 
 - JavaCPP 1.5.1+ https://github.com/bytedeco/javacpp
 - Python 3.7+ https://www.python.org/downloads/
 - pybind11 2.2.4+ https://github.com/pybind/pybind11
-- RLlib https://ray.readthedocs.io/en/latest/rllib.html
+- RLlib 1.3.0 https://docs.ray.io/en/releases-1.3.0/rllib.html
+
+Refer to requirements.txt for the latest
 
 ## Build Instructions
 
