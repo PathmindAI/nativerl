@@ -1,3 +1,6 @@
+# flake8: noqa
+# TODO https://github.com/SkymindIO/nativerl/issues/442
+
 import cv2
 import numpy as np
 
