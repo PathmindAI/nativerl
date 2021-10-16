@@ -137,3 +137,24 @@ unzip -j nativerl-1.8.1-SNAPSHOT-bin.zip
 NativeRL's helpers currently implement only the simplest possible multiagent support available in RLlib, but it might just be what is needed in "99%" of the cases anyway, and it does allow us to have the "multiagent checkbox" ticked. Specifically, the policy optimized is shared among all agents, so they must be homogeneous enough to allow that. This corresponds to "level 1" described on this blog post: https://bair.berkeley.edu/blog/2018/12/12/rllib/
 
 To use this basic level of support, we need to increase the "Number of Agents" value in the PathmindHelper, and make the values for "Observations", "Reward", "Actions", and "ActionMasks" depend on the `int agentId` argument that gets passed to them. This way, NativeRL can get 1 observation array per agent, 1 reward per agent, and can send 1 action per agent.
+
+## Code formatting and autotests
+
+For all PR to nativeRL, this will check basic code syntax, linting and run auto-tests for pynativerl.
+
+### To run code syntax formatting locally:
+
+```
+> pip install -r nativerl/python/requirements-dev.txt
+> pre-commit run --all-files
+```
+
+When you create a commit it will automatically lint and format your code.
+
+### To run python tests locally:
+
+```
+> pip install -r nativerl/python/requirements-dev.txt
+> cd nativerl/python/
+> USE_PY_NATIVERL=True pytest
+```
