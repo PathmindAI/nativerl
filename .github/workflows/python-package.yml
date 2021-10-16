@@ -43,7 +43,9 @@ jobs:
           pip install -r nativerl/python/requirements-dev.txt
       - name: Test with pytest - Unit tests
         run: |
-          USE_PY_NATIVERL=True pytest nativerl/python/. -m "not integration"
+          cd nativerl/python
+          USE_PY_NATIVERL=True pytest -m "not integration"
       - name: Test with pytest - Integration tests
         run: |
-          USE_PY_NATIVERL=True pytest nativerl/python/. -m "integration"
+          cd nativerl/python
+          USE_PY_NATIVERL=True pytest -m "integration"

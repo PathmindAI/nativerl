@@ -5,6 +5,9 @@ from tests.mouse.mouse_env_pathmind import MouseAndCheese
 
 
 @pytest.mark.integration
+@pytest.mark.xfail(
+    reason="Pathmind Simulations needs bug fixes to be released - https://github.com/PathmindAI/pathmind-api/pull/2"
+)
 def test_policy_predictions():
     # Note: this requires a policy server to run on localhost 8000 with (any) MouseAndCheese model hosted.
     # server = PolicyServer(url="http://localhost:8000", api_key="1234567asdfgh")
