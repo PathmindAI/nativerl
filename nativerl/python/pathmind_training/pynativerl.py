@@ -1,3 +1,4 @@
+import importlib
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
 
@@ -92,3 +93,20 @@ class Environment(ABC):
     @abstractmethod
     def getRewardTerms(self, agent_id: int = 0) -> np.array:
         return NotImplemented
+
+
+def get_environment_class(env_name):
+    """Get environment class instance from a string, interpreted as Python module
+    :param env_name:
+    :return:
+    """
+    class_name = env_name.split(".")[-1]
+    module = env_name.replace(f".{class_name}", "")
+    lib = importlib.import_module(module)
+    return getattr(lib, class_name)
+
+
+def createEnvironment(env_name):
+    clazz = get_environment_class(env_name)
+    obj = clazz()
+    return obj
