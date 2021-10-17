@@ -37,14 +37,12 @@ def test_freezing():
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(reason="Still debugging this")
 def test_pathmind_env_module():
     ray.shutdown()
     output_dir = f"testoutputs/test-pathmind-env-module-{randint(0,1000)}"
     run.main(
         environment="tests.cartpole.PathmindEnvironment",
         max_episodes=1,
-        is_pathmind_simulation=True,
         output_dir=output_dir,
     )
 
