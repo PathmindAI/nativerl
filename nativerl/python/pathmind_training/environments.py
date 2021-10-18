@@ -456,6 +456,7 @@ def get_native_env_from_simulation(
             )
 
         def getRewardTerms(self, agent_id: int = 0) -> np.array:
-            return NotImplemented
+            reward_dict = self.simulation.get_reward(agent_id)
+            return list(reward_dict.values())
 
     return PathmindEnv()
