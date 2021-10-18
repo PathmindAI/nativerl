@@ -4,6 +4,7 @@ import math
 import os
 import typing
 from collections import OrderedDict
+from typing import List
 
 import gym
 import numpy as np
@@ -455,8 +456,8 @@ def get_native_env_from_simulation(
                 low=[-math.inf], high=[math.inf], shape=[num_metrics]
             )
 
-        def getRewardTerms(self, agent_id: int = 0):
+        def getRewardTerms(self, agent_id: int = 0) -> List[float]:
             reward_dict = self.simulation.get_reward(agent_id)
-            return list(reward_dict.values())
+            return List(reward_dict.values())
 
     return PathmindEnv()
