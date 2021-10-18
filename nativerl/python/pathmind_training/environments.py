@@ -127,7 +127,6 @@ def get_environment(
             self.term_contributions_dict = {}
             self.term_contributions = np.zeros(self.num_reward_terms)
 
-
         def define_action_space(self):
             i = 0
             action_space = self.nativeEnv.getActionSpace(i)
@@ -279,10 +278,15 @@ def get_environment(
 
                 done_dict["__all__"] = all(done_dict.values())
 
-                if self.use_reward_terms and done_dict['__all__']:
+                if self.use_reward_terms and done_dict["__all__"]:
                     max_array = np.zeros(len(reward_array))
                     for key, val in self.term_contributions_dict.items():
-                        max_array = np.array([max(max_array[i], abs(val[i])) for i in range(len(reward_array))])
+                        max_array = np.array(
+                            [
+                                max(max_array[i], abs(val[i]))
+                                for i in range(len(reward_array))
+                            ]
+                        )
                     self.term_contributions = max_array
 
                 return obs_dict, reward_dict, done_dict, {}
@@ -342,7 +346,7 @@ def get_environment(
 
         def updateBetas(self, target_betas, lr):
             if self.use_auto_norm:
-                self.betas = self.betas - lr*(target_betas - self.betas)
+                self.betas = self.betas - lr * (target_betas - self.betas)
 
         def getRewardTermContributions(self):
             if self.use_reward_terms:

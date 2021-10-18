@@ -16,56 +16,56 @@ from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
 from pathmind_training.freezing import freeze_trained_policy
 from pathmind_training.models import get_custom_model
-from ray.tune import run, sample_from, Analysis
+from ray.tune import Analysis, run, sample_from
 
 
-
-def main(environment: str,
-         is_gym: bool = False,
-         is_pathmind_simulation: bool = False,
-         obs_selection: str = None,
-         rew_fct_name: str = None,
-         algorithm: str = 'PPO',
-         scheduler: str = 'PBT',
-         output_dir: str = os.getcwd(),
-         multi_agent: bool = False,
-         max_memory_in_mb: int = 4096,
-         cpu_count: int = 8,
-         num_cpus: int = 1,
-         num_gpus: int = 0,
-         num_workers: int = 1,
-         num_hidden_layers: int = 2,
-         num_hidden_nodes: int = 256,
-         max_iterations: int = 500,
-         convergence_check_start_iteration: int = 250,
-         max_time_in_sec: int = 43200,
-         max_episodes: int = 200000,
-         num_samples: int = 4,
-         resume: bool = False,
-         checkpoint_frequency: int = 5,
-         keep_checkpoints_number: int = 5,
-         max_failures: int = 5,
-         debug_metrics: bool = False,
-         user_log: bool = False,
-         autoregressive: bool = False,
-         episode_reward_range: float = 0.01,
-         entropy_slope: float = 0.01,
-         vf_loss_range: float = 0.1,
-         value_pred: float = 0.01,
-         action_masking: bool = False,
-         freezing: bool = False,
-         discrete: bool = True,
-         random_seed: Optional[int] = None,
-         custom_callback: Optional[str] = None,
-         gamma: float = 0.99,
-         train_batch_mode: str = 'complete_episodes',
-         train_batch_size: Optional[int] = None,
-         rollout_fragment_length: int = 200,
-         reward_balance_period: int = 1,
-         num_reward_terms: int = None,
-         alphas: str = None,
-         use_auto_norm: bool = True 
-         ):
+def main(
+    environment: str,
+    is_gym: bool = False,
+    is_pathmind_simulation: bool = False,
+    obs_selection: str = None,
+    rew_fct_name: str = None,
+    algorithm: str = "PPO",
+    scheduler: str = "PBT",
+    output_dir: str = os.getcwd(),
+    multi_agent: bool = False,
+    max_memory_in_mb: int = 4096,
+    cpu_count: int = 8,
+    num_cpus: int = 1,
+    num_gpus: int = 0,
+    num_workers: int = 1,
+    num_hidden_layers: int = 2,
+    num_hidden_nodes: int = 256,
+    max_iterations: int = 500,
+    convergence_check_start_iteration: int = 250,
+    max_time_in_sec: int = 43200,
+    max_episodes: int = 200000,
+    num_samples: int = 4,
+    resume: bool = False,
+    checkpoint_frequency: int = 5,
+    keep_checkpoints_number: int = 5,
+    max_failures: int = 5,
+    debug_metrics: bool = False,
+    user_log: bool = False,
+    autoregressive: bool = False,
+    episode_reward_range: float = 0.01,
+    entropy_slope: float = 0.01,
+    vf_loss_range: float = 0.1,
+    value_pred: float = 0.01,
+    action_masking: bool = False,
+    freezing: bool = False,
+    discrete: bool = True,
+    random_seed: Optional[int] = None,
+    custom_callback: Optional[str] = None,
+    gamma: float = 0.99,
+    train_batch_mode: str = "complete_episodes",
+    train_batch_size: Optional[int] = None,
+    rollout_fragment_length: int = 200,
+    reward_balance_period: int = 1,
+    num_reward_terms: int = None,
+    alphas: str = None,
+    use_auto_norm: bool = True,
+):
     """
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
@@ -129,12 +129,14 @@ def main(environment: str,
     modify_anylogic_db_properties()
 
     env_config = {
-        'use_reward_terms': alphas is not None,
-        'reward_balance_period': reward_balance_period,
-        'num_reward_terms': num_reward_terms if alphas else 1,
-        'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms),
-        'betas': np.ones(num_reward_terms),
-        'use_auto_norm': use_auto_norm and (alphas is not None) and (num_reward_terms !=1)
+        "use_reward_terms": alphas is not None,
+        "reward_balance_period": reward_balance_period,
+        "num_reward_terms": num_reward_terms if alphas else 1,
+        "alphas": np.asarray(alphas) if alphas else np.ones(num_reward_terms),
+        "betas": np.ones(num_reward_terms),
+        "use_auto_norm": use_auto_norm
+        and (alphas is not None)
+        and (num_reward_terms != 1),
     }
 
     if env_config["use_reward_terms"]:
@@ -204,28 +206,30 @@ def main(environment: str,
     loggers = get_loggers()
 
     config = {
-        'env': env_name,
-        'env_config': env_config,
-        'callbacks': callbacks,
-        'num_gpus': num_gpus,
-        'num_workers': num_workers,
-        'num_cpus_per_worker': num_cpus,
-        'model': model,
-        'use_gae': True,
-        'vf_loss_coeff': 1.0,
-        'vf_clip_param': np.inf,
-        'lambda': 0.95,
-        'clip_param': 0.2,
-        'lr': 0.0,
-        'gamma': gamma,
-        'entropy_coeff': 0.0,
-        'num_sgd_iter': sample_from(lambda spec: random.choice([10, 20, 30])),
-        'sgd_minibatch_size': sample_from(lambda spec: random.choice([128, 512, 2048])),
-        'train_batch_size': train_batch_size if train_batch_size else sample_from(lambda spec: random.choice([4000, 8000, 12000])),
-        'rollout_fragment_length': rollout_fragment_length,
-        'batch_mode': train_batch_mode,  # Set rollout samples to episode length
-        'horizon': env_instance.max_steps, # Set max steps per episode
-        'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
+        "env": env_name,
+        "env_config": env_config,
+        "callbacks": callbacks,
+        "num_gpus": num_gpus,
+        "num_workers": num_workers,
+        "num_cpus_per_worker": num_cpus,
+        "model": model,
+        "use_gae": True,
+        "vf_loss_coeff": 1.0,
+        "vf_clip_param": np.inf,
+        "lambda": 0.95,
+        "clip_param": 0.2,
+        "lr": 0.0,
+        "gamma": gamma,
+        "entropy_coeff": 0.0,
+        "num_sgd_iter": sample_from(lambda spec: random.choice([10, 20, 30])),
+        "sgd_minibatch_size": sample_from(lambda spec: random.choice([128, 512, 2048])),
+        "train_batch_size": train_batch_size
+        if train_batch_size
+        else sample_from(lambda spec: random.choice([4000, 8000, 12000])),
+        "rollout_fragment_length": rollout_fragment_length,
+        "batch_mode": train_batch_mode,  # Set rollout samples to episode length
+        "horizon": env_instance.max_steps,  # Set max steps per episode
+        "no_done_at_end": multi_agent,  # Disable "de-allocation" of agents for simplicity
     }
 
     trials = run(
@@ -245,16 +249,33 @@ def main(environment: str,
         queue_trials=True,
     )
 
-    analysis = Analysis(output_dir, default_metric="episode_reward_mean", default_mode="max")
+    analysis = Analysis(
+        output_dir, default_metric="episode_reward_mean", default_mode="max"
+    )
     trial = analysis.get_best_logdir()
-    df = analysis.get_trial_dataframes[os.path.join(output_dir,trial)]
+    df = analysis.get_trial_dataframes[os.path.join(output_dir, trial)]
     betas = df.iloc[-1][f"custom_metrics/betas"]
     env_config["betas"] = np.array(betas)
 
     if freezing:
-        best_freezing_log_dir = freeze_trained_policy(env=env_instance, env_name=env_name, env_config=env_config, callbacks=callbacks, trials=trials, loggers=loggers,
-                              algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete, multi_agent=multi_agent)
-        write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm, best_freezing_log_dir=best_freezing_log_dir)
+        best_freezing_log_dir = freeze_trained_policy(
+            env=env_instance,
+            env_name=env_name,
+            env_config=env_config,
+            callbacks=callbacks,
+            trials=trials,
+            loggers=loggers,
+            algorithm=algorithm,
+            output_dir=f"{output_dir}/{algorithm}/freezing",
+            is_discrete=discrete,
+            multi_agent=multi_agent,
+        )
+        write_completion_report(
+            trials=trials,
+            output_dir=output_dir,
+            algorithm=algorithm,
+            best_freezing_log_dir=best_freezing_log_dir,
+        )
     else:
         write_completion_report(
             trials=trials, output_dir=output_dir, algorithm=algorithm

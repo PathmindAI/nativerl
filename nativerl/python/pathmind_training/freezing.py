@@ -19,27 +19,39 @@ def find(key, value):
                     yield result
 
 
-def mc_rollout(steps, checkpoint, environment, env_name, env_config, callbacks, loggers, output_dir, input_config,
-               step_tolerance=1000000, algorithm='PPO', multi_agent=False):
+def mc_rollout(
+    steps,
+    checkpoint,
+    environment,
+    env_name,
+    env_config,
+    callbacks,
+    loggers,
+    output_dir,
+    input_config,
+    step_tolerance=1000000,
+    algorithm="PPO",
+    multi_agent=False,
+):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
     """
 
     config = {
-        'env': env_name,
-        'env_config': env_config,
-        'callbacks': callbacks,
-        'num_gpus': 0,
-        'num_workers': 6,
-        'num_cpus_per_worker': 1,
-        'model': input_config['model'],
-        'lr': 0.0,
-        'num_sgd_iter': 1,
-        'sgd_minibatch_size': 1,
-        'train_batch_size': steps,
-        'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
-        'horizon': environment.max_steps,  # Set max steps per episode,
-        'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
+        "env": env_name,
+        "env_config": env_config,
+        "callbacks": callbacks,
+        "num_gpus": 0,
+        "num_workers": 6,
+        "num_cpus_per_worker": 1,
+        "model": input_config["model"],
+        "lr": 0.0,
+        "num_sgd_iter": 1,
+        "sgd_minibatch_size": 1,
+        "train_batch_size": steps,
+        "batch_mode": "complete_episodes",  # Set rollout samples to episode length
+        "horizon": environment.max_steps,  # Set max steps per episode,
+        "no_done_at_end": multi_agent,  # Disable "de-allocation" of agents for simplicity
     }
 
     trials = run(
@@ -66,9 +78,21 @@ def mc_rollout(steps, checkpoint, environment, env_name, env_config, callbacks, 
     )
 
 
-def freeze_trained_policy(env, env_name, env_config, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
-                          filter_tolerance: float = 0.85, mc_steps: int = 10000,
-                          step_tolerance: int = 100_000_000, multi_agent: bool = False):
+def freeze_trained_policy(
+    env,
+    env_name,
+    env_config,
+    callbacks,
+    trials,
+    loggers,
+    output_dir: str,
+    algorithm: str,
+    is_discrete: bool,
+    filter_tolerance: float = 0.85,
+    mc_steps: int = 10000,
+    step_tolerance: int = 100_000_000,
+    multi_agent: bool = False,
+):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
     :param env: nativerl.Environment instance
@@ -110,11 +134,26 @@ def freeze_trained_policy(env, env_name, env_config, callbacks, trials, loggers,
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'].update({'custom_action_dist': temp})
+            config["model"].update({"custom_action_dist": temp})
 
-        mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
-            mc_rollout(mc_steps, checkpoint_path, env, env_name, env_config, callbacks, loggers, output_dir, config,
-                       step_tolerance, algorithm, multi_agent)
+        (
+            mean_reward_dict[temp],
+            range_reward_dict[temp],
+            log_dir_dict[temp],
+        ) = mc_rollout(
+            mc_steps,
+            checkpoint_path,
+            env,
+            env_name,
+            env_config,
+            callbacks,
+            loggers,
+            output_dir,
+            config,
+            step_tolerance,
+            algorithm,
+            multi_agent,
+        )
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
     filter_tolerance = (
