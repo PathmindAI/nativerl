@@ -244,9 +244,9 @@ def main(environment: str,
         queue_trials=True,
     )
 
-    analysis = Analyisis(outdir, default_metric="episode_reward_mean", default_mode="max")
+    analysis = Analysis(output_dir, default_metric="episode_reward_mean", default_mode="max")
     trial = analysis.get_best_logdir()
-    df = analysis.get_trial_dataframes[os.path.join(outdir,trial)]
+    df = analysis.get_trial_dataframes[os.path.join(output_dir,trial)]
     betas = df.iloc[-1][f"custom_metrics/betas"]
     env_config["betas"] = np.array(betas)
 
