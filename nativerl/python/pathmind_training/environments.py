@@ -96,7 +96,7 @@ def get_environment(jar_dir: str, environment_name: str, is_multi_agent: bool = 
             self.use_auto_norm = env_config["use_auto_norm"]
             self.num_reward_terms = env_config["num_reward_terms"]
             self.alphas = env_config["alphas"]
-            self.betas = env_config["betas"] if env_config["betas"] not None else np.ones(self.num_reward_terms)
+            self.betas = env_config["betas"]
 
             self.term_contributions_dict = {}
             self.term_contributions = np.zeros(self.num_reward_terms)
