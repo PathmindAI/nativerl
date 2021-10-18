@@ -1,0 +1,153 @@
+{{#if packageName}}package {{packageName}};{{/if}}
+import com.anylogic.engine.Engine;
+import pathmind.policyhelper.PathmindHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.*;
+import java.nio.charset.Charset;
+import org.apache.commons.io.FileUtils;
+import io.skymind.pathmind.analyzer.dto.SimulationParameter;
+import io.skymind.pathmind.analyzer.dto.HyperparametersDTO;
+{{#if simulationClassName}}import {{simulationClassName}};{{/if}}
+
+public class ModelAnalyzer {
+    private static String display(String[] theStrings) {
+        return Stream.of(theStrings).collect(Collectors.joining("|"));
+    }
+    public static void main(String[] args) throws Throwable {
+        HyperparametersDTO dto = new HyperparametersDTO();
+        System.setProperty("ai.skymind.nativerl.disablePolicyHelper", "true");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        List<String> failedSteps = new ArrayList<>();
+        Engine engine;
+        {{agentClassName}} agent;
+
+        try {
+            {{simulationClassName}} exp = new {{simulationClassName}}();
+{{#if isRLExperiment}}
+            agent = exp.createModel();
+            engine = agent.getEngine();
+{{else}}
+            engine = new Training(null).createEngine();
+            exp.setupEngine(engine);
+            exp.initDefaultRandomNumberGenerator(engine);
+            agent = new {{agentClassName}}(engine, null, null);
+{{/if}}
+        } catch(RuntimeException e) {
+            if (e.getCause() instanceof ClassNotFoundException) {
+                dto.setOldVersionFound(true);
+                System.exit(0);
+                return;
+            } else {
+                dto.setOldVersionFound(false);
+                e.printStackTrace(System.out);
+                System.exit(1);
+                return;
+            }
+        }
+
+        agent.setParametersToDefaultValues();
+
+        AtomicInteger index = new AtomicInteger();
+        List<SimulationParameter> simulationParameters = Arrays.stream(agent.getParameterNames())
+                .map(p -> {
+                    String key = p;
+                    Object value = agent.getParameter(p);
+                    Integer type = getType(value);
+                    return new SimulationParameter(index.getAndIncrement(), key, value == null ? "NULL_VALUE" : value.toString(), type);
+                })
+                .collect(Collectors.toList());
+
+        if (!simulationParameters.isEmpty()) {
+            dto.setAgentParams(simulationParameters);
+        }
+
+        try {
+            engine.start(agent);
+        } catch (Throwable ex) {
+            ex.printStackTrace(System.out);
+            failedSteps.add("startEngine");
+        }
+
+        PathmindHelper helper = agent.{{pathmindHelperClassName}};
+
+        try {
+            dto.setObservations(String.valueOf(helper.observationForTraining().length));
+            dto.setObservationNames(Arrays.asList(helper.getObservationNames()));
+            dto.setObservationTypes(Arrays.asList(helper.getObservationTypes()));
+        } catch (Throwable ex) {
+             System.out.println("Cannot get obs:");
+             ex.printStackTrace(System.out);
+             failedSteps.add("observations");
+        }
+
+        // actions is here just to keep backward compatibility. When we remove support from webapp, we can remove it.
+        boolean[] actionMasks = helper.actionMask();
+        dto.setActions(String.valueOf(helper.getPossibleActionCount()));
+        dto.setActionMask((actionMasks != null && actionMasks.length > 0));
+        dto.setRewardVariablesCount(String.valueOf(helper.observationForReward().length));
+        dto.setRewardVariableNames(Arrays.asList(helper.getRewardVariableNames()));
+        dto.setRewardVariableTypes(Arrays.asList(helper.getRewardVariableTypes()));
+
+
+        // check number of agent
+        //System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "al_multi" : "al_single"));
+        //this is for temporary roll back for support staging and dev server again
+        //System.out.println("model-analyzer-mode:" + (helper.numberOfAgents > 1 ? "multi" : "single"));
+        dto.setAgents(String.valueOf(helper.numberOfAgents));
+        dto.setMode((helper.numberOfAgents > 1 ? "multi" : "single"));
+
+        try {
+            if (helper.isEnabled) {
+                dto.setEnabled(true);
+            } else {
+                dto.setEnabled(false);
+                failedSteps.add("pathmindHelperDisabled");
+            }
+        } catch (Throwable ex) {
+            System.out.println("Cannot get isEnabled:");
+            ex.printStackTrace(System.out);
+            failedSteps.add("pathmindHelperDisabled");
+        }
+
+        try {
+            File f = new File("HyperparametersDTO");
+            FileUtils.writeStringToFile(f, objectMapper.writeValueAsString(dto));
+            System.out.println("DTOPath:" + f.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        dto.setRewardFunction("not defined");
+        dto.setFailedSteps(String.join(",", failedSteps));
+
+        System.exit(0);
+    }
+
+    private static Integer getType(Object value) {
+        Integer type = 4;
+        if (value != null) {
+            Class klass = value.getClass();
+            if (klass == java.lang.Boolean.class) {
+                type = 0;
+            } else if (klass == java.lang.Integer.class) {
+                type = 1;
+            } else if (klass == java.lang.Double.class) {
+                type = 2;
+            } else if (klass == java.lang.String.class) {
+                type = 3;
+            } else if (klass == java.util.Date.class) {
+                type = 5;
+            }
+        }
+        return type;
+    }
+}

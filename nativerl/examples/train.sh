@@ -227,7 +227,6 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --agent-class-name "$AGENT_CLASS" \
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
-        --reward-snippet "$REWARD_SNIPPET" \
         --reward-terms-snippet "$REWARD_TERMS_SNIPPET" \
         --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \

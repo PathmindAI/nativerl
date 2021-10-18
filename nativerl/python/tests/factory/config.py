@@ -1,6 +1,6 @@
 import os
-import yaml
 
+import yaml
 
 full_dir_name = os.path.dirname(os.path.realpath(__file__))
 config_file_path = os.path.join(full_dir_name, "./config.yml")
@@ -14,8 +14,14 @@ OBS_KEY = "observations"
 
 
 def get_observation_names():
-    return [k for k, v in SIMULATION_CONFIG.items() if k.startswith('obs_') and v is True]
+    return [
+        k for k, v in SIMULATION_CONFIG.items() if k.startswith("obs_") and v is True
+    ]
 
 
 def get_reward_names_and_weights():
-    return {k: v.get("weight") for k, v in SIMULATION_CONFIG.items() if k.startswith('rew_') and v.get("value") is True}
+    return {
+        k: v.get("weight")
+        for k, v in SIMULATION_CONFIG.items()
+        if k.startswith("rew_") and v.get("value") is True
+    }

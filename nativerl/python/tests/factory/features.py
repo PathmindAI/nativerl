@@ -1,17 +1,22 @@
-from .models import Node, Direction, Table
-from .simulation import Factory
-from .config import get_observation_names, get_reward_names_and_weights, SIMULATION_CONFIG
-import numpy as np
-from typing import List, Optional
 import inspect
 import sys
+from typing import List, Optional
+
+import numpy as np
+
+from .config import (
+    SIMULATION_CONFIG,
+    get_observation_names,
+    get_reward_names_and_weights,
+)
+from .models import Direction, Node, Table
+from .simulation import Factory
 
 __all__ = ["get_observations", "get_reward", "get_done", "can_move_in_direction"]
 
 
 def get_done(agent_id: int, factory: Factory) -> bool:
-    """We're done with the table if it doesn't have a core anymore or we're out of moves.
-    """
+    """We're done with the table if it doesn't have a core anymore or we're out of moves."""
     counter = factory.agent_step_counter.get(agent_id)
     if counter > factory.max_num_steps:
         # Note that we track the maximum number of steps per agent, not in total.
@@ -29,7 +34,7 @@ def get_reward(agent_id: int, factory: Factory, episodes: int) -> float:
     rewards_to_use = get_reward_names_and_weights()
     rewards = {}
 
-    if SIMULATION_CONFIG.get("tighten_max_steps") :
+    if SIMULATION_CONFIG.get("tighten_max_steps"):
         discount_by = SIMULATION_CONFIG.get("discount_episodes_by")
         discount_until = SIMULATION_CONFIG.get("discount_episodes_until")
         episode_discount = max(discount_until, 1 - (episodes / float(discount_by)))
@@ -50,24 +55,24 @@ def get_reward(agent_id: int, factory: Factory, episodes: int) -> float:
     # high incentive for reaching a target, quickly
     time_taken = steps / float(max_num_steps)
     if agent.is_at_target:
-        rewards["rew_found_target"] = (1.0 - time_taken)
+        rewards["rew_found_target"] = 1.0 - time_taken
         rewards["rew_found_target_squared"] = (1.0 - time_taken) ** 2
 
     # Draft reward term that accounts for physical moves
     physical_moves = factory.move_counter["MOVED"]
     physical_moves_ratio = physical_moves / float(max_num_steps)
     if agent.is_at_target:
-        rewards["rew_found_target_physical"] = (1.0 - physical_moves_ratio)
+        rewards["rew_found_target_physical"] = 1.0 - physical_moves_ratio
         rewards["rew_found_target_physical_squared"] = (1.0 - physical_moves_ratio) ** 2
 
     # punish if too slow
     if steps == max_num_steps:
         num_cores_left = len([t for t in factory.tables if t.has_core()])
-        rewards["rew_punish_slow_tables"] = - 1 * num_cores_left
+        rewards["rew_punish_slow_tables"] = -1 * num_cores_left
 
     if not agent.has_core():
         # If an agent without core is close to one with core, let it shy away...
-        rewards["rew_avoid_cores"]  = -1.0 * has_core_neighbour(agent.node, factory)
+        rewards["rew_avoid_cores"] = -1.0 * has_core_neighbour(agent.node, factory)
 
         # ... and if it sits on any current target, punish it
         # TODO: how can we account for the fact that tables might be "on the path"
@@ -125,9 +130,11 @@ def has_core_neighbour(node: Node, factory: Factory):
                 return True
     return False
 
+
 # COORDINATE-BASED OBSERVATIONS
 # TODO: investigate if there's a way to assess the "value" of locations for
 #  non-core bearing tables to move to? This way we could assign them more concrete goals in the reward function.
+
 
 def obs_agent_id(agent_id: int, factory: Factory) -> np.ndarray:
     """This agent's ID"""
@@ -152,24 +159,28 @@ def obs_agent_has_neighbour(agent_id: int, factory: Factory) -> np.ndarray:
     """Does this agent have a neighbouring node?"""
     agent: Table = factory.tables[agent_id]
 
-    return np.asarray([
-        agent.node.has_neighbour(Direction.up),
-        agent.node.has_neighbour(Direction.right),
-        agent.node.has_neighbour(Direction.down),
-        agent.node.has_neighbour(Direction.left),
-    ])
+    return np.asarray(
+        [
+            agent.node.has_neighbour(Direction.up),
+            agent.node.has_neighbour(Direction.right),
+            agent.node.has_neighbour(Direction.down),
+            agent.node.has_neighbour(Direction.left),
+        ]
+    )
 
 
 def obs_agent_free_neighbour(agent_id: int, factory: Factory):
     """Does this agent have a neighbouring node and, if so, can we go there?"""
     agent: Table = factory.tables[agent_id]
 
-    return np.asarray([
-        can_move_in_direction(agent.node, Direction.up, factory),
-        can_move_in_direction(agent.node, Direction.right, factory),
-        can_move_in_direction(agent.node, Direction.down, factory),
-        can_move_in_direction(agent.node, Direction.left, factory)
-    ])
+    return np.asarray(
+        [
+            can_move_in_direction(agent.node, Direction.up, factory),
+            can_move_in_direction(agent.node, Direction.right, factory),
+            can_move_in_direction(agent.node, Direction.down, factory),
+            can_move_in_direction(agent.node, Direction.left, factory),
+        ]
+    )
 
 
 def obs_agent_has_core(agent_id: int, factory: Factory):
@@ -192,6 +203,7 @@ def obs_agent_core_target_coordinates(agent_id: int, factory: Factory):
 
 # ONE-HOT OBSERVATIONS
 
+
 def obs_all_tables_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
     """One-hot encode all current table positions."""
     num_nodes = len(factory.nodes)
@@ -202,14 +214,18 @@ def obs_all_tables_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
 def obs_all_cores_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
     """One-hot encode all cores."""
     num_nodes = len(factory.nodes)
-    all_table_indices = [factory.nodes.index(t.node) for t in factory.tables if t.has_core()]
+    all_table_indices = [
+        factory.nodes.index(t.node) for t in factory.tables if t.has_core()
+    ]
     return np.asarray(one_hot_encode(num_nodes, all_table_indices))
 
 
 def obs_all_targets_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
     """One-hot encode all core targets."""
     num_nodes = len(factory.nodes)
-    all_target_indices = [factory.nodes.index(c.current_target) for c in factory.cores if c.current_target]
+    all_target_indices = [
+        factory.nodes.index(c.current_target) for c in factory.cores if c.current_target
+    ]
     return np.asarray(one_hot_encode(num_nodes, all_target_indices))
 
 
@@ -235,30 +251,38 @@ def obs_agent_core_target_one_hot(agent_id: int, factory: Factory) -> np.ndarray
         core_target_index = [factory.nodes.index(agent.core.current_target)]
     return np.asarray(one_hot_encode(num_nodes, core_target_index))
 
+
 def obs_all_node_target_pairs_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
     """One-hot encoding (of length nodes) of the target location for each node. Size of nodes**2"""
     num_nodes = len(factory.nodes)
-    node_pair_target = np.zeros(num_nodes**2)
+    node_pair_target = np.zeros(num_nodes ** 2)
     for n in range(num_nodes):
         core_target_index = []
         if factory.nodes[n].table != None and factory.nodes[n].table.has_core():
-            core_target_index = [factory.nodes.index(factory.nodes[n].table.core.current_target)]
-            node_pair_target[n*num_nodes:(n+1)*num_nodes] = np.asarray(one_hot_encode(num_nodes, core_target_index)) 
+            core_target_index = [
+                factory.nodes.index(factory.nodes[n].table.core.current_target)
+            ]
+            node_pair_target[n * num_nodes : (n + 1) * num_nodes] = np.asarray(
+                one_hot_encode(num_nodes, core_target_index)
+            )
         else:
-            node_pair_target[n*num_nodes:(n+1)*num_nodes] = np.zeros(num_nodes)
+            node_pair_target[n * num_nodes : (n + 1) * num_nodes] = np.zeros(num_nodes)
     return node_pair_target
 
-    
+
 # Tuple observations
+
 
 def obs_all_table_node_pairs_one_hot(agent_id: int, factory: Factory) -> np.ndarray:
     """One-hot encodings for each table, NOT summed together; length: number of tables x number of nodes"""
     num_nodes = len(factory.nodes)
     num_tables = len(factory.tables)
-    table_node_pair = np.zeros(num_nodes*num_tables)
-    for n,t in enumerate(factory.tables):
+    table_node_pair = np.zeros(num_nodes * num_tables)
+    for n, t in enumerate(factory.tables):
         table_node_index = [factory.nodes.index(t.node)]
-        table_node_pair[n*num_nodes:(n+1)*num_nodes] = np.asarray(one_hot_encode(num_nodes, table_node_index))
+        table_node_pair[n * num_nodes : (n + 1) * num_nodes] = np.asarray(
+            one_hot_encode(num_nodes, table_node_index)
+        )
     return table_node_pair
 
 
@@ -266,13 +290,15 @@ def obs_all_table_target_pairs_one_hot(agent_id: int, factory: Factory) -> np.nd
     """One-hot encoding for each table target, NOT summed together; length: number of tables x number of nodes"""
     num_nodes = len(factory.nodes)
     num_tables = len(factory.tables)
-    table_target_pair = np.zeros(num_nodes*num_tables)
-    for n,t in enumerate(factory.tables):
+    table_target_pair = np.zeros(num_nodes * num_tables)
+    for n, t in enumerate(factory.tables):
         if t.has_core():
             table_target_index = [factory.nodes.index(t.core.current_target)]
-            table_target_pair[n*num_nodes:(n+1)*num_nodes] = np.asarray(one_hot_encode(num_nodes, table_target_index))
+            table_target_pair[n * num_nodes : (n + 1) * num_nodes] = np.asarray(
+                one_hot_encode(num_nodes, table_target_index)
+            )
         else:
-            table_target_pair[n*num_nodes:(n+1)*num_nodes] = np.zeros(num_nodes)
+            table_target_pair[n * num_nodes : (n + 1) * num_nodes] = np.zeros(num_nodes)
 
     return table_target_pair
 
@@ -293,9 +319,10 @@ def get_observations(agent_id: Optional[int], factory: Factory) -> np.ndarray:
     also how you "register" a new observation
     """
     obs_names = get_observation_names()
-    local_functions = {name: obj for name, obj in inspect.getmembers(sys.modules[__name__])}
+    local_functions = {
+        name: obj for name, obj in inspect.getmembers(sys.modules[__name__])
+    }
 
-    obs_dict = {obs: local_functions.get(obs)(agent_id, factory)
-                for obs in obs_names}
+    obs_dict = {obs: local_functions.get(obs)(agent_id, factory) for obs in obs_names}
     obs_arrays = [obs for obs in obs_dict.values()]
     return np.concatenate(obs_arrays, axis=0)

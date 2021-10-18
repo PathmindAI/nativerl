@@ -1,18 +1,22 @@
-import random
 import os
-import fire
+import random
 from typing import Optional
 
+import fire
 import numpy as np
-import gym
 import ray
-from ray.tune import run, sample_from
-
-from pathmind_training import get_loggers, write_completion_report, Stopper, get_scheduler, modify_anylogic_db_properties
+from pathmind_training import (
+    Stopper,
+    get_loggers,
+    get_scheduler,
+    modify_anylogic_db_properties,
+    write_completion_report,
+)
+from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
-from pathmind_training.models import get_custom_model
-from pathmind_training.callbacks import get_callbacks, get_callback_function
 from pathmind_training.freezing import freeze_trained_policy
+from pathmind_training.models import get_custom_model
+from ray.tune import run, sample_from
 
 
 def main(environment: str,
@@ -132,9 +136,10 @@ def main(environment: str,
         'use_auto_norm': use_auto_norm and (alphas is not None) and (num_reward_terms !=1)
     }
 
-    if env_config['use_reward_terms']:
-        assert env_config['alphas'].size == env_config['num_reward_terms'], \
-        f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
+    if env_config["use_reward_terms"]:
+        assert (
+            env_config["alphas"].size == env_config["num_reward_terms"]
+        ), f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
 
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
@@ -146,39 +151,55 @@ def main(environment: str,
             max_memory_in_mb=max_memory_in_mb,
             is_pathmind_simulation=is_pathmind_simulation,
             obs_selection=obs_selection,
-            reward_function_name=rew_fct_name
+            reward_function_name=rew_fct_name,
         )
         env_creator = env_name
 
     env_instance = env_creator(env_config=env_config)
-    env_instance.max_steps = env_instance._max_episode_steps if hasattr(env_instance, "_max_episode_steps") \
+    env_instance.max_steps = (
+        env_instance._max_episode_steps
+        if hasattr(env_instance, "_max_episode_steps")
         else 20000
+    )
 
-    ray.init(log_to_driver=user_log, dashboard_host='127.0.0.1', num_cpus=cpu_count)
+    ray.init(log_to_driver=user_log, dashboard_host="127.0.0.1", num_cpus=cpu_count)
 
     model = get_custom_model(
         num_hidden_nodes=num_hidden_nodes,
         num_hidden_layers=num_hidden_layers,
         autoregressive=autoregressive,
         action_masking=action_masking,
-        discrete=discrete
+        discrete=discrete,
     )
 
     stopper = Stopper(
-        output_dir=output_dir, algorithm=algorithm, max_iterations=max_iterations,
-        max_time_in_sec=max_time_in_sec, max_episodes=max_episodes, convergence_check_start_iteration=convergence_check_start_iteration,
-        episode_reward_range_th=episode_reward_range, entropy_slope_th=entropy_slope,
-        vf_loss_range_th=vf_loss_range, value_pred_th=value_pred
+        output_dir=output_dir,
+        algorithm=algorithm,
+        max_iterations=max_iterations,
+        max_time_in_sec=max_time_in_sec,
+        max_episodes=max_episodes,
+        convergence_check_start_iteration=convergence_check_start_iteration,
+        episode_reward_range_th=episode_reward_range,
+        entropy_slope_th=entropy_slope,
+        vf_loss_range_th=vf_loss_range,
+        value_pred_th=value_pred,
     )
 
     if custom_callback:
         # from tests.custom_callback import get_callback as foo
         callbacks = get_callback_function(custom_callback)()
     else:
-        callbacks = get_callbacks(debug_metrics, env_config['use_reward_terms'], is_gym, checkpoint_frequency)
+        callbacks = get_callbacks(
+            debug_metrics, env_config["use_reward_terms"], is_gym, checkpoint_frequency
+        )
 
-    assert scheduler in ["PBT", "PB2"], f"Scheduler has to be either PBT or PB2, got {scheduler}"
-    scheduler_instance = get_scheduler(scheduler_name=scheduler, train_batch_size=train_batch_size)
+    assert scheduler in [
+        "PBT",
+        "PB2",
+    ], f"Scheduler has to be either PBT or PB2, got {scheduler}"
+    scheduler_instance = get_scheduler(
+        scheduler_name=scheduler, train_batch_size=train_batch_size
+    )
     loggers = get_loggers()
 
     config = {
@@ -219,8 +240,8 @@ def main(environment: str,
         keep_checkpoints_num=keep_checkpoints_number,
         checkpoint_at_end=True,
         max_failures=max_failures,
-        export_formats=['model'],
-        queue_trials=True
+        export_formats=["model"],
+        queue_trials=True,
     )
 
     analysis = Analyisis(outdir, default_metric="episode_reward_mean", default_mode="max")
@@ -234,16 +255,20 @@ def main(environment: str,
                               algorithm=algorithm, output_dir=f"{output_dir}/{algorithm}/freezing", is_discrete=discrete, multi_agent=multi_agent)
         write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm, best_freezing_log_dir=best_freezing_log_dir)
     else:
-        write_completion_report(trials=trials, output_dir=output_dir, algorithm=algorithm)
+        write_completion_report(
+            trials=trials, output_dir=output_dir, algorithm=algorithm
+        )
 
     ray.shutdown()
 
-def test(environment: str,
-         is_gym: bool = False,
-         multi_agent: bool = True,
-         max_memory_in_mb: int = 4096,
-         module_path: str = None
-         ):
+
+def test(
+    environment: str,
+    is_gym: bool = False,
+    multi_agent: bool = True,
+    max_memory_in_mb: int = 4096,
+    module_path: str = None,
+):
     """
     :check if valid environment or not for Model Analyzer
 
@@ -261,6 +286,7 @@ def test(environment: str,
     if is_gym:
         if module_path:
             import sys
+
             sys.path.append(module_path)
 
         env_name, env_creator = get_gym_environment(environment_name=environment)
@@ -269,7 +295,7 @@ def test(environment: str,
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
             environment_name=environment,
-            max_memory_in_mb=max_memory_in_mb
+            max_memory_in_mb=max_memory_in_mb,
         )
         env_creator = env_name
 
@@ -280,15 +306,12 @@ def from_config(config_file="./config.json"):
     :return:
     """
     import json
-    with open(config_file, 'r') as f:
+
+    with open(config_file, "r") as f:
         config_string = f.read()
         config = json.loads(config_string)
     return main(**config)
 
 
-if __name__ == '__main__':
-    fire.Fire({
-        "training": main,
-        "from_config": from_config,
-        "test": test
-    })
+if __name__ == "__main__":
+    fire.Fire({"training": main, "from_config": from_config, "test": test})
