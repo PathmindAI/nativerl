@@ -356,4 +356,8 @@ def get_native_env_from_simulation(simulation_name, observation_file=None, rewar
             num_metrics = len(self.getMetrics())
             return nativerl.Continuous(low=[-math.inf], high=[math.inf], shape=[num_metrics])
 
+        def getRewardTerms(self, agent_id: int = 0):
+            reward_dict = self.simulation.get_reward(agent_id)
+            return list(reward_dict.values())
+
     return PathmindEnv()

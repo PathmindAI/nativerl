@@ -126,10 +126,10 @@ def main(environment: str,
     env_config = {
         'use_reward_terms': alphas is not None,
         'reward_balance_period': reward_balance_period,
-        'num_reward_terms': num_reward_terms,
+        'num_reward_terms': num_reward_terms if alphas else 1,
         'alphas': np.asarray(alphas) if alphas else np.ones(num_reward_terms),
         'betas': np.ones(num_reward_terms),
-        'use_auto_norm': use_auto_norm
+        'use_auto_norm': use_auto_norm and (alphas is not None)
     }
 
     if env_config['use_reward_terms']:
