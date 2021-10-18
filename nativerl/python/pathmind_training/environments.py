@@ -281,7 +281,7 @@ def get_environment(
 
                 if self.use_reward_terms and done_dict['__all__']:
                     max_array = np.zeros(len(reward_array))
-                    for key, val in term_contributions_dict.items():
+                    for key, val in self.term_contributions_dict.items():
                         max_array = np.array([max(max_array[i], abs(val[i])) for i in range(len(reward_array))])
                     self.term_contributions = max_array
 
