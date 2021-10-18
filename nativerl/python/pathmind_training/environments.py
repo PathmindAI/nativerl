@@ -455,7 +455,7 @@ def get_native_env_from_simulation(
                 low=[-math.inf], high=[math.inf], shape=[num_metrics]
             )
 
-        def getRewardTerms(self, agent_id: int = 0) -> np.array:
+        def getRewardTerms(self, agent_id: int = 0):
             reward_dict = self.simulation.get_reward(agent_id)
             return list(reward_dict.values())
 
