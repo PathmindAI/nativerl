@@ -16,7 +16,7 @@ from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
 from pathmind_training.freezing import freeze_trained_policy
 from pathmind_training.models import get_custom_model
-from ray.tune import run, sample_from
+from ray.tune import ExperimentAnalysis, run, sample_from
 
 
 def main(
