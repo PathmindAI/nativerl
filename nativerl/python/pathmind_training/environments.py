@@ -334,11 +334,9 @@ def get_environment(
                         agent_metrics = np.zeros(metrics_space.shape)
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
+                    metrics = np.zeros(metrics_space.shape)
                     metrics = (
-                        agent_metrics
-                        if i == 0
-                        else np.vstack((metrics, agent_metrics))  # noqa
-                        # TODO https://github.com/SkymindIO/nativerl/issues/441
+                        agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
                     )
                 return np.mean(metrics, axis=0)
             else:
