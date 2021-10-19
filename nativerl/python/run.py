@@ -16,7 +16,7 @@ from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
 from pathmind_training.freezing import freeze_trained_policy
 from pathmind_training.models import get_custom_model
-from ray.tune import ExperimentAnalysis, run, sample_from
+from ray.tune import run, sample_from
 
 
 def main(
@@ -249,16 +249,11 @@ def main(
         queue_trials=True,
     )
 
-    best_trial = trials.get_best_trial("episode_reward_mean", "max")
-    best_checkpoint = trials.get_best_checkpoint(
-        best_trial, "episode_reward_mean", "max"
-    )
-    analysis = ExperimentAnalysis(
-        best_checkpoint, default_metric="episode_reward_mean", default_mode="max"
-    )
-    df = analysis.best_dataframe
-    betas = df.iloc[-1]["custom_metrics/betas"]
-    env_config["betas"] = np.array(betas)
+    if use_auto_norm:
+        best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
+        df = trials.fetch_trial_dataframes[best_logdir]
+        betas = df.iloc[-1]["custom_metrics/betas"]
+        env_config["betas"] = np.array(betas)
 
     if freezing:
         best_freezing_log_dir = freeze_trained_policy(
