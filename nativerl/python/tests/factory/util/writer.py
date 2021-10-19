@@ -1,6 +1,3 @@
-# flake8: noqa
-# TODO https://github.com/SkymindIO/nativerl/issues/442
-
 import cv2
 import numpy as np
 
@@ -40,10 +37,10 @@ def draw_boxes(factory: Factory, original_img: np.array):
 def draw_box(img: np.array, pos=(0, 0), text: str = "pt_01", nd_type: str = "N"):
     top_left = pos
     bottom_right = (pos[0] + 100, pos[1] + 100)
-    if nd_type is "C":
+    if nd_type == "C":
         thickness = -1
         color = (255, 0, 0)
-    elif nd_type is "T":
+    elif nd_type == "T":
         thickness = -1
         color = (0, 255, 0)
     else:
@@ -67,7 +64,7 @@ def draw_box(img: np.array, pos=(0, 0), text: str = "pt_01", nd_type: str = "N")
         cv2.LINE_AA,
     )
 
-    if nd_type is not "N":
+    if nd_type != "N":
         position = (pos[0] + 43, pos[1] + 70)
         img = cv2.putText(
             img,
