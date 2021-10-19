@@ -249,7 +249,10 @@ def main(
         queue_trials=True,
     )
 
-    df = trials.best_dataframe
+    analysis = ExperimentAnalysis(
+        output_dir, default_metric="episode_reward_mean", default_mode="max"
+    )
+    df = analysis.best_dataframe
     betas = df.iloc[-1]["custom_metrics/betas"]
     env_config["betas"] = np.array(betas)
 
