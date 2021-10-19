@@ -249,8 +249,12 @@ def main(
         queue_trials=True,
     )
 
+    best_trial = trials.best_trial
+    best_checkpoint = trials.get_best_checkpoint(
+        best_trial, "episode_reward_mean", "max"
+    )
     analysis = ExperimentAnalysis(
-        output_dir, default_metric="episode_reward_mean", default_mode="max"
+        best_checkpoint, default_metric="episode_reward_mean", default_mode="max"
     )
     df = analysis.best_dataframe
     betas = df.iloc[-1]["custom_metrics/betas"]
