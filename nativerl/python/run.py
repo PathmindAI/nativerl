@@ -234,6 +234,8 @@ def main(
 
     trials = run(
         algorithm,
+        metric="episode_reward_mean",
+        mode="max",
         scheduler=scheduler_instance,
         num_samples=num_samples,
         stop=stopper.stop,
@@ -249,12 +251,8 @@ def main(
         queue_trials=True,
     )
 
-    analysis = Analysis(
-        output_dir, default_metric="episode_reward_mean", default_mode="max"
-    )
-    trial = analysis.get_best_logdir()
-    df = analysis.get_trial_dataframes[os.path.join(output_dir, trial)]
-    betas = df.iloc[-1][f"custom_metrics/betas"]
+    df = trials.best_dataframe
+    betas = df.iloc[-1]["custom_metrics/betas"]
     env_config["betas"] = np.array(betas)
 
     if freezing:
