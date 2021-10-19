@@ -249,7 +249,7 @@ def main(
         queue_trials=True,
     )
 
-    best_trial = trials.best_trial
+    best_trial = trials.get_best_trial(metric, mode)
     best_checkpoint = trials.get_best_checkpoint(
         best_trial, "episode_reward_mean", "max"
     )
