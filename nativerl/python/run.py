@@ -251,7 +251,8 @@ def main(
 
     if use_auto_norm:
         best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
-        df = trials.fetch_trial_dataframes[best_logdir]
+        trial_dfs = trials.fetch_trial_dataframes()
+        df = trial_dfs[best_logdir]
         betas = df.iloc[-1]["custom_metrics/betas"]
         env_config["betas"] = np.array(betas)
 
