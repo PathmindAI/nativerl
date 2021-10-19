@@ -249,11 +249,11 @@ def main(
         queue_trials=True,
     )
 
-    if use_auto_norm:
+    if env_config["use_auto_norm"]:
         best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
         trial_dfs = trials.fetch_trial_dataframes()
         df = trial_dfs[best_logdir]
-        betas = df.iloc[-1]["custom_metrics"]["betas"]
+        betas = df.iloc[-1]["custom_metrics/betas"]
         env_config["betas"] = np.array(betas)
 
     if freezing:
