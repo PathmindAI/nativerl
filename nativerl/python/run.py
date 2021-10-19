@@ -234,8 +234,6 @@ def main(
 
     trials = run(
         algorithm,
-        metric="episode_reward_mean",
-        mode="max",
         scheduler=scheduler_instance,
         num_samples=num_samples,
         stop=stopper.stop,
