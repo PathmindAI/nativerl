@@ -5,7 +5,6 @@ from typing import Optional
 import fire
 import numpy as np
 import ray
-
 from pathmind_training import (
     Stopper,
     get_loggers,

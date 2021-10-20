@@ -4,7 +4,6 @@ import math
 import os
 import typing
 from collections import OrderedDict
-from typing import List
 
 import gym
 import numpy as np
@@ -20,7 +19,6 @@ else:
 import pathmind_training.utils
 from pathmind_training.pynativerl import Continuous
 from pathmind_training.utils import get_class_from_string
-
 
 OR_GYM_ENVS = [
     "Knapsack-v0",
