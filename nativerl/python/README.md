@@ -105,7 +105,17 @@ To run training for simulations defined with the `pathmind` package, you need to
 Here's an example to run:
 
 ```shell
+python run.py training tests.mouse.mouse_env_pathmind.MouseAndCheese \
+--max_episodes=10 \
+--is_pathmind_simulation
+```
+
+and here a slightly more elaborated one:
+
+```shell
 python run.py training tests.mouse.multi_mouse_env_pathmind.MultiMouseAndCheese \
+--max_episodes=10 \
+--multi_agent \
 --is_pathmind_simulation \
 --obs_selection tests/mouse/obs.yaml \
 --rew_fct_name tests.mouse.reward.reward_function
