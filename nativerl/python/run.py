@@ -204,6 +204,9 @@ def main(
         scheduler_name=scheduler, train_batch_size=train_batch_size
     )
     loggers = get_loggers()
+    
+    #to learn useful initial betas(for auto-norm), we delay policy training until scheduler activates
+    lr = 0.0 if env_config["use_auto_norm"] else 1e-4
 
     config = {
         "env": env_name,
@@ -218,7 +221,7 @@ def main(
         "vf_clip_param": np.inf,
         "lambda": 0.95,
         "clip_param": 0.2,
-        "lr": 0.0,
+        "lr": lr,
         "gamma": gamma,
         "entropy_coeff": 0.0,
         "num_sgd_iter": sample_from(lambda spec: random.choice([10, 20, 30])),
@@ -249,14 +252,13 @@ def main(
         queue_trials=True,
     )
 
-    if env_config["use_auto_norm"]:
-        best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
-        trial_dfs = trials.fetch_trial_dataframes()
-        df = trial_dfs[best_logdir]
-        betas = df.iloc[-1]["custom_metrics/betas"]
-        env_config["betas"] = np.array(betas)
-
     if freezing:
+        if env_config["use_auto_norm"]:
+            best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
+            trial_dfs = trials.fetch_trial_dataframes()
+            df = trial_dfs[best_logdir]
+            betas = df.iloc[-1]["custom_metrics/betas"]
+            env_config["betas"] = np.array(betas)
         best_freezing_log_dir = freeze_trained_policy(
             env=env_instance,
             env_name=env_name,
