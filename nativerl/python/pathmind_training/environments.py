@@ -350,7 +350,9 @@ def get_environment(
     return PathmindEnvironment
 
 
-def get_native_env_from_simulation(simulation_name: str, observation_file: str = None) -> nativerl.Environment:
+def get_native_env_from_simulation(
+    simulation_name: str, observation_file: str = None
+) -> nativerl.Environment:
     """Returns a pynativerl.Environment given a Pathmind Python `Simulation` name.
 
     :param simulation_name: name of the `Simulation` class to run

@@ -290,6 +290,7 @@ def test(
     if is_gym:
         if module_path:
             import sys
+
             sys.path.append(module_path)
 
         env_name, env_creator = get_gym_environment(environment_name=environment)
