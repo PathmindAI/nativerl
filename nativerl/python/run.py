@@ -204,8 +204,8 @@ def main(
         scheduler_name=scheduler, train_batch_size=train_batch_size
     )
     loggers = get_loggers()
-    
-    #to learn useful initial betas(for auto-norm), we delay policy training until scheduler activates
+
+    # to learn useful initial betas(for auto-norm), we delay policy training until scheduler activates
     lr = 0.0 if env_config["use_auto_norm"] else 1e-4
 
     config = {
