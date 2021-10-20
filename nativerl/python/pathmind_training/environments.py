@@ -302,14 +302,13 @@ def get_environment(
                 if self.use_reward_terms:
                     reward_array = np.array(self.nativeEnv.getRewardTerms())
                     reward = np.sum(reward_array * self.alphas * self.betas)
+                    self.term_contributions += reward_array
+
                 else:
                     reward = self.nativeEnv.getReward()
 
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
-
-                if self.use_reward_terms:
-                    self.term_contributions += reward_array
 
                 if isinstance(self.observation_space, gym.spaces.Dict):
                     obs = {
