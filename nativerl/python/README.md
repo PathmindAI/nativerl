@@ -10,6 +10,18 @@ generation. Notably, it comes with a pure Python implementation of the
 with an elaborated setup. Just tweak the RL experiments you care about and
 start a test.
 
+## Training support
+
+NativeRL training (run.py) accepts the following environments:
+
+1. OpenAI gym.Env / or-gym referenced by name (python)
+2. Pathmind Simulation (python)
+3. AnyLogic (.jar file)
+
+(1) remain as gym.Env
+
+(2) and (3) get reformatted into rllib.env.MultiAgentEnv OR gym.Env, depending on whether def number_of_agents or "Number of Controlled Agents" (PathmindHelper) is a number greater than one.
+
 ## Installation
 
 We might properly package this library at some point and maybe put it on a
