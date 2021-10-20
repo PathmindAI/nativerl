@@ -21,6 +21,7 @@ import pathmind_training.utils
 from pathmind_training.pynativerl import Continuous
 from pathmind_training.utils import get_class_from_string
 
+
 OR_GYM_ENVS = [
     "Knapsack-v0",
     "Knapsack-v1",
@@ -320,12 +321,13 @@ def get_environment(
         def getMetrics(self):
             if is_multi_agent:
                 metrics_space = self.nativeEnv.getMetricsSpace()
+                # create before the loop to ensure existence in return value
+                metrics = np.zeros(metrics_space.shape)
                 for i in range(0, self.nativeEnv.getNumberOfAgents()):
                     if self.nativeEnv.isSkip(i):
                         agent_metrics = np.zeros(metrics_space.shape)
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
-                    metrics = np.zeros(metrics_space.shape)
                     metrics = (
                         agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
                     )
@@ -348,8 +350,13 @@ def get_environment(
     return PathmindEnvironment
 
 
-def get_native_env_from_simulation(
-    simulation_name: str, observation_file: str = None):
+def get_native_env_from_simulation(simulation_name: str, observation_file: str = None) -> nativerl.Environment:
+    """Returns a pynativerl.Environment given a Pathmind Python `Simulation` name.
+
+    :param simulation_name: name of the `Simulation` class to run
+    :param observation_file: file name of the optional observation yaml
+    :return: a `pathmind_training.pynativerl.Environment` instance
+    """
     simulation_class = get_class_from_string(simulation_name)
 
     obs_names: typing.Optional[str] = None
@@ -435,7 +442,7 @@ def get_native_env_from_simulation(
 
         def getMetrics(self, agent_id=0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return nativerl.Array(list(reward_dict.values))
+            return nativerl.Array(list(reward_dict.values()))
 
         def getMetricsSpace(self) -> Continuous:
             num_metrics = len(self.getMetrics())

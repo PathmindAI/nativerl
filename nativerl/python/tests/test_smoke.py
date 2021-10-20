@@ -1,5 +1,4 @@
 import os
-
 from pathmind_training.callbacks import get_callbacks
 from pathmind_training.distributions import register_freezing_distributions
 from pathmind_training.environments import (
