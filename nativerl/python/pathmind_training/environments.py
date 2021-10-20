@@ -82,7 +82,6 @@ def get_environment(
     max_memory_in_mb: int = 4096,
     is_pathmind_simulation: bool = False,
     obs_selection=None,
-    reward_function_name=None,
 ):
     base_class = MultiAgentEnv if is_multi_agent else gym.Env
 
@@ -107,7 +106,7 @@ def get_environment(
             # Instantiate the native environment, or mock it with pynativerl
             if is_pathmind_simulation:
                 self.nativeEnv = get_native_env_from_simulation(
-                    environment_name, obs_selection, reward_function_name
+                    environment_name, obs_selection
                 )
             else:
                 self.nativeEnv = nativerl.createEnvironment(environment_name)
@@ -353,14 +352,8 @@ def get_environment(
 
 
 def get_native_env_from_simulation(
-    simulation_name, observation_file=None, reward_function_name=None
-):
-
+    simulation_name: str, observation_file: str = None):
     simulation_class = get_class_from_string(simulation_name)
-
-    reward_function = (
-        get_class_from_string(reward_function_name) if reward_function_name else None
-    )
 
     obs_names: typing.Optional[str] = None
     if observation_file:
@@ -372,12 +365,10 @@ def get_native_env_from_simulation(
         def __init__(
             self,
             simulation=simulation_class(),
-            reward_fct=reward_function,
             obs=obs_names,
         ):
             nativerl.Environment.__init__(self)
             self.simulation = simulation
-            self.reward_function = reward_fct
             self.obs_names = obs
 
         def getActionSpace(self, agent_id=0):
@@ -398,9 +389,11 @@ def get_native_env_from_simulation(
             return self.simulation.number_of_agents()
 
         def getActionMask(self, agent_id=0):
+            # TODO: support this
             return None
 
         def getActionMaskSpace(self):
+            # TODO: support this
             return None
 
         def getObservation(self, agent_id=0):
@@ -438,17 +431,14 @@ def get_native_env_from_simulation(
             return self.simulation.is_done(agent_id)
 
         def getReward(self, agent_id=0) -> float:
+            """In the absence of proper reward term handling for Python models, we just sum up
+            all values of the "reward terms" we get from `get_reward`."""
             reward_dict = self.simulation.get_reward(agent_id)
-            if self.reward_function:
-                return self.reward_function(reward_dict)
-            else:
-                return sum(reward_dict.values())
+            return sum(reward_dict.values())
 
-        def getMetrics(self, agent_id=0):
-            if self.simulation.get_metrics(agent_id):
-                return self.simulation.get_metrics(agent_id)
-            else:
-                return list(self.simulation.get_observation(agent_id).values())
+        def getMetrics(self, agent_id=0) -> nativerl.Array:
+            reward_dict = self.simulation.get_reward(agent_id)
+            return nativerl.Array(list(reward_dict.values))
 
         def getMetricsSpace(self) -> Continuous:
             num_metrics = len(self.getMetrics())
@@ -456,8 +446,8 @@ def get_native_env_from_simulation(
                 low=[-math.inf], high=[math.inf], shape=[num_metrics]
             )
 
-        def getRewardTerms(self, agent_id: int = 0) -> List[float]:
+        def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return List(reward_dict.values())
+            return nativerl.Array(reward_dict.values())
 
     return PathmindEnv()
