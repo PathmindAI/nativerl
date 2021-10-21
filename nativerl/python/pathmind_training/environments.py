@@ -120,7 +120,10 @@ def get_environment(
 
             self.use_reward_terms = env_config["use_reward_terms"]
             self.num_reward_terms = env_config["num_reward_terms"]
-            self.alphas = env_config["alphas"]
+            if is_pathmind_simulation and self.nativeEnv.reward_weights:
+                self.alphas = self.nativeEnv.reward_weights
+            else:
+                self.alphas = env_config["alphas"]
             self.betas = np.ones(self.num_reward_terms)
 
             self.term_contributions_dict = {}
@@ -444,10 +447,7 @@ def get_native_env_from_simulation(
                 return sum(reward_dict.values())
 
         def getMetrics(self, agent_id=0):
-            if self.simulation.get_metrics(agent_id):
-                return self.simulation.get_metrics(agent_id)
-            else:
-                return list(self.simulation.get_observation(agent_id).values())
+            return self.simulation.get_reward(agent_id)
 
         def getMetricsSpace(self) -> Continuous:
             num_metrics = len(self.getMetrics())
@@ -456,6 +456,7 @@ def get_native_env_from_simulation(
             )
 
         def getRewardTerms(self, agent_id: int = 0) -> np.array:
-            return NotImplemented
+            reward_dict = self.simulation.get_reward(agent_id)
+            return np.array(reward_dict.values())
 
     return PathmindEnv()
