@@ -1,5 +1,7 @@
+import importlib
 from abc import ABC, abstractmethod
 from typing import List, Optional, Union
+
 import numpy as np
 
 
@@ -30,7 +32,6 @@ def Array(arr: Union[np.array, List]):
 
 
 class Environment(ABC):
-
     @abstractmethod
     def getActionSpace(self, agent_id: int = 0) -> Optional[Space]:
         return NotImplemented
@@ -54,11 +55,11 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def getActionMask(self, agent_id: int = 0) -> np.array:
+    def getActionMask(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
-    def getObservation(self, agent_id: int = 0) -> np.array:
+    def getObservation(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
@@ -86,10 +87,26 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def getMetrics(self, agent_id: int = 0) -> np.array:
+    def getMetrics(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
-    def getRewardTerms(self, agent_id: int = 0) -> np.array:
+    def getRewardTerms(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
+
+def get_environment_class(env_name):
+    """Get environment class instance from a string, interpreted as Python module
+    :param env_name:
+    :return:
+    """
+    class_name = env_name.split(".")[-1]
+    module = env_name.replace(f".{class_name}", "")
+    lib = importlib.import_module(module)
+    return getattr(lib, class_name)
+
+
+def createEnvironment(env_name):
+    clazz = get_environment_class(env_name)
+    obj = clazz()
+    return obj

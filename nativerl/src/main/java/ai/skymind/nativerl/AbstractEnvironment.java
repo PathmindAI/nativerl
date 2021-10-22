@@ -96,7 +96,7 @@ public abstract class AbstractEnvironment extends Environment {
 
         metrics = getMetrics();
         metricsSpace = getContinuousSpace(metrics.length());
-	
+
         rewardTerms = getRewardTerms();
     }
 

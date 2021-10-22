@@ -75,4 +75,3 @@ public class SSizeTVector extends Pointer {
         return this;
     }
 }
-

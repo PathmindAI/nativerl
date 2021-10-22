@@ -2,12 +2,13 @@
 import enum
 import random
 
-from .models import Table, Direction, Node, Rail, ActionResult
+from .models import ActionResult, Direction, Node, Rail, Table
 from .simulation import Factory
 
 
 class Action(enum.IntEnum):
     """Move in a direction or stay where you are."""
+
     up = 0
     right = 1
     down = 2
@@ -24,7 +25,6 @@ def do_action(table: Table, factory: Factory, action: Action):
 
 
 class TableAndRailController:
-
     def __init__(self, factory: Factory, name=None):
         self.factory = factory
         self.name = name
@@ -56,8 +56,7 @@ class TableAndRailController:
         raise NotImplementedError
 
     def do_action(self, table: Table, action: Action) -> ActionResult:
-        """Attempt to carry out a specified action.
-        """
+        """Attempt to carry out a specified action."""
         table.is_at_target = False  # Reset target
         if action.value == 4:
             return ActionResult.NONE

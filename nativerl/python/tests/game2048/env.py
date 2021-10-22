@@ -1,15 +1,14 @@
-import math
-import typing
 import itertools
-import yaml
-import numpy as np
+import math
+import os
+import typing
 from collections import OrderedDict
 
+import yaml
 from pathmind_training import pynativerl as nativerl
 from pathmind_training.pynativerl import Continuous
-from .base import Game2048
 
-import os
+from .base import Game2048
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 with open(os.path.join(dir_path, "obs.yaml"), "r") as f:
@@ -18,13 +17,16 @@ OBS = schema.get("observations")
 
 
 class Game2048Env(nativerl.Environment):
-
     def __init__(self, simulation=Game2048()):
         nativerl.Environment.__init__(self)
         self.simulation = simulation
 
     def getActionSpace(self, agent_id=0):
-        return nativerl.Discrete(self.simulation.number_of_actions) if agent_id == 0 else None
+        return (
+            nativerl.Discrete(self.simulation.number_of_actions)
+            if agent_id == 0
+            else None
+        )
 
     def getObservationSpace(self):
         obs_shape = [self.simulation.number_of_observations]
@@ -42,7 +44,12 @@ class Game2048Env(nativerl.Environment):
     def getObservation(self, agent_id=0):
         obs_dict = self.simulation.get_observation()
 
-        lists = [[obs_dict[obs]] if not isinstance(obs_dict[obs], typing.List) else obs_dict[obs] for obs in OBS]
+        lists = [
+            [obs_dict[obs]]
+            if not isinstance(obs_dict[obs], typing.List)
+            else obs_dict[obs]
+            for obs in OBS
+        ]
         observations = list(itertools.chain(*lists))
 
         return nativerl.Array(observations)
@@ -75,4 +82,6 @@ class Game2048Env(nativerl.Environment):
 
     def getMetricsSpace(self) -> Continuous:
         num_metrics = len(self.getMetrics())
-        return nativerl.Continuous(low=[-math.inf], high=[math.inf], shape=[num_metrics])
+        return nativerl.Continuous(
+            low=[-math.inf], high=[math.inf], shape=[num_metrics]
+        )

@@ -1,23 +1,31 @@
-from typing import Optional, List, Dict, TypeVar
 import os
+import pprint
 from collections import Counter
 from csv import writer
-import pprint
+from typing import Dict, List, Optional, TypeVar
+
 from .models import *
 
 PRINTER = pprint.PrettyPrinter(indent=2)
 VERBOSE = True
 
-F = TypeVar('F', bound='Factory')
+F = TypeVar("F", bound="Factory")
 
 
 class Factory:
     """A Factory sets up all components (nodes, rails, tables) needed to
     solve the problem of delivering cores to their destinations. Note that
     this is just a "model", the application logic and agent interaction is
-    separated  """
-    def __init__(self, nodes: List[Node], rails: List[Rail],
-                 tables: List[Table], max_num_steps: int  = 1000, name: str = None):
+    separated"""
+
+    def __init__(
+        self,
+        nodes: List[Node],
+        rails: List[Rail],
+        tables: List[Table],
+        max_num_steps: int = 1000,
+        name: str = None,
+    ):
         self.nodes = nodes
         self.rails = rails
         self.tables = tables
@@ -28,11 +36,17 @@ class Factory:
 
         # Stats counter
         self.step_count = 0
-        self.agent_step_counter: Dict[int, int] = {t: 0 for t in range(len(self.tables))}
-        self.moves: Dict[int, List[ActionResult]] = {t: [] for t in range(len(self.tables))}
+        self.agent_step_counter: Dict[int, int] = {
+            t: 0 for t in range(len(self.tables))
+        }
+        self.moves: Dict[int, List[ActionResult]] = {
+            t: [] for t in range(len(self.tables))
+        }
         self.move_counter = Counter()
         self.action_counter = Counter()
-        self.step_completion_counter: Dict[int, List[int]] = {t: [] for t in range(len(self.tables))}
+        self.step_completion_counter: Dict[int, List[int]] = {
+            t: [] for t in range(len(self.tables))
+        }
 
     def is_solved(self):
         """A factory is solved if no table has a core anymore."""
@@ -55,7 +69,7 @@ class Factory:
         self.moves.get(agent_id).append(move)
         self.agent_step_counter[agent_id] += 1
         self.move_counter[move.name] += 1
-        self.action_counter[action.name] +=1
+        self.action_counter[action.name] += 1
 
     def add_completed_step_count(self):
         for agent_id in range(len(self.tables)):
@@ -81,15 +95,21 @@ class Factory:
     def record_stats(self):
         """Record statistics in a CSV file for later visualisation."""
         move_dict = dict(self.move_counter)
-        move_dict['CORES_REMAIN'] = len([t for t in self.tables if t.has_core()])
+        move_dict["CORES_REMAIN"] = len([t for t in self.tables if t.has_core()])
         key_list = sorted(move_dict)
         elements = []
         for item in key_list:
             elements.append(move_dict[item])
-        if os.path.exists(os.path.join(os.path.abspath('PPO/'), 'Move_Stats.csv')):
-            with open(os.path.join(os.path.abspath('PPO/'), 'Move_Stats.csv'), 'a', newline='') as f:
+        if os.path.exists(os.path.join(os.path.abspath("PPO/"), "Move_Stats.csv")):
+            with open(
+                os.path.join(os.path.abspath("PPO/"), "Move_Stats.csv"), "a", newline=""
+            ) as f:
                 writer(f).writerow(elements)
         else:
-            with open(os.path.join(os.path.abspath('PPO/'), 'Move_Stats.csv'), 'w+', newline='') as f:
+            with open(
+                os.path.join(os.path.abspath("PPO/"), "Move_Stats.csv"),
+                "w+",
+                newline="",
+            ) as f:
                 writer(f).writerow(key_list)
                 writer(f).writerow(elements)
