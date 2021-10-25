@@ -47,10 +47,7 @@ class TwoRewardMouseAndCheese(Simulation):
         }
 
     def get_reward(self, agent_id) -> typing.Dict[str, float]:
-        return {
-            "found_cheese": 1 if self.mouse == self.cheese else 0,
-            "took_step": -1
-        }
+        return {"found_cheese": 1 if self.mouse == self.cheese else 0, "took_step": -1}
 
     def is_done(self, agent_id) -> bool:
         return self.mouse == self.cheese

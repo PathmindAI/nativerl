@@ -47,6 +47,17 @@ def test_pathmind_env_module():
     )
 
 
+# @pytest.mark.integration
+# def test_feature_pathmind_env_module():
+#    ray.shutdown()
+#    output_dir = f"testoutputs/test-pathmind-env-module-{randint(0,1000)}"
+#    run.main(
+#        environment="tests.mouse.PathmindEnvironment",
+#        max_episodes=1,
+#        output_dir=output_dir,
+#    )
+
+
 @pytest.mark.integration
 def test_gym_module():
     ray.shutdown()
