@@ -391,6 +391,7 @@ def get_native_env_from_simulation(
             self.reward_function = reward_fct
             self.obs_names = obs
             self.reward_weights = simulation.reward_weights
+            self.auto_norm_reward = simulation.auto_norm_reward
 
         def getActionSpace(self, agent_id=0):
             space = self.simulation.action_space(agent_id=agent_id)
