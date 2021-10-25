@@ -119,7 +119,10 @@ def get_environment(
                 self.unwrapped.spec = self
 
             self.use_reward_terms = env_config["use_reward_terms"]
-            self.use_auto_norm = env_config["use_auto_norm"]
+            if is_pathmind_simulation and self.nativeEnv.auto_norm_reward:
+                self.use_auto_norm = self.nativeEnv.auto_norm_reward
+            else:
+                self.use_auto_norm = env_config["use_auto_norm"]
             self.num_reward_terms = env_config["num_reward_terms"]
             if is_pathmind_simulation and self.nativeEnv.reward_weights:
                 self.alphas = self.nativeEnv.reward_weights
@@ -387,6 +390,7 @@ def get_native_env_from_simulation(
             self.simulation = simulation
             self.reward_function = reward_fct
             self.obs_names = obs
+            self.reward_weights = simulation.reward_weights
 
         def getActionSpace(self, agent_id=0):
             space = self.simulation.action_space(agent_id=agent_id)

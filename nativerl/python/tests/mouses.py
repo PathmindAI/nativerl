@@ -9,6 +9,7 @@ class TwoRewardMouseAndCheese(Simulation):
     cheese = (4, 4)
     steps = 0
     reward_weights = [1.0, 0.5]
+    auto_norm_reward = True
 
     def number_of_agents(self) -> int:
         return 1

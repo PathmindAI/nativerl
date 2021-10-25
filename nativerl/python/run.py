@@ -288,6 +288,7 @@ def main(
 def test(
     environment: str,
     is_gym: bool = False,
+    is_pathmind_simulation: bool = False,
     multi_agent: bool = True,
     max_memory_in_mb: int = 4096,
     module_path: str = None,
@@ -297,6 +298,7 @@ def test(
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
+    :param is_pathmind_simulation: if True, "environment" should use "Simulation" interface from the pathmind package.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
 
@@ -317,6 +319,7 @@ def test(
         env_name = get_environment(
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
+            is_pathmind_simulation=is_pathmind_simulation,
             environment_name=environment,
             max_memory_in_mb=max_memory_in_mb,
         )
