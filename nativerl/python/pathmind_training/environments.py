@@ -452,8 +452,9 @@ def get_native_env_from_simulation(
             else:
                 return sum(reward_dict.values())
 
-        def getMetrics(self, agent_id=0):
-            return self.simulation.get_reward(agent_id)
+        def getMetrics(self, agent_id=0) -> nativerl.Array:
+            reward_dict = self.simulation.get_reward(agent_id)
+            return nativerl.Array(list(reward_dict.values()))
 
         def getMetricsSpace(self) -> Continuous:
             num_metrics = len(self.getMetrics())
@@ -461,8 +462,8 @@ def get_native_env_from_simulation(
                 low=[-math.inf], high=[math.inf], shape=[num_metrics]
             )
 
-        def getRewardTerms(self, agent_id: int = 0) -> np.array:
+        def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return np.array(reward_dict.values())
+            return nativerl.Array(reward_dict.values())
 
     return PathmindEnv()
