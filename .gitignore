@@ -46,7 +46,9 @@ build/
 .vscode/
 pathmind-lib
 
-.venv
-.pyenv
+
+.venv/
+venv/
+.pyenv/
 
 testoutputs/

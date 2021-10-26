@@ -145,6 +145,30 @@ The configuration of the underlying factory can be modified in `tests/factory/co
 It should be interesting to use this non-trivial case for faster prototyping, e.g. for
 evaluating action masking or using autoregression.
 
+### Reward balancing
+
+If you have multi-objective rewards (or many terms due to reward shaping) and want to control the relative influences of each term,
+then you may define "simulation.reward_weights: List[double]" along with "simulation.auto_norm_reward: bool"
+while building your Pathmind simulation.
+
+If you don't weight the reward terms but use auto-norm, then they'll be made to have equal influence on trainings.
+If you provide reward term weights but do not use auto-norm, then your reward terms will be only multiplied by weight.
+
+When you are not using a Pathmind Simulation OR are using one but haven't defined a these class attributes(see above),
+then you can provide reward weights and whether to use auto-norm as "alphas" and "use_auto_norm" flags, respectively.
+
+Option 1: Set up reward balancing inside Pathmind Simulation
+
+```shell
+python run.py training tests.mouse.two_reward_balance.TwoRewardMouseAndCheese --is_pathmind_simulation=True --max_episodes=1
+```
+
+Option 2: Pathmind Simulation (w/o reward balancing defined) but with reward balancing argument flags
+
+```shell
+python run.py training tests.mouse.two_reward_no_balance.TwoRewardMouseAndCheeseNoBalance --is_pathmind_simulation=True --alphas="1.0, 0.5" --num_reward_terms=2 --use_auto_norm=True --max_episodes=1
+```
+
 ## Help
 
 The auto-generated help for this module is available via

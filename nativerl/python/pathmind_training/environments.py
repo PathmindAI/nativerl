@@ -118,9 +118,16 @@ def get_environment(
                 self.unwrapped.spec = self
 
             self.use_reward_terms = env_config["use_reward_terms"]
+            if is_pathmind_simulation and self.nativeEnv.auto_norm_reward:
+                self.use_auto_norm = self.nativeEnv.auto_norm_reward
+            else:
+                self.use_auto_norm = env_config["use_auto_norm"]
             self.num_reward_terms = env_config["num_reward_terms"]
-            self.alphas = env_config["alphas"]
-            self.betas = np.ones(self.num_reward_terms)
+            if is_pathmind_simulation and self.nativeEnv.reward_weights:
+                self.alphas = self.nativeEnv.reward_weights
+            else:
+                self.alphas = env_config["alphas"]
+            self.betas = env_config["betas"]
 
             self.term_contributions_dict = {}
             self.term_contributions = np.zeros(self.num_reward_terms)
@@ -277,9 +284,16 @@ def get_environment(
                 done_dict["__all__"] = all(done_dict.values())
 
                 if self.use_reward_terms and done_dict["__all__"]:
-                    self.term_contributions += sum(
-                        self.term_contributions_dict.values()
-                    ) / len(self.term_contributions_dict)
+                    max_array = np.zeros(len(reward_array))
+                    for key, val in self.term_contributions_dict.items():
+                        max_array = np.array(
+                            [
+                                max(max_array[i], abs(val[i]))
+                                for i in range(len(reward_array))
+                            ]
+                        )
+                    self.term_contributions = max_array
+
                 return obs_dict, reward_dict, done_dict, {}
 
             else:
@@ -299,7 +313,7 @@ def get_environment(
                 self.nativeEnv.step()
 
                 if self.use_reward_terms:
-                    reward_array = np.array(self.nativeEnv.getRewardTerms())
+                    reward_array = self.nativeEnv.getRewardTerms()
                     reward = np.sum(reward_array * self.alphas * self.betas)
                     self.term_contributions += reward_array
 
@@ -333,9 +347,9 @@ def get_environment(
             else:
                 return np.array(self.nativeEnv.getMetrics(0))
 
-        def updateBetas(self, betas):
-            if self.use_reward_terms:
-                self.betas = betas
+        def updateBetas(self, target_betas, lr):
+            if self.use_auto_norm:
+                self.betas = self.betas - lr * (target_betas - self.betas)
 
         def getRewardTermContributions(self):
             if self.use_reward_terms:
@@ -374,6 +388,14 @@ def get_native_env_from_simulation(
             nativerl.Environment.__init__(self)
             self.simulation = simulation
             self.obs_names = obs
+            if hasattr(simulation, "reward_weights"):
+                self.reward_weights = simulation.reward_weights
+            else:
+                self.reward_weights = None
+            if hasattr(simulation, "auto_norm_reward"):
+                self.auto_norm_reward = simulation.auto_norm_reward
+            else:
+                self.auto_norm_reward = False
 
         def getActionSpace(self, agent_id=0):
             space = self.simulation.action_space(agent_id=agent_id)
@@ -452,6 +474,6 @@ def get_native_env_from_simulation(
 
         def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return nativerl.Array(reward_dict.values())
+            return nativerl.Array(list(reward_dict.values()))
 
     return PathmindEnv()
