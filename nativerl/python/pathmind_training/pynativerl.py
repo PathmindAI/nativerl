@@ -55,11 +55,11 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def getActionMask(self, agent_id: int = 0) -> np.array:
+    def getActionMask(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
-    def getObservation(self, agent_id: int = 0) -> np.array:
+    def getObservation(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
@@ -87,11 +87,11 @@ class Environment(ABC):
         return NotImplemented
 
     @abstractmethod
-    def getMetrics(self, agent_id: int = 0) -> np.array:
+    def getMetrics(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
     @abstractmethod
-    def getRewardTerms(self, agent_id: int = 0) -> np.array:
+    def getRewardTerms(self, agent_id: int = 0) -> Array:
         return NotImplemented
 
 

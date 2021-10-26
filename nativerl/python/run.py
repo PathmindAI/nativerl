@@ -24,7 +24,6 @@ def main(
     is_gym: bool = False,
     is_pathmind_simulation: bool = False,
     obs_selection: str = None,
-    rew_fct_name: str = None,
     algorithm: str = "PPO",
     scheduler: str = "PBT",
     output_dir: str = os.getcwd(),
@@ -72,8 +71,6 @@ def main(
     :param is_gym: if True, "environment" must be a gym environment.
     :param is_pathmind_simulation: if True, use the "Simulation" interface from the pathmind package.
     :param obs_selection: If provided, read the names of the observations to be selected from this yaml file.
-    :param rew_fct_name: If provided, read a Python function from this file to compute the reward from
-                                 reward terms.
     :param algorithm: The algorithm to use with RLlib for training and the PythonPolicyHelper.
     :param scheduler: The tune scheduler used for picking trials, currently supports "PBT"
     :param output_dir: The directory where to output the logs of RLlib.
@@ -154,7 +151,6 @@ def main(
             max_memory_in_mb=max_memory_in_mb,
             is_pathmind_simulation=is_pathmind_simulation,
             obs_selection=obs_selection,
-            reward_function_name=rew_fct_name,
         )
         env_creator = env_name
 
@@ -302,7 +298,7 @@ def test(
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
 
-    :return: runs training for the given environment, with nativerl
+    :return: creates an environment name and creator function and returns it.
     """
 
     jar_dir = os.getcwd()
@@ -324,6 +320,8 @@ def test(
             max_memory_in_mb=max_memory_in_mb,
         )
         env_creator = env_name
+
+    return env_name, env_creator
 
 
 def from_config(config_file="./config.json"):

@@ -81,7 +81,6 @@ def get_environment(
     max_memory_in_mb: int = 4096,
     is_pathmind_simulation: bool = False,
     obs_selection=None,
-    reward_function_name=None,
 ):
     base_class = MultiAgentEnv if is_multi_agent else gym.Env
 
@@ -106,7 +105,7 @@ def get_environment(
             # Instantiate the native environment, or mock it with pynativerl
             if is_pathmind_simulation:
                 self.nativeEnv = get_native_env_from_simulation(
-                    environment_name, obs_selection, reward_function_name
+                    environment_name, obs_selection
                 )
             else:
                 self.nativeEnv = nativerl.createEnvironment(environment_name)
@@ -316,14 +315,13 @@ def get_environment(
                 if self.use_reward_terms:
                     reward_array = np.array(self.nativeEnv.getRewardTerms())
                     reward = np.sum(reward_array * self.alphas * self.betas)
+                    self.term_contributions += reward_array
+
                 else:
                     reward = self.nativeEnv.getReward()
 
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
-
-                if self.use_reward_terms:
-                    self.term_contributions += reward_array
 
                 if isinstance(self.observation_space, gym.spaces.Dict):
                     obs = {
@@ -335,12 +333,13 @@ def get_environment(
         def getMetrics(self):
             if is_multi_agent:
                 metrics_space = self.nativeEnv.getMetricsSpace()
+                # create before the loop to ensure existence in return value
+                metrics = np.zeros(metrics_space.shape)
                 for i in range(0, self.nativeEnv.getNumberOfAgents()):
                     if self.nativeEnv.isSkip(i):
                         agent_metrics = np.zeros(metrics_space.shape)
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
-                    metrics = np.zeros(metrics_space.shape)
                     metrics = (
                         agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
                     )
@@ -364,14 +363,15 @@ def get_environment(
 
 
 def get_native_env_from_simulation(
-    simulation_name, observation_file=None, reward_function_name=None
-):
+    simulation_name: str, observation_file: str = None
+) -> nativerl.Environment:
+    """Returns a pynativerl.Environment given a Pathmind Python `Simulation` name.
 
+    :param simulation_name: name of the `Simulation` class to run
+    :param observation_file: file name of the optional observation yaml
+    :return: a `pathmind_training.pynativerl.Environment` instance
+    """
     simulation_class = get_class_from_string(simulation_name)
-
-    reward_function = (
-        get_class_from_string(reward_function_name) if reward_function_name else None
-    )
 
     obs_names: typing.Optional[str] = None
     if observation_file:
@@ -383,12 +383,10 @@ def get_native_env_from_simulation(
         def __init__(
             self,
             simulation=simulation_class(),
-            reward_fct=reward_function,
             obs=obs_names,
         ):
             nativerl.Environment.__init__(self)
             self.simulation = simulation
-            self.reward_function = reward_fct
             self.obs_names = obs
             self.reward_weights = simulation.reward_weights
             self.auto_norm_reward = simulation.auto_norm_reward
@@ -411,9 +409,11 @@ def get_native_env_from_simulation(
             return self.simulation.number_of_agents()
 
         def getActionMask(self, agent_id=0):
+            # TODO: support this
             return None
 
         def getActionMaskSpace(self):
+            # TODO: support this
             return None
 
         def getObservation(self, agent_id=0):
@@ -451,11 +451,10 @@ def get_native_env_from_simulation(
             return self.simulation.is_done(agent_id)
 
         def getReward(self, agent_id=0) -> float:
+            """In the absence of proper reward term handling for Python models, we just sum up
+            all values of the "reward terms" we get from `get_reward`."""
             reward_dict = self.simulation.get_reward(agent_id)
-            if self.reward_function:
-                return self.reward_function(reward_dict)
-            else:
-                return sum(reward_dict.values())
+            return sum(reward_dict.values())
 
         def getMetrics(self, agent_id=0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
