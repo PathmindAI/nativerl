@@ -53,7 +53,7 @@ def test_pathmind_sim_module():
     output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
     run.main(
         is_pathmind_simulation=True,
-        environment="tests.mouses.TwoRewardMouseAndCheese",
+        environment="tests.mouse.two_reward_balance.TwoRewardMouseAndCheese",
         max_episodes=1,
         output_dir=output_dir,
     )
