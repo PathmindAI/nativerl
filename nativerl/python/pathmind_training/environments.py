@@ -314,7 +314,7 @@ def get_environment(
                 self.nativeEnv.step()
 
                 if self.use_reward_terms:
-                    reward_array = np.array(self.nativeEnv.getRewardTerms())
+                    reward_array = self.nativeEnv.getRewardTerms()
                     reward = np.sum(reward_array * self.alphas * self.betas)
                 else:
                     reward = self.nativeEnv.getReward()
@@ -390,8 +390,14 @@ def get_native_env_from_simulation(
             self.simulation = simulation
             self.reward_function = reward_fct
             self.obs_names = obs
-            self.reward_weights = simulation.reward_weights
-            self.auto_norm_reward = simulation.auto_norm_reward
+            if hasattr(simulation, "reward_weights"):
+                self.reward_weights = simulation.reward_weights
+            else:
+                self.reward_weights = None
+            if hasattr(simulation, "auto_norm_reward"):
+                self.auto_norm_reward = simulation.auto_norm_reward
+            else:
+                self.auto_norm_reward = False
 
         def getActionSpace(self, agent_id=0):
             space = self.simulation.action_space(agent_id=agent_id)
@@ -469,6 +475,6 @@ def get_native_env_from_simulation(
 
         def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return nativerl.Array(reward_dict.values())
+            return nativerl.Array(list(reward_dict.values()))
 
     return PathmindEnv()

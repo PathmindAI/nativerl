@@ -57,7 +57,8 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                         episode.custom_metrics[
                             f"metrics_term_{str(i)}"
                         ] = term_contributions[i]
-                        episode.custom_metrics["betas"] = betas
+                    for i, val in enumerate(betas):
+                        episode.custom_metrics[f"beta_{str(i)}"] = betas[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:

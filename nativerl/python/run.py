@@ -3,6 +3,7 @@ import random
 from typing import Optional
 
 import fire
+import ipdb
 import numpy as np
 import ray
 from pathmind_training import (
@@ -257,8 +258,11 @@ def main(
             best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
             trial_dfs = trials.fetch_trial_dataframes()
             df = trial_dfs[best_logdir]
-            betas = df.iloc[-1]["custom_metrics/betas"]
-            env_config["betas"] = np.array(betas)
+            ipdb.set_trace(context=20)
+            for i in range(len(env_config["betas"])):
+                beta = df.iloc[-1][f"custom_metrics/beta_{str(i)}_mean"]
+                env_config["betas"][i] = beta
+        #            env_config["betas"] = np.array(env_config["betas"])
         best_freezing_log_dir = freeze_trained_policy(
             env=env_instance,
             env_name=env_name,

@@ -3,7 +3,7 @@ import typing
 from pathmind.simulation import Continuous, Discrete, Simulation
 
 
-class TwoRewardMouseAndCheese(Simulation):
+class TwoRewardMouseAndCheeseNoBalance(Simulation):
 
     mouse = (0, 0)
     cheese = (4, 4)
