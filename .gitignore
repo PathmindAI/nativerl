@@ -48,3 +48,5 @@ pathmind-lib
 
 .venv
 .pyenv
+
+testoutputs/
