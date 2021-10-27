@@ -22,8 +22,8 @@ fi
 
 cd ${workDir}
 
-export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -print0 | sort -z -r | xargs --null -i printf "{}:")
-export CLASSPATH=$(find $PWD/lib -iname '*.jar' -print0 | sort -z -r | xargs --null -i printf "{}:"):${CLASSPATH}
+export CLASSPATH=$(find ${libDir}/pathmind -iname '*.jar' -print0 | sort -z | xargs --null -i printf "{}:")
+export CLASSPATH=$(find $PWD/lib -iname '*.jar' -print0 | sort -z | xargs --null -i printf "{}:"):${CLASSPATH}
 export CLASSPATH=$PWD:$PWD/model.jar:${CLASSPATH}
 export CLASSPATH=/ma-common.jar:${CLASSPATH}
 
