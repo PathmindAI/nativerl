@@ -1,9 +1,9 @@
 import logging
-from ray.rllib.agents.registry import get_agent_class
-from ray.tune import run
 
 from pathmind_training.distributions import register_freezing_distributions
 from pathmind_training.utils import write_file
+from ray.rllib.agents.registry import get_agent_class
+from ray.tune import run
 
 
 def find(key, value):
@@ -19,32 +19,43 @@ def find(key, value):
                     yield result
 
 
-def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, output_dir, input_config,
-               step_tolerance=1000000, algorithm='PPO', multi_agent=False):
+def mc_rollout(
+    steps,
+    checkpoint,
+    environment,
+    env_name,
+    callbacks,
+    loggers,
+    output_dir,
+    input_config,
+    step_tolerance=1000000,
+    algorithm="PPO",
+    multi_agent=False,
+):
     """
     Monte Carlo rollout. Currently set to return brief summary of rewards and metrics.
     """
 
     config = {
-        'env': env_name,
-        'callbacks': callbacks,
-        'num_gpus': 0,
-        'num_workers': 6,
-        'num_cpus_per_worker': 1,
-        'model': input_config['model'],
-        'lr': 0.0,
-        'num_sgd_iter': 1,
-        'sgd_minibatch_size': 1,
-        'train_batch_size': steps,
-        'batch_mode': 'complete_episodes',  # Set rollout samples to episode length
-        'horizon': environment.max_steps,  # Set max steps per episode,
-        'no_done_at_end': multi_agent  # Disable "de-allocation" of agents for simplicity
+        "env": env_name,
+        "callbacks": callbacks,
+        "num_gpus": 0,
+        "num_workers": 6,
+        "num_cpus_per_worker": 1,
+        "model": input_config["model"],
+        "lr": 0.0,
+        "num_sgd_iter": 1,
+        "sgd_minibatch_size": 1,
+        "train_batch_size": steps,
+        "batch_mode": "complete_episodes",  # Set rollout samples to episode length
+        "horizon": environment.max_steps,  # Set max steps per episode,
+        "no_done_at_end": multi_agent,  # Disable "de-allocation" of agents for simplicity
     }
 
     trials = run(
         algorithm,
         num_samples=1,
-        stop={'training_iteration': 1},
+        stop={"training_iteration": 1},
         loggers=loggers,
         config=config,
         local_dir=output_dir,
@@ -52,18 +63,33 @@ def mc_rollout(steps, checkpoint, environment, env_name, callbacks, loggers, out
         max_failures=10,
     )
 
-    max_reward = next(find('episode_reward_max', trials.results))
-    min_reward = next(find('episode_reward_min', trials.results))
+    max_reward = next(find("episode_reward_max", trials.results))
+    min_reward = next(find("episode_reward_min", trials.results))
 
     range_of_rewards = max_reward - min_reward
-    mean_reward = next(find('episode_reward_mean', trials.results))
+    mean_reward = next(find("episode_reward_mean", trials.results))
 
-    return mean_reward, range_of_rewards, trials.get_best_logdir(metric="episode_reward_mean", mode="max")
+    return (
+        mean_reward,
+        range_of_rewards,
+        trials.get_best_logdir(metric="episode_reward_mean", mode="max"),
+    )
 
 
-def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir: str, algorithm: str, is_discrete: bool,
-                          filter_tolerance: float = 0.85, mc_steps: int = 10000,
-                          step_tolerance: int = 100_000_000, multi_agent: bool = False):
+def freeze_trained_policy(
+    env,
+    env_name,
+    callbacks,
+    trials,
+    loggers,
+    output_dir: str,
+    algorithm: str,
+    is_discrete: bool,
+    filter_tolerance: float = 0.85,
+    mc_steps: int = 10000,
+    step_tolerance: int = 100_000_000,
+    multi_agent: bool = False,
+):
     """Freeze the trained policy at several temperatures and pick the best ones.
 
     :param env: nativerl.Environment instance
@@ -82,8 +108,10 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
     :return: Best Freezing log dir
     """
     if not is_discrete:
-        logger = logging.getLogger('freezing')
-        logger.warning('Freezing skipped. Only supported for models with discrete actions.')
+        logger = logging.getLogger("freezing")
+        logger.warning(
+            "Freezing skipped. Only supported for models with discrete actions."
+        )
         return
 
     temperature_list = ["icy", "cold", "cool", "vanilla", "warm", "hot"]
@@ -92,7 +120,9 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
 
     best_trial = trials.get_best_trial(metric="episode_reward_mean", mode="max")
     config = trials.get_best_config(metric="episode_reward_mean", mode="max")
-    checkpoint_path = trials.get_best_checkpoint(trial=best_trial, metric="episode_reward_mean", mode="max")
+    checkpoint_path = trials.get_best_checkpoint(
+        trial=best_trial, metric="episode_reward_mean", mode="max"
+    )
 
     mean_reward_dict = dict.fromkeys(temperature_list)
     range_reward_dict = dict.fromkeys(temperature_list)
@@ -100,26 +130,48 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
+            config["model"].update({"custom_action_dist": temp})
 
-        mean_reward_dict[temp], range_reward_dict[temp], log_dir_dict[temp] = \
-            mc_rollout(mc_steps, checkpoint_path, env, env_name, callbacks, loggers, output_dir, config,
-                       step_tolerance, algorithm, multi_agent)
+        (
+            mean_reward_dict[temp],
+            range_reward_dict[temp],
+            log_dir_dict[temp],
+        ) = mc_rollout(
+            mc_steps,
+            checkpoint_path,
+            env,
+            env_name,
+            callbacks,
+            loggers,
+            output_dir,
+            config,
+            step_tolerance,
+            algorithm,
+            multi_agent,
+        )
 
     # Filter out policies with under (filter_tolerance*100)% of max mean reward
-    filter_tolerance = filter_tolerance if max(mean_reward_dict.values()) > 0 else 1. / filter_tolerance
-    filtered_range_reward_dict = {temp: range_reward_dict[temp]
-                                  for temp in mean_reward_dict.keys()
-                                  if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())}
+    filter_tolerance = (
+        filter_tolerance
+        if max(mean_reward_dict.values()) > 0
+        else 1.0 / filter_tolerance
+    )
+    filtered_range_reward_dict = {
+        temp: range_reward_dict[temp]
+        for temp in mean_reward_dict.keys()
+        if mean_reward_dict[temp] > filter_tolerance * max(mean_reward_dict.values())
+    }
 
     top_performing_temp = max(mean_reward_dict, key=lambda k: mean_reward_dict[k])
-    most_reliable_temp = min(filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k])
+    most_reliable_temp = min(
+        filtered_range_reward_dict, key=lambda k: filtered_range_reward_dict[k]
+    )
 
     for temp in temperature_list:
         if temp != "vanilla":
-            config['model'] = {'custom_action_dist': temp}
+            config["model"].update({"custom_action_dist": temp})
         trainer_class = get_agent_class(algorithm)
-        agent = trainer_class(env=config['env'], config=config)
+        agent = trainer_class(env=config["env"], config=config)
         agent.restore(checkpoint_path)
         if temp == top_performing_temp:
             agent.export_policy_model(f"{output_dir}/models/{temp}-top-mean-reward")
@@ -136,7 +188,7 @@ def freeze_trained_policy(env, env_name, callbacks, trials, loggers, output_dir:
         f"Top performing reward temperature: {top_performing_temp}",
         f"Filtered temperature list: {filtered_range_reward_dict}",
         f"Most reliable temperature (our policy of choice): {most_reliable_temp}",
-        f"Most reliable temperature log dir: {log_dir_dict[most_reliable_temp]}"
+        f"Most reliable temperature log dir: {log_dir_dict[most_reliable_temp]}",
     ]
     write_file(message_list, "FreezingCompletionReport.txt", output_dir, algorithm)
 

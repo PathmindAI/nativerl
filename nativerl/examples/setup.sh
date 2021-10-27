@@ -1,7 +1,7 @@
 
 export CLASS_SNIPPET='' ; # Unused, ignore
 export RESET_SNIPPET='' ; # Unused, ignore
-export REWARD_SNIPPET='reward = after[0] - before[0];' ; # Write reward function here.
+export REWARD_TERMS_SNIPPET ='rewardTermsRaw[0] = after[0] - before[0];' ; # Write reward function here.
 export METRICS_SNIPPET='' ; # Unused, ignore
 export DISCRETE_ACTIONS='123' ; # Set num actions
 export CONTINUOUS_OBSERVATIONS='123' ; # Set num observations

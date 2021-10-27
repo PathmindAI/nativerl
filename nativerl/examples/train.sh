@@ -159,6 +159,41 @@ if [[ ! -z "$NUM_HIDDEN_NODES" ]]; then
     NUM_HIDDEN_NODES_PARAM="--num_hidden_nodes $NUM_HIDDEN_NODES"
 fi
 
+GAMMA_PARAM=""
+if [[ ! -z "$GAMMA" ]]; then
+    GAMMA_PARAM="--gamma $GAMMA"
+fi
+
+TRAIN_BATCH_MODE_PARAM=""
+if [[ ! -z "$TRAIN_BATCH_MODE" ]]; then
+    TRAIN_BATCH_MODE_PARAM="--train_batch_mode $TRAIN_BATCH_MODE"
+fi
+
+TRAIN_BATCH_SIZE_PARAM=""
+if [[ ! -z "$TRAIN_BATCH_SIZE" ]]; then
+    TRAIN_BATCH_SIZE_PARAM="--train_batch_size $TRAIN_BATCH_SIZE"
+fi
+
+ROLLOUT_FRAGMENT_LENGTH_PARAM=""
+if [[ ! -z "$ROLLOUT_FRAGMENT_LENGTH" ]]; then
+    ROLLOUT_FRAGMENT_LENGTH_PARAM="--rollout_fragment_length $ROLLOUT_FRAGMENT_LENGTH"
+fi
+
+REWARD_TERMS_WEIGHTS_PARAM=""
+if [[ ! -z "$REWARD_TERMS_WEIGHTS" ]]; then
+    REWARD_TERMS_WEIGHTS_PARAM="--alphas $REWARD_TERMS_WEIGHTS"
+fi
+
+NUM_REWARD_TERMS_PARAM=""
+if [[ ! -z "$NUM_REWARD_TERMS" ]]; then
+    NUM_REWARD_TERMS_PARAM="--num_reward_terms  $NUM_REWARD_TERMS"
+fi
+
+REWARD_BALANCE_PERIOD_PARAM=""
+if [[ ! -z "$REWARD_BALANCE_PERIOD" ]]; then
+    REWARD_BALANCE_PERIOD_PARAM="--reward_balance_period $REWARD_BALANCE_PERIOD"
+fi
+
 export OUTPUT_DIR=$(pwd)
 
 if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
@@ -187,7 +222,7 @@ if [[ "$MODEL_TYPE" = "ANYLOGIC" ]]; then
         --agent-class-name "$AGENT_CLASS" \
         --class-snippet "$CLASS_SNIPPET" \
         --reset-snippet "$RESET_SNIPPET" \
-        --reward-snippet "$REWARD_SNIPPET" \
+        --reward-terms-snippet "$REWARD_TERMS_SNIPPET" \
         --simulation-parameter-snippet "$SIMULATION_PARAMETER_SNIPPET" \
         --observation-snippet "$OBSERVATION_SNIPPET" \
         --metrics-snippet "$METRICS_SNIPPET" \
@@ -237,4 +272,11 @@ PYTHON=$(which python.exe) || PYTHON=$(which python3)
     $SCHEDULER_PARAM \
     $CONVERGENCE_CHECK_START_ITERATION_PARAM \
     $NUM_HIDDEN_LAYERS_PARAM \
-    $NUM_HIDDEN_NODES_PARAM
+    $NUM_HIDDEN_NODES_PARAM \
+    $GAMMA_PARAM \
+    $TRAIN_BATCH_MODE_PARAM \
+    $ROLLOUT_FRAGMENT_LENGTH_PARAM \
+    $TRAIN_BATCH_SIZE_PARAM \
+    $REWARD_TERMS_WEIGHTS_PARAM \
+    $NUM_REWARD_TERMS_PARAM \
+    $REWARD_BALANCE_PERIOD_PARAM

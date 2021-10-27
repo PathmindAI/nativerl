@@ -1,7 +1,9 @@
-from ..models import Node
-from ..simulation import Factory
 import cv2
 import numpy as np
+
+from ..models import Node
+from ..simulation import Factory
+
 SCALE_X, SCALE_Y = 4, 2
 
 
@@ -35,10 +37,10 @@ def draw_boxes(factory: Factory, original_img: np.array):
 def draw_box(img: np.array, pos=(0, 0), text: str = "pt_01", nd_type: str = "N"):
     top_left = pos
     bottom_right = (pos[0] + 100, pos[1] + 100)
-    if nd_type is "C":
+    if nd_type == "C":
         thickness = -1
         color = (255, 0, 0)
-    elif nd_type is "T":
+    elif nd_type == "T":
         thickness = -1
         color = (0, 255, 0)
     else:
@@ -51,11 +53,29 @@ def draw_box(img: np.array, pos=(0, 0), text: str = "pt_01", nd_type: str = "N")
     bottom_right = (pos[0] + 98, pos[1] + 40)
     img = cv2.rectangle(img, top_left, bottom_right, (255, 255, 255), cv2.FILLED)
     position = (pos[0] + 10, pos[1] + 30)
-    img = cv2.putText(img, text, position, cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (0, 0, 0), 2, cv2.LINE_AA)
+    img = cv2.putText(
+        img,
+        text,
+        position,
+        cv2.FONT_HERSHEY_COMPLEX_SMALL,
+        1,
+        (0, 0, 0),
+        2,
+        cv2.LINE_AA,
+    )
 
-    if nd_type is not "N":
+    if nd_type != "N":
         position = (pos[0] + 43, pos[1] + 70)
-        img = cv2.putText(img, nd_type, position, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 4, cv2.LINE_AA)
+        img = cv2.putText(
+            img,
+            nd_type,
+            position,
+            cv2.FONT_HERSHEY_SIMPLEX,
+            1,
+            (0, 0, 0),
+            4,
+            cv2.LINE_AA,
+        )
 
     return img
 
@@ -74,9 +94,13 @@ def factory_string(factory: Factory, fill_char="·", line_break="\n") -> str:
         for direction, nb in node.neighbours.items():
             if nb:
                 if direction == "left":
-                    grid[y * SCALE_Y][x * SCALE_X - SCALE_X + 1: x * SCALE_X] = ["="] * (SCALE_X - 1)
+                    grid[y * SCALE_Y][x * SCALE_X - SCALE_X + 1 : x * SCALE_X] = [
+                        "="
+                    ] * (SCALE_X - 1)
                 elif direction == "right":
-                    grid[y * SCALE_Y][x * SCALE_X + 1: x * SCALE_X + SCALE_X] = ["="] * (SCALE_X - 1)
+                    grid[y * SCALE_Y][x * SCALE_X + 1 : x * SCALE_X + SCALE_X] = [
+                        "="
+                    ] * (SCALE_X - 1)
                 elif direction == "up":
                     grid[y * SCALE_Y - 1][x * SCALE_X] = "║"
                 elif direction == "down":
