@@ -1,0 +1,7 @@
+# Install everything the developer needs in addition to prod requirements
+-r requirements.txt
+
+flake8
+flake8-debugger
+pre-commit
+pytest

@@ -1,15 +1,15 @@
 """Models specify the basic building blocks for this project (what).
 They model what objects are and how to interact with them."""
 import enum
-from typing import Optional, Tuple, TypeVar, List, Dict
-
+from typing import Dict, List, Optional, Tuple, TypeVar
 
 __all__ = ["Direction", "Node", "Rail", "Table", "Phase", "Core", "ActionResult"]
-N = TypeVar('N', bound='Node')
+N = TypeVar("N", bound="Node")
 
 
 class Direction(enum.IntEnum):
     """Four basic directions on a 2D plane."""
+
     up = 0
     right = 1
     down = 2
@@ -27,6 +27,7 @@ class Table:
     """Tables sit on nodes and potentially carry cores. Tables will
     act as our main agents in simulations.
     """
+
     def __init__(self, node, core=None, name: str = None):
         node.set_table(self)
         self.node = node
@@ -34,19 +35,19 @@ class Table:
         self.name = name
         # Since tables act as agents, they (not cores) know when they're at a target
         self.is_at_target = False
-    
+
     def has_core(self) -> bool:
         return self.core is not None
 
     def set_core(self, core) -> None:
         self.core = core
-    
+
     def set_node(self, node) -> None:
         self.node = node
-    
+
     def get_target(self):
         return self.core.current_target if self.has_core() else None
-    
+
     def phase_completed(self):
         """Complete a phase on behalf of your core. If all phases are complete,
         remove the core from this table."""
@@ -61,8 +62,13 @@ class Node:
     to each other. A node can either belong to a Rail, or exist as
     a standalone, static node. Nodes can host a single Table.
     """
-    def __init__(self, name: Optional[str] = None, is_rail: bool = False,
-                 coordinates: Optional[Tuple[int, int]] = None):
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        is_rail: bool = False,
+        coordinates: Optional[Tuple[int, int]] = None,
+    ):
         self.is_rail = is_rail
         self.name = name
         self.coordinates = coordinates
@@ -73,12 +79,14 @@ class Node:
         return self.table is not None
 
     def set_table(self, table: Table) -> None:
-        assert not self.has_table(), "Can't set another Table, remove the existing first."
+        assert (
+            not self.has_table()
+        ), "Can't set another Table, remove the existing first."
         self.table = table
 
     def remove_table(self) -> None:
         self.table = None
-    
+
     def connected_to(self, node: N) -> bool:
         return node in [n for n in self.neighbours.values()]
 
@@ -87,7 +95,7 @@ class Node:
 
     def has_neighbour(self, where: Direction) -> bool:
         return self.get_neighbour(where) is not None
-    
+
     def add_neighbour(self, neighbour: N, where: Direction, bidirectional=True) -> None:
         assert neighbour is not self, "Can't connect node to itself"
         opposite = where.opposite()
@@ -100,11 +108,12 @@ class Node:
 class Rail:
     """Rails consist of sequentially connected Nodes,
     only one of which can carry a Table."""
+
     def __init__(self, nodes: List[Node]):
         for node in nodes:
             node.is_rail = True
-        for i in range(len(nodes)-1):
-            assert nodes[i].connected_to(nodes[i+1])
+        for i in range(len(nodes) - 1):
+            assert nodes[i].connected_to(nodes[i + 1])
         self.nodes = nodes
 
     def get_table_node(self):
@@ -119,15 +128,15 @@ class Rail:
 
     def has_table(self):
         return self.num_tables() == 1
-    
+
     def is_free(self) -> bool:
         return self.num_tables() == 0
-
 
 
 class Phase(enum.IntEnum):
     """Cores go through one or several production phases.
     Each phase is mapped to a Node"""
+
     A = 0
     B = 1
     C = 2
@@ -140,6 +149,7 @@ class Core:
     """Cores reside on tables and know which phase corresponds to which
     target node. Cores have to be delivered to targets according to the
     specified phases."""
+
     def __init__(self, table: Table, cycle: Dict[Phase, Node], name: str = None):
         self.table = table
         table.set_core(self)
@@ -151,18 +161,21 @@ class Core:
 
     def done(self):
         return not bool(self.cycle)
-    
+
     def phase_completed(self):
         """Remove the completed target from the phases and set next target."""
         del self.cycle[self.current_phase]
         self.current_phase = list(self.cycle)[0] if not self.done() else None
-        self.current_target = self.cycle[self.current_phase] if not self.done() else None
+        self.current_target = (
+            self.cycle[self.current_phase] if not self.done() else None
+        )
 
 
 class ActionResult(enum.IntEnum):
     """Result of an action with attached rewards."""
-    NONE = 0,
-    MOVED = 1,
+
+    NONE = (0,)
+    MOVED = (1,)
     INVALID = 2
     COLLISION = 3
     INVALID_RAIL_ENTERING = 4

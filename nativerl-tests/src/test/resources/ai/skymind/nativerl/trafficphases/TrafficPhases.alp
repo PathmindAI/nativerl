@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 *************************************************
-	         AnyLogic Project File 
-*************************************************	         
+	         AnyLogic Project File
+*************************************************
 -->
 <AnyLogicWorkspace WorkspaceVersion="1.9" AnyLogicVersion="8.6.0.202008201526" AlpVersion="8.5.7">
 <Model>
@@ -56,7 +56,7 @@ traceln("FINISH @ " + systemEnd.toString() + " => Run time: " + roundToDecimal(j
 			<SceneBackgroundColor/>
 			<SceneSkybox>null</SceneSkybox>
 			<AgentProperties>
-	 			<SpaceType>CONTINUOUS</SpaceType>			
+	 			<SpaceType>CONTINUOUS</SpaceType>
 				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
 				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
 				<RotateAnimationVertically>false</RotateAnimationVertically>
@@ -257,7 +257,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[int]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -269,7 +269,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[int]]></Type>        
+						<Type><![CDATA[int]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -281,7 +281,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[double]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -293,7 +293,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[Instant]]></Type>        
+						<Type><![CDATA[Instant]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[Instant.now()]]></Code>
 						</InitialValue>
@@ -308,7 +308,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[ScheduleWithUnits<RateUnits>]]></Type>        
+						<Type><![CDATA[ScheduleWithUnits<RateUnits>]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="PlainVariable">
@@ -320,7 +320,7 @@ lastPhaseTS = time();]]></Code>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[ScheduleWithUnits<RateUnits>]]></Type>        
+						<Type><![CDATA[ScheduleWithUnits<RateUnits>]]></Type>
 					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
@@ -346,7 +346,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1550355395353</Id>
@@ -371,7 +371,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1550463694518</Id>
@@ -395,7 +395,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1550502586330</Id>
@@ -420,7 +420,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1550871334387</Id>
@@ -445,7 +445,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 				<Variable Class="Parameter">
 					<Id>1550871355487</Id>
@@ -470,7 +470,7 @@ lastPhaseTS = time();]]></Code>
 							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
 							<DelimeterType>NO_DELIMETER</DelimeterType>
 						</ParameterEditor>
-					</Properties>                 
+					</Properties>
 				</Variable>
 			</Variables>
 			<Connectors>
@@ -779,7 +779,7 @@ lastPhaseTS = time();]]></Code>
 						<Condition><![CDATA[filter(intersection.getCars(), a -> a.getSpeed() < 1).size() > 0]]></Condition>
 					</Properties>
 					<Action><![CDATA[// This event checks for any cars that are stuck in the intersection.
-// (A leftover car that started to go in the previous phase, 
+// (A leftover car that started to go in the previous phase,
 //		but couldn't get thru the yellow phase in time)
 // Not sure the best way to solve this problem; for now just makes a print statement.
 
@@ -1025,10 +1025,10 @@ for (int i = 0; i < sNS.size(); i++)
 	previewNS.add(sNS.get(i)*3600, vNS.get(i)); // time in hours; convert to seconds to match other graphs
 for (int i = 0; i < sEW.size(); i++)
 	previewEW.add(sEW.get(i)*3600, vEW.get(i));
-				
-plotPreviewNS.addDataSet(previewNS, "N/S", blue, true, false, InterpolationType.INTERPOLATION_STEP, 
+
+plotPreviewNS.addDataSet(previewNS, "N/S", blue, true, false, InterpolationType.INTERPOLATION_STEP,
 						1.0, Chart.PointStyle.POINT_SQUARE);
-plotPreviewEW.addDataSet(previewEW, "E/W", red, true, false, InterpolationType.INTERPOLATION_STEP, 
+plotPreviewEW.addDataSet(previewEW, "E/W", red, true, false, InterpolationType.INTERPOLATION_STEP,
 						1.0, Chart.PointStyle.POINT_CIRCLE);
 
 // Initialize objects
@@ -2756,7 +2756,7 @@ tisDS.add(elapsed);]]></Code>
 						<Code><![CDATA[100]]></Code>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
-					<InEnvironment>true</InEnvironment>	
+					<InEnvironment>true</InEnvironment>
 					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
@@ -2818,7 +2818,7 @@ tisDS.add(elapsed);]]></Code>
 						<Code><![CDATA[100]]></Code>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
-					<InEnvironment>true</InEnvironment>	
+					<InEnvironment>true</InEnvironment>
 					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
@@ -2958,7 +2958,7 @@ void doIt() { doAction(action); }
 						<Code><![CDATA[100]]></Code>
 					</Replication>
 					<CollectionType>ARRAY_LIST_BASED</CollectionType>
-					<InEnvironment>true</InEnvironment>	
+					<InEnvironment>true</InEnvironment>
 					<InitialLocationType>AT_ANIMATION_POSITION</InitialLocationType>
 					<XCode Class="CodeValue">
 						<Code><![CDATA[0]]></Code>
@@ -3044,7 +3044,7 @@ void doIt() { doAction(action); }
 					<Z>0</Z>
 					<Rotation>0.0</Rotation>
 					<Color>-16777216</Color>
-					<Text><![CDATA[If 5 minutes is longest wait time for a single phase, 
+					<Text><![CDATA[If 5 minutes is longest wait time for a single phase,
 a rate of 1000 is the upper limit.
 Anything higher will (more or less) output the same amount of cars
 (due to the traffic library's self-limiting behavior).]]></Text>
@@ -5025,7 +5025,7 @@ Anything higher will (more or less) output the same amount of cars
 					<Alignment>CENTER</Alignment>
 				</Text>
 				<Control Type="Button">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1550463735307</Id>
 					<Name><![CDATA[button]]></Name>
 					<X>220</X><Y>-370</Y>
@@ -5035,7 +5035,7 @@ Anything higher will (more or less) output the same amount of cars
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<TextColor/>
 						<YCode><![CDATA[manual ? 370 : -370]]></YCode>
 						<Enabled>true</Enabled>
@@ -5097,7 +5097,7 @@ Anything higher will (more or less) output the same amount of cars
 					<VerScaleType>AUTO</VerScaleType>
 					<DrawLine>true</DrawLine>
 					<Interpolation>STEP</Interpolation>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[N/S]]></Title>
 					<Expression><![CDATA[NSPhaseLenDS]]></Expression>
 					<Color>-16776961</Color>
@@ -5106,7 +5106,7 @@ Anything higher will (more or less) output the same amount of cars
 						<LineWidth>1.0</LineWidth>
 						<HorizontalAxisExpression><![CDATA[]]></HorizontalAxisExpression>
 					</DatasetExpression>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[E/W]]></Title>
 					<Expression><![CDATA[EWPhaseLenDS]]></Expression>
 					<Color>-65536</Color>
@@ -5171,7 +5171,7 @@ Anything higher will (more or less) output the same amount of cars
 					<VerScaleType>AUTO</VerScaleType>
 					<DrawLine>true</DrawLine>
 					<Interpolation>STEP</Interpolation>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[N/S]]></Title>
 					<Expression><![CDATA[NSCountDS]]></Expression>
 					<Color>-16776961</Color>
@@ -5181,7 +5181,7 @@ Anything higher will (more or less) output the same amount of cars
 						<LineWidth>1.0</LineWidth>
 						<HorizontalAxisExpression><![CDATA[0]]></HorizontalAxisExpression>
 					</DatasetExpression>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[E/W]]></Title>
 					<Expression><![CDATA[EWCountDS]]></Expression>
 					<Color>-65536</Color>
@@ -5245,7 +5245,7 @@ Anything higher will (more or less) output the same amount of cars
 					<VerScaleType>AUTO</VerScaleType>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[TIS mean from past half hour]]></Title>
 					<Expression><![CDATA[tisRecentMeanDS]]></Expression>
 					<Color>-16744448</Color>
@@ -5399,7 +5399,7 @@ Anything higher will (more or less) output the same amount of cars
 			<SceneBackgroundColor/>
 			<SceneSkybox>null</SceneSkybox>
 			<AgentProperties>
-	 			<SpaceType>CONTINUOUS</SpaceType>			
+	 			<SpaceType>CONTINUOUS</SpaceType>
 				<EnvironmentDefinesInitialLocation>true</EnvironmentDefinesInitialLocation>
 				<RotateAnimationTowardsMovement>true</RotateAnimationTowardsMovement>
 				<RotateAnimationVertically>false</RotateAnimationVertically>
@@ -5483,7 +5483,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
+						<Type><![CDATA[boolean]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[getPopulation().equals(main.carsNS)]]></Code>
 						</InitialValue>
@@ -5498,7 +5498,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[double]]></Type>
 					</Properties>
 				</Variable>
 			</Variables>
@@ -5656,7 +5656,7 @@ Anything higher will (more or less) output the same amount of cars
 			</Areas>
 
 		</ActiveObjectClass>
-	</ActiveObjectClasses>	
+	</ActiveObjectClasses>
 	<DifferentialEquationsMethod>EULER</DifferentialEquationsMethod>
 	<MixedEquationsMethod>RK45_NEWTON</MixedEquationsMethod>
 	<AlgebraicEquationsMethod>MODIFIED_NEWTON</AlgebraicEquationsMethod>
@@ -5677,17 +5677,17 @@ Anything higher will (more or less) output the same amount of cars
 		<ExportSettings>
 		</ExportSettings>
 	</Database>
-	
+
 	<RunConfiguration ActiveObjectClassId="1550346985141">
 		<Id>1550346985144</Id>
 		<Name><![CDATA[RunConfiguration]]></Name>
 		<MaximumMemory>512</MaximumMemory>
 		<ModelTimeProperties>
 			<StopOption><![CDATA[Stop at specified time]]></StopOption>
-			<InitialDate><![CDATA[1550275200000]]></InitialDate>	
-			<InitialTime><![CDATA[0.0]]></InitialTime>	
-			<FinalDate><![CDATA[1552694400000]]></FinalDate>	
-			<FinalTime><![CDATA[100.0]]></FinalTime>	
+			<InitialDate><![CDATA[1550275200000]]></InitialDate>
+			<InitialTime><![CDATA[0.0]]></InitialTime>
+			<FinalDate><![CDATA[1552694400000]]></FinalDate>
+			<FinalTime><![CDATA[100.0]]></FinalTime>
 		</ModelTimeProperties>
 		<AnimationProperties>
 			<StopNever>true</StopNever>
@@ -5697,12 +5697,12 @@ Anything higher will (more or less) output the same amount of cars
 			<EnableDeveloperPanel>false</EnableDeveloperPanel>
 			<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 		</AnimationProperties>
-		<Inputs>		
+		<Inputs>
 		</Inputs>
 		<Outputs>
 		</Outputs>
 	</RunConfiguration>
-	<Experiments>	
+	<Experiments>
 		<!--   =========   Simulation Experiment   ========  -->
 		<SimulationExperiment ActiveObjectClassId="1550346985141">
 			<Id>1550346985143</Id>
@@ -5727,7 +5727,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[double]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[300]]></Code>
 						</InitialValue>
@@ -5742,7 +5742,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[double]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[300]]></Code>
 						</InitialValue>
@@ -5757,7 +5757,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
+						<Type><![CDATA[boolean]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
 						</InitialValue>
@@ -5772,7 +5772,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[boolean]]></Type>        
+						<Type><![CDATA[boolean]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[false]]></Code>
 						</InitialValue>
@@ -5787,7 +5787,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[String]]></Type>        
+						<Type><![CDATA[String]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA["none_til_heavy_afternoon_peak"]]></Code>
 						</InitialValue>
@@ -5802,7 +5802,7 @@ Anything higher will (more or less) output the same amount of cars
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[String]]></Type>        
+						<Type><![CDATA[String]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA["constant_moderate"]]></Code>
 						</InitialValue>
@@ -6143,7 +6143,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 
 				</Group>
 				<Control Type="EditBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1000000000002</Id>
 					<Name><![CDATA[c_timeNS]]></Name>
 					<X>210</X><Y>170</Y>
@@ -6153,7 +6153,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<FillColor/>
 						<TextColor/>
 						<Enabled>true</Enabled>
@@ -6166,7 +6166,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					</ExtendedProperties>
 				</Control>
 				<Control Type="EditBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1000000000005</Id>
 					<Name><![CDATA[c_timeEW]]></Name>
 					<X>210</X><Y>220</Y>
@@ -6176,7 +6176,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="100" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<FillColor/>
 						<TextColor/>
 						<Enabled>true</Enabled>
@@ -6189,7 +6189,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1550463650320</Id>
 					<Name><![CDATA[checkbox]]></Name>
 					<X>210</X><Y>120</Y>
@@ -6199,7 +6199,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="200" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<TextColor/>
 						<Enabled>true</Enabled>
 					</BasicProperties>
@@ -6211,7 +6211,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="CheckBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1550502633705</Id>
 					<Name><![CDATA[checkbox1]]></Name>
 					<X>210</X><Y>90</Y>
@@ -6221,7 +6221,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="190" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<TextColor/>
 						<Enabled>true</Enabled>
 					</BasicProperties>
@@ -6233,7 +6233,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 	 				</ExtendedProperties>
 				</Control>
 				<Control Type="ComboBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1550950435028</Id>
 					<Name><![CDATA[comboNS]]></Name>
 					<X>210</X><Y>340</Y>
@@ -6243,7 +6243,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="290" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<FillColor/>
 						<TextColor/>
 						<Enabled>true</Enabled>
@@ -6267,7 +6267,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					</ExtendedProperties>
 				</Control>
 				<Control Type="ComboBox">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>1550950819264</Id>
 					<Name><![CDATA[comboEW]]></Name>
 					<X>210</X><Y>400</Y>
@@ -6277,7 +6277,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="290" Height="30">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<FillColor/>
 						<TextColor/>
 						<Enabled>true</Enabled>
@@ -6291,7 +6291,7 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 				</Control>
 			</Presentation>
 
-			<Parameters>			
+			<Parameters>
 				<Parameter>
 					<ParameterName><![CDATA[timeNS]]></ParameterName>
 					<ParameterValue Class="CodeValue">
@@ -6328,21 +6328,21 @@ comboEW.setValue(v_nameEW);]]></OnClickCode>
 						<Code><![CDATA[v_nameEW]]></Code>
 					</ParameterValue>
 				</Parameter>
-			</Parameters>			
+			</Parameters>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
 				<ExecutionMode><![CDATA[realTimeScaled]]></ExecutionMode>
-				<Title><![CDATA[Traffic Light Opt (Comprehensive) : Simulation]]></Title>	
+				<Title><![CDATA[Traffic Light Opt (Comprehensive) : Simulation]]></Title>
 				<EnableDeveloperPanel>true</EnableDeveloperPanel>
 				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 				<RealTimeScale>500.0</RealTimeScale>
 			</PresentationProperties>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified time]]></StopOption>
-				<InitialDate><![CDATA[1571216400000]]></InitialDate>	
-				<InitialTime><![CDATA[0.0]]></InitialTime>	
-				<FinalDate><![CDATA[1571245200000]]></FinalDate>	
-				<FinalTime><![CDATA[28800.0]]></FinalTime>	
+				<InitialDate><![CDATA[1571216400000]]></InitialDate>
+				<InitialTime><![CDATA[0.0]]></InitialTime>
+				<FinalDate><![CDATA[1571245200000]]></FinalDate>
+				<FinalTime><![CDATA[28800.0]]></FinalTime>
 			</ModelTimeProperties>
 			<BypassInitialScreen>true</BypassInitialScreen>
 		</SimulationExperiment>
@@ -6364,7 +6364,7 @@ double[] key = new double[]{root.timeNS, root.timeEW};
 if (!collection.containsKey(key)) {
 	double[] val = new double[]{1.0, root.meanTIS};
 	collection.put(key, val);
-} else {	
+} else {
 	double[] val = collection.get(key);
 	val[0]++;
 	val[1] += ( (root.meanTIS-val[1]) / val[0] );
@@ -6389,7 +6389,7 @@ if (!collection.containsKey(key)) {
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Properties SaveInSnapshot="true" Constant="false" AccessType="public" StaticVariable="false">
-						<Type><![CDATA[double]]></Type>        
+						<Type><![CDATA[double]]></Type>
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[Double.NEGATIVE_INFINITY]]></Code>
 						</InitialValue>
@@ -7118,7 +7118,7 @@ if (!collection.containsKey(key)) {
 					<Dz>0</Dz>
 				</Line>
 				<Control Type="Button">
-				 	<EmbeddedIcon>false</EmbeddedIcon>				
+				 	<EmbeddedIcon>false</EmbeddedIcon>
 					<Id>0</Id>
 					<Name><![CDATA[button]]></Name>
 					<X>255</X><Y>205</Y>
@@ -7128,7 +7128,7 @@ if (!collection.containsKey(key)) {
 					<ShowLabel>false</ShowLabel>
 					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
 					<BasicProperties Width="90" Height="20">
-                        <EmbeddedIcon>false</EmbeddedIcon>	
+                        <EmbeddedIcon>false</EmbeddedIcon>
 						<TextColor/>
 						<Enabled>true</Enabled>
 						<EnableExpression><![CDATA[getBestIteration() > 0]]></EnableExpression>
@@ -7193,7 +7193,7 @@ copyToClipboard( s );]]></ActionCode>
 					<VerScaleType>AUTO</VerScaleType>
 					<DrawLine>true</DrawLine>
 					<Interpolation>LINEAR</Interpolation>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[Current]]></Title>
 					<Expression><![CDATA[datasetCurrentObjective]]></Expression>
 					<Color>-4144960</Color>
@@ -7202,7 +7202,7 @@ copyToClipboard( s );]]></ActionCode>
 						<LineWidth>1.0</LineWidth>
 						<HorizontalAxisExpression><![CDATA[]]></HorizontalAxisExpression>
 					</DatasetExpression>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[Best infeasible]]></Title>
 					<Expression><![CDATA[datasetBestInfeasibleObjective]]></Expression>
 					<Color>-4194304</Color>
@@ -7211,7 +7211,7 @@ copyToClipboard( s );]]></ActionCode>
 						<LineWidth>2.0</LineWidth>
 						<HorizontalAxisExpression><![CDATA[]]></HorizontalAxisExpression>
 					</DatasetExpression>
-					<DatasetExpression>  
+					<DatasetExpression>
 						<Title><![CDATA[Best feasible]]></Title>
 					<Expression><![CDATA[datasetBestFeasibleObjective]]></Expression>
 					<Color>-16777088</Color>
@@ -7227,7 +7227,7 @@ copyToClipboard( s );]]></ActionCode>
     			</Plot>
 			</Presentation>
 
-			<Parameter>	
+			<Parameter>
 				<Id>1550355384249</Id>
 				<Type>DISCRETE</Type>
 				<Min Class="CodeValue">
@@ -7243,7 +7243,7 @@ copyToClipboard( s );]]></ActionCode>
 					<Code><![CDATA[20]]></Code>
 				</Suggested>
 			</Parameter>
-			<Parameter>	
+			<Parameter>
 				<Id>1550355395353</Id>
 				<Type>DISCRETE</Type>
 				<Min Class="CodeValue">
@@ -7259,22 +7259,22 @@ copyToClipboard( s );]]></ActionCode>
 					<Code><![CDATA[20]]></Code>
 				</Suggested>
 			</Parameter>
-			<Parameter>	
+			<Parameter>
 				<Id>1550463694518</Id>
 				<Type>FIXED</Type>
 			</Parameter>
-			<Parameter>	
+			<Parameter>
 				<Id>1550502586330</Id>
 				<Type>FIXED</Type>
 				<Value Class="CodeValue">
 					<Code><![CDATA[false]]></Code>
 				</Value>
 			</Parameter>
-			<Parameter>	
+			<Parameter>
 				<Id>1550871334387</Id>
 				<Type>FIXED</Type>
 			</Parameter>
-			<Parameter>	
+			<Parameter>
 				<Id>1550871355487</Id>
 				<Type>FIXED</Type>
 			</Parameter>
@@ -7309,21 +7309,21 @@ for (double[] key : collection.keySet()) {
 			</ReplicationsProperties>
 			<PresentationProperties>
 				<EnableZoomAndPanning>true</EnableZoomAndPanning>
-				<Title><![CDATA[Traffic Light Opt (Comprehensive) : Optimization]]></Title>	
+				<Title><![CDATA[Traffic Light Opt (Comprehensive) : Optimization]]></Title>
 				<EnableDeveloperPanel>true</EnableDeveloperPanel>
 				<ShowDeveloperPanelOnStart>false</ShowDeveloperPanelOnStart>
 			</PresentationProperties>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified time]]></StopOption>
-				<InitialDate><![CDATA[1550307600000]]></InitialDate>	
-				<InitialTime><![CDATA[0.0]]></InitialTime>	
-				<FinalDate><![CDATA[1550336400000]]></FinalDate>	
-				<FinalTime><![CDATA[28800.0]]></FinalTime>	
+				<InitialDate><![CDATA[1550307600000]]></InitialDate>
+				<InitialTime><![CDATA[0.0]]></InitialTime>
+				<FinalDate><![CDATA[1550336400000]]></FinalDate>
+				<FinalTime><![CDATA[28800.0]]></FinalTime>
 				<StopAfterIterationCount>false</StopAfterIterationCount>
 				<IterationCount>4</IterationCount>
 				<AutomaticStop>true</AutomaticStop>
 			</ModelTimeProperties>
-		</OptimizationExperiment>	
+		</OptimizationExperiment>
 	</Experiments>
 	<ModelResources>
 		<Resource>
