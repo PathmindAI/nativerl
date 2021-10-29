@@ -63,6 +63,7 @@ def main(
     reward_balance_period: int = 1,
     num_reward_terms: int = None,
     alphas: str = None,
+    use_auto_norm: bool = True,
 ):
     """
 
@@ -110,6 +111,7 @@ def main(
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
     :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
     :param alphas: User defined importance weights on conceptual chunks (reward terms)
+    :param use_auto_norm: Whether or not to call updateBeta
 
     :return: runs training for the given environment, with nativerl
     """

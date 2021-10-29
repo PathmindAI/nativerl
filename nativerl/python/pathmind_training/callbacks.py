@@ -66,7 +66,9 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                     ]
                 )
 
-                if use_reward_terms:
+                use_auto_norm = trainer.config["env_config"]["use_auto_norm"]
+
+                if use_auto_norm:
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
