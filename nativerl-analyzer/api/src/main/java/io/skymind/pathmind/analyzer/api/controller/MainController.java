@@ -100,6 +100,13 @@ public class MainController {
                     dto.setMode(maMode);
                     return dto;
                 }
+
+                String maError = parametersMap.get("model-analyzer-error");
+                if (maError != null) {
+                    HyperparametersDTO dto = new HyperparametersDTO();
+                    dto.setFailedSteps(maError);
+                    return dto;
+                }
                 e.printStackTrace();
                 return null;
             }

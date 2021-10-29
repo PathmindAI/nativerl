@@ -320,6 +320,7 @@ def test(
         except Exception as e1:
             print("cannot initiate GYM env")
             traceback.print_tb(e1.__traceback__)
+            print(f"model-analyzer-error:{e1}")
             sys.exit(-1)
 
     sys.exit(0)

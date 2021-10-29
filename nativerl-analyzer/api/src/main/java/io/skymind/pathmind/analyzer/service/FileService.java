@@ -92,7 +92,6 @@ public class FileService {
             }
             return result;
         } else {
-            // todo need to get is_gym or not?
             final String[] cmd = new String[]{
                     "/lib/pathmind/conda/bin/python",
                     "/lib/pathmind/nativerl-bin/python/run.py",
