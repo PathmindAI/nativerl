@@ -109,7 +109,6 @@ def main(
     :param train_batch_size: Optional train batch size
     :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
-    :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
     :param alphas: User defined importance weights on conceptual chunks (reward terms)
     :param use_auto_norm: Whether or not to call updateBeta
 
@@ -125,20 +124,12 @@ def main(
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
 
+    num_reward_terms = (len(np.asarray(alphas)) if alphas else 1,)
     env_config = {
-        "use_reward_terms": alphas is not None,
         "reward_balance_period": reward_balance_period,
-        "num_reward_terms": num_reward_terms if alphas else 1,
-        "alphas": np.asarray(alphas) if alphas else np.ones(num_reward_terms),
-        "use_auto_norm": use_auto_norm
-        and (alphas is not None)
-        and (num_reward_terms != 1),
+        "alphas": np.asarray(alphas) if alphas else np.ones(1),
+        "use_auto_norm": use_auto_norm and (num_reward_terms > 1),
     }
-
-    if env_config["use_reward_terms"]:
-        assert (
-            env_config["alphas"].size == env_config["num_reward_terms"]
-        ), f"alphas array size ({env_config['alphas'].size}) must be == num_reward_terms ({env_config['num_reward_terms']})"
 
     if is_gym:
         env_name, env_creator = get_gym_environment(environment_name=environment)
@@ -187,9 +178,7 @@ def main(
         # from tests.custom_callback import get_callback as foo
         callbacks = get_callback_function(custom_callback)()
     else:
-        callbacks = get_callbacks(
-            debug_metrics, env_config["use_reward_terms"], is_gym, checkpoint_frequency
-        )
+        callbacks = get_callbacks(debug_metrics, is_gym, checkpoint_frequency)
 
     assert scheduler in [
         "PBT",

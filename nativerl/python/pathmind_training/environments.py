@@ -117,7 +117,6 @@ def get_environment(
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
-            self.use_reward_terms = env_config["use_reward_terms"]
             self.num_reward_terms = env_config["num_reward_terms"]
             self.alphas = env_config["alphas"]
             self.betas = np.ones(self.num_reward_terms)
@@ -259,24 +258,21 @@ def get_environment(
                             "real_obs": obs,
                         }
                     obs_dict[str(i)] = obs
-                    if self.use_reward_terms:
-                        reward_array = np.array(self.nativeEnv.getRewardTerms(i))
-                        reward_dict[str(i)] = np.sum(
-                            reward_array * self.alphas * self.betas
-                        )
+                    reward_array = np.array(self.nativeEnv.getRewardTerms(i))
+                    reward_dict[str(i)] = np.sum(
+                        reward_array * self.alphas * self.betas
+                    )
 
-                        if str(i) not in self.term_contributions_dict:
-                            self.term_contributions_dict[str(i)] = reward_array
-                        else:
-                            self.term_contributions_dict[str(i)] += reward_array
+                    if str(i) not in self.term_contributions_dict:
+                        self.term_contributions_dict[str(i)] = reward_array
                     else:
-                        reward_dict[str(i)] = self.nativeEnv.getReward(i)
+                        self.term_contributions_dict[str(i)] += reward_array
 
                     done_dict[str(i)] = self.nativeEnv.isDone(i)
 
                 done_dict["__all__"] = all(done_dict.values())
 
-                if self.use_reward_terms and done_dict["__all__"]:
+                if done_dict["__all__"]:
                     self.term_contributions += sum(
                         self.term_contributions_dict.values()
                     ) / len(self.term_contributions_dict)
@@ -298,13 +294,9 @@ def get_environment(
                 self.nativeEnv.setNextAction(nativerl.Array(action_array))
                 self.nativeEnv.step()
 
-                if self.use_reward_terms:
-                    reward_array = np.array(self.nativeEnv.getRewardTerms())
-                    reward = np.sum(reward_array * self.alphas * self.betas)
-                    self.term_contributions += reward_array
-
-                else:
-                    reward = self.nativeEnv.getReward()
+                reward_array = np.array(self.nativeEnv.getRewardTerms())
+                reward = np.sum(reward_array * self.alphas * self.betas)
+                self.term_contributions += reward_array
 
                 obs = np.array(self.nativeEnv.getObservation())
                 done = self.nativeEnv.isDone()
@@ -334,12 +326,10 @@ def get_environment(
                 return np.array(self.nativeEnv.getMetrics(0))
 
         def updateBetas(self, betas):
-            if self.use_reward_terms:
-                self.betas = betas
+            self.betas = betas
 
         def getRewardTermContributions(self):
-            if self.use_reward_terms:
-                return self.term_contributions
+            return self.term_contributions
 
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name

@@ -20,7 +20,7 @@ def get_callback_function(callback_function_name):
     return getattr(lib, class_name)
 
 
-def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency):
+def get_callbacks(debug_metrics, is_gym, checkpoint_frequency):
     class Callbacks(DefaultCallbacks):
         def on_episode_start(
             self,
@@ -48,14 +48,11 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                 for i, val in enumerate(metrics):
                     episode.custom_metrics[f"metrics_{str(i)}"] = metrics[i]
 
-                if use_reward_terms:
-                    term_contributions = (
-                        worker.env.getRewardTermContributions().tolist()
-                    )
-                    for i, val in enumerate(term_contributions):
-                        episode.custom_metrics[
-                            f"metrics_term_{str(i)}"
-                        ] = term_contributions[i]
+                term_contributions = worker.env.getRewardTermContributions().tolist()
+                for i, val in enumerate(term_contributions):
+                    episode.custom_metrics[
+                        f"metrics_term_{str(i)}"
+                    ] = term_contributions[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
