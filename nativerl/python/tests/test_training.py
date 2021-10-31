@@ -62,7 +62,7 @@ def test_pathmind_sim_module():
 @pytest.mark.integration
 def test_pathmind_alphas_module():
     ray.shutdown()
-    output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
+    output_dir = f"testoutputs/test-pathmind-alphas-module-{randint(0,1000)}"
     run.main(
         is_pathmind_simulation=True,
         environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
@@ -76,7 +76,7 @@ def test_pathmind_alphas_module():
 @pytest.mark.integration
 def test_pathmind_bad_alphas_module():
     ray.shutdown()
-    output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
+    output_dir = f"testoutputs/test-pathmind-bad-alphas-module-{randint(0,1000)}"
     with pytest.raises(AssertionError) as execinfo:
         run.main(
             is_pathmind_simulation=True,
