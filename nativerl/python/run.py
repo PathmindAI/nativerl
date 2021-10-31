@@ -127,7 +127,9 @@ def main(
         "use_reward_terms": alphas is not None,
         "reward_balance_period": reward_balance_period,
         "num_reward_terms": num_reward_terms,
-        "alphas": np.asarray(alphas) if alphas else np.ones(num_reward_terms),
+        "alphas": np.fromstring(alphas, sep=",")
+        if alphas
+        else np.ones(num_reward_terms),
     }
 
     if env_config["use_reward_terms"]:

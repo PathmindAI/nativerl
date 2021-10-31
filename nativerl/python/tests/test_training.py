@@ -86,7 +86,9 @@ def test_pathmind_bad_alphas_module():
             alphas="1.0, 1.0, 1.0, 1.0",
             num_reward_terms=2,
         )
-    assert "alphas array size (4) must be == num_reward_terms" in str(execinfo.value)
+    assert "alphas array size (4) must be == num_reward_terms (2)" in str(
+        execinfo.value
+    )
 
 
 @pytest.mark.integration
