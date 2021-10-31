@@ -61,7 +61,7 @@ def main(
     train_batch_size: Optional[int] = None,
     rollout_fragment_length: int = 200,
     reward_balance_period: int = 1,
-    alphas: str = None,
+    alphas: str = "1.0",
     use_auto_norm: bool = True,
 ):
     """
@@ -108,7 +108,7 @@ def main(
     :param train_batch_size: Optional train batch size
     :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
-    :param alphas: User defined importance weights on conceptual chunks (reward terms)
+    :param alphas: Optional user-defined importance weights on conceptual chunks (reward terms). Defaults to a single reward term.
     :param use_auto_norm: Whether or not to call updateBeta
 
     :return: runs training for the given environment, with nativerl
@@ -127,7 +127,7 @@ def main(
     env_config = {
         "reward_balance_period": reward_balance_period,
         "alphas": alphas,
-        "use_auto_norm": use_auto_norm and len(alphas) > 1,
+        "use_auto_norm": use_auto_norm and alphas.size > 1,
     }
 
     if is_gym:
