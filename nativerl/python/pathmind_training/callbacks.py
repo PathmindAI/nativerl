@@ -67,7 +67,7 @@ def get_callbacks(debug_metrics, is_gym, checkpoint_frequency):
 
                 if use_auto_norm:
                     period = trainer.config["env_config"]["reward_balance_period"]
-                    num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
+                    num_reward_terms = len(trainer.config["env_config"]["alphas"])
 
                     if result["training_iteration"] % period == 0:
                         # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions

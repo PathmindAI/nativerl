@@ -61,7 +61,6 @@ def main(
     train_batch_size: Optional[int] = None,
     rollout_fragment_length: int = 200,
     reward_balance_period: int = 1,
-    num_reward_terms: int = None,
     alphas: str = None,
     use_auto_norm: bool = True,
 ):
@@ -124,11 +123,11 @@ def main(
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
 
-    num_reward_terms = (len(np.asarray(alphas)) if alphas else 1,)
+    alphas = np.asarray(alphas) if alphas else np.ones(1)
     env_config = {
         "reward_balance_period": reward_balance_period,
-        "alphas": np.asarray(alphas) if alphas else np.ones(1),
-        "use_auto_norm": use_auto_norm and (num_reward_terms > 1),
+        "alphas": alphas,
+        "use_auto_norm": use_auto_norm and len(alphas) > 1,
     }
 
     if is_gym:
