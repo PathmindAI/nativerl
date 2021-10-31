@@ -118,7 +118,7 @@ class PathmindEnvironment(nativerl.Environment):
         return reward
 
     def getRewardTerms(self):
-        return
+        return {"reward": self.getReward()}
 
     def getMetrics(self, agent_id=0):
         return (
