@@ -46,6 +46,7 @@ def test_pathmind_env_module():
         output_dir=output_dir,
     )
 
+
 @pytest.mark.integration
 def test_pathmind_sim_module():
     ray.shutdown()
@@ -55,6 +56,33 @@ def test_pathmind_sim_module():
         environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
         max_episodes=1,
         output_dir=output_dir,
+    )
+
+
+@pytest.mark.integration
+def test_pathmind_alphas_module():
+    ray.shutdown()
+    output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
+    run.main(
+        is_pathmind_simulation=True,
+        environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
+        max_episodes=1,
+        output_dir=output_dir,
+        alphas="1.0, 5.0",
+    )
+
+
+@pytest.mark.integration
+@pytest.mark.xfail(reason="wrong number of alpha sent")
+def test_pathmind_bad_alphas_module():
+    ray.shutdown()
+    output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
+    run.main(
+        is_pathmind_simulation=True,
+        environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
+        max_episodes=1,
+        output_dir=output_dir,
+        alphas="1.0, 1.0, 1.0, 1.0",
     )
 
 
