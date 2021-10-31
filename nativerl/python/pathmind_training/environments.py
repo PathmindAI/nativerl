@@ -117,8 +117,12 @@ def get_environment(
             if not is_multi_agent:
                 self.unwrapped.spec = self
 
-            self.alphas = env_config["alphas"]
-            self.num_reward_terms = len(self.alphas)
+            self.num_reward_terms = self.nativeEnv.getRewardTerms().size
+            self.alphas = (
+                env_config["alphas"]
+                if "alphas" in env_config and env_config["alphas"]
+                else np.ones(self.num_reward_terms)
+            )
             self.betas = np.ones(self.num_reward_terms)
 
             self.term_contributions_dict = {}

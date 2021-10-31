@@ -61,7 +61,7 @@ def main(
     train_batch_size: Optional[int] = None,
     rollout_fragment_length: int = 200,
     reward_balance_period: int = 1,
-    alphas: str = "1.0",
+    alphas: str = None,
     use_auto_norm: bool = True,
 ):
     """
@@ -108,7 +108,7 @@ def main(
     :param train_batch_size: Optional train batch size
     :param rollout_fragment_length: Divide episodes into fragments of this many steps each during rollouts.
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
-    :param alphas: Optional user-defined importance weights on conceptual chunks (reward terms). Defaults to a single reward term.
+    :param alphas: Optional user-defined importance weights on conceptual chunks (reward terms).
     :param use_auto_norm: Whether or not to call updateBeta
 
     :return: runs training for the given environment, with nativerl
@@ -123,11 +123,13 @@ def main(
     output_dir = os.path.abspath(output_dir)
     modify_anylogic_db_properties()
 
-    alphas = np.asarray(alphas) if alphas else np.ones(1)
+    alphas = np.asarray(alphas) if alphas else None
     env_config = {
         "reward_balance_period": reward_balance_period,
         "alphas": alphas,
-        "use_auto_norm": use_auto_norm and alphas.size > 1,
+        "use_auto_norm": use_auto_norm
+        and alphas
+        and alphas.size > 1,  # TODO: should this be handled in environment.py?
     }
 
     if is_gym:
