@@ -34,33 +34,10 @@ def test_get_pathmind_env():
 
 
 def test_callbacks():
-    get_callbacks(
-        debug_metrics=False, is_gym=True, use_reward_terms=False, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=True, is_gym=False, use_reward_terms=False, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=False,
-        is_gym=False,
-        use_reward_terms=False,
-        checkpoint_frequency=1,
-    )
-    get_callbacks(
-        debug_metrics=True, is_gym=True, use_reward_terms=False, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=False, is_gym=True, use_reward_terms=True, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=True, is_gym=False, use_reward_terms=True, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=False, is_gym=False, use_reward_terms=True, checkpoint_frequency=1
-    )
-    get_callbacks(
-        debug_metrics=True, is_gym=True, use_reward_terms=True, checkpoint_frequency=1
-    )
+    get_callbacks(debug_metrics=True, is_gym=True, checkpoint_frequency=1)
+    get_callbacks(debug_metrics=True, is_gym=False, checkpoint_frequency=1)
+    get_callbacks(debug_metrics=False, is_gym=True, checkpoint_frequency=1)
+    get_callbacks(debug_metrics=False, is_gym=False, checkpoint_frequency=1)
 
 
 def test_distributions():
