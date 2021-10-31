@@ -69,21 +69,24 @@ def test_pathmind_alphas_module():
         max_episodes=1,
         output_dir=output_dir,
         alphas="1.0, 5.0",
+        num_reward_terms=2,
     )
 
 
 @pytest.mark.integration
-@pytest.mark.xfail(reason="wrong number of alpha sent")
 def test_pathmind_bad_alphas_module():
     ray.shutdown()
     output_dir = f"testoutputs/test-pathmind-sim-module-{randint(0,1000)}"
-    run.main(
-        is_pathmind_simulation=True,
-        environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
-        max_episodes=1,
-        output_dir=output_dir,
-        alphas="1.0, 1.0, 1.0, 1.0",
-    )
+    with pytest.raises(AssertionError) as execinfo:
+        run.main(
+            is_pathmind_simulation=True,
+            environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
+            max_episodes=1,
+            output_dir=output_dir,
+            alphas="1.0, 1.0, 1.0, 1.0",
+            num_reward_terms=2,
+        )
+    assert "alphas array size (4) must be == num_reward_terms" in str(execinfo.value)
 
 
 @pytest.mark.integration
