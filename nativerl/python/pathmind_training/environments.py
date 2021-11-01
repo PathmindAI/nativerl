@@ -260,7 +260,7 @@ def get_environment(
                         }
                     obs_dict[str(i)] = obs
                     if self.use_reward_terms:
-                        reward_array = np.array(self.nativeEnv.getRewardTerms(i))
+                        reward_array = self.nativeEnv.getRewardTerms()
                         reward_dict[str(i)] = np.sum(
                             reward_array * self.alphas * self.betas
                         )
@@ -452,6 +452,6 @@ def get_native_env_from_simulation(
 
         def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
-            return nativerl.Array(reward_dict.values())
+            return nativerl.Array(list(reward_dict.values()))
 
     return PathmindEnv()
