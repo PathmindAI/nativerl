@@ -1,8 +1,8 @@
 import os
 import random
-from typing import Optional
 import sys
 import traceback
+from typing import Optional
 
 import fire
 import numpy as np
@@ -292,13 +292,13 @@ def test(
             "use_reward_terms": False,
             "reward_balance_period": 0,
             "num_reward_terms": 0,
-            "alphas": np.ones(0)
+            "alphas": np.ones(0),
         }
         env_name = get_environment(
             jar_dir=jar_dir,
             is_multi_agent=True,
             environment_name=environment,
-            is_pathmind_simulation=True
+            is_pathmind_simulation=True,
         )
 
         env_creator = env_name
@@ -308,7 +308,9 @@ def test(
         mode = "pm_single" if len(env_instance.reset()) == 1 else "pm_multi"
         print(f"model-analyzer-mode:{mode}")
     except Exception as e:
-        print("cannot initiate Pathmind simulation env. it will try to initiate GYM env.")
+        print(
+            "cannot initiate Pathmind simulation env. it will try to initiate GYM env."
+        )
         traceback.print_tb(e.__traceback__)
         try:
             # try GYM simulation

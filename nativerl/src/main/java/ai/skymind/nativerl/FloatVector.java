@@ -76,4 +76,3 @@ public class FloatVector extends Pointer {
         return this;
     }
 }
-
