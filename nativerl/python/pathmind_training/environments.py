@@ -267,7 +267,7 @@ def get_environment(
                         }
                     obs_dict[str(i)] = obs
                     if self.use_reward_terms:
-                        reward_array = np.array(self.nativeEnv.getRewardTerms(i))
+                        reward_array = self.nativeEnv.getRewardTerms()
                         reward_dict[str(i)] = np.sum(
                             reward_array * self.alphas * self.betas
                         )

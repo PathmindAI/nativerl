@@ -84,9 +84,12 @@ public abstract class AbstractEnvironment extends Environment {
 
         try {
             ActionMaskProcessor mp = new ActionMaskProcessor(agent.getClass());
-            actionMaskSpace = getContinuousSpace(0, 1, actionMaskSize);
-            actionMask = new Array(new SSizeTVector().put(actionMaskSize));
-        } catch (ClassNotFoundException e) {
+            // to check action mask length is zero case
+            // it could happen when PM helper doesn't have the default content of Action Masking Field from AL
+            boolean[] aMasks = mp.getActionMasks(agent.getClass());
+            actionMaskSpace = aMasks == null || aMasks.length == 0 ? null : getContinuousSpace(0, 1, actionMaskSize);
+            actionMask = aMasks == null || aMasks.length == 0 ? null : new Array(new SSizeTVector().put(actionMaskSize));
+        } catch (ClassNotFoundException | IllegalArgumentException e) {
             actionMaskSpace = null;
             actionMask = null;
         }
