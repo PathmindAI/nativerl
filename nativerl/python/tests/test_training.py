@@ -68,7 +68,7 @@ def test_pathmind_alphas_module():
         environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
         max_episodes=1,
         output_dir=output_dir,
-        alphas="[1.0, 5.0]",
+        alphas=[1.0, 5.0],
         num_reward_terms=2,
     )
 
@@ -83,7 +83,7 @@ def test_pathmind_bad_alphas_module():
             environment="tests.mouse.two_reward.TwoRewardMouseAndCheese",
             max_episodes=1,
             output_dir=output_dir,
-            alphas="[1.0, 1.0, 1.0, 1.0]",
+            alphas=[1.0, 1.0, 1.0, 1.0],
             num_reward_terms=2,
         )
     assert "alphas array size (4) must be == num_reward_terms (2)" in str(
