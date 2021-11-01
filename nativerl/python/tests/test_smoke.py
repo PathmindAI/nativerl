@@ -1,5 +1,6 @@
 import os
 
+import pytest
 from pathmind_training.callbacks import get_callbacks
 from pathmind_training.distributions import register_freezing_distributions
 from pathmind_training.environments import (
@@ -12,6 +13,7 @@ from pathmind_training.models import get_action_masking_model, get_custom_model
 from pathmind_training.scheduler import get_scheduler
 from pathmind_training.stopper import Stopper
 from pathmind_training.utils import createEnvironment, get_class_from_string
+from run import test as ma_test
 
 
 def test_make_envs():
@@ -111,3 +113,35 @@ def test_stopper():
         convergence_check_start_iteration=1,
     )
     assert hasattr(stopper, "stop")
+
+
+def test_ma_test_pathmind(capfd):
+    original_dir = os.path.dirname(__file__)
+    test_dir = f"{original_dir}/mouse"
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        ma_test(environment="mouse_env_pathmind.MouseAndCheese", module_path=test_dir)
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 0
+    out, err = capfd.readouterr()
+    assert "model-analyzer-mode:pm_single" in out
+
+
+def test_ma_test_pathmind_bad_env(capfd):
+    original_dir = os.path.dirname(__file__)
+    test_dir = f"{original_dir}/mouse"
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        ma_test(environment="mouse_env_pathmind1.MouseAndCheese", module_path=test_dir)
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == -1
+    out, err = capfd.readouterr()
+    assert "model-analyzer-error:No module named 'mouse_env_pathmind1'" in out
+
+
+def test_ma_test_gym_env(capfd):
+    test_dir = os.path.dirname(__file__)
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        ma_test(environment="gym_cartpole.CartPoleEnv", module_path=test_dir)
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 0
+    out, err = capfd.readouterr()
+    assert "model-analyzer-mode:py_single" in out
