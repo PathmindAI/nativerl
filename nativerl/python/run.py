@@ -310,8 +310,12 @@ def test(
         env_instance = env_creator(env_config=env_config)
         env_instance.__init__(env_config=env_config)
 
-        mode = "pm_single" if len(env_instance.reset()) == 1 else "pm_multi"
+        obs = env_instance.reset()
+        mode = "pm_single" if len(obs) == 1 else "pm_multi"
         print(f"model-analyzer-mode:{mode}")
+        dto = env_instance.write_meta()
+        print(f"dto:{dto}")
+
     except Exception as e:
         print(
             "cannot initiate Pathmind simulation env. it will try to initiate GYM env."

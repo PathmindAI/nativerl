@@ -341,6 +341,9 @@ def get_environment(
             if self.use_reward_terms:
                 return self.term_contributions
 
+        def write_meta(self):
+            return self.nativeEnv.writeMeta()
+
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name
     PathmindEnvironment.__qualname__ = simple_name
@@ -453,5 +456,33 @@ def get_native_env_from_simulation(
         def getRewardTerms(self, agent_id: int = 0) -> nativerl.Array:
             reward_dict = self.simulation.get_reward(agent_id)
             return nativerl.Array(list(reward_dict.values()))
+
+        def writeMeta(self):
+            self.simulation.reset()
+            obs = self.simulation.get_observation(0)
+            obs_names = list(obs.keys())
+            obs_types = list(map(lambda i: type(i).__name__, list(obs.values())))
+
+            act = self.simulation.action_space(0)
+
+            rew = self.simulation.get_reward(0)
+            rew_names = list(rew.keys())
+            rew_types = list(map(lambda i: type(i).__name__, list(rew.values())))
+
+            agents = self.simulation.number_of_agents()
+            return {
+                "dto.setObservations": len(obs),
+                "dto.setObservationNames": obs_names,
+                "setObservationTypes": obs_types,
+                "setActions": act.choices,  # support continuous action space
+                "setActionMask": None,  # support action mask
+                "setRewardVariablesCount": len(rew),
+                "setRewardVariableNames": rew_names,
+                "setRewardVariableTypes": rew_types,
+                "setAgents": agents,
+                "setMode": "pm_single" if agents == 1 else "pm_multi",
+                "setEnabled": False
+            }
+
 
     return PathmindEnv()
