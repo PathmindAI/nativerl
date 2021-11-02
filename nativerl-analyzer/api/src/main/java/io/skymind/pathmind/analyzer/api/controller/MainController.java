@@ -95,9 +95,16 @@ public class MainController {
                 return null;
             } catch (IOException e) {
                 String maMode = parametersMap.get("model-analyzer-mode");
-                if (maMode != null && maMode.startsWith("py_")) {
+                if (maMode != null && (maMode.startsWith("py_") || maMode.startsWith("pm_"))) {
                     HyperparametersDTO dto = new HyperparametersDTO();
                     dto.setMode(maMode);
+                    return dto;
+                }
+
+                String maError = parametersMap.get("model-analyzer-error");
+                if (maError != null) {
+                    HyperparametersDTO dto = new HyperparametersDTO();
+                    dto.setFailedSteps(maError);
                     return dto;
                 }
                 e.printStackTrace();
