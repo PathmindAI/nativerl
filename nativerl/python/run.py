@@ -1,5 +1,7 @@
 import os
 import random
+import sys
+import traceback
 from typing import Optional
 
 import fire
@@ -285,45 +287,63 @@ def main(
 
 def test(
     environment: str,
-    is_gym: bool = False,
-    is_pathmind_simulation: bool = False,
-    multi_agent: bool = True,
-    max_memory_in_mb: int = 4096,
     module_path: str = None,
 ):
     """
     :check if valid environment or not for Model Analyzer
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
-    :param is_gym: if True, "environment" must be a gym environment.
-    :param is_pathmind_simulation: if True, "environment" should use "Simulation" interface from the pathmind package.
-    :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
-    :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
+    :param module_path: The path where the model related codes(python or java) live.
 
-    :return: creates an environment name and creator function and returns it.
+    :return: model types in normal cases, otherwise return exit code -1
     """
 
-    jar_dir = os.getcwd()
+    jar_dir = module_path if module_path else os.getcwd()
     os.chdir(jar_dir)
 
-    if is_gym:
-        if module_path:
-            import sys
+    if module_path:
+        sys.path.append(module_path)
 
-            sys.path.append(module_path)
-
-        env_name, env_creator = get_gym_environment(environment_name=environment)
-    else:
+    try:
+        # try Pathmind simulation
+        env_config = {
+            "use_reward_terms": False,
+            "reward_balance_period": 0,
+            "num_reward_terms": 0,
+            "alphas": np.ones(0),
+        }
         env_name = get_environment(
             jar_dir=jar_dir,
-            is_multi_agent=multi_agent,
-            is_pathmind_simulation=is_pathmind_simulation,
+            is_multi_agent=True,
             environment_name=environment,
-            max_memory_in_mb=max_memory_in_mb,
+            is_pathmind_simulation=True,
         )
-        env_creator = env_name
 
-    return env_name, env_creator
+        env_creator = env_name
+        env_instance = env_creator(env_config=env_config)
+        env_instance.__init__(env_config=env_config)
+
+        mode = "pm_single" if len(env_instance.reset()) == 1 else "pm_multi"
+        print(f"model-analyzer-mode:{mode}")
+    except Exception as e:
+        print(
+            "cannot initiate Pathmind simulation env. it will try to initiate GYM env."
+        )
+        traceback.print_tb(e.__traceback__)
+        try:
+            # try GYM simulation
+            env_name, env_creator = get_gym_environment(environment_name=environment)
+            env_instance = env_creator(env_config={})
+            env_instance.__init__()
+
+            print(f"model-analyzer-mode:py_single")
+        except Exception as e1:
+            print("cannot initiate GYM env")
+            traceback.print_tb(e1.__traceback__)
+            print(f"model-analyzer-error:{e1}")
+            sys.exit(-1)
+
+    sys.exit(0)
 
 
 def from_config(config_file="./config.json"):

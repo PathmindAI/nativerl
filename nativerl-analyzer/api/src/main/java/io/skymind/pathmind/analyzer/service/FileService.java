@@ -86,20 +86,17 @@ public class FileService {
             log.info("Bash script finished: {}", java.util.Arrays.toString(cmd));
             List<String> result = readResult(proc.getInputStream());
 
-
             if (returnCode != 0) {
                 List<String> err = readResult(proc.getErrorStream());
                 log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
             }
             return result;
         } else {
-            // todo need to get is_gym or not?
             final String[] cmd = new String[]{
                     "/lib/pathmind/conda/bin/python",
                     "/lib/pathmind/nativerl-bin/python/run.py",
                     "test",
                     request.getEnvironment(),
-                    "--is_gym",
                     "--module_path=" + newFile.getParentFile().getAbsolutePath()
             };
             final String[] envp = {"USE_PY_NATIVERL=True"};
@@ -108,15 +105,8 @@ public class FileService {
             List<String> result = readResult(proc.getInputStream());
             if (returnCode != 0) {
                 List<String> err = readResult(proc.getErrorStream());
-                if (err.size() > 0) {
-                    result.add("failedSteps:" + err.get(err.size() - 1));
-                } else {
-                    result.add("failedSteps:" + "failed without error message");
-                }
-                System.out.println(err);
+                log.warn("Unexpected output for {} file, \nresult: {}, \nerr: {}", unzippedPath, String.join("\n", result), String.join("\n", err));
             }
-            // todo extract model type:py_single or py_multi
-            result.add("model-analyzer-mode:" + "py_single");
 
             return result;
         }

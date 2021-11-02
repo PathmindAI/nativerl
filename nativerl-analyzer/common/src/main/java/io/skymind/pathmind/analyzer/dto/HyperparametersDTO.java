@@ -15,6 +15,7 @@ public class HyperparametersDTO {
 
     private final static Set<String> KNOWN_OUTPUT = Set.of(
             "model-analyzer-mode",
+            "model-analyzer-error",
             "DTOPath"
             );
 
