@@ -69,7 +69,29 @@ scl enable devtoolset-7 rh-maven35 bash
 mvn clean install -Djavacpp.platform=linux-x86_64
 ```
 
-We can also package the Anaconda environment this way:
+### Packaging the Python requirements
+
+We use Anaconda to package the Python requirements. To add new python packages that all trainings or model analyzer should have by default, add it to `/rllibpack/requirements.txt` and it will be installed the next merge to a branch.
+
+#### Using Docker to build:
+
+First build the image.
+
+```bash
+cd rllibpack
+docker build . -t rllibpack
+```
+
+Then start the build in the container by mounting your current working directory.
+
+```bash
+docker run --mount "src=$(pwd),target=/app,type=bind" rllibpack
+```
+
+After a successful build you'll find the results in the `rllibpack` folder. These instructions work
+on Unix machines, on Windows you'll likely have to use `${PWD}` instead of `$(pwd)` in the `run` step.
+
+#### Manual instructions:
 
 ```
 conda install -c conda-forge conda-pack

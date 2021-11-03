@@ -25,6 +25,20 @@ def buildNativerl(image_name) {
 }
 
 /*
+    Build the conda package
+*/
+def buildRllibpack(image_name) {
+    echo "Building the rllibpack Docker Image for branch ${env.BRANCH_NAME}"
+    sh """
+        set +x
+        docker image ls | grep rllibpack | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+        docker build -t ${image_name} -f ${WORKSPACE}/rllibpack/Dockerfile ${WORKSPACE}/rllibpack/
+    """
+    sh "docker run --mount \"src=${WORKSPACE}/rllibpack/,target=/app,type=bind\" rllibpack"
+    sh "aws s3 cp ${WORKSPACE}/rllibpack/rllibpack.tar.gz s3://slin-training-dynamic-files.pathmind.com/test/conda/1_3_0/rllibpack.tar.gz"
+}
+
+/*
     Build MA docker image
 */
 def buildMADockerImage(image_name, docker_tag) {
@@ -90,11 +104,20 @@ pipeline {
 
         stage('Build Docker Images') {
             stages {
-                stage('Build nativerl image') {
+        stage('Build') {
+                    parallel {
+                        stage('Build rllibpack') {
                     steps {
-                        buildNativerl("${IMAGE_NAME}")
-                    }
+                buildRllibpack("rllibpack")
                 }
+            }
+            stage('Build nativerl image') {
+                steps {
+                buildNativerl("${IMAGE_NAME}")
+                }
+                        }
+            }
+        }
                 stage('Build Model Analyzer image') {
                     steps {
                         buildMADockerImage("${IMAGE_NAME}-ma", "dev")
