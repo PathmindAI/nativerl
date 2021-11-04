@@ -321,12 +321,12 @@ def get_environment(
         def getMetrics(self):
             if is_multi_agent:
                 metrics_space = self.nativeEnv.getMetricsSpace()
+                metrics = np.zeros(metrics_space.shape)
                 for i in range(0, self.nativeEnv.getNumberOfAgents()):
                     if self.nativeEnv.isSkip(i):
                         agent_metrics = np.zeros(metrics_space.shape)
                     else:
                         agent_metrics = np.array(self.nativeEnv.getMetrics(i))
-                    metrics = np.zeros(metrics_space.shape)
                     metrics = (
                         agent_metrics if i == 0 else np.vstack((metrics, agent_metrics))
                     )
