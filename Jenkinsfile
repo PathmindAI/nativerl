@@ -32,7 +32,7 @@ def buildRllibpack(image_name) {
         docker image ls | grep rllibpack | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker build -t ${image_name} -f ${WORKSPACE}/rllibpack/Dockerfile ${WORKSPACE}/rllibpack/
     """
-    h "docker run -v ${WORKSPACE}/rllibpack/out:/home/rllibpack/out/ rllibpack"
+    sh "docker run -v ${WORKSPACE}/rllibpack/out:/home/rllibpack/out/ rllibpack"
     sh "aws s3 cp ${WORKSPACE}/rllibpack/out/rllibpack.tar.gz s3://slin-training-dynamic-files.pathmind.com/test/conda/1_3_0/rllibpack.tar.gz"
 }
 
