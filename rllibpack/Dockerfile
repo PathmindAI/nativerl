@@ -32,6 +32,8 @@ RUN conda install -c conda-forge conda-pack
 # Black magic. Conda pack fails the first time, so we have to run list first.
 RUN conda list
 
+USER root
+
 # Set entry point
 CMD /bin/bash -c "source ~/.bashrc" && \
     conda pack -f -o rllibpack.tar.gz
