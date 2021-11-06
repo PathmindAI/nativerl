@@ -25,15 +25,15 @@ RUN pip install -U pip && \
     pip install -r requirements.txt
 
 RUN mkdir -p app
-WORKDIR /home/rllibpack/app
+WORKDIR /home/rllibpack/
 
 RUN conda install -c conda-forge conda-pack
-
 # Black magic. Conda pack fails the first time, so we have to run list first.
 RUN conda list
 
-USER root
 
 # Set entry point
-CMD /bin/bash -c "source ~/.bashrc" && \
-    conda pack -f -o rllibpack.tar.gz
+RUN conda pack -f -o rllibpack.tar.gz
+RUN chmod 644 rllibpack.tar.gz
+
+CMD ["cp" "/home/rllibpack/rllibpack.tar.gz" "/home/rllibpack/out/"]
