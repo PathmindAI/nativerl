@@ -24,16 +24,14 @@ ADD requirements.txt .
 RUN pip install -U pip && \
     pip install -r requirements.txt
 
-RUN mkdir -p app
+RUN mkdir -p out
 WORKDIR /home/rllibpack/
 
 RUN conda install -c conda-forge conda-pack
 # Black magic. Conda pack fails the first time, so we have to run list first.
 RUN conda list
 
-
-# Set entry point
 RUN conda pack -f -o rllibpack.tar.gz
 RUN chmod 644 rllibpack.tar.gz
 
-CMD ["cp" "/home/rllibpack/rllibpack.tar.gz" "/home/rllibpack/out/"]
+CMD ["cp", "/home/rllibpack/rllibpack.tar.gz", "/home/rllibpack/out/", "-v"]
