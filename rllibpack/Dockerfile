@@ -6,24 +6,30 @@ RUN DEBIAN_FRONTEND=noninteractive \
     apt-get install -y \
     wget
 
+RUN useradd -ms /bin/bash rllibpack
+
+USER rllibpack
+WORKDIR /home/rllibpack
+
 # Install anaconda3
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh \
     && bash Anaconda3-2019.03-Linux-x86_64.sh -b && \
-    echo "export PATH="/root/anaconda3/bin:$PATH"" >> ~/.bashrc && \
+    echo "export PATH="/home/rllibpack/anaconda3/bin:$PATH"" >> ~/.bashrc && \
     /bin/bash -c "source ~/.bashrc"
-ENV PATH /root/anaconda3/bin:$PATH
+ENV PATH /home/rllibpack/anaconda3/bin:$PATH
 
 ADD requirements.txt .
-RUN conda install -y pybind11 conda-pack  && \
-    pip install -U pip && \
+RUN conda install -y pybind11
+RUN pip install -U pip && \
     pip install -r requirements.txt
 
 RUN mkdir -p app
-WORKDIR app
+WORKDIR /home/rllibpack/app
+
+RUN conda install -c conda-forge conda-pack
 
 # Black magic. Conda pack fails the first time, so we have to run list first.
 RUN conda list
-
 
 # Set entry point
 CMD /bin/bash -c "source ~/.bashrc" && \
