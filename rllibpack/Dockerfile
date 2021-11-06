@@ -34,4 +34,5 @@ RUN conda list
 RUN conda pack -f -o rllibpack.tar.gz
 RUN chmod 644 rllibpack.tar.gz
 
+USER root
 CMD ["cp", "/home/rllibpack/rllibpack.tar.gz", "/home/rllibpack/out/", "-v"]
