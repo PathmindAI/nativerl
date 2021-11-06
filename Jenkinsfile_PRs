@@ -31,7 +31,7 @@ def buildRllibpack(image_name) {
     echo "Building the rllibpack Docker Image for branch ${env.BRANCH_NAME}"
     sh """
         set +x
-        docker image ls | grep rllibpack | awk '{print \$3}' | xargs -I {} docker rmi {} -f
+        #docker image ls | grep rllibpack | awk '{print \$3}' | xargs -I {} docker rmi {} -f
         docker build -t ${image_name} -f ${WORKSPACE}/rllibpack/Dockerfile ${WORKSPACE}/rllibpack/
     """
     sh "docker run -v ${WORKSPACE}/rllibpack/out:/home/rllibpack/out/ rllibpack"
