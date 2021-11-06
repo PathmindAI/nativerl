@@ -4,6 +4,7 @@ FROM ubuntu:20.04
 RUN apt-get update
 RUN DEBIAN_FRONTEND=noninteractive \
     apt-get install -y \
+    build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev \
     wget
 
 RUN useradd -ms /bin/bash rllibpack
@@ -18,8 +19,8 @@ RUN wget https://repo.anaconda.com/archive/Anaconda3-2019.03-Linux-x86_64.sh \
     /bin/bash -c "source ~/.bashrc"
 ENV PATH /home/rllibpack/anaconda3/bin:$PATH
 
-ADD requirements.txt .
 RUN conda install -y pybind11
+ADD requirements.txt .
 RUN pip install -U pip && \
     pip install -r requirements.txt
 
