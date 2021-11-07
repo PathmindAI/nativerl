@@ -13,6 +13,7 @@ from pathmind_training import (
     get_scheduler,
     modify_anylogic_db_properties,
     write_completion_report,
+    write_temp_file,
 )
 from pathmind_training.callbacks import get_callback_function, get_callbacks
 from pathmind_training.environments import get_environment, get_gym_environment
@@ -313,8 +314,8 @@ def test(
         obs = env_instance.reset()
         mode = "pm_single" if len(obs) == 1 else "pm_multi"
         print(f"model-analyzer-mode:{mode}")
-        dto = env_instance.write_meta()
-        print(f"dto:{dto}")
+        dto_json = env_instance.write_meta()
+        print(f"DTOPath:{write_temp_file(dto_json)}")
 
     except Exception as e:
         print(

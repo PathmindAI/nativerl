@@ -4,6 +4,7 @@ import math
 import os
 import typing
 from collections import OrderedDict
+import json
 
 import gym
 import numpy as np
@@ -342,7 +343,7 @@ def get_environment(
                 return self.term_contributions
 
         def write_meta(self):
-            return self.nativeEnv.writeMeta()
+            return json.dumps(self.nativeEnv.writeMeta())
 
     # Set correct class name internally
     PathmindEnvironment.__name__ = simple_name
@@ -471,17 +472,17 @@ def get_native_env_from_simulation(
 
             agents = self.simulation.number_of_agents()
             return {
-                "dto.setObservations": len(obs),
-                "dto.setObservationNames": obs_names,
-                "setObservationTypes": obs_types,
-                "setActions": act.choices,  # support continuous action space
-                "setActionMask": None,  # support action mask
-                "setRewardVariablesCount": len(rew),
-                "setRewardVariableNames": rew_names,
-                "setRewardVariableTypes": rew_types,
-                "setAgents": agents,
-                "setMode": "pm_single" if agents == 1 else "pm_multi",
-                "setEnabled": False
+                "observations": len(obs),
+                "observationNames": obs_names,
+                "observationTypes": obs_types,
+                "actions": act.choices,  # support continuous action space
+                "actionMask": False,  # support action mask
+                "rewardVariablesCount": len(rew),
+                "rewardVariableNames": rew_names,
+                "rewardVariableTypes": rew_types,
+                "agents": agents,
+                "mode": "pm_single" if agents == 1 else "pm_multi",
+                "enabled": False
             }
 
 

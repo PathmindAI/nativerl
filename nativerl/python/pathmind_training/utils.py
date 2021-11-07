@@ -60,6 +60,14 @@ def write_completion_report(trials, output_dir, algorithm, best_freezing_log_dir
         )
         print("Training completed successfully")
 
+def write_temp_file(json):
+    import tempfile
+
+    new_file, file_name = tempfile.mkstemp()
+    with open(new_file, 'w') as f:
+        f.write(json)
+
+    return file_name
 
 def modify_anylogic_db_properties():
     # Make sure multiple processes can read the database from AnyLogic
