@@ -24,7 +24,6 @@ def mc_rollout(
     checkpoint,
     environment,
     env_name,
-    env_config,
     callbacks,
     loggers,
     output_dir,
@@ -39,7 +38,6 @@ def mc_rollout(
 
     config = {
         "env": env_name,
-        "env_config": env_config,
         "callbacks": callbacks,
         "num_gpus": 0,
         "num_workers": 6,
@@ -81,7 +79,6 @@ def mc_rollout(
 def freeze_trained_policy(
     env,
     env_name,
-    env_config,
     callbacks,
     trials,
     loggers,
@@ -97,7 +94,6 @@ def freeze_trained_policy(
 
     :param env: nativerl.Environment instance
     :param env_name: name of the env (str)
-    :param env_config: holds custom training parameters
     :param callbacks: ray Callbacks class
     :param trials: The trials returned from a ray tune run.
     :param loggers: loggers for mc_rollout
@@ -145,7 +141,6 @@ def freeze_trained_policy(
             checkpoint_path,
             env,
             env_name,
-            env_config,
             callbacks,
             loggers,
             output_dir,

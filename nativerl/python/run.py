@@ -63,7 +63,6 @@ def main(
     reward_balance_period: int = 1,
     num_reward_terms: int = None,
     alphas: str = None,
-    use_auto_norm: bool = True,
 ):
     """
 
@@ -111,7 +110,6 @@ def main(
     :param reward_balance_period: How often (iterations) to recalculate betas and adjust reward function
     :param num_reward_terms: Number of conceptual chunks (possibly multiple lines) reward function is chopped into: each chunk gets an alpha and beta.
     :param alphas: User defined importance weights on conceptual chunks (reward terms)
-    :param use_auto_norm: Whether or not to call updateBeta
 
     :return: runs training for the given environment, with nativerl
     """
@@ -128,12 +126,8 @@ def main(
     env_config = {
         "use_reward_terms": alphas is not None,
         "reward_balance_period": reward_balance_period,
-        "num_reward_terms": num_reward_terms if alphas else 1,
+        "num_reward_terms": num_reward_terms,
         "alphas": np.asarray(alphas) if alphas else np.ones(num_reward_terms),
-        "betas": np.ones(num_reward_terms),
-        "use_auto_norm": use_auto_norm
-        and (alphas is not None)
-        and (num_reward_terms != 1),
     }
 
     if env_config["use_reward_terms"]:
@@ -201,9 +195,6 @@ def main(
     )
     loggers = get_loggers()
 
-    # to learn useful initial betas(for auto-norm), we delay policy training until scheduler activates
-    lr = 0.0 if env_config["use_auto_norm"] else 1e-4
-
     config = {
         "env": env_name,
         "env_config": env_config,
@@ -217,7 +208,7 @@ def main(
         "vf_clip_param": np.inf,
         "lambda": 0.95,
         "clip_param": 0.2,
-        "lr": lr,
+        "lr": 1e-4,
         "gamma": gamma,
         "entropy_coeff": 0.0,
         "num_sgd_iter": sample_from(lambda spec: random.choice([10, 20, 30])),
@@ -249,18 +240,9 @@ def main(
     )
 
     if freezing:
-        if env_config["use_auto_norm"]:
-            best_logdir = trials.get_best_logdir("episode_reward_mean", "max")
-            trial_dfs = trials.fetch_trial_dataframes()
-            df = trial_dfs[best_logdir]
-            for i in range(len(env_config["betas"])):
-                beta = df.iloc[-1][f"custom_metrics/beta_{str(i)}_mean"]
-                env_config["betas"][i] = beta
-        #            env_config["betas"] = np.array(env_config["betas"])
         best_freezing_log_dir = freeze_trained_policy(
             env=env_instance,
             env_name=env_name,
-            env_config=env_config,
             callbacks=callbacks,
             trials=trials,
             loggers=loggers,
@@ -286,7 +268,6 @@ def main(
 def test(
     environment: str,
     is_gym: bool = False,
-    is_pathmind_simulation: bool = False,
     multi_agent: bool = True,
     max_memory_in_mb: int = 4096,
     module_path: str = None,
@@ -296,7 +277,6 @@ def test(
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param is_gym: if True, "environment" must be a gym environment.
-    :param is_pathmind_simulation: if True, "environment" should use "Simulation" interface from the pathmind package.
     :param multi_agent: Indicates that we need multi-agent support with the Environment class provided.
     :param max_memory_in_mb: The maximum amount of memory in MB to use for Java environments.
 
@@ -317,7 +297,6 @@ def test(
         env_name = get_environment(
             jar_dir=jar_dir,
             is_multi_agent=multi_agent,
-            is_pathmind_simulation=is_pathmind_simulation,
             environment_name=environment,
             max_memory_in_mb=max_memory_in_mb,
         )

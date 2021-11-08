@@ -52,13 +52,10 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                     term_contributions = (
                         worker.env.getRewardTermContributions().tolist()
                     )
-                    betas = worker.env.betas
                     for i, val in enumerate(term_contributions):
                         episode.custom_metrics[
                             f"metrics_term_{str(i)}"
                         ] = term_contributions[i]
-                    for i, val in enumerate(betas):
-                        episode.custom_metrics[f"beta_{str(i)}"] = betas[i]
 
         def on_train_result(self, trainer, result: dict, **kwargs):
             if not is_gym:
@@ -69,64 +66,24 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                     ]
                 )
 
-                use_auto_norm = trainer.config["env_config"]["use_auto_norm"]
-
-                if use_auto_norm:
+                if use_reward_terms:
                     period = trainer.config["env_config"]["reward_balance_period"]
                     num_reward_terms = trainer.config["env_config"]["num_reward_terms"]
 
-                    if (
-                        result["training_iteration"] % period == 0
-                        or result["training_iteration"] == 1
-                    ):
-
-                        if result["training_iteration"] == 1:
-                            lr = 1.0
-                        else:
-                            lr = max(
-                                0.025,
-                                min(
-                                    0.4,
-                                    20
-                                    * round(period / result["training_iteration"], 4),
-                                ),
-                            )
-
+                    if result["training_iteration"] % period == 0:
+                        # First "num_reward_terms" amount of custom metrics will be reserved for raw reward term contributions
                         betas = [
                             1.0
-                            / max(
-                                abs(
-                                    result["custom_metrics"][
-                                        f"metrics_term_{str(i)}_min"
-                                    ]
-                                ),
-                                abs(
-                                    result["custom_metrics"][
-                                        f"metrics_term_{str(i)}_max"
-                                    ]
-                                ),
+                            / abs(
+                                result["custom_metrics"][f"metrics_term_{str(i)}_mean"]
                             )
-                            if max(
-                                abs(
-                                    result["custom_metrics"][
-                                        f"metrics_term_{str(i)}_min"
-                                    ]
-                                ),
-                                abs(
-                                    result["custom_metrics"][
-                                        f"metrics_term_{str(i)}_max"
-                                    ]
-                                ),
-                            )
+                            if result["custom_metrics"][f"metrics_term_{str(i)}_mean"]
                             != 0.0
-                            else 1.0
+                            else 0.0
                             for i in range(num_reward_terms)
                         ]
-
                         for w in trainer.workers.remote_workers():
-                            w.apply.remote(
-                                lambda worker: worker.env.updateBetas(betas, lr=lr)
-                            )
+                            w.apply.remote(lambda worker: worker.env.updateBetas(betas))
 
                 if (
                     result["training_iteration"] % checkpoint_frequency == 0
