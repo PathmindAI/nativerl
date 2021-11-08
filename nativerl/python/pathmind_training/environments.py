@@ -268,7 +268,9 @@ def get_environment(
                         if str(i) not in self.term_contributions_dict:
                             self.term_contributions_dict[str(i)] = reward_array
                         else:
-                            self.term_contributions_dict[str(i)] += reward_array
+                            self.term_contributions_dict[str(i)] = (
+                                reward_array + self.term_contributions_dict[str(i)]
+                            )
                     else:
                         reward_dict[str(i)] = self.nativeEnv.getReward(i)
 
