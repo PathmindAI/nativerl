@@ -120,13 +120,16 @@ def get_environment(
             self.use_reward_terms = env_config["use_reward_terms"]
             if is_pathmind_simulation and self.nativeEnv.auto_norm_reward:
                 self.use_auto_norm = self.nativeEnv.auto_norm_reward
+                env_config["use_auto_norm"] = self.use_auto_norm
             else:
                 self.use_auto_norm = env_config["use_auto_norm"]
-            self.num_reward_terms = env_config["num_reward_terms"]
             if is_pathmind_simulation and self.nativeEnv.reward_weights:
                 self.alphas = self.nativeEnv.reward_weights
+                env_config["alphas"] = self.alphas
+                self.num_reward_terms = len(self.alphas)
             else:
                 self.alphas = env_config["alphas"]
+                self.num_reward_terms = env_config["num_reward_terms"]
             self.betas = env_config["betas"]
 
             self.term_contributions_dict = {}
@@ -349,7 +352,10 @@ def get_environment(
 
         def updateBetas(self, target_betas, lr):
             if self.use_auto_norm:
-                self.betas = self.betas - lr * (target_betas - self.betas)
+                if os.path.exists("../betas.npy"):
+                    with open("../betas.npy", "rb") as f:
+                        self.betas = np.load(f)
+                self.betas = self.betas + lr * (target_betas - self.betas)
 
         def getRewardTermContributions(self):
             if self.use_reward_terms:

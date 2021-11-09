@@ -2,7 +2,7 @@ import numpy as np
 from ray.tune.schedulers import PopulationBasedTraining
 
 
-def get_scheduler(scheduler_name, train_batch_size=None):
+def get_scheduler(scheduler_name, train_batch_size=None, use_auto_norm=True):
     if scheduler_name == "PBT":
         return PopulationBasedTraining(
             time_attr="training_iteration",
@@ -12,6 +12,7 @@ def get_scheduler(scheduler_name, train_batch_size=None):
             quantile_fraction=0.25,
             resample_probability=0.25,
             log_config=True,
+            synch=use_auto_norm,
             hyperparam_mutations={
                 "lambda": np.linspace(0.9, 1.0, 5).tolist(),
                 "clip_param": np.linspace(0.01, 0.5, 5).tolist(),
@@ -34,6 +35,7 @@ def get_scheduler(scheduler_name, train_batch_size=None):
             perturbation_interval=20,
             quantile_fraction=0.25,
             log_config=True,
+            synch=use_auto_norm,
             hyperparam_bounds={
                 "lambda": [0.9, 1.0],
                 "clip_param": [0.01, 0.5],

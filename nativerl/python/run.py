@@ -163,7 +163,8 @@ def main(
         else 20000
     )
 
-    ray.init(log_to_driver=user_log, dashboard_host="127.0.0.1", num_cpus=cpu_count)
+    #    ray.init(log_to_driver=user_log, dashboard_host="127.0.0.1", num_cpus=cpu_count)
+    ray.init(local_mode=True)
 
     model = get_custom_model(
         num_hidden_nodes=num_hidden_nodes,
@@ -199,7 +200,9 @@ def main(
         "PB2",
     ], f"Scheduler has to be either PBT or PB2, got {scheduler}"
     scheduler_instance = get_scheduler(
-        scheduler_name=scheduler, train_batch_size=train_batch_size
+        scheduler_name=scheduler,
+        train_batch_size=train_batch_size,
+        use_auto_norm=env_config["use_auto_norm"],
     )
     loggers = get_loggers()
 

@@ -1,6 +1,7 @@
 import importlib
 from typing import Dict
 
+import numpy as np
 import ray
 from pathmind_training.exports import export_policy_from_checkpoint
 from ray.rllib.agents.callbacks import DefaultCallbacks
@@ -127,6 +128,15 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                             w.apply.remote(
                                 lambda worker: worker.env.updateBetas(betas, lr=lr)
                             )
+                        betas_list = ray.get(
+                            [
+                                w.apply.remote(lambda worker: worker.env.betas)
+                                for w in trainer.workers.remote_workers()
+                            ]
+                        )
+                        betas = np.array(sum(betas_list) / len(betas_list))
+                        with open("../betas.npy", "wb") as f:
+                            np.save(f, betas)
 
                 if (
                     result["training_iteration"] % checkpoint_frequency == 0
