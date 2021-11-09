@@ -134,7 +134,7 @@ def get_callbacks(debug_metrics, use_reward_terms, is_gym, checkpoint_frequency)
                                 for w in trainer.workers.remote_workers()
                             ]
                         )
-                        betas = np.array(sum(betas_list) / len(betas_list))
+                        betas = np.array(betas_list)
                         with open("../betas.npy", "wb") as f:
                             np.save(f, betas)
 

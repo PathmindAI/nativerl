@@ -163,8 +163,7 @@ def main(
         else 20000
     )
 
-    #    ray.init(log_to_driver=user_log, dashboard_host="127.0.0.1", num_cpus=cpu_count)
-    ray.init(local_mode=True)
+    ray.init(log_to_driver=user_log, dashboard_host="127.0.0.1", num_cpus=cpu_count)
 
     model = get_custom_model(
         num_hidden_nodes=num_hidden_nodes,
