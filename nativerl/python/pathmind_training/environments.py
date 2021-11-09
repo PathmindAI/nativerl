@@ -17,7 +17,7 @@ else:
     import nativerl
 
 import pathmind_training.utils
-from pathmind_training.pynativerl import Continuous
+from pathmind_training.pynativerl import Array, Continuous
 from pathmind_training.utils import get_class_from_string
 
 OR_GYM_ENVS = [
@@ -278,7 +278,7 @@ def get_environment(
 
                 if self.use_reward_terms and done_dict["__all__"]:
                     self.term_contributions += sum(
-                        self.term_contributions_dict.values()
+                        Array(self.term_contributions_dict.values())
                     ) / len(self.term_contributions_dict)
                 return obs_dict, reward_dict, done_dict, {}
 
