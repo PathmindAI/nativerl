@@ -66,9 +66,7 @@ public:
         return length;
     }
 
-    ssize_t len() {
-        return length();
-    }
+    ssize_t len() { return shape[0]; }
 };
 
 class Continuous;
