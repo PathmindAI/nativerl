@@ -8,7 +8,7 @@ import fire
 import numpy as np
 import ray
 
-from nativerl.python.pathmind_training import ObservationMismatch
+from pathmind_training import ObservationMismatch, ObservationFileNotFound
 from pathmind_training import (
     Stopper,
     get_loggers,
@@ -324,14 +324,19 @@ def test(
         dto_json = env_instance.write_meta()
         print(f"DTOPath:{write_temp_file(dto_json)}")
 
+    except ObservationFileNotFound as e:
+        print("obs.yaml doesn't exist.")
+        traceback.print_tb(e.__traceback__)
+        print(f"model-analyzer-error:{e}")
+        sys.exit(-1)
     except ObservationMismatch as e:
-        print("observation mismatch between full obs list and obs.yaml")
+        print("observation mismatch between full obs list and obs.yaml.")
         traceback.print_tb(e.__traceback__)
         print(f"model-analyzer-error:{e}")
         sys.exit(-1)
     except Exception as e:
         print(
-            "cannot initiate Pathmind simulation env. it will try to initiate GYM env."
+            f"cannot initiate Pathmind simulation env. it will try to initiate GYM env., {e}, {type(e)}"
         )
         traceback.print_tb(e.__traceback__)
         try:

@@ -1,9 +1,14 @@
 class ObservationMismatch(Exception):
-    """ Inappropriate argument value (of correct type). """
-    def __init__(self, *args, **kwargs): # real signature unknown
-        pass
+    def __init__(self, message):
+        self.message = message
 
-    @staticmethod # known case of __new__
-    def __new__(*args, **kwargs): # real signature unknown
-        """ Create and return a new object.  See help(type) for accurate signature. """
-        pass
+    def __str__(self):
+        return self.message
+
+
+class ObservationFileNotFound(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message

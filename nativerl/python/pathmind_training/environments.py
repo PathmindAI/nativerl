@@ -12,7 +12,7 @@ import yaml
 from ray.rllib.env import MultiAgentEnv
 from ray.tune.registry import register_env
 
-from nativerl.python.pathmind_training import ObservationMismatch
+from pathmind_training.exceptions import ObservationMismatch, ObservationFileNotFound
 
 if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
@@ -367,9 +367,12 @@ def get_native_env_from_simulation(
 
     obs_names: typing.Optional[str] = None
     if observation_file:
-        with open(observation_file, "r") as f:
-            schema: OrderedDict = yaml.safe_load(f.read())
-            obs_names = schema.get("observations")
+        try:
+            with open(observation_file, "r") as f:
+                schema: OrderedDict = yaml.safe_load(f.read())
+                obs_names = schema.get("observations")
+        except FileNotFoundError as fe:
+            raise ObservationFileNotFound(f"obs.yaml file doesn't exist in {observation_file}")
 
     class PathmindEnv(nativerl.Environment):
         def __init__(
