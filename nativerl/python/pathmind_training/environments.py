@@ -388,7 +388,7 @@ def get_native_env_from_simulation(
             # obs_full_names(local var): it has full obs list of simulation
             if obs:
                 obs_full_names = list(self.simulation.get_observation(0).keys())
-                diff_obs = set(obs_full_names) - set(obs)
+                diff_obs = set(obs) - set(obs_full_names)
                 if len(diff_obs) > 1:
                     raise ObservationMismatch(
                         f"Could not find {list(diff_obs)} observation(s) from the simulation. Make sure to check for obs.yaml and simulation"
