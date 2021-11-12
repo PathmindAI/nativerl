@@ -7,6 +7,8 @@ from typing import Optional
 import fire
 import numpy as np
 import ray
+
+from nativerl.python.pathmind_training import ObservationMismatch
 from pathmind_training import (
     Stopper,
     get_loggers,
@@ -276,12 +278,16 @@ def main(
 def test(
     environment: str,
     module_path: str = None,
+    obs_selection: str = None,
+    rew_fct_name: str = None
 ):
     """
     :check if valid environment or not for Model Analyzer
 
     :param environment: The name of a subclass of "Environment" to use as environment for training.
     :param module_path: The path where the model related codes(python or java) live.
+    :param obs_selection: If provided, read the names of the observations to be selected from this yaml file.
+    :param rew_fct_name: If provided, read a Python function from this file to compute the reward from reward terms.
 
     :return: model types in normal cases, otherwise return exit code -1
     """
@@ -305,6 +311,7 @@ def test(
             is_multi_agent=True,
             environment_name=environment,
             is_pathmind_simulation=True,
+            obs_selection=obs_selection
         )
 
         env_creator = env_name
@@ -317,6 +324,11 @@ def test(
         dto_json = env_instance.write_meta()
         print(f"DTOPath:{write_temp_file(dto_json)}")
 
+    except ObservationMismatch as e:
+        print("observation mismatch between full obs list and obs.yaml")
+        traceback.print_tb(e.__traceback__)
+        print(f"model-analyzer-error:{e}")
+        sys.exit(-1)
     except Exception as e:
         print(
             "cannot initiate Pathmind simulation env. it will try to initiate GYM env."

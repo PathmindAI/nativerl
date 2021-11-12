@@ -12,6 +12,8 @@ import yaml
 from ray.rllib.env import MultiAgentEnv
 from ray.tune.registry import register_env
 
+from nativerl.python.pathmind_training import ObservationMismatch
+
 if os.environ.get("USE_PY_NATIVERL"):
     import pathmind_training.pynativerl as nativerl
 else:
@@ -377,6 +379,18 @@ def get_native_env_from_simulation(
         ):
             nativerl.Environment.__init__(self)
             self.simulation = simulation
+
+            # check all obs from obs.yaml belongs to full obs(from simulation model)
+            # obs: if obs.yaml exist, obs has the content of the file(selected obs)
+            # obs_full_names(local var): it has full obs list of simulation
+            if obs:
+                obs_full_names = list(self.simulation.get_observation(0).keys())
+                diff_obs = set(obs_full_names) - set(obs)
+                if len(diff_obs) > 1:
+                    raise ObservationMismatch(
+                        f"Could not find {list(diff_obs)} observation(s) from the simulation. Make sure to check for obs.yaml and simulation"
+                    )
+
             self.obs_names = obs
 
         def getActionSpace(self, agent_id=0):
