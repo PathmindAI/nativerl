@@ -282,7 +282,7 @@ def get_environment(
                         max_array = np.array(
                             [
                                 max(max_array[i], abs(val[i]))
-                                for i in range(len(reward_array))
+                                for i in range(self.num_reward_terms)
                             ]
                         )
                     self.term_contributions = max_array
