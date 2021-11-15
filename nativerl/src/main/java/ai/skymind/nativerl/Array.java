@@ -46,8 +46,14 @@ public class Array extends Pointer {
     private native void allocate(@Const @ByRef FloatVector values);
     public Array(@Const @ByRef SSizeTVector shape) { super((Pointer)null); allocate(shape); }
     private native void allocate(@Const @ByRef SSizeTVector shape);
+    public native @ByRef @Name("operator +=") Array addPut(@Const @ByRef Array a);
 
     public native @ByVal FloatVector values();
 
     public native @Cast("ssize_t") long length();
+
+    public native @Cast("ssize_t") long py_len();
+
+    public native float get_item(int i);
+
 }
