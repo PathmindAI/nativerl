@@ -1,3 +1,4 @@
+#include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
 #include <pybind11/stl.h>
@@ -126,6 +127,9 @@ PYBIND11_MODULE(nativerl, m) {
 
             return new nativerl::Array((float*)info.ptr, info.shape);
         }))
+        .def(pybind11::self += pybind11::self)
+        .def("__len__", &nativerl::Array::py_len)
+        .def("__getitem__", &nativerl::Array::get_item)
         .def_buffer([](nativerl::Array &a) -> pybind11::buffer_info {
             std::vector<ssize_t> strides(a.shape.size());
             strides[a.shape.size() - 1] = sizeof(float);

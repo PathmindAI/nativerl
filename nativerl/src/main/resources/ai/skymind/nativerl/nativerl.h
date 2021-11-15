@@ -41,6 +41,15 @@ public:
             : allocated(nullptr), data(nullptr), shape(shape) {
         allocated = data = new float[length()];
     }
+    Array& operator+= (const Array& a) {
+        if (shape != a.shape) {
+            throw std::runtime_error("Array shapes do not match");
+        }
+        for (ssize_t i = 0; i < length(); i++) {
+            data[i] += a.data[i];
+        }
+        return *this;
+    }
     ~Array() {
         delete[] allocated;
     }
@@ -56,6 +65,13 @@ public:
         }
         return length;
     }
+
+    ssize_t py_len() { return shape[0]; }
+
+    float get_item(int i) {
+        return data[i];
+    }
+
 };
 
 class Continuous;
