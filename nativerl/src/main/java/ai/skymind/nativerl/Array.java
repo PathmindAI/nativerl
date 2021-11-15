@@ -52,5 +52,8 @@ public class Array extends Pointer {
 
     public native @Cast("ssize_t") long length();
 
-    public native @Cast("ssize_t") long len();
+    public native @Cast("ssize_t") long py_len();
+
+    public native float get_item(int i);
+
 }

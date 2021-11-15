@@ -66,7 +66,12 @@ public:
         return length;
     }
 
-    ssize_t len() { return shape[0]; }
+    ssize_t py_len() { return shape[0]; }
+
+    float get_item(int i) {
+        return data[i];
+    }
+
 };
 
 class Continuous;
