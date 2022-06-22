@@ -1,5 +1,5 @@
 aioredis<2
-numpy==1.19.4
+numpy==1.22.0
 gym==0.17.3
 or_gym==0.1.5
 dm_tree==0.1.5
