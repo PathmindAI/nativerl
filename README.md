@@ -6,8 +6,6 @@ NativeRL enables you to apply Reinforcement Learning (RL) to [AnyLogic](https://
 
 ### Example Simulations Trained Using NativeRL
 
-<iframe width="500" height="500" allow="fullscreen" src="https://cloud.anylogic.com/assets/embed?modelId=23213598-1bc4-419a-ade2-3b0e8a220e0d"></iframe>
-
 - Product Delivery - https://cloud.anylogic.com/model/23213598-1bc4-419a-ade2-3b0e8a220e0d
 - Flexible Manufacturing - https://cloud.anylogic.com/model/9044fa72-c5dd-4079-9f6a-a877464b905f
 - AGVs - https://cloud.anylogic.com/model/bc88f3be-b5a6-4962-abc1-a26def59994d
