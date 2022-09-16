@@ -13,7 +13,7 @@ NativeRL enables you to apply Reinforcement Learning (RL) to [AnyLogic](https://
 
 ## Getting Started
 
-To get started, please navigate to our wiki (coming soon). There are generally 3 steps to get started.
+To get started, please navigate to [our wiki](https://github.com/PathmindAI/nativerl/wiki). There are generally 3 steps to get started.
 
 1. Build the NativeRL libraries.
 2. Install NativeRL locally and add Pathmind Helper to your AnyLogic simulation.
